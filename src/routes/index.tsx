@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import {
   Search,
   ShoppingBag,
@@ -97,6 +98,8 @@ function Index() {
   useEffect(() => { setMaxPrice(priceMax); }, [priceMax]);
   const [sort, setSort] = useState<SortKey>("featured");
   const [query, setQuery] = useState("");
+  const debouncedQuery = useDebouncedValue(query, 250);
+
 
   const [searchOpen, setSearchOpen] = useState(false);
   const focusSearch = () => {
@@ -119,7 +122,7 @@ function Index() {
 
 
   const visibleProducts = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = debouncedQuery.trim().toLowerCase();
     let list = products.filter((p) => (activeCat === "All" ? true : p.category === activeCat));
     list = list.filter((p) => p.price <= maxPrice);
     if (q) {
@@ -135,7 +138,8 @@ function Index() {
       case "rating": list = [...list].sort((a, b) => b.rating - a.rating); break;
     }
     return list;
-  }, [activeCat, maxPrice, sort, query]);
+  }, [activeCat, maxPrice, sort, debouncedQuery]);
+
 
   return (
     <div className="flex min-h-screen flex-col" style={inter}>
