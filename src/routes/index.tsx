@@ -44,7 +44,7 @@ const cards = [
   { Icon: Sparkles, bg: "bg-rose-800", text: "Small-batch made in family-run European mills" },
 ];
 
-const navLinks = ["Shop", "Collections", "Journal", "Contact"];
+const navLinks = ["Shop", "Collections"];
 
 const categories: { Icon: typeof Bath; name: Category; count: number; bg: string; accent: string; desc: string; img: string }[] = [
   { Icon: Bath, name: "Towels", count: 18, bg: "bg-orange-100", accent: "text-orange-800", desc: "Plush cotton, quick-dry", img: productTowel },
@@ -91,9 +91,13 @@ function Index() {
   const [sort, setSort] = useState<SortKey>("featured");
   const [query, setQuery] = useState("");
 
+  const [searchOpen, setSearchOpen] = useState(false);
   const focusSearch = () => {
-    document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" });
-    setTimeout(() => document.getElementById("product-search")?.focus(), 400);
+    setSearchOpen(true);
+    setTimeout(() => document.getElementById("header-search")?.focus(), 50);
+  };
+  const scrollToProducts = () => {
+    document.getElementById("shop")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   useEffect(() => {
@@ -150,7 +154,29 @@ function Index() {
             ))}
           </div>
           <div className="flex items-center gap-3 sm:gap-4 animate-slide-right delay-300">
-            <button aria-label="Search" onClick={focusSearch} className="text-white/90 hover:text-white"><Search size={20} strokeWidth={1.5} /></button>
+            <div className={`hidden sm:flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-full transition-all duration-300 overflow-hidden ${searchOpen ? "w-56 px-3 py-1.5" : "w-9 h-9 justify-center"}`}>
+              <button aria-label="Search" onClick={() => (searchOpen ? scrollToProducts() : focusSearch())} className="text-white/90 hover:text-white shrink-0">
+                <Search size={18} strokeWidth={1.75} />
+              </button>
+              {searchOpen && (
+                <>
+                  <input
+                    id="header-search"
+                    type="search"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    onFocus={scrollToProducts}
+                    placeholder="Search products…"
+                    className="bg-transparent outline-none text-white placeholder:text-white/60 text-sm w-full"
+                    style={inter}
+                  />
+                  <button aria-label="Close search" onClick={() => { setSearchOpen(false); setQuery(""); }} className="text-white/70 hover:text-white shrink-0">
+                    <X size={16} />
+                  </button>
+                </>
+              )}
+            </div>
+            <button aria-label="Search" onClick={focusSearch} className="sm:hidden text-white/90 hover:text-white"><Search size={20} strokeWidth={1.5} /></button>
             <Link to="/favorites" aria-label="Favourites" className="relative text-white/90 hover:text-white">
               <Heart size={20} strokeWidth={1.5} />
               {favCount > 0 && (
