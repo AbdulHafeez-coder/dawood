@@ -97,6 +97,65 @@ function AdminDashboard() {
   const productImportRef = useRef<HTMLInputElement>(null);
   const categoryImportRef = useRef<HTMLInputElement>(null);
 
+  // Product filters + pagination
+  const [pQuery, setPQuery] = useState("");
+  const [pCategory, setPCategory] = useState<string>("all");
+  const [pMinPrice, setPMinPrice] = useState<string>("");
+  const [pMaxPrice, setPMaxPrice] = useState<string>("");
+  const [pMinRating, setPMinRating] = useState<string>("");
+  const [pMaxRating, setPMaxRating] = useState<string>("");
+  const [pPage, setPPage] = useState(1);
+  const [pPageSize, setPPageSize] = useState(10);
+  const [pShowFilters, setPShowFilters] = useState(false);
+
+  const filteredProducts = useMemo(() => {
+    const q = pQuery.trim().toLowerCase();
+    const min = pMinPrice === "" ? -Infinity : Number(pMinPrice);
+    const max = pMaxPrice === "" ? Infinity : Number(pMaxPrice);
+    const rMin = pMinRating === "" ? -Infinity : Number(pMinRating);
+    const rMax = pMaxRating === "" ? Infinity : Number(pMaxRating);
+    return products.filter((p) => {
+      if (pCategory !== "all" && p.category !== pCategory) return false;
+      if (!Number.isNaN(min) && p.price < min) return false;
+      if (!Number.isNaN(max) && p.price > max) return false;
+      if (!Number.isNaN(rMin) && p.rating < rMin) return false;
+      if (!Number.isNaN(rMax) && p.rating > rMax) return false;
+      if (q) {
+        const hay = `${p.name} ${p.tagline} ${p.category} ${p.tag}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+  }, [products, pQuery, pCategory, pMinPrice, pMaxPrice, pMinRating, pMaxRating]);
+
+  const pTotalPages = Math.max(1, Math.ceil(filteredProducts.length / pPageSize));
+  const pCurrentPage = Math.min(pPage, pTotalPages);
+  const pagedProducts = useMemo(
+    () => filteredProducts.slice((pCurrentPage - 1) * pPageSize, pCurrentPage * pPageSize),
+    [filteredProducts, pCurrentPage, pPageSize],
+  );
+
+  useEffect(() => {
+    setPPage(1);
+  }, [pQuery, pCategory, pMinPrice, pMaxPrice, pMinRating, pMaxRating, pPageSize]);
+
+  const hasActiveFilters =
+    pQuery !== "" ||
+    pCategory !== "all" ||
+    pMinPrice !== "" ||
+    pMaxPrice !== "" ||
+    pMinRating !== "" ||
+    pMaxRating !== "";
+
+  function clearProductFilters() {
+    setPQuery("");
+    setPCategory("all");
+    setPMinPrice("");
+    setPMaxPrice("");
+    setPMinRating("");
+    setPMaxRating("");
+  }
+
   function handleExportProducts() {
     if (products.length === 0) return toast.error("No products to export");
     downloadCsv(`maison-terra-products-${new Date().toISOString().slice(0, 10)}.csv`, productsToCsv(products));
