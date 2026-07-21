@@ -1,4 +1,5 @@
 import { ShoppingBag, X, Plus, Minus, Trash2, MessageCircle } from "lucide-react";
+import { toast } from "sonner";
 import { useCart } from "@/lib/shop";
 import { whatsappCartUrl } from "@/lib/whatsapp";
 
@@ -6,6 +7,18 @@ const dmSans = { fontFamily: "'DM Sans', sans-serif" };
 
 export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { cart, changeQty, removeItem, cartCount, subtotal } = useCart();
+
+  const handleQty = (item: (typeof cart)[number], delta: number) => {
+    const nextQty = item.qty + delta;
+    changeQty(item.id, delta);
+    if (nextQty <= 0) {
+      toast.success(`Removed ${item.name} from cart`);
+    } else {
+      toast.success(`${item.name} — qty ${nextQty}`, {
+        description: `$${(item.price * nextQty).toFixed(2)}`,
+      });
+    }
+  };
 
   return (
     <div
@@ -76,11 +89,11 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                     </div>
                     <div className="mt-auto pt-2 flex items-center justify-between">
                       <div className="inline-flex items-center border border-black/10 rounded-full h-8">
-                        <button onClick={() => changeQty(i.id, -1)} className="w-8 h-8 flex items-center justify-center text-black/70 hover:text-black" aria-label="Decrease">
+                        <button onClick={() => handleQty(i, -1)} className="w-8 h-8 flex items-center justify-center text-black/70 hover:text-black" aria-label="Decrease">
                           <Minus size={14} />
                         </button>
                         <span className="w-6 text-center text-sm text-black">{i.qty}</span>
-                        <button onClick={() => changeQty(i.id, 1)} className="w-8 h-8 flex items-center justify-center text-black/70 hover:text-black" aria-label="Increase">
+                        <button onClick={() => handleQty(i, 1)} className="w-8 h-8 flex items-center justify-center text-black/70 hover:text-black" aria-label="Increase">
                           <Plus size={14} />
                         </button>
                       </div>
