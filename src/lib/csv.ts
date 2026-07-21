@@ -127,7 +127,9 @@ export function parseCsv(text: string, delimiter?: CsvDelimiter): string[][] {
 }
 
 export function downloadCsv(filename: string, content: string) {
-  const blob = new Blob([content], { type: "text/csv;charset=utf-8" });
+  // Prefix a UTF-8 BOM so Excel opens non-ASCII characters correctly.
+  const withBom = content.startsWith("\uFEFF") ? content : `\uFEFF${content}`;
+  const blob = new Blob([withBom], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
