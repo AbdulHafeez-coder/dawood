@@ -88,7 +88,16 @@ function ProductPage() {
 
   const handleAdd = () => {
     if (!canAdd) return;
-    addToCart(variantProduct, qty);
+    addToCart(variantProduct, qty, {
+      baseId: product.id,
+      baseName: product.name,
+      variantSize: selectedSize!.id,
+      variantColor: selectedColor!.id,
+      variantSizeLabel: selectedSize!.label,
+      variantSizeNote: selectedSize!.note,
+      variantColorLabel: selectedColor!.label,
+      variantColorSwatch: selectedColor!.swatch,
+    });
     toast.success(`${variantProduct.name} added to cart`, {
       description: `Qty ${qty} · $${(product.price * qty).toFixed(2)}`,
     });
