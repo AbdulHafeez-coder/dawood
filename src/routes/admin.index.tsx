@@ -16,6 +16,8 @@ import {
   DollarSign,
   UploadCloud,
   ImageIcon,
+  Download,
+  Upload,
   Settings as SettingsIcon,
 
 } from "lucide-react";
@@ -30,6 +32,13 @@ import {
 } from "@/lib/shop";
 import { useOrders, removeOrder } from "@/lib/orders";
 import { useSettings, updateSettings, resetSettings, type SocialKey } from "@/lib/settings";
+import {
+  productsToCsv,
+  parseProductsCsv,
+  categoriesToCsv,
+  parseCategoriesCsv,
+  downloadCsv,
+} from "@/lib/csv";
 
 
 import {
@@ -81,6 +90,95 @@ function AdminDashboard() {
   const [confirmCategory, setConfirmCategory] = useState<string | null>(null);
   const [confirmResetProducts, setConfirmResetProducts] = useState(false);
   const [confirmResetCategories, setConfirmResetCategories] = useState(false);
+  const productImportRef = useRef<HTMLInputElement>(null);
+  const categoryImportRef = useRef<HTMLInputElement>(null);
+
+  function handleExportProducts() {
+    if (products.length === 0) return toast.error("No products to export");
+    downloadCsv(`maison-terra-products-${new Date().toISOString().slice(0, 10)}.csv`, productsToCsv(products));
+    toast.success("Products exported", { description: `${products.length} row${products.length === 1 ? "" : "s"}` });
+  }
+
+  function handleExportCategories() {
+    if (categories.length === 0) return toast.error("No categories to export");
+    downloadCsv(`maison-terra-categories-${new Date().toISOString().slice(0, 10)}.csv`, categoriesToCsv(categories));
+    toast.success("Categories exported", { description: `${categories.length} row${categories.length === 1 ? "" : "s"}` });
+  }
+
+  async function handleImportProducts(file: File) {
+    try {
+      const text = await file.text();
+      const rows = parseProductsCsv(text);
+      if (rows.length === 0) return toast.error("CSV is empty");
+      const headerError = rows.find((r) => r.error && r.row === 1);
+      if (headerError) return toast.error("Invalid CSV", { description: headerError.error });
+      let created = 0;
+      let updated = 0;
+      let skipped = 0;
+      const errors: string[] = [];
+      const fallbackImg = PRODUCT_IMAGE_CHOICES[0]?.url ?? "";
+      const fallbackBg = PRODUCT_BG_CHOICES[0] ?? "";
+      const knownCategories = new Set(categories.map((c) => c.toLowerCase()));
+      for (const r of rows) {
+        if (r.error || !r.data) {
+          skipped++;
+          errors.push(`Row ${r.row}: ${r.error}`);
+          continue;
+        }
+        const d = r.data;
+        if (!knownCategories.has(d.category.toLowerCase())) {
+          addCategory(d.category);
+          knownCategories.add(d.category.toLowerCase());
+        }
+        const payload = {
+          name: d.name,
+          tag: d.tag || "New",
+          price: d.price,
+          rating: d.rating ?? 4.7,
+          img: d.img || fallbackImg,
+          bg: d.bg || fallbackBg,
+          category: d.category,
+          tagline: d.tagline ?? "",
+          description: d.description ?? "",
+          details: d.details ?? [],
+          gallery: d.gallery && d.gallery.length ? d.gallery : [d.img || fallbackImg],
+        };
+        const existing = d.id ? products.find((p) => p.id === d.id) : undefined;
+        if (existing) {
+          updateProduct(existing.id, payload);
+          updated++;
+        } else {
+          addProduct(d.id ? { id: d.id, ...payload } : payload);
+          created++;
+        }
+      }
+      toast.success("Products imported", {
+        description: `${created} created · ${updated} updated${skipped ? ` · ${skipped} skipped` : ""}`,
+      });
+      if (errors.length) console.warn("CSV import issues:\n" + errors.join("\n"));
+    } catch (err) {
+      toast.error("Import failed", { description: err instanceof Error ? err.message : "Could not read file" });
+    }
+  }
+
+  async function handleImportCategories(file: File) {
+    try {
+      const text = await file.text();
+      const names = parseCategoriesCsv(text);
+      if (names.length === 0) return toast.error("No category rows found");
+      let created = 0;
+      let skipped = 0;
+      for (const n of names) {
+        if (addCategory(n)) created++;
+        else skipped++;
+      }
+      toast.success("Categories imported", {
+        description: `${created} added${skipped ? ` · ${skipped} duplicates skipped` : ""}`,
+      });
+    } catch (err) {
+      toast.error("Import failed", { description: err instanceof Error ? err.message : "Could not read file" });
+    }
+  }
 
   useEffect(() => {
     if (ready && !isAuthed) navigate({ to: "/admin/login" });
@@ -243,7 +341,30 @@ function AdminDashboard() {
             <section className="bg-white border border-black/10 rounded-2xl p-5 sm:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                 <SectionTitle icon={<Package className="w-3.5 h-3.5" />} label={`Products (${products.length})`} />
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <input
+                    ref={productImportRef}
+                    type="file"
+                    accept=".csv,text/csv"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) handleImportProducts(f);
+                      e.target.value = "";
+                    }}
+                  />
+                  <button
+                    onClick={() => productImportRef.current?.click()}
+                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em]"
+                  >
+                    <Upload className="w-3 h-3" /> Import CSV
+                  </button>
+                  <button
+                    onClick={handleExportProducts}
+                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em]"
+                  >
+                    <Download className="w-3 h-3" /> Export CSV
+                  </button>
                   <button
                     onClick={() => setConfirmResetProducts(true)}
                     className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em]"
@@ -323,7 +444,30 @@ function AdminDashboard() {
             <section className="bg-white border border-black/10 rounded-2xl p-5 sm:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                 <SectionTitle icon={<Tag className="w-3.5 h-3.5" />} label={`Categories (${categories.length})`} />
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <input
+                    ref={categoryImportRef}
+                    type="file"
+                    accept=".csv,text/csv"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) handleImportCategories(f);
+                      e.target.value = "";
+                    }}
+                  />
+                  <button
+                    onClick={() => categoryImportRef.current?.click()}
+                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em]"
+                  >
+                    <Upload className="w-3 h-3" /> Import CSV
+                  </button>
+                  <button
+                    onClick={handleExportCategories}
+                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em]"
+                  >
+                    <Download className="w-3 h-3" /> Export CSV
+                  </button>
                   <button
                     onClick={() => setConfirmResetCategories(true)}
                     className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em]"
