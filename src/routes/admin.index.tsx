@@ -688,12 +688,18 @@ function AdminDashboard() {
                     {pShowFilters && (
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-3 rounded-xl bg-black/[0.03] border border-black/5">
                         <label className="block">
-                          <span className="block text-[10px] uppercase tracking-[0.18em] text-black/50 mb-1">Min price</span>
-                          <input type="number" min="0" step="0.01" value={pMinPrice} onChange={(e) => setPMinPrice(e.target.value)} placeholder="PKR 0" className="w-full px-3 py-1.5 text-sm rounded-lg border border-black/15 focus:border-black focus:outline-none bg-white" />
+                          <span className="block text-[10px] uppercase tracking-[0.18em] text-black/50 mb-1">Min price (PKR)</span>
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[11px] font-medium text-black/50 pointer-events-none">PKR</span>
+                            <input type="number" min="0" step="0.01" value={pMinPrice} onChange={(e) => setPMinPrice(e.target.value)} placeholder="0" className="w-full pl-11 pr-3 py-1.5 text-sm rounded-lg border border-black/15 focus:border-black focus:outline-none bg-white" />
+                          </div>
                         </label>
                         <label className="block">
-                          <span className="block text-[10px] uppercase tracking-[0.18em] text-black/50 mb-1">Max price</span>
-                          <input type="number" min="0" step="0.01" value={pMaxPrice} onChange={(e) => setPMaxPrice(e.target.value)} placeholder="Any" className="w-full px-3 py-1.5 text-sm rounded-lg border border-black/15 focus:border-black focus:outline-none bg-white" />
+                          <span className="block text-[10px] uppercase tracking-[0.18em] text-black/50 mb-1">Max price (PKR)</span>
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[11px] font-medium text-black/50 pointer-events-none">PKR</span>
+                            <input type="number" min="0" step="0.01" value={pMaxPrice} onChange={(e) => setPMaxPrice(e.target.value)} placeholder="Any" className="w-full pl-11 pr-3 py-1.5 text-sm rounded-lg border border-black/15 focus:border-black focus:outline-none bg-white" />
+                          </div>
                         </label>
                         <label className="block">
                           <span className="block text-[10px] uppercase tracking-[0.18em] text-black/50 mb-1">Min rating</span>
@@ -1505,14 +1511,20 @@ function ProductFormDialog({
               </select>
             </Field>
             <Field label="Price (PKR)">
-              <input
-                type="number"
-                min={0}
-                step="0.01"
-                value={form.price}
-                onChange={(e) => set("price", Number(e.target.value))}
-                className="mt-input"
-              />
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-medium text-black/50 pointer-events-none">PKR</span>
+                <input
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  value={form.price}
+                  onChange={(e) => set("price", Number(e.target.value))}
+                  className="mt-input pl-12"
+                />
+              </div>
+              <div className="mt-1 text-[11px] text-black/55 tabular-nums">
+                Displays as <span className="text-black font-medium">{formatPKR(Number(form.price) || 0)}</span>
+              </div>
             </Field>
             <Field label="Rating">
               <input
