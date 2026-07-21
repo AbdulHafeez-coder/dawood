@@ -825,7 +825,7 @@ function AdminDashboard() {
                                 <td className="py-3 pr-3 text-black/70">{p.category}</td>
                                 <td className="py-3 pr-3 text-black/70">{p.tag}</td>
                                 <td className="py-3 pr-3 text-black/70 tabular-nums">{p.rating.toFixed(1)}</td>
-                                <td className="py-3 pr-3 text-right tabular-nums">PKR {p.price.toFixed(2)}</td>
+                                <td className="py-3 pr-3 text-right tabular-nums">{formatPKR(p.price)}</td>
                                 <td className="py-3 pl-3">
                                   <div className="flex items-center justify-end gap-1">
                                     <button
