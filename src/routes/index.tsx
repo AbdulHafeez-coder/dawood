@@ -261,24 +261,35 @@ function Index() {
           </p>
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-          {categories.map(({ Icon, name, count, bg, accent, desc }) => (
+          {categories.map(({ Icon, name, count, bg, accent, desc, img }) => (
             <button
               key={name}
               onClick={() => {
                 setActiveCat(name);
                 document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" });
               }}
-              className={`${bg} text-left rounded-2xl p-6 lg:p-8 flex flex-col justify-between min-h-[200px] lg:min-h-[240px] hover:-translate-y-1 transition-transform`}
+              className={`${bg} group relative text-left rounded-2xl overflow-hidden flex flex-col justify-between min-h-[240px] lg:min-h-[300px] hover:-translate-y-1 transition-transform`}
             >
-              <div className={`${accent} w-12 h-12 rounded-full bg-white/70 flex items-center justify-center`}>
-                <Icon size={22} strokeWidth={1.5} />
-              </div>
-              <div>
-                <div className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: "clamp(22px, 3vw, 30px)", letterSpacing: "-0.03em" }}>
-                  {name}
+              <img
+                src={img}
+                alt={name}
+                width={1024}
+                height={1024}
+                loading="lazy"
+                className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-80 group-hover:scale-105 transition-all duration-500"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
+              <div className="relative p-6 lg:p-8 flex flex-col justify-between h-full min-h-[240px] lg:min-h-[300px]">
+                <div className={`${accent} w-12 h-12 rounded-full bg-white/85 backdrop-blur-sm flex items-center justify-center`}>
+                  <Icon size={22} strokeWidth={1.5} />
                 </div>
-                <div className="text-black/60 text-sm mt-1">{desc}</div>
-                <div className="text-black/40 text-xs mt-2">{count} products</div>
+                <div>
+                  <div className="text-white drop-shadow-sm" style={{ ...dmSans, fontWeight: 500, fontSize: "clamp(22px, 3vw, 30px)", letterSpacing: "-0.03em" }}>
+                    {name}
+                  </div>
+                  <div className="text-white/85 text-sm mt-1">{desc}</div>
+                  <div className="text-white/70 text-xs mt-2">{count} products</div>
+                </div>
               </div>
             </button>
           ))}
