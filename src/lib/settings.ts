@@ -93,3 +93,19 @@ export function useSettings() {
   }, []);
   return s;
 }
+
+if (typeof window !== "undefined") {
+  window.addEventListener("storage", (e) => {
+    if (e.key !== KEY) return;
+    try {
+      const parsed = e.newValue ? JSON.parse(e.newValue) : null;
+      current = parsed
+        ? { ...DEFAULTS, ...parsed, socials: { ...DEFAULTS.socials, ...(parsed?.socials ?? {}) } }
+        : { ...DEFAULTS, socials: { ...DEFAULTS.socials } };
+      emit();
+    } catch {
+      /* ignore */
+    }
+  });
+}
+
