@@ -174,7 +174,7 @@ function AdminDashboard() {
 
   useEffect(() => {
     setPPage(1);
-  }, [pQuery, pCategory, pMinPrice, pMaxPrice, pMinRating, pMaxRating, pPageSize]);
+  }, [debouncedPQuery, pCategory, pMinPrice, pMaxPrice, pMinRating, pMaxRating, pPageSize]);
 
   const hasActiveFilters =
     pQuery !== "" ||
