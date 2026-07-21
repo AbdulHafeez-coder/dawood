@@ -377,7 +377,7 @@ function Index() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
             {visibleProducts.map((p) => (
-              <div key={p.id} className="bg-white rounded-2xl overflow-hidden flex flex-col group">
+              <div key={p.id} className="bg-white rounded-2xl overflow-hidden flex flex-col h-full group">
                 <Link to="/product/$id" params={{ id: p.id }} className={`${p.bg} relative aspect-square overflow-hidden block`}>
                   <span className="absolute top-4 left-4 z-10 bg-black text-white text-xs px-3 py-1 rounded-full">{p.tag}</span>
                   <span className="absolute top-4 right-4 z-10 bg-white/85 text-black text-[11px] px-2 py-1 rounded-full">{p.category}</span>
@@ -390,9 +390,9 @@ function Index() {
                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </Link>
-                <div className="p-5 flex flex-col gap-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
+                <div className="p-5 flex flex-col gap-3 flex-1">
+                  <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
+                    <div className="min-w-0">
                       <Link to="/product/$id" params={{ id: p.id }} className="text-black hover:underline block" style={{ ...dmSans, fontWeight: 500, fontSize: 20, letterSpacing: "-0.03em" }}>
                         {p.name}
                       </Link>
@@ -400,11 +400,11 @@ function Index() {
                         <Star size={12} className="fill-black text-black" /> {p.rating}
                       </div>
                     </div>
-                    <div className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 20 }}>${p.price}</div>
+                    <div className="text-black shrink-0" style={{ ...dmSans, fontWeight: 500, fontSize: 20 }}>${p.price}</div>
                   </div>
                   <button
                     onClick={() => addToCart(p)}
-                    className="mt-1 inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-11 text-sm hover:bg-black/85"
+                    className="mt-auto inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-11 text-sm hover:bg-black/85"
                     style={{ fontWeight: 500 }}
                   >
                     Add to cart <Plus size={16} />
