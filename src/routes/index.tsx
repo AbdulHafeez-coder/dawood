@@ -412,8 +412,9 @@ function Index() {
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value as SortKey)}
-              className="h-9 rounded-full bg-black/5 hover:bg-black/10 text-sm px-3 pr-8 text-black outline-none"
+              className="mt-select h-9 rounded-full bg-black/5 text-sm px-3 text-black cursor-pointer"
               style={{ fontWeight: 500 }}
+              aria-label="Sort products"
             >
               <option value="featured">Featured</option>
               <option value="price-asc">Price: low to high</option>
