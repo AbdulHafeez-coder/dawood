@@ -128,7 +128,7 @@ function OrdersPage() {
                   <div className="flex flex-col sm:flex-row gap-4 p-4 sm:p-5">
                     <div className={`${o.primaryBg ?? "bg-black/[0.04]"} w-full sm:w-24 h-24 rounded-xl shrink-0 overflow-hidden`}>
                       {o.primaryImg && (
-                        <img src={o.primaryImg} alt={o.primaryName} width={512} height={512} loading="lazy" className="w-full h-full object-cover" />
+                        <img src={o.primaryImg} alt={o.primaryName} width={512} height={512} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                       )}
                     </div>
                     <div className="flex-1 min-w-0 flex flex-col gap-2">

@@ -103,7 +103,7 @@ function FavoritesPage() {
                     alt={p.name}
                     width={1024}
                     height={1024}
-                    loading="lazy"
+                    loading="lazy" decoding="async"
                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </Link>

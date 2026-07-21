@@ -317,7 +317,7 @@ function Index() {
                 alt={c.label}
                 width={1024}
                 height={1024}
-                loading="lazy"
+                loading="lazy" decoding="async"
                 className="relative w-[92px] h-[92px] sm:w-[110px] sm:h-[110px] md:w-[130px] md:h-[130px] lg:w-[160px] lg:h-[160px] rounded-xl object-cover shrink-0"
               />
             </div>
@@ -351,7 +351,7 @@ function Index() {
                 alt={name}
                 width={1024}
                 height={1024}
-                loading="lazy"
+                loading="lazy" decoding="async"
                 className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-80 group-hover:scale-105 transition-all duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
@@ -479,7 +479,7 @@ function Index() {
                     alt={p.name}
                     width={1024}
                     height={1024}
-                    loading="lazy"
+                    loading="lazy" decoding="async"
                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </Link>
