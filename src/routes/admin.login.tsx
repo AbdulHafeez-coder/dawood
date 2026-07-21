@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, Lock, Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 import { useAdminAuth, ADMIN_EMAIL, ADMIN_PASSWORD } from "@/lib/admin-auth";
-import { SiteFooter } from "@/components/SiteFooter";
+
 
 const dmSans = { fontFamily: "'DM Sans', sans-serif" };
 const inter = { fontFamily: "'Inter', sans-serif" };
@@ -163,7 +163,7 @@ function AdminLogin() {
           </div>
         </div>
       </main>
-      <SiteFooter />
+
     </div>
   );
 }

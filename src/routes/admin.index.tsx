@@ -30,7 +30,7 @@ import {
 } from "@/lib/shop";
 import { useOrders, removeOrder } from "@/lib/orders";
 import { useSettings, updateSettings, resetSettings, type SocialKey } from "@/lib/settings";
-import { SiteFooter } from "@/components/SiteFooter";
+
 
 import {
   Dialog,
@@ -398,7 +398,7 @@ function AdminDashboard() {
         </div>
       </main>
 
-      <SiteFooter />
+
 
       {/* Product dialog */}
       {productDialog && (
