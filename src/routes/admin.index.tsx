@@ -197,6 +197,68 @@ function AdminDashboard() {
     setPMaxRating("");
   }
 
+  // Prune selection when products list changes (e.g. deletes, imports)
+  useEffect(() => {
+    setSelectedIds((prev) => {
+      const valid = new Set(products.map((p) => p.id));
+      let changed = false;
+      const next = new Set<string>();
+      prev.forEach((id) => {
+        if (valid.has(id)) next.add(id);
+        else changed = true;
+      });
+      return changed ? next : prev;
+    });
+  }, [products]);
+
+  const toggleSelect = (id: string) =>
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+
+  const pageIds = pagedProducts.map((p) => p.id);
+  const allPageSelected = pageIds.length > 0 && pageIds.every((id) => selectedIds.has(id));
+  const somePageSelected = pageIds.some((id) => selectedIds.has(id));
+  const togglePageSelection = () =>
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (allPageSelected) pageIds.forEach((id) => next.delete(id));
+      else pageIds.forEach((id) => next.add(id));
+      return next;
+    });
+
+  const clearSelection = () => setSelectedIds(new Set());
+  const selectedCount = selectedIds.size;
+
+  function applyBulkDelete() {
+    const ids = Array.from(selectedIds);
+    ids.forEach((id) => deleteProduct(id));
+    toast.success(`${ids.length} product${ids.length === 1 ? "" : "s"} deleted`);
+    clearSelection();
+    setConfirmBulkDelete(false);
+  }
+
+  function applyBulkCategory() {
+    if (!bulkCategory) return;
+    const ids = Array.from(selectedIds);
+    ids.forEach((id) => updateProduct(id, { category: bulkCategory }));
+    toast.success(`Moved ${ids.length} to ${bulkCategory}`);
+    setBulkCategory("");
+  }
+
+  function applyBulkTag() {
+    const t = bulkTag.trim();
+    if (!t) return;
+    const ids = Array.from(selectedIds);
+    ids.forEach((id) => updateProduct(id, { tag: t }));
+    toast.success(`Tagged ${ids.length} as “${t}”`);
+    setBulkTag("");
+  }
+
+
   function handleExportProducts() {
     if (products.length === 0) return toast.error("No products to export");
     downloadCsv(`maison-terra-products-${new Date().toISOString().slice(0, 10)}.csv`, productsToCsv(products));
