@@ -122,7 +122,7 @@ function Index() {
 
 
   const visibleProducts = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = debouncedQuery.trim().toLowerCase();
     let list = products.filter((p) => (activeCat === "All" ? true : p.category === activeCat));
     list = list.filter((p) => p.price <= maxPrice);
     if (q) {
@@ -138,7 +138,8 @@ function Index() {
       case "rating": list = [...list].sort((a, b) => b.rating - a.rating); break;
     }
     return list;
-  }, [activeCat, maxPrice, sort, query]);
+  }, [activeCat, maxPrice, sort, debouncedQuery]);
+
 
   return (
     <div className="flex min-h-screen flex-col" style={inter}>
