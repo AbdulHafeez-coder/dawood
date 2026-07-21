@@ -93,7 +93,7 @@ function Index() {
     list = list.filter((p) => p.price <= maxPrice);
     if (q) {
       list = list.filter((p) =>
-        [p.name, p.category, p.tag, p.tagline, ...(p.features ?? [])]
+        [p.name, p.category, p.tag, p.tagline]
           .filter(Boolean)
           .some((s) => String(s).toLowerCase().includes(q))
       );
