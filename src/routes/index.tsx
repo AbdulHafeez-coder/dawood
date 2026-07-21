@@ -25,6 +25,7 @@ import productCloth from "@/assets/product-cloth.jpg";
 import productSponge from "@/assets/product-sponge.jpg";
 import { products, CATEGORY_LIST, useCart, useFavourites, type Category, type Product } from "@/lib/shop";
 import { CartDrawer } from "@/components/CartDrawer";
+import { SiteFooter } from "@/components/SiteFooter";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/")({
@@ -449,89 +450,7 @@ function Index() {
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-[#FEFDF9] px-4 sm:px-6 md:px-8 lg:px-12 py-8 lg:py-12">
-        <div className="mx-auto max-w-7xl bg-[#ECEDEC] rounded-[2rem] lg:rounded-[3rem] overflow-hidden text-black shadow-sm">
-          {/* Newsletter row */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 border-b border-black/10">
-            <div className="p-8 sm:p-12 lg:p-20 border-b lg:border-b-0 lg:border-r border-black/10">
-              <h2 className="text-black" style={{ ...dmSans, fontWeight: 300, letterSpacing: "-0.03em", fontSize: "clamp(30px, 4vw, 52px)", lineHeight: 1.05 }}>
-                Invite nature into<br />your inbox.
-              </h2>
-              <p className="mt-5 text-black/55 max-w-sm text-sm sm:text-base leading-relaxed">
-                Seasonal rituals, studio notes, and early access to our limited runs of home essentials.
-              </p>
-            </div>
-            <div className="p-8 sm:p-12 lg:p-20 flex flex-col justify-center bg-[#FEF3C7]">
-              <form
-                onSubmit={(e) => e.preventDefault()}
-                className="flex flex-col sm:flex-row gap-4"
-              >
-                <input
-                  type="email"
-                  placeholder="Email address"
-                  aria-label="Email address"
-                  className="flex-1 bg-transparent border-b border-black/20 pb-2 focus:outline-none focus:border-black placeholder:text-black/40 text-base sm:text-lg transition-colors"
-                />
-                <button
-                  type="submit"
-                  className="px-7 py-3.5 bg-black text-white rounded-full font-medium hover:bg-black/85 transition-colors uppercase tracking-[0.18em] text-[11px]"
-                  style={{ ...inter, fontWeight: 500 }}
-                >
-                  Join Terra
-                </button>
-              </form>
-              <p className="mt-4 text-[10px] uppercase tracking-[0.18em] text-black/50">
-                By subscribing, you agree to our privacy policy.
-              </p>
-            </div>
-          </div>
-
-          {/* Link columns */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-8 lg:gap-12 p-8 sm:p-12 lg:p-20">
-            {[
-              { title: "Shop", links: ["Towels", "Wallpaper", "Cloths", "Sponges"] },
-              { title: "Collections", links: ["Spring Edit", "Core Series", "Limited Editions", "Archive"] },
-              { title: "Company", links: ["Journal", "Sustainability", "Our Studio", "Careers"] },
-              { title: "Contact", links: ["Help Center", "Shipping", "Wholesale", "Instagram"] },
-            ].map((col) => (
-              <div key={col.title} className="space-y-5">
-                <h4 className="text-[11px] uppercase tracking-[0.2em] text-black/40" style={{ ...dmSans, fontWeight: 700 }}>
-                  {col.title}
-                </h4>
-                <ul className="space-y-3">
-                  {col.links.map((l) => (
-                    <li key={l}>
-                      <a href="#" className="text-sm text-black hover:text-black/55 transition-colors">{l}</a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-
-          {/* Wordmark + legal */}
-          <div className="px-6 sm:px-12 lg:px-20 pb-8 lg:pb-12">
-            <div className="flex flex-col items-center">
-              <div
-                aria-hidden
-                className="select-none text-black/10 leading-none"
-                style={{ ...dmSans, fontWeight: 500, letterSpacing: "-0.05em", fontSize: "clamp(60px, 14vw, 220px)" }}
-              >
-                MAISON TERRA
-              </div>
-              <div className="w-full mt-6 lg:mt-8 pt-8 lg:pt-12 border-t border-black/10 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-6 text-[10px] uppercase tracking-[0.18em] text-black/50">
-                <div>Essentials for a tactile home</div>
-                <div className="flex gap-6 sm:gap-8">
-                  <a href="#" className="hover:text-black transition-colors">Privacy</a>
-                  <a href="#" className="hover:text-black transition-colors">Terms</a>
-                  <a href="#" className="hover:text-black transition-colors">Cookies</a>
-                </div>
-                <div>© {new Date().getFullYear()} Maison Terra</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
 
 
       {/* CART DRAWER */}

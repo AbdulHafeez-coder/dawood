@@ -4,6 +4,7 @@ import { ArrowLeft, ShoppingBag, Star, Plus, Minus, Check, Truck, ShieldCheck, L
 import { whatsappProductUrl } from "@/lib/whatsapp";
 import { getProduct, getVariants, products, useCart, useFavourites, type Product } from "@/lib/shop";
 import { CartDrawer } from "@/components/CartDrawer";
+import { SiteFooter } from "@/components/SiteFooter";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/product/$id")({
@@ -357,12 +358,9 @@ function ProductPage() {
         </section>
       )}
 
-      <footer className="bg-black text-white px-5 sm:px-8 lg:px-10 py-10 mt-auto">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div style={{ ...dmSans, fontWeight: 500, fontSize: 24, letterSpacing: "-0.04em" }}>Maison Terra</div>
-          <div className="text-white/50 text-sm">© {new Date().getFullYear()} Maison Terra.</div>
-        </div>
-      </footer>
+      <div className="mt-auto">
+        <SiteFooter />
+      </div>
 
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </div>
