@@ -224,13 +224,13 @@ function Index() {
           <span className="inline-flex self-start items-center gap-2 rounded-full bg-white/15 backdrop-blur-sm px-4 py-1.5 text-white/90 text-xs sm:text-sm animate-fade-up delay-200" style={inter}>
             <Sparkles size={14} /> New autumn collection · 2026
           </span>
-          <h1 className="text-white mt-6" style={{ ...dmSans, fontWeight: 400, letterSpacing: "-0.05em" }}>
+          <h1 className="text-white mt-6" style={{ ...dmSans, fontWeight: 300, letterSpacing: "-0.04em" }}>
             <style>{`
-              .hero-h1 { font-size: 44px; line-height: 46px; }
-              @media (min-width: 640px) { .hero-h1 { font-size: 72px; line-height: 68px; } }
-              @media (min-width: 768px) { .hero-h1 { font-size: 96px; line-height: 88px; } }
-              @media (min-width: 1024px) { .hero-h1 { font-size: 118px; line-height: 102px; } }
-              @media (min-width: 1280px) { .hero-h1 { font-size: 140px; line-height: 118px; } }
+              .hero-h1 { font-size: 32px; line-height: 36px; }
+              @media (min-width: 640px) { .hero-h1 { font-size: 48px; line-height: 50px; } }
+              @media (min-width: 768px) { .hero-h1 { font-size: 64px; line-height: 64px; } }
+              @media (min-width: 1024px) { .hero-h1 { font-size: 80px; line-height: 78px; } }
+              @media (min-width: 1280px) { .hero-h1 { font-size: 96px; line-height: 92px; } }
             `}</style>
             <span className="hero-h1 block">
               <div>
@@ -251,11 +251,11 @@ function Index() {
           <div className="mt-8 sm:mt-12 lg:mt-14 flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-8 lg:gap-[50px] animate-fade-up delay-600">
             <a
               href="#shop"
-              className="inline-flex items-center justify-center gap-2 bg-white text-black rounded-md w-full sm:w-[240px] md:w-[260px] lg:w-[280px] h-14 sm:h-16 lg:h-[68px] text-base sm:text-xl lg:text-2xl hover:bg-white/90 transition-colors"
-              style={{ ...inter, fontWeight: 500, letterSpacing: "-0.03em" }}
+              className="inline-flex items-center justify-center gap-2 bg-white text-black rounded-md w-full sm:w-[190px] md:w-[200px] lg:w-[210px] h-11 sm:h-12 lg:h-[52px] text-sm sm:text-[15px] lg:text-base hover:bg-white/90 transition-colors"
+              style={{ ...inter, fontWeight: 500, letterSpacing: "-0.02em" }}
             >
               Shop the edit
-              <ArrowUpRight size={22} strokeWidth={1.75} />
+              <ArrowUpRight size={18} strokeWidth={1.75} />
             </a>
             <p className="text-white max-w-[340px]" style={{ ...inter, fontWeight: 400, letterSpacing: "-0.03em", lineHeight: 1.45 }}>
               <span className="text-sm sm:text-base lg:text-lg">
