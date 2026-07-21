@@ -379,10 +379,10 @@ function Index() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
             {visibleProducts.map((p) => (
-              <div key={p.id} className="bg-white rounded-2xl overflow-hidden flex flex-col h-full group">
+              <div key={p.id} className="bg-white rounded-2xl overflow-hidden flex flex-col h-full group relative">
                 <Link to="/product/$id" params={{ id: p.id }} className={`${p.bg} relative aspect-square overflow-hidden block`}>
                   <span className="absolute top-4 left-4 z-10 bg-black text-white text-xs px-3 py-1 rounded-full">{p.tag}</span>
-                  <span className="absolute top-4 right-4 z-10 bg-white/85 text-black text-[11px] px-2 py-1 rounded-full">{p.category}</span>
+                  <span className="absolute bottom-4 left-4 z-10 bg-white/85 text-black text-[11px] px-2 py-1 rounded-full">{p.category}</span>
                   <img
                     src={p.img}
                     alt={p.name}
@@ -396,7 +396,7 @@ function Index() {
                   onClick={() => toggleFav(p.id)}
                   aria-label={isFav(p.id) ? "Remove from favourites" : "Add to favourites"}
                   aria-pressed={isFav(p.id)}
-                  className="absolute top-3 right-3 z-10 h-9 w-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center hover:bg-white transition-colors"
+                  className="absolute top-3 right-3 z-10 h-9 w-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center hover:bg-white transition-colors shadow-sm"
                 >
                   <Heart size={16} className={isFav(p.id) ? "fill-black text-black" : "text-black/60"} />
                 </button>
