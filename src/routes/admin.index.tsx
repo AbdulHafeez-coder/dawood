@@ -403,7 +403,7 @@ function AdminDashboard() {
           {tab === "products" && (
             <section className="bg-white border border-black/10 rounded-2xl p-5 sm:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                <SectionTitle icon={<Package className="w-3.5 h-3.5" />} label={`Products (${products.length})`} />
+                <SectionTitle icon={<Package className="w-3.5 h-3.5" />} label={`Products (${filteredProducts.length}${filteredProducts.length !== products.length ? ` of ${products.length}` : ""})`} />
                 <div className="flex flex-wrap items-center gap-2">
                   <input
                     ref={productImportRef}
