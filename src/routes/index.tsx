@@ -206,7 +206,7 @@ function Index() {
           </div>
         </section>
 
-        <div className="relative z-10 grid grid-cols-1 md:grid-cols-3">
+        <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3">
           {[
             { label: "TOWELS", bg: "bg-[#ECEDEC]", chipBg: "bg-white", chipText: "text-black", off: "UP to 40% OFF", img: productTowel },
             { label: "WALLPAPER", bg: "bg-[#FEF3C7]", chipBg: "bg-black", chipText: "text-white", off: "UP to 60% OFF", img: productWallpaper },
@@ -214,15 +214,15 @@ function Index() {
           ].map((c, i) => (
             <div
               key={c.label}
-              className={`${c.bg} relative overflow-hidden p-6 sm:p-8 lg:p-10 min-h-[220px] flex items-center gap-4 sm:gap-6 animate-fade-up`}
+              className={`${c.bg} relative overflow-hidden p-5 sm:p-6 md:p-7 lg:p-10 min-h-[180px] sm:min-h-[200px] md:min-h-[220px] lg:min-h-[240px] flex items-center gap-3 sm:gap-4 md:gap-6 animate-fade-up`}
               style={{ animationDelay: `${900 + i * 100}ms`, animationFillMode: "both" }}
             >
-              <div className="flex-1 min-w-0 flex flex-col gap-3">
+              <div className="flex-1 min-w-0 flex flex-col gap-2 sm:gap-3">
                 <span className={`${c.chipBg} ${c.chipText} self-start text-[10px] sm:text-xs tracking-[0.15em] px-3 py-1.5 rounded-md`} style={{ ...inter, fontWeight: 600 }}>
                   {c.label}
                 </span>
                 <div className="text-black" style={{ ...dmSans, fontWeight: 500, letterSpacing: "-0.03em", lineHeight: 1.05 }}>
-                  <span className="text-xl sm:text-2xl lg:text-[28px]">{c.off}</span>
+                  <span className="text-lg sm:text-xl md:text-2xl lg:text-[28px]">{c.off}</span>
                 </div>
               </div>
               <div className="absolute -right-6 -top-6 w-40 h-40 sm:w-48 sm:h-48 rounded-full bg-white/40 blur-2xl pointer-events-none" />
@@ -232,7 +232,7 @@ function Index() {
                 width={1024}
                 height={1024}
                 loading="lazy"
-                className="relative w-[110px] h-[110px] sm:w-[140px] sm:h-[140px] lg:w-[160px] lg:h-[160px] rounded-xl object-cover shrink-0"
+                className="relative w-[92px] h-[92px] sm:w-[110px] sm:h-[110px] md:w-[130px] md:h-[130px] lg:w-[160px] lg:h-[160px] rounded-xl object-cover shrink-0"
               />
             </div>
           ))}
@@ -250,7 +250,7 @@ function Index() {
             Four small edits with big impact — bath, walls, kitchen, and the daily reset.
           </p>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
           {categories.map(({ Icon, name, count, bg, accent, desc, img }) => (
             <button
               key={name}
@@ -319,7 +319,7 @@ function Index() {
           )}
         </div>
 
-        <div className="bg-white rounded-2xl p-4 lg:p-5 mb-8 lg:mb-10 flex flex-col lg:flex-row lg:items-center gap-5 lg:gap-8">
+        <div className="bg-white rounded-2xl p-4 lg:p-5 mb-8 lg:mb-10 flex flex-col md:flex-row md:items-center md:flex-wrap gap-4 md:gap-5 lg:gap-8">
           <div className="flex flex-wrap items-center gap-2">
             {(["All", ...CATEGORY_LIST] as const).map((c) => (
               <button
@@ -335,7 +335,7 @@ function Index() {
             ))}
           </div>
 
-          <div className="flex items-center gap-3 flex-1 min-w-0 lg:max-w-xs">
+          <div className="flex items-center gap-3 flex-1 min-w-0 md:min-w-[200px] md:max-w-xs">
             <span className="text-sm text-black/60 whitespace-nowrap">Max ${maxPrice}</span>
             <input
               type="range"
@@ -375,7 +375,7 @@ function Index() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
             {visibleProducts.map((p) => (
               <div key={p.id} className="bg-white rounded-2xl overflow-hidden flex flex-col group">
                 <Link to="/product/$id" params={{ id: p.id }} className={`${p.bg} relative aspect-square overflow-hidden block`}>
