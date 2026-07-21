@@ -269,7 +269,6 @@ function AdminDashboard() {
                         <th className="py-2 pr-3 font-medium">Tag</th>
                         <th className="py-2 pr-3 font-medium">Rating</th>
                         <th className="py-2 pr-3 font-medium text-right">Price</th>
-                        <th className="py-2 pr-3 font-medium text-right">Fav</th>
                         <th className="py-2 pl-3 font-medium text-right">Actions</th>
                       </tr>
                     </thead>
@@ -291,15 +290,6 @@ function AdminDashboard() {
                           <td className="py-3 pr-3 text-black/70">{p.tag}</td>
                           <td className="py-3 pr-3 text-black/70 tabular-nums">{p.rating.toFixed(1)}</td>
                           <td className="py-3 pr-3 text-right tabular-nums">${p.price.toFixed(2)}</td>
-                          <td className="py-3 pr-3 text-right">
-                            {favs.includes(p.id) ? (
-                              <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-[0.15em] px-2 py-0.5 rounded-full bg-black text-white">
-                                <Heart className="w-3 h-3 fill-current" />
-                              </span>
-                            ) : (
-                              <span className="text-black/30 text-xs">—</span>
-                            )}
-                          </td>
                           <td className="py-3 pl-3">
                             <div className="flex items-center justify-end gap-1">
                               <button
