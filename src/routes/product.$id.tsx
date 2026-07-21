@@ -160,7 +160,7 @@ function ProductPage() {
       variantColorSwatch: selectedColor!.swatch,
     });
     toast.success(`${variantProduct.name} added to cart`, {
-      description: `Qty ${qty} · $${(product.price * qty).toFixed(2)}`,
+      description: `Qty ${qty} · PKR ${(product.price * qty).toFixed(2)}`,
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 1600);
@@ -239,7 +239,7 @@ function ProductPage() {
           <p className="mt-3 text-black/70 max-w-md">{product.tagline}</p>
 
           <div className="mt-6 flex items-center gap-4">
-            <div className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 32 }}>${product.price}</div>
+            <div className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 32 }}>PKR {product.price}</div>
             <div className="flex items-center gap-1 text-black/60 text-sm">
               <Star size={14} className="fill-black text-black" /> {product.rating} · 240 reviews
             </div>
@@ -377,7 +377,7 @@ function ProductPage() {
 
           <div className="mt-8 grid grid-cols-3 gap-3 max-w-md">
             {[
-              { Icon: Truck, label: "Free over $50" },
+              { Icon: Truck, label: "Free over PKR 50" },
               { Icon: ShieldCheck, label: "60-day returns" },
               { Icon: Leaf, label: "OEKO-TEX" },
             ].map(({ Icon, label }) => (
@@ -428,7 +428,7 @@ function RelatedCard({ product: p }: { product: Product }) {
       </div>
       <div className="p-4 flex items-start justify-between gap-2">
         <div className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 16, letterSpacing: "-0.02em" }}>{p.name}</div>
-        <div className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 16 }}>${p.price}</div>
+        <div className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 16 }}>PKR {p.price}</div>
       </div>
     </Link>
   );

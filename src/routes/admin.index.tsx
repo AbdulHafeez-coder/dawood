@@ -500,7 +500,7 @@ function AdminDashboard() {
                 <KpiCard icon={<Package className="w-4 h-4" />} label="Products" value={products.length.toString()} hint={`${categories.length} categories`} />
                 <KpiCard icon={<Tag className="w-4 h-4" />} label="Categories" value={categories.length.toString()} hint="Active collections" accent="#FEF3C7" />
                 <KpiCard icon={<ScrollText className="w-4 h-4" />} label="Orders" value={orders.length.toString()} hint="WhatsApp drafts" accent="#ECEDEC" />
-                <KpiCard icon={<DollarSign className="w-4 h-4" />} label="Revenue" value={`$${revenue.toFixed(2)}`} hint="From saved orders" accent="#EAEEE6" />
+                <KpiCard icon={<DollarSign className="w-4 h-4" />} label="Revenue" value={`PKR ${revenue.toFixed(2)}`} hint="From saved orders" accent="#EAEEE6" />
               </section>
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -670,7 +670,7 @@ function AdminDashboard() {
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-3 rounded-xl bg-black/[0.03] border border-black/5">
                         <label className="block">
                           <span className="block text-[10px] uppercase tracking-[0.18em] text-black/50 mb-1">Min price</span>
-                          <input type="number" min="0" step="0.01" value={pMinPrice} onChange={(e) => setPMinPrice(e.target.value)} placeholder="$0" className="w-full px-3 py-1.5 text-sm rounded-lg border border-black/15 focus:border-black focus:outline-none bg-white" />
+                          <input type="number" min="0" step="0.01" value={pMinPrice} onChange={(e) => setPMinPrice(e.target.value)} placeholder="PKR 0" className="w-full px-3 py-1.5 text-sm rounded-lg border border-black/15 focus:border-black focus:outline-none bg-white" />
                         </label>
                         <label className="block">
                           <span className="block text-[10px] uppercase tracking-[0.18em] text-black/50 mb-1">Max price</span>
@@ -1485,7 +1485,7 @@ function ProductFormDialog({
                 ))}
               </select>
             </Field>
-            <Field label="Price ($)">
+            <Field label="Price (PKR)">
               <input
                 type="number"
                 min={0}

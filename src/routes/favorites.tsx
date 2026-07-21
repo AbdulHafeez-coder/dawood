@@ -32,7 +32,7 @@ function FavoritesPage() {
 
   const handleAdd = (p: Product) => {
     addToCart(p, 1);
-    toast.success(`${p.name} added to cart`, { description: `$${p.price.toFixed(2)} · ${p.category}` });
+    toast.success(`${p.name} added to cart`, { description: `PKR ${p.price.toFixed(2)} · ${p.category}` });
   };
 
   const handleRemove = (p: Product) => {
