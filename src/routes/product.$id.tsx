@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, ShoppingBag, Star, Plus, Minus, Check, Truck, ShieldCheck, Leaf } from "lucide-react";
-import { getProduct, products, useCart, type Product } from "@/lib/shop";
+import { ArrowLeft, ShoppingBag, Star, Plus, Minus, Check, Truck, ShieldCheck, Leaf, Heart } from "lucide-react";
+import { getProduct, products, useCart, useFavourites, type Product } from "@/lib/shop";
 import { CartDrawer } from "@/components/CartDrawer";
 
 export const Route = createFileRoute("/product/$id")({
@@ -50,6 +50,7 @@ function NotFoundProduct() {
 function ProductPage() {
   const { product } = Route.useLoaderData();
   const { addToCart, cartCount } = useCart();
+  const { toggleFav, isFav } = useFavourites();
   const [cartOpen, setCartOpen] = useState(false);
   const [qty, setQty] = useState(1);
   const [activeImg, setActiveImg] = useState(0);
@@ -169,6 +170,14 @@ function ProductPage() {
               style={{ fontWeight: 500 }}
             >
               {added ? (<><Check size={18} /> Added</>) : (<>Add to cart · ${(product.price * qty).toFixed(2)}</>)}
+            </button>
+            <button
+              onClick={() => toggleFav(product.id)}
+              aria-label={isFav(product.id) ? "Remove from favourites" : "Add to favourites"}
+              aria-pressed={isFav(product.id)}
+              className="h-12 w-12 shrink-0 inline-flex items-center justify-center rounded-full border border-black/15 hover:border-black transition-colors"
+            >
+              <Heart size={18} className={isFav(product.id) ? "fill-black text-black" : "text-black"} />
             </button>
           </div>
 

@@ -16,13 +16,14 @@ import {
   Leaf,
   Truck,
   ShieldCheck,
+  Heart,
 } from "lucide-react";
 import heroBg from "@/assets/hero-home.jpg";
 import productTowel from "@/assets/product-towel.jpg";
 import productWallpaper from "@/assets/product-wallpaper.jpg";
 import productCloth from "@/assets/product-cloth.jpg";
 import productSponge from "@/assets/product-sponge.jpg";
-import { products, CATEGORY_LIST, useCart, type Category, type Product } from "@/lib/shop";
+import { products, CATEGORY_LIST, useCart, useFavourites, type Category, type Product } from "@/lib/shop";
 import { CartDrawer } from "@/components/CartDrawer";
 
 export const Route = createFileRoute("/")({
@@ -66,6 +67,7 @@ function Index() {
   const [activeCard, setActiveCard] = useState(0);
   const [cartOpen, setCartOpen] = useState(false);
   const { addToCart: addToCartShared, cartCount } = useCart();
+  const { toggleFav, isFav } = useFavourites();
 
   const [activeCat, setActiveCat] = useState<Category | "All">("All");
   const priceMax = Math.max(...products.map((p) => p.price));
@@ -377,10 +379,10 @@ function Index() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
             {visibleProducts.map((p) => (
-              <div key={p.id} className="bg-white rounded-2xl overflow-hidden flex flex-col h-full group">
+              <div key={p.id} className="bg-white rounded-2xl overflow-hidden flex flex-col h-full group relative">
                 <Link to="/product/$id" params={{ id: p.id }} className={`${p.bg} relative aspect-square overflow-hidden block`}>
                   <span className="absolute top-4 left-4 z-10 bg-black text-white text-xs px-3 py-1 rounded-full">{p.tag}</span>
-                  <span className="absolute top-4 right-4 z-10 bg-white/85 text-black text-[11px] px-2 py-1 rounded-full">{p.category}</span>
+                  <span className="absolute bottom-4 left-4 z-10 bg-white/85 text-black text-[11px] px-2 py-1 rounded-full">{p.category}</span>
                   <img
                     src={p.img}
                     alt={p.name}
@@ -390,6 +392,14 @@ function Index() {
                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </Link>
+                <button
+                  onClick={() => toggleFav(p.id)}
+                  aria-label={isFav(p.id) ? "Remove from favourites" : "Add to favourites"}
+                  aria-pressed={isFav(p.id)}
+                  className="absolute top-3 right-3 z-10 h-9 w-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center hover:bg-white transition-colors shadow-sm"
+                >
+                  <Heart size={16} className={isFav(p.id) ? "fill-black text-black" : "text-black/60"} />
+                </button>
                 <div className="p-5 flex flex-col gap-3 flex-1">
                   <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
                     <div className="min-w-0">
