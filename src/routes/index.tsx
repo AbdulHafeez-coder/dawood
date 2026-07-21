@@ -28,7 +28,7 @@ import productCloth from "@/assets/product-cloth.jpg";
 import productSponge from "@/assets/product-sponge.jpg";
 import { useProducts, useCategories, useCart, useFavourites, type Category, type Product } from "@/lib/shop";
 import { useSettings } from "@/lib/settings";
-import { CartDrawer } from "@/components/CartDrawer";
+import { LazyCartDrawer as CartDrawer } from "@/components/LazyCartDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
 import { toast } from "sonner";
 import { formatPKR } from "@/lib/format";
@@ -36,6 +36,11 @@ import { formatPKR } from "@/lib/format";
 
 export const Route = createFileRoute("/")({
   component: Index,
+  head: () => ({
+    links: [
+      { rel: "preload", as: "image", href: heroBg, fetchpriority: "high" },
+    ],
+  }),
 });
 
 const dmSans = { fontFamily: "'DM Sans', sans-serif" };
@@ -93,8 +98,16 @@ function Index() {
   };
 
   const [activeCat, setActiveCat] = useState<Category | "All">("All");
-  const priceMax = products.length ? Math.max(...products.map((p) => p.price)) : 100;
-  const priceMin = products.length ? Math.min(...products.map((p) => p.price)) : 0;
+  const { priceMin, priceMax } = useMemo(() => {
+    if (!products.length) return { priceMin: 0, priceMax: 100 };
+    let lo = products[0].price;
+    let hi = products[0].price;
+    for (const p of products) {
+      if (p.price < lo) lo = p.price;
+      if (p.price > hi) hi = p.price;
+    }
+    return { priceMin: lo, priceMax: hi };
+  }, [products]);
   const [maxPrice, setMaxPrice] = useState(priceMax);
   useEffect(() => { setMaxPrice(priceMax); }, [priceMax]);
   const [sort, setSort] = useState<SortKey>("featured");
@@ -139,7 +152,7 @@ function Index() {
       case "rating": list = [...list].sort((a, b) => b.rating - a.rating); break;
     }
     return list;
-  }, [activeCat, maxPrice, sort, debouncedQuery]);
+  }, [products, activeCat, maxPrice, sort, debouncedQuery]);
 
 
   return (
@@ -304,7 +317,7 @@ function Index() {
                 alt={c.label}
                 width={1024}
                 height={1024}
-                loading="lazy"
+                loading="lazy" decoding="async"
                 className="relative w-[92px] h-[92px] sm:w-[110px] sm:h-[110px] md:w-[130px] md:h-[130px] lg:w-[160px] lg:h-[160px] rounded-xl object-cover shrink-0"
               />
             </div>
@@ -338,7 +351,7 @@ function Index() {
                 alt={name}
                 width={1024}
                 height={1024}
-                loading="lazy"
+                loading="lazy" decoding="async"
                 className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-80 group-hover:scale-105 transition-all duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
@@ -466,7 +479,7 @@ function Index() {
                     alt={p.name}
                     width={1024}
                     height={1024}
-                    loading="lazy"
+                    loading="lazy" decoding="async"
                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </Link>

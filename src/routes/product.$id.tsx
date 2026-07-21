@@ -4,7 +4,7 @@ import { ArrowLeft, ShoppingBag, Star, Plus, Minus, Check, Truck, ShieldCheck, L
 import { buildWhatsappProductOrder } from "@/lib/whatsapp";
 import { saveOrder } from "@/lib/orders";
 import { getProduct, getVariants, useProducts, useCart, useFavourites, type Product } from "@/lib/shop";
-import { CartDrawer } from "@/components/CartDrawer";
+import { LazyCartDrawer as CartDrawer } from "@/components/LazyCartDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
 import { toast } from "sonner";
 import { formatPKR } from "@/lib/format";
@@ -225,7 +225,7 @@ function ProductPage() {
                 aria-label={`Show image ${i + 1}`}
                 className={`aspect-square rounded-xl overflow-hidden border-2 transition-colors ${activeImg === i ? "border-black" : "border-transparent hover:border-black/20"} ${product.bg}`}
               >
-                <img src={g} alt="" className="w-full h-full object-cover" loading="lazy" />
+                <img src={g} alt="" className="w-full h-full object-cover" loading="lazy" decoding="async" />
               </button>
             ))}
           </div>
@@ -425,7 +425,7 @@ function RelatedCard({ product: p }: { product: Product }) {
       className="bg-white rounded-2xl overflow-hidden flex flex-col group border border-black/5 hover:border-black/20 transition-colors"
     >
       <div className={`${p.bg} relative aspect-square overflow-hidden`}>
-        <img src={p.img} alt={p.name} width={800} height={800} loading="lazy" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        <img src={p.img} alt={p.name} width={800} height={800} loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
       </div>
       <div className="p-4 flex items-start justify-between gap-2">
         <div className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 16, letterSpacing: "-0.02em" }}>{p.name}</div>

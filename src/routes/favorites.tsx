@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { ArrowLeft, Heart, ShoppingBag, Star, Plus, X } from "lucide-react";
 import { useProducts, useCart, useFavourites, type Product } from "@/lib/shop";
-import { CartDrawer } from "@/components/CartDrawer";
+import { LazyCartDrawer as CartDrawer } from "@/components/LazyCartDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
 import { toast } from "sonner";
 import { formatPKR } from "@/lib/format";
@@ -103,7 +103,7 @@ function FavoritesPage() {
                     alt={p.name}
                     width={1024}
                     height={1024}
-                    loading="lazy"
+                    loading="lazy" decoding="async"
                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </Link>

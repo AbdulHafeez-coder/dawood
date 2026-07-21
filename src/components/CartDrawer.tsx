@@ -102,7 +102,7 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
               {cart.map((i) => (
                 <li key={i.id} className="flex gap-3">
                   <div className={`${i.bg} w-20 h-20 rounded-xl shrink-0 overflow-hidden`}>
-                    <img src={i.img} alt={i.name} width={1024} height={1024} loading="lazy" className="w-full h-full object-cover" />
+                    <img src={i.img} alt={i.name} width={1024} height={1024} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                   </div>
                   <div className="flex-1 min-w-0 flex flex-col">
                     <div className="flex items-start justify-between gap-2">
