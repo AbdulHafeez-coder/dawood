@@ -624,3 +624,34 @@ export function useFavourites() {
 
   return { favs, toggleFav, isFav, favCount: favs.length };
 }
+
+// Cross-tab sync: react to writes made in other tabs.
+if (typeof window !== "undefined") {
+  window.addEventListener("storage", (e) => {
+    if (!e.key) return;
+    try {
+      if (e.key === PRODUCTS_KEY) {
+        const parsed = e.newValue ? (JSON.parse(e.newValue) as Product[]) : [];
+        if (Array.isArray(parsed)) {
+          products.splice(0, products.length, ...parsed);
+          for (const l of productListeners) l([...products]);
+        }
+      } else if (e.key === CATEGORIES_KEY) {
+        const parsed = e.newValue ? (JSON.parse(e.newValue) as string[]) : [];
+        if (Array.isArray(parsed)) {
+          categoriesLive.splice(0, categoriesLive.length, ...parsed);
+          for (const l of categoryListeners) l([...categoriesLive]);
+        }
+      } else if (e.key === STORAGE_KEY) {
+        cartState = loadInitial();
+        for (const l of listeners) l(cartState);
+      } else if (e.key === FAV_KEY) {
+        favState = e.newValue ? (JSON.parse(e.newValue) as string[]) : [];
+        for (const l of favListeners) l([...favState]);
+      }
+    } catch {
+      /* ignore malformed cross-tab payload */
+    }
+  });
+}
+
