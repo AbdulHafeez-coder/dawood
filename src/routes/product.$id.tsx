@@ -96,8 +96,8 @@ function ProductPage() {
       {/* MAIN */}
       <section className="px-5 sm:px-8 lg:px-10 py-8 lg:py-12 grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-14">
         {/* GALLERY */}
-        <div className="flex flex-col-reverse lg:flex-row gap-4">
-          <div className="flex lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto lg:max-h-[560px] pb-1 lg:pb-0">
+        <div className="flex flex-col-reverse md:flex-row gap-4">
+          <div className="flex md:flex-col gap-3 overflow-x-auto md:overflow-y-auto md:max-h-[560px] pb-1 md:pb-0">
             {product.gallery.map((src: string, i: number) => (
               <button
                 key={i}
@@ -111,7 +111,7 @@ function ProductPage() {
               </button>
             ))}
           </div>
-          <div className={`${product.bg} relative flex-1 rounded-3xl overflow-hidden aspect-square lg:aspect-auto lg:min-h-[560px]`}>
+          <div className={`${product.bg} relative flex-1 rounded-3xl overflow-hidden aspect-square md:aspect-auto md:min-h-[480px] lg:min-h-[560px]`}>
             <span className="absolute top-5 left-5 z-10 bg-black text-white text-xs px-3 py-1 rounded-full">{product.tag}</span>
             <img
               src={product.gallery[activeImg]}
