@@ -12,13 +12,33 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
   const handleQty = (item: (typeof cart)[number], delta: number) => {
     const nextQty = item.qty + delta;
     changeQty(item.id, delta);
+    // Compute new cart total from current cart state
+    const newSubtotal = cart.reduce(
+      (s, i) => s + (i.id === item.id ? Math.max(0, nextQty) * i.price : i.qty * i.price),
+      0,
+    );
+    const newCount = cart.reduce(
+      (n, i) => n + (i.id === item.id ? Math.max(0, nextQty) : i.qty),
+      0,
+    );
     if (nextQty <= 0) {
-      toast.success(`Removed ${item.name} from cart`);
+      toast.success(`Removed ${item.name} from cart`, {
+        description: `Cart total: $${newSubtotal.toFixed(2)} · ${newCount} item${newCount === 1 ? "" : "s"}`,
+      });
     } else {
       toast.success(`${item.name} — qty ${nextQty}`, {
-        description: `$${(item.price * nextQty).toFixed(2)}`,
+        description: `Line $${(item.price * nextQty).toFixed(2)} · Cart total $${newSubtotal.toFixed(2)}`,
       });
     }
+  };
+
+  const handleRemove = (item: (typeof cart)[number]) => {
+    const newSubtotal = cart.reduce((s, i) => s + (i.id === item.id ? 0 : i.qty * i.price), 0);
+    const newCount = cart.reduce((n, i) => n + (i.id === item.id ? 0 : i.qty), 0);
+    removeItem(item.id);
+    toast.success(`Removed ${item.name} from cart`, {
+      description: `Cart total: $${newSubtotal.toFixed(2)} · ${newCount} item${newCount === 1 ? "" : "s"}`,
+    });
   };
 
   return (
@@ -98,7 +118,7 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                           <Plus size={14} />
                         </button>
                       </div>
-                      <button onClick={() => { removeItem(i.id); toast.success(`Removed ${i.name} from cart`); }} className="text-black/50 hover:text-black inline-flex items-center gap-1 text-xs" aria-label={`Remove ${i.name}`}>
+                      <button onClick={() => handleRemove(i)} className="text-black/50 hover:text-black inline-flex items-center gap-1 text-xs" aria-label={`Remove ${i.name}`}>
                         <Trash2 size={14} /> Remove
                       </button>
                     </div>
