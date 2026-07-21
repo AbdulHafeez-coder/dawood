@@ -38,9 +38,6 @@ const cards = [
 
 const navLinks = ["Shop", "Collections", "Journal", "Contact"];
 
-const CATEGORY_LIST = ["Towels", "Wallpaper", "Cloths", "Sponges"] as const;
-type Category = (typeof CATEGORY_LIST)[number];
-
 const categories: { Icon: typeof Bath; name: Category; count: number; bg: string; accent: string; desc: string }[] = [
   { Icon: Bath, name: "Towels", count: 18, bg: "bg-orange-100", accent: "text-orange-800", desc: "Plush cotton, quick-dry" },
   { Icon: Wallpaper, name: "Wallpaper", count: 24, bg: "bg-stone-200", accent: "text-stone-800", desc: "Peel-and-stick sheets" },
@@ -48,30 +45,8 @@ const categories: { Icon: typeof Bath; name: Category; count: number; bg: string
   { Icon: SprayCan, name: "Sponges", count: 9, bg: "bg-amber-100", accent: "text-amber-800", desc: "Plant-based scrubs" },
 ];
 
-type Product = {
-  id: string;
-  name: string;
-  tag: string;
-  price: number;
-  rating: number;
-  img: string;
-  bg: string;
-  category: Category;
-};
-
-const products: Product[] = [
-  { id: "p1", name: "Aegean Bath Towel", tag: "Bestseller", price: 38, rating: 4.9, img: productTowel, bg: "bg-[#F3ECE3]", category: "Towels" },
-  { id: "p2", name: "Sunday Roll", tag: "New", price: 24, rating: 4.8, img: productBathset, bg: "bg-[#F5EFE4]", category: "Towels" },
-  { id: "p3", name: "Botanical Wallpaper", tag: "Popular", price: 46, rating: 4.7, img: productWallpaper, bg: "bg-[#EFEBE3]", category: "Wallpaper" },
-  { id: "p4", name: "Linen Peel-Stick", tag: "New", price: 52, rating: 4.8, img: productWallpaper, bg: "bg-[#EDE7DB]", category: "Wallpaper" },
-  { id: "p5", name: "Everyday Cloth Set", tag: "Bestseller", price: 18, rating: 4.9, img: productCloth, bg: "bg-[#EAEEE6]", category: "Cloths" },
-  { id: "p6", name: "Glass & Mirror Cloth", tag: "Popular", price: 14, rating: 4.7, img: productCloth, bg: "bg-[#E8EFEA]", category: "Cloths" },
-  { id: "p7", name: "Cellulose Kitchen Sponge", tag: "Eco", price: 9, rating: 4.6, img: productSponge, bg: "bg-[#F5EEDF]", category: "Sponges" },
-  { id: "p8", name: "Heavy-Duty Scrub Duo", tag: "Limited", price: 12, rating: 4.8, img: productSponge, bg: "bg-[#F3E9D8]", category: "Sponges" },
-];
-
-type CartItem = Product & { qty: number };
 type SortKey = "featured" | "price-asc" | "price-desc" | "rating";
+
 
 function Word({ children, delay, className = "" }: { children: React.ReactNode; delay: string; className?: string }) {
   return (
