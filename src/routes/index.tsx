@@ -36,6 +36,11 @@ import { formatPKR } from "@/lib/format";
 
 export const Route = createFileRoute("/")({
   component: Index,
+  head: () => ({
+    links: [
+      { rel: "preload", as: "image", href: heroBg, fetchpriority: "high" },
+    ],
+  }),
 });
 
 const dmSans = { fontFamily: "'DM Sans', sans-serif" };
