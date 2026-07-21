@@ -156,6 +156,10 @@ function FavoritesPage() {
         )}
       </section>
 
+      <div className="mt-auto">
+        <SiteFooter />
+      </div>
+
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </div>
   );
