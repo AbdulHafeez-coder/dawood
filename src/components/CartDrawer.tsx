@@ -8,6 +8,18 @@ const dmSans = { fontFamily: "'DM Sans', sans-serif" };
 export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { cart, changeQty, removeItem, cartCount, subtotal } = useCart();
 
+  const handleQty = (item: (typeof cart)[number], delta: number) => {
+    const nextQty = item.qty + delta;
+    changeQty(item.id, delta);
+    if (nextQty <= 0) {
+      toast.success(`Removed ${item.name} from cart`);
+    } else {
+      toast.success(`${item.name} — qty ${nextQty}`, {
+        description: `$${(item.price * nextQty).toFixed(2)}`,
+      });
+    }
+  };
+
   return (
     <div
       className={`fixed inset-0 z-40 transition-opacity ${open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
