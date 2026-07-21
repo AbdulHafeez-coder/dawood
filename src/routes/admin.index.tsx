@@ -14,6 +14,8 @@ import {
   LayoutDashboard,
   RotateCcw,
   DollarSign,
+  UploadCloud,
+  ImageIcon,
   Settings as SettingsIcon,
 
 } from "lucide-react";
@@ -762,33 +764,49 @@ function ProductFormDialog({
           </Field>
 
           <Field label="Image">
-            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-              {PRODUCT_IMAGE_CHOICES.map((choice) => {
-                const active = form.img === choice.url;
-                return (
-                  <button
-                    type="button"
-                    key={choice.id}
-                    onClick={() =>
-                      setForm((f) => ({
-                        ...f,
-                        img: choice.url,
-                        gallery:
-                          f.gallery && f.gallery.length
-                            ? [choice.url, ...f.gallery.filter((x) => x !== choice.url)].slice(0, 4)
-                            : [choice.url],
-                      }))
-                    }
-                    className={`relative aspect-square rounded-lg overflow-hidden border-2 transition ${
-                      active ? "border-black" : "border-transparent hover:border-black/30"
-                    }`}
-                    aria-label={choice.label}
-                  >
-                    <img src={choice.url} alt="" className="w-full h-full object-cover" />
-                    {active && <div className="absolute inset-0 ring-2 ring-black rounded-lg" />}
-                  </button>
-                );
-              })}
+            <ImageUploader
+              value={form.img}
+              onChange={(url) =>
+                setForm((f) => ({
+                  ...f,
+                  img: url,
+                  gallery:
+                    f.gallery && f.gallery.length
+                      ? [url, ...f.gallery.filter((x) => x !== url)].slice(0, 4)
+                      : [url],
+                }))
+              }
+            />
+            <div className="mt-3">
+              <div className="text-[10px] uppercase tracking-[0.18em] text-black/45 mb-2">Or pick a preset</div>
+              <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                {PRODUCT_IMAGE_CHOICES.map((choice) => {
+                  const active = form.img === choice.url;
+                  return (
+                    <button
+                      type="button"
+                      key={choice.id}
+                      onClick={() =>
+                        setForm((f) => ({
+                          ...f,
+                          img: choice.url,
+                          gallery:
+                            f.gallery && f.gallery.length
+                              ? [choice.url, ...f.gallery.filter((x) => x !== choice.url)].slice(0, 4)
+                              : [choice.url],
+                        }))
+                      }
+                      className={`relative aspect-square rounded-lg overflow-hidden border-2 transition ${
+                        active ? "border-black" : "border-transparent hover:border-black/30"
+                      }`}
+                      aria-label={choice.label}
+                    >
+                      <img src={choice.url} alt="" className="w-full h-full object-cover" />
+                      {active && <div className="absolute inset-0 ring-2 ring-black rounded-lg" />}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </Field>
 
