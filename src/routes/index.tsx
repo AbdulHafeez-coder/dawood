@@ -206,48 +206,38 @@ function Index() {
           </div>
         </section>
 
-        <div className="relative z-10 grid grid-cols-1 md:grid-cols-[2fr_1fr_2fr]">
-          <div className="relative overflow-hidden bg-[#ECEDEC] p-6 sm:p-8 lg:p-10 min-h-[220px] flex flex-col justify-between animate-fade-up delay-900">
-            <p className="max-w-[380px] text-black" style={{ ...dmSans, fontWeight: 400, letterSpacing: "-0.05em", lineHeight: 1.1 }}>
-              <span className="text-2xl sm:text-[28px] lg:text-[35px]">Free carbon-neutral shipping on every order over $50</span>
-            </p>
-            <div className="mt-6 inline-flex items-center gap-2 text-black/70 text-sm">
-              <Truck size={16} /> Delivered in 2–4 days
-            </div>
-          </div>
-
-          <div className="relative bg-[#FEFDF9] p-6 sm:p-8 lg:p-10 min-h-[220px] flex flex-col justify-between animate-fade-up delay-1000">
-            <div className="relative flex-1">
-              {cards.map(({ Icon, bg, text }, i) => (
-                <div key={i} className={`flex items-start gap-3 sm:gap-4 transition-all duration-700 ${i === activeCard ? "opacity-100 translate-y-0 relative" : "opacity-0 translate-y-4 absolute inset-0"}`}>
-                  <div className={`shrink-0 ${bg} rounded-full w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center`}>
-                    <Icon size={18} strokeWidth={1.75} className="text-white" />
-                  </div>
-                  <p className="text-black/80" style={{ ...inter, fontWeight: 400, letterSpacing: "-0.03em", lineHeight: 1.2 }}>
-                    <span className="text-sm sm:text-base lg:text-lg">{text}</span>
-                  </p>
+        <div className="relative z-10 grid grid-cols-1 md:grid-cols-3">
+          {[
+            { label: "TOWELS", bg: "bg-[#ECEDEC]", chipBg: "bg-white", chipText: "text-black", off: "UP to 40% OFF", img: productTowel },
+            { label: "WALLPAPER", bg: "bg-[#FEF3C7]", chipBg: "bg-black", chipText: "text-white", off: "UP to 60% OFF", img: productWallpaper },
+            { label: "CLEANING", bg: "bg-[#FCE7D8]", chipBg: "bg-white", chipText: "text-black", off: "UP to 35% OFF", img: productSponge },
+          ].map((c, i) => (
+            <div
+              key={c.label}
+              className={`${c.bg} relative overflow-hidden p-6 sm:p-8 lg:p-10 min-h-[220px] flex items-center gap-4 sm:gap-6 animate-fade-up`}
+              style={{ animationDelay: `${900 + i * 100}ms`, animationFillMode: "both" }}
+            >
+              <div className="flex-1 min-w-0 flex flex-col gap-3">
+                <span className={`${c.chipBg} ${c.chipText} self-start text-[10px] sm:text-xs tracking-[0.15em] px-3 py-1.5 rounded-md`} style={{ ...inter, fontWeight: 600 }}>
+                  {c.label}
+                </span>
+                <div className="text-black" style={{ ...dmSans, fontWeight: 500, letterSpacing: "-0.03em", lineHeight: 1.05 }}>
+                  <span className="text-xl sm:text-2xl lg:text-[28px]">{c.off}</span>
                 </div>
-              ))}
-            </div>
-            <div className="mt-6 flex gap-2">
-              {cards.map((_, i) => (
-                <div key={i} className={`h-0.5 flex-1 rounded-full transition-colors ${i === activeCard ? "bg-black" : "bg-black/20"}`} />
-              ))}
-            </div>
-          </div>
-
-          <div className="bg-black p-6 sm:p-8 lg:p-10 min-h-[220px] flex items-center gap-4 sm:gap-6 lg:gap-8 animate-fade-up delay-1100">
-            <img src={productTowel} alt="" width={1024} height={1024} loading="lazy" className="w-[120px] h-[120px] sm:w-[150px] sm:h-[150px] lg:w-[180px] lg:h-[180px] rounded-xl object-cover shrink-0" />
-            <div className="min-w-0">
-              <div className="text-white" style={{ ...inter, fontWeight: 400, letterSpacing: "-0.05em" }}>
-                <span className="text-2xl sm:text-3xl lg:text-[35px]">+12K</span>
               </div>
-              <p className="text-white/60 mt-1" style={{ ...inter, fontWeight: 400, lineHeight: 1.2 }}>
-                <span className="text-sm sm:text-base lg:text-lg">Homes refreshed with Maison Terra this year</span>
-              </p>
+              <div className="absolute -right-6 -top-6 w-40 h-40 sm:w-48 sm:h-48 rounded-full bg-white/40 blur-2xl pointer-events-none" />
+              <img
+                src={c.img}
+                alt={c.label}
+                width={1024}
+                height={1024}
+                loading="lazy"
+                className="relative w-[110px] h-[110px] sm:w-[140px] sm:h-[140px] lg:w-[160px] lg:h-[160px] rounded-xl object-cover shrink-0"
+              />
             </div>
-          </div>
+          ))}
         </div>
+
       </div>
 
       {/* CATEGORIES SECTION */}
