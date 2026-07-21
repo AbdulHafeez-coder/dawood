@@ -1747,3 +1747,40 @@ function ImageUploader({ value, onChange }: { value: string; onChange: (url: str
     </div>
   );
 }
+
+function ImportStat({ label, value, tone }: { label: string; value: number; tone: "green" | "blue" | "amber" }) {
+  const toneClass =
+    tone === "green"
+      ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+      : tone === "blue"
+      ? "bg-sky-50 border-sky-200 text-sky-700"
+      : "bg-amber-50 border-amber-200 text-amber-700";
+  return (
+    <div className={`rounded-xl border px-3 py-2.5 ${toneClass}`}>
+      <div className="text-[10px] uppercase tracking-[0.18em] opacity-80">{label}</div>
+      <div className="text-xl tabular-nums" style={{ fontWeight: 500 }}>{value}</div>
+    </div>
+  );
+}
+
+function ImportRowList({ title, items, tone }: { title: string; items: string[]; tone?: "amber" }) {
+  if (items.length === 0) return null;
+  const limit = 8;
+  const shown = items.slice(0, limit);
+  const rest = items.length - shown.length;
+  return (
+    <div>
+      <div className="text-[10px] uppercase tracking-[0.18em] text-black/50 mb-1">
+        {title} ({items.length})
+      </div>
+      <ul className={`text-[12px] rounded-lg border ${tone === "amber" ? "border-amber-200 bg-amber-50/50" : "border-black/10 bg-black/[0.02]"} divide-y divide-black/5 max-h-40 overflow-auto`}>
+        {shown.map((s, i) => (
+          <li key={i} className="px-3 py-1.5 truncate">{s}</li>
+        ))}
+        {rest > 0 && (
+          <li className="px-3 py-1.5 text-black/50 italic">+{rest} more…</li>
+        )}
+      </ul>
+    </div>
+  );
+}
