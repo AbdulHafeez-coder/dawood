@@ -1,5 +1,6 @@
-import { ShoppingBag, X, Plus, Minus, Trash2, ArrowUpRight } from "lucide-react";
+import { ShoppingBag, X, Plus, Minus, Trash2, MessageCircle } from "lucide-react";
 import { useCart } from "@/lib/shop";
+import { whatsappCartUrl } from "@/lib/whatsapp";
 
 const dmSans = { fontFamily: "'DM Sans', sans-serif" };
 
