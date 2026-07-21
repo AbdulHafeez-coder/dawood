@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, ShoppingBag, Star, Plus, Minus, Check, Truck, ShieldCheck, Leaf, Heart, MessageCircle } from "lucide-react";
 import { whatsappProductUrl } from "@/lib/whatsapp";
 import { getProduct, getVariants, products, useCart, useFavourites, type Product } from "@/lib/shop";
