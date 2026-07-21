@@ -25,25 +25,15 @@ const inter = { fontFamily: "'Inter', sans-serif" };
 
 function FavoritesPage() {
   const { favs, toggleFav, favCount } = useFavourites();
-  const { addToCart, cartCount } = useCart();
+  const { cartCount } = useCart();
   const { products } = useProducts();
   const [cartOpen, setCartOpen] = useState(false);
 
   const items = products.filter((p) => favs.includes(p.id));
 
-  const handleAdd = (p: Product) => {
-    addToCart(p, 1);
-    toast.success(`${p.name} added to cart`, { description: `${formatPKR(p.price)} · ${p.category}` });
-  };
-
   const handleRemove = (p: Product) => {
     toggleFav(p.id);
     toast(`${p.name} removed from favourites`);
-  };
-
-  const addAllToCart = () => {
-    items.forEach((p) => addToCart(p, 1));
-    toast.success(`${items.length} item${items.length === 1 ? "" : "s"} added to cart`);
   };
 
   return (
