@@ -62,7 +62,7 @@ function Index() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeCard, setActiveCard] = useState(0);
   const [cartOpen, setCartOpen] = useState(false);
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const { addToCart: addToCartShared, cartCount } = useCart();
 
   const [activeCat, setActiveCat] = useState<Category | "All">("All");
   const priceMax = Math.max(...products.map((p) => p.price));
@@ -76,21 +76,10 @@ function Index() {
   }, []);
 
   const addToCart = (p: Product) => {
-    setCart((prev) => {
-      const found = prev.find((i) => i.id === p.id);
-      if (found) return prev.map((i) => (i.id === p.id ? { ...i, qty: i.qty + 1 } : i));
-      return [...prev, { ...p, qty: 1 }];
-    });
+    addToCartShared(p, 1);
     setCartOpen(true);
   };
-  const changeQty = (id: string, delta: number) =>
-    setCart((prev) =>
-      prev.flatMap((i) => (i.id === id ? (i.qty + delta <= 0 ? [] : [{ ...i, qty: i.qty + delta }]) : [i]))
-    );
-  const removeItem = (id: string) => setCart((prev) => prev.filter((i) => i.id !== id));
 
-  const cartCount = cart.reduce((s, i) => s + i.qty, 0);
-  const subtotal = cart.reduce((s, i) => s + i.qty * i.price, 0);
 
   const visibleProducts = useMemo(() => {
     let list = products.filter((p) => (activeCat === "All" ? true : p.category === activeCat));
