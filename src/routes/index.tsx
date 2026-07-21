@@ -338,7 +338,7 @@ function Index() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
             {visibleProducts.map((p) => (
               <div key={p.id} className="bg-white rounded-2xl overflow-hidden flex flex-col group">
-                <div className={`${p.bg} relative aspect-square overflow-hidden`}>
+                <Link to="/product/$id" params={{ id: p.id }} className={`${p.bg} relative aspect-square overflow-hidden block`}>
                   <span className="absolute top-4 left-4 z-10 bg-black text-white text-xs px-3 py-1 rounded-full">{p.tag}</span>
                   <span className="absolute top-4 right-4 z-10 bg-white/85 text-black text-[11px] px-2 py-1 rounded-full">{p.category}</span>
                   <img
@@ -349,7 +349,7 @@ function Index() {
                     loading="lazy"
                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                </div>
+                </Link>
                 <div className="p-5 flex flex-col gap-3">
                   <div className="flex items-start justify-between gap-2">
                     <div>
