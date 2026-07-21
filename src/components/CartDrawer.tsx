@@ -21,9 +21,13 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
       (n, i) => n + (i.id === item.id ? Math.max(0, nextQty) : i.qty),
       0,
     );
+    const prevQty = item.qty;
+    const newQty = Math.max(0, nextQty);
+    const prevLine = item.price * prevQty;
+    const newLine = item.price * newQty;
     if (nextQty <= 0) {
       toast.success(`Removed ${item.name} from cart`, {
-        description: `Cart total: $${newSubtotal.toFixed(2)} · ${newCount} item${newCount === 1 ? "" : "s"}`,
+        description: `Qty ${prevQty} → 0  ·  Line $${prevLine.toFixed(2)} → $0.00\nCart total $${newSubtotal.toFixed(2)} · ${newCount} item${newCount === 1 ? "" : "s"}`,
         action: {
           label: "Undo",
           onClick: () => restoreItem(prevSnapshot),
@@ -31,7 +35,7 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
       });
     } else {
       toast.success(`${item.name} — qty ${nextQty}`, {
-        description: `Line $${(item.price * nextQty).toFixed(2)} · Cart total $${newSubtotal.toFixed(2)}`,
+        description: `Qty ${prevQty} → ${newQty}  ·  Line $${prevLine.toFixed(2)} → $${newLine.toFixed(2)}\nCart total $${newSubtotal.toFixed(2)}`,
         action: {
           label: "Undo",
           onClick: () => changeQty(item.id, -delta),
