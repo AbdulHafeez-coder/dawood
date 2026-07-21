@@ -10,7 +10,7 @@ function buildUrl(text: string) {
 const money = (n: number) => `$${n.toFixed(2)}`;
 const DIVIDER = "━━━━━━━━━━━━━━";
 
-export function whatsappProductUrl(product: Product, qty: number = 1) {
+export function buildWhatsappProductOrder(product: Product, qty: number = 1) {
   const url = typeof window !== "undefined" ? window.location.href : "";
   const subtotal = product.price * qty;
 
@@ -32,10 +32,11 @@ export function whatsappProductUrl(product: Product, qty: number = 1) {
     "Please share payment & delivery details. Thanks!",
   ].filter(Boolean);
 
-  return buildUrl(lines.join("\n"));
+  const text = lines.join("\n");
+  return { text, url: buildUrl(text), total: subtotal };
 }
 
-export function whatsappCartUrl(cart: CartItem[], subtotal: number) {
+export function buildWhatsappCartOrder(cart: CartItem[], subtotal: number) {
   const shipping = subtotal >= 50 || subtotal === 0 ? 0 : 5;
   const total = subtotal + shipping;
   const itemCount = cart.reduce((n, i) => n + i.qty, 0);
@@ -74,5 +75,14 @@ export function whatsappCartUrl(cart: CartItem[], subtotal: number) {
     "Please share payment & delivery details. Thanks!",
   ];
 
-  return buildUrl(lines.join("\n"));
+  const text = lines.join("\n");
+  return { text, url: buildUrl(text), total, itemCount };
+}
+
+// Legacy convenience wrappers (URL only)
+export function whatsappProductUrl(product: Product, qty: number = 1) {
+  return buildWhatsappProductOrder(product, qty).url;
+}
+export function whatsappCartUrl(cart: CartItem[], subtotal: number) {
+  return buildWhatsappCartOrder(cart, subtotal).url;
 }
