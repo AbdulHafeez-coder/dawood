@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, ShoppingBag, Star, Plus, Minus, Check, Truck, ShieldCheck, Leaf, Heart, MessageCircle } from "lucide-react";
 import { whatsappProductUrl } from "@/lib/whatsapp";
 import { getProduct, getVariants, products, useCart, useFavourites, type Product } from "@/lib/shop";
@@ -69,8 +69,36 @@ function ProductPage() {
   const [added, setAdded] = useState(false);
 
   const variants = getVariants(product.category);
+  const variantStorageKey = `mt-variant:${product.id}`;
   const [size, setSize] = useState<string | null>(null);
   const [color, setColor] = useState<string | null>(null);
+
+  // Restore last-selected size/colour for this product from localStorage on mount.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = window.localStorage.getItem(variantStorageKey);
+      if (!raw) return;
+      const saved = JSON.parse(raw) as { size?: string; color?: string };
+      if (saved.size && variants.sizes.some((s) => s.id === saved.size)) setSize(saved.size);
+      if (saved.color && variants.colors.some((c) => c.id === saved.color)) setColor(saved.color);
+    } catch {
+      /* ignore */
+    }
+    // Re-run when navigating to a different product id.
+  }, [variantStorageKey, variants]);
+
+  // Persist whenever the selection changes (including partial selections).
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (size === null && color === null) return;
+    try {
+      window.localStorage.setItem(variantStorageKey, JSON.stringify({ size, color }));
+    } catch {
+      /* ignore */
+    }
+  }, [size, color, variantStorageKey]);
+
   const canAdd = size !== null && color !== null;
 
   const selectedSize = variants.sizes.find((s) => s.id === size) ?? null;
