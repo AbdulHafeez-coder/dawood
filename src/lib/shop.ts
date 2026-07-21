@@ -274,3 +274,52 @@ export function useCart() {
 
   return { cart, addToCart, changeQty, removeItem, cartCount, subtotal };
 }
+
+// ---------- FAVOURITES ----------
+const FAV_KEY = "mt-favs-v1";
+let favState: string[] = [];
+let favHydrated = false;
+const favListeners = new Set<(f: string[]) => void>();
+
+function ensureFavHydrated() {
+  if (favHydrated || typeof window === "undefined") return;
+  favHydrated = true;
+  try {
+    const raw = window.localStorage.getItem(FAV_KEY);
+    if (raw) favState = JSON.parse(raw) as string[];
+  } catch {
+    favState = [];
+  }
+}
+
+function emitFavs() {
+  if (typeof window !== "undefined") {
+    window.localStorage.setItem(FAV_KEY, JSON.stringify(favState));
+  }
+  for (const l of favListeners) l(favState);
+}
+
+export function useFavourites() {
+  ensureFavHydrated();
+  const [favs, setFavs] = useState<string[]>(favState);
+
+  useEffect(() => {
+    ensureFavHydrated();
+    setFavs(favState);
+    const l = (f: string[]) => setFavs([...f]);
+    favListeners.add(l);
+    return () => {
+      favListeners.delete(l);
+    };
+  }, []);
+
+  const toggleFav = useCallback((id: string) => {
+    favState = favState.includes(id) ? favState.filter((x) => x !== id) : [...favState, id];
+    emitFavs();
+  }, []);
+
+  const isFav = useCallback((id: string) => favs.includes(id), [favs]);
+
+  return { favs, toggleFav, isFav, favCount: favs.length };
+}
+
