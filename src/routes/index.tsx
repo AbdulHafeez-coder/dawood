@@ -69,6 +69,12 @@ function Index() {
   const priceMin = Math.min(...products.map((p) => p.price));
   const [maxPrice, setMaxPrice] = useState(priceMax);
   const [sort, setSort] = useState<SortKey>("featured");
+  const [query, setQuery] = useState("");
+
+  const focusSearch = () => {
+    document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" });
+    setTimeout(() => document.getElementById("product-search")?.focus(), 400);
+  };
 
   useEffect(() => {
     const id = setInterval(() => setActiveCard((c) => (c + 1) % cards.length), 3500);
@@ -82,15 +88,23 @@ function Index() {
 
 
   const visibleProducts = useMemo(() => {
+    const q = query.trim().toLowerCase();
     let list = products.filter((p) => (activeCat === "All" ? true : p.category === activeCat));
     list = list.filter((p) => p.price <= maxPrice);
+    if (q) {
+      list = list.filter((p) =>
+        [p.name, p.category, p.tag, p.tagline]
+          .filter(Boolean)
+          .some((s) => String(s).toLowerCase().includes(q))
+      );
+    }
     switch (sort) {
       case "price-asc": list = [...list].sort((a, b) => a.price - b.price); break;
       case "price-desc": list = [...list].sort((a, b) => b.price - a.price); break;
       case "rating": list = [...list].sort((a, b) => b.rating - a.rating); break;
     }
     return list;
-  }, [activeCat, maxPrice, sort]);
+  }, [activeCat, maxPrice, sort, query]);
 
   return (
     <div className="flex min-h-screen flex-col" style={inter}>
@@ -116,7 +130,7 @@ function Index() {
             ))}
           </div>
           <div className="flex items-center gap-3 sm:gap-4 animate-slide-right delay-300">
-            <button aria-label="Search" className="text-white/90 hover:text-white"><Search size={20} strokeWidth={1.5} /></button>
+            <button aria-label="Search" onClick={focusSearch} className="text-white/90 hover:text-white"><Search size={20} strokeWidth={1.5} /></button>
             <button aria-label="Cart" onClick={() => setCartOpen(true)} className="relative text-white/90 hover:text-white">
               <ShoppingBag size={20} strokeWidth={1.5} />
               {cartCount > 0 && (
@@ -279,6 +293,28 @@ function Index() {
           </div>
         </div>
 
+        <div className="bg-white rounded-2xl p-4 lg:p-5 mb-4 flex items-center gap-3">
+          <Search size={18} strokeWidth={1.75} className="text-black/50 shrink-0" />
+          <input
+            id="product-search"
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search towels, wallpaper, cloths, sponges…"
+            className="flex-1 bg-transparent outline-none text-black placeholder:text-black/40 text-sm sm:text-base"
+            style={{ fontWeight: 400 }}
+          />
+          {query && (
+            <button
+              onClick={() => setQuery("")}
+              className="text-black/50 hover:text-black shrink-0"
+              aria-label="Clear search"
+            >
+              <X size={16} />
+            </button>
+          )}
+        </div>
+
         <div className="bg-white rounded-2xl p-4 lg:p-5 mb-8 lg:mb-10 flex flex-col lg:flex-row lg:items-center gap-5 lg:gap-8">
           <div className="flex flex-wrap items-center gap-2">
             {(["All", ...CATEGORY_LIST] as const).map((c) => (
@@ -328,7 +364,7 @@ function Index() {
           <div className="bg-white rounded-2xl p-10 text-center text-black/60">
             No products match your filters.{" "}
             <button
-              onClick={() => { setActiveCat("All"); setMaxPrice(priceMax); setSort("featured"); }}
+              onClick={() => { setActiveCat("All"); setMaxPrice(priceMax); setSort("featured"); setQuery(""); }}
               className="underline text-black"
             >
               Reset
