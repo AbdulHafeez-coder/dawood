@@ -429,7 +429,7 @@ function RelatedCard({ product: p }: { product: Product }) {
       </div>
       <div className="p-4 flex items-start justify-between gap-2">
         <div className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 16, letterSpacing: "-0.02em" }}>{p.name}</div>
-        <div className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 16 }}>PKR {p.price}</div>
+        <div className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 16 }}>{formatPKR(p.price)}</div>
       </div>
     </Link>
   );
