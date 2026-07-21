@@ -43,8 +43,8 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
       toast.success(`${item.name} — qty ${nextQty}`, {
         description: (
           <div className="text-xs leading-relaxed">
-            <div>Qty <b>{prevQty}</b> → <b>{newQty}</b> · Line <b>PKR {prevLine.toFixed(2)}</b> → <b>PKR {newLine.toFixed(2)}</b></div>
-            <div className="opacity-70">Cart total PKR {newSubtotal.toFixed(2)}</div>
+            <div>Qty <b>{prevQty}</b> → <b>{newQty}</b> · Line <b>{formatPKR(prevLine)}</b> → <b>{formatPKR(newLine)}</b></div>
+            <div className="opacity-70">Cart total {formatPKR(newSubtotal)}</div>
           </div>
         ),
         action: {
