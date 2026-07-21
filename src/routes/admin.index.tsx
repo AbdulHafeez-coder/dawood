@@ -985,6 +985,92 @@ function AdminDashboard() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Product import preview */}
+      <AlertDialog open={!!productImportPlan} onOpenChange={(o) => !o && setProductImportPlan(null)}>
+        <AlertDialogContent className="max-w-lg">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Review product import</AlertDialogTitle>
+            <AlertDialogDescription>
+              {productImportPlan?.fileName ? `From ${productImportPlan.fileName}. ` : ""}
+              Confirm the changes before applying them to your catalogue.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          {productImportPlan && (
+            <div className="space-y-3">
+              <div className="grid grid-cols-3 gap-2">
+                <ImportStat label="Create" value={productImportPlan.create.length} tone="green" />
+                <ImportStat label="Update" value={productImportPlan.update.length} tone="blue" />
+                <ImportStat label="Skip" value={productImportPlan.skip.length} tone="amber" />
+              </div>
+              {productImportPlan.newCategories.length > 0 && (
+                <div className="text-[11px] text-black/70 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                  <span className="font-medium">{productImportPlan.newCategories.length}</span> new categor{productImportPlan.newCategories.length === 1 ? "y" : "ies"} will be auto-created:{" "}
+                  <span className="text-black/60">{productImportPlan.newCategories.slice(0, 6).join(", ")}{productImportPlan.newCategories.length > 6 ? "…" : ""}</span>
+                </div>
+              )}
+              <ImportRowList
+                title="Will be created"
+                items={productImportPlan.create.map((c) => `${c.name} · ${c.category}`)}
+              />
+              <ImportRowList
+                title="Will be updated"
+                items={productImportPlan.update.map((c) => `${c.name} · ${c.category}`)}
+              />
+              {productImportPlan.skip.length > 0 && (
+                <ImportRowList
+                  title="Skipped rows"
+                  tone="amber"
+                  items={productImportPlan.skip.map((s) => `Row ${s.row}: ${s.error}`)}
+                />
+              )}
+            </div>
+          )}
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={!productImportPlan || (productImportPlan.create.length + productImportPlan.update.length === 0)}
+              onClick={() => productImportPlan && applyProductImport(productImportPlan)}
+            >
+              Apply import
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Category import preview */}
+      <AlertDialog open={!!categoryImportPlan} onOpenChange={(o) => !o && setCategoryImportPlan(null)}>
+        <AlertDialogContent className="max-w-lg">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Review category import</AlertDialogTitle>
+            <AlertDialogDescription>
+              {categoryImportPlan?.fileName ? `From ${categoryImportPlan.fileName}. ` : ""}
+              Duplicates of existing categories will be skipped.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          {categoryImportPlan && (
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-2">
+                <ImportStat label="Create" value={categoryImportPlan.create.length} tone="green" />
+                <ImportStat label="Skip" value={categoryImportPlan.skip.length} tone="amber" />
+              </div>
+              <ImportRowList title="Will be created" items={categoryImportPlan.create} />
+              {categoryImportPlan.skip.length > 0 && (
+                <ImportRowList title="Skipped (duplicates)" tone="amber" items={categoryImportPlan.skip} />
+              )}
+            </div>
+          )}
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={!categoryImportPlan || categoryImportPlan.create.length === 0}
+              onClick={() => categoryImportPlan && applyCategoryImport(categoryImportPlan)}
+            >
+              Apply import
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
