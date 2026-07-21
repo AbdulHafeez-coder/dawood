@@ -353,9 +353,9 @@ function Index() {
                 <div className="p-5 flex flex-col gap-3">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <div className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 20, letterSpacing: "-0.03em" }}>
+                      <Link to="/product/$id" params={{ id: p.id }} className="text-black hover:underline block" style={{ ...dmSans, fontWeight: 500, fontSize: 20, letterSpacing: "-0.03em" }}>
                         {p.name}
-                      </div>
+                      </Link>
                       <div className="flex items-center gap-1 mt-1 text-black/60 text-xs">
                         <Star size={12} className="fill-black text-black" /> {p.rating}
                       </div>
