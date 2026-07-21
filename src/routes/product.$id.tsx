@@ -122,7 +122,7 @@ function ProductPage() {
             <img src={product.gallery[activeImg] ?? product.img} alt={product.name} width={1600} height={1600} className="w-full h-full object-cover" />
           </div>
           <div className="grid grid-cols-4 gap-3">
-            {product.gallery.map((g, i) => (
+            {product.gallery.map((g: string, i: number) => (
               <button
                 key={i}
                 onClick={() => setActiveImg(i)}
