@@ -31,6 +31,7 @@ import { useSettings } from "@/lib/settings";
 import { CartDrawer } from "@/components/CartDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
 import { toast } from "sonner";
+import { formatPKR } from "@/lib/format";
 
 
 export const Route = createFileRoute("/")({
