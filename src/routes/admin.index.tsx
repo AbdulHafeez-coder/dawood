@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
   LogOut,
@@ -14,6 +14,8 @@ import {
   LayoutDashboard,
   RotateCcw,
   DollarSign,
+  UploadCloud,
+  ImageIcon,
   Settings as SettingsIcon,
 
 } from "lucide-react";
@@ -762,33 +764,49 @@ function ProductFormDialog({
           </Field>
 
           <Field label="Image">
-            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-              {PRODUCT_IMAGE_CHOICES.map((choice) => {
-                const active = form.img === choice.url;
-                return (
-                  <button
-                    type="button"
-                    key={choice.id}
-                    onClick={() =>
-                      setForm((f) => ({
-                        ...f,
-                        img: choice.url,
-                        gallery:
-                          f.gallery && f.gallery.length
-                            ? [choice.url, ...f.gallery.filter((x) => x !== choice.url)].slice(0, 4)
-                            : [choice.url],
-                      }))
-                    }
-                    className={`relative aspect-square rounded-lg overflow-hidden border-2 transition ${
-                      active ? "border-black" : "border-transparent hover:border-black/30"
-                    }`}
-                    aria-label={choice.label}
-                  >
-                    <img src={choice.url} alt="" className="w-full h-full object-cover" />
-                    {active && <div className="absolute inset-0 ring-2 ring-black rounded-lg" />}
-                  </button>
-                );
-              })}
+            <ImageUploader
+              value={form.img}
+              onChange={(url) =>
+                setForm((f) => ({
+                  ...f,
+                  img: url,
+                  gallery:
+                    f.gallery && f.gallery.length
+                      ? [url, ...f.gallery.filter((x) => x !== url)].slice(0, 4)
+                      : [url],
+                }))
+              }
+            />
+            <div className="mt-3">
+              <div className="text-[10px] uppercase tracking-[0.18em] text-black/45 mb-2">Or pick a preset</div>
+              <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                {PRODUCT_IMAGE_CHOICES.map((choice) => {
+                  const active = form.img === choice.url;
+                  return (
+                    <button
+                      type="button"
+                      key={choice.id}
+                      onClick={() =>
+                        setForm((f) => ({
+                          ...f,
+                          img: choice.url,
+                          gallery:
+                            f.gallery && f.gallery.length
+                              ? [choice.url, ...f.gallery.filter((x) => x !== choice.url)].slice(0, 4)
+                              : [choice.url],
+                        }))
+                      }
+                      className={`relative aspect-square rounded-lg overflow-hidden border-2 transition ${
+                        active ? "border-black" : "border-transparent hover:border-black/30"
+                      }`}
+                      aria-label={choice.label}
+                    >
+                      <img src={choice.url} alt="" className="w-full h-full object-cover" />
+                      {active && <div className="absolute inset-0 ring-2 ring-black rounded-lg" />}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </Field>
 
@@ -1085,3 +1103,95 @@ function SettingsPanel() {
   );
 }
 
+
+const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif", "image/svg+xml"];
+const MAX_IMAGE_BYTES = 3 * 1024 * 1024; // 3 MB
+
+function ImageUploader({ value, onChange }: { value: string; onChange: (url: string) => void }) {
+  const [dragging, setDragging] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const inputRef = React.useRef<HTMLInputElement>(null);
+
+  function handleFile(file: File | undefined | null) {
+    if (!file) return;
+    if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+      toast.error("Unsupported file", { description: "Use PNG, JPG, WEBP, GIF or SVG." });
+      return;
+    }
+    if (file.size > MAX_IMAGE_BYTES) {
+      toast.error("File too large", { description: `Max ${(MAX_IMAGE_BYTES / 1024 / 1024).toFixed(0)} MB. Yours is ${(file.size / 1024 / 1024).toFixed(2)} MB.` });
+      return;
+    }
+    setLoading(true);
+    const reader = new FileReader();
+    reader.onload = () => {
+      onChange(String(reader.result));
+      setLoading(false);
+      toast.success("Image uploaded", { description: file.name });
+    };
+    reader.onerror = () => {
+      setLoading(false);
+      toast.error("Could not read the file");
+    };
+    reader.readAsDataURL(file);
+  }
+
+  return (
+    <div className="flex flex-col sm:flex-row gap-3 items-stretch">
+      <div
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDragging(true);
+        }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setDragging(false);
+          handleFile(e.dataTransfer.files?.[0]);
+        }}
+        onClick={() => inputRef.current?.click()}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            inputRef.current?.click();
+          }
+        }}
+        className={`flex-1 rounded-xl border-2 border-dashed transition cursor-pointer grid place-items-center p-5 text-center ${
+          dragging ? "border-black bg-black/[0.03]" : "border-black/15 hover:border-black/40 hover:bg-black/[0.02]"
+        }`}
+      >
+        <div className="flex flex-col items-center gap-2 text-black/60">
+          <UploadCloud className="w-5 h-5" />
+          <div className="text-sm">
+            <span className="font-medium text-black">Drop an image</span> or click to browse
+          </div>
+          <div className="text-[11px] text-black/45">PNG, JPG, WEBP, GIF, SVG · up to 3 MB</div>
+        </div>
+        <input
+          ref={inputRef}
+          type="file"
+          accept={ACCEPTED_IMAGE_TYPES.join(",")}
+          className="hidden"
+          onChange={(e) => {
+            handleFile(e.target.files?.[0]);
+            e.target.value = "";
+          }}
+        />
+      </div>
+      <div className="w-full sm:w-40 shrink-0">
+        <div className="text-[10px] uppercase tracking-[0.18em] text-black/45 mb-1.5">Preview</div>
+        <div className="aspect-square rounded-xl overflow-hidden bg-black/5 border border-black/10 grid place-items-center relative">
+          {loading ? (
+            <div className="text-[11px] text-black/50">Reading…</div>
+          ) : value ? (
+            <img src={value} alt="Preview" className="w-full h-full object-cover" />
+          ) : (
+            <ImageIcon className="w-6 h-6 text-black/25" />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
