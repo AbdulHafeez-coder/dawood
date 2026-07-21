@@ -102,6 +102,18 @@ function Index() {
   const priceMin = products.length ? Math.min(...products.map((p) => p.price)) : 0;
   const [maxPrice, setMaxPrice] = useState(priceMax);
   useEffect(() => { setMaxPrice(priceMax); }, [priceMax]);
+  const { priceMin, priceMax } = useMemo(() => {
+    if (!products.length) return { priceMin: 0, priceMax: 100 };
+    let lo = products[0].price;
+    let hi = products[0].price;
+    for (const p of products) {
+      if (p.price < lo) lo = p.price;
+      if (p.price > hi) hi = p.price;
+    }
+    return { priceMin: lo, priceMax: hi };
+  }, [products]);
+  const [maxPrice, setMaxPrice] = useState(priceMax);
+  useEffect(() => { setMaxPrice(priceMax); }, [priceMax]);
   const [sort, setSort] = useState<SortKey>("featured");
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebouncedValue(query, 250);
@@ -144,7 +156,7 @@ function Index() {
       case "rating": list = [...list].sort((a, b) => b.rating - a.rating); break;
     }
     return list;
-  }, [activeCat, maxPrice, sort, debouncedQuery]);
+  }, [products, activeCat, maxPrice, sort, debouncedQuery]);
 
 
   return (
