@@ -1399,14 +1399,22 @@ function SettingsPanel() {
               )}
             </div>
           </Field>
-          <Field label="WhatsApp number (digits, e.g. 15551234567)">
+          <Field label="WhatsApp number (Pakistan, e.g. 0301-1234567)">
             <input
               className="mt-input"
-              value={draft.whatsappNumber}
-              onChange={(e) => setDraft({ ...draft, whatsappNumber: e.target.value.replace(/\D/g, "") })}
+              value={formatPkPhone(draft.whatsappNumber)}
+              onChange={(e) => setDraft({ ...draft, whatsappNumber: normalizePkDigits(e.target.value) })}
               inputMode="numeric"
-              placeholder="15551234567"
+              autoComplete="tel"
+              maxLength={12}
+              placeholder={PK_PHONE_PLACEHOLDER}
+              aria-invalid={draft.whatsappNumber.length > 0 && !isValidPkPhone(draft.whatsappNumber)}
             />
+            {draft.whatsappNumber.length > 0 && !isValidPkPhone(draft.whatsappNumber) && (
+              <p className="mt-1 text-[11px] text-red-600">
+                Enter an 11-digit Pakistani mobile starting with 03 (e.g. 0301-1234567).
+              </p>
+            )}
           </Field>
         </div>
       </section>
@@ -1427,10 +1435,20 @@ function SettingsPanel() {
           <Field label="Phone">
             <input
               className="mt-input"
-              value={draft.contactPhone}
-              onChange={(e) => setDraft({ ...draft, contactPhone: e.target.value })}
-              placeholder="+1 555 123 4567"
+              type="tel"
+              inputMode="numeric"
+              autoComplete="tel"
+              maxLength={12}
+              value={formatPkPhone(draft.contactPhone)}
+              onChange={(e) => setDraft({ ...draft, contactPhone: normalizePkDigits(e.target.value) })}
+              placeholder={PK_PHONE_PLACEHOLDER}
+              aria-invalid={draft.contactPhone.length > 0 && !isValidPkPhone(draft.contactPhone)}
             />
+            {draft.contactPhone.length > 0 && !isValidPkPhone(draft.contactPhone) && (
+              <p className="mt-1 text-[11px] text-red-600">
+                Enter an 11-digit Pakistani mobile starting with 03.
+              </p>
+            )}
           </Field>
           <Field label="Address">
             <input
