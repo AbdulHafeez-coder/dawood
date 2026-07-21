@@ -2,7 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
 import { ArrowLeft, ShoppingBag, Star, Plus, Minus, Check, Truck, ShieldCheck, Leaf, Heart, MessageCircle } from "lucide-react";
 import { whatsappProductUrl } from "@/lib/whatsapp";
-import { getProduct, products, useCart, useFavourites, type Product } from "@/lib/shop";
+import { getProduct, getVariants, products, useCart, useFavourites, type Product } from "@/lib/shop";
 import { CartDrawer } from "@/components/CartDrawer";
 
 export const Route = createFileRoute("/product/$id")({
