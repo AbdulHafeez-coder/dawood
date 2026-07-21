@@ -4,7 +4,6 @@ import {
   ArrowLeft,
   LogOut,
   Package,
-  Heart,
   ShoppingBag,
   ScrollText,
   TrendingUp,
@@ -14,14 +13,13 @@ import {
   Tag,
   LayoutDashboard,
   RotateCcw,
+  DollarSign,
   Settings as SettingsIcon,
 
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAdminAuth } from "@/lib/admin-auth";
 import {
-  useCart,
-  useFavourites,
   useProducts,
   useCategories,
   PRODUCT_IMAGE_CHOICES,
@@ -70,8 +68,6 @@ export const Route = createFileRoute("/admin/")({
 function AdminDashboard() {
   const navigate = useNavigate();
   const { isAuthed, ready, logout } = useAdminAuth();
-  const { cartCount, subtotal } = useCart();
-  const { favs, favCount } = useFavourites();
   const { orders } = useOrders();
   const { products, addProduct, updateProduct, deleteProduct, resetProducts } = useProducts();
   const { categories, addCategory, renameCategory, deleteCategory, resetCategories } = useCategories();
