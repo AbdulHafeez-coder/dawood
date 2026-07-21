@@ -2,7 +2,11 @@ import type { Product, CartItem } from "@/lib/shop";
 import { getSettings } from "@/lib/settings";
 
 function buildUrl(text: string) {
-  const number = (getSettings().whatsappNumber || "").replace(/\D/g, "") || "15551234567";
+  const raw = (getSettings().whatsappNumber || "").replace(/\D/g, "");
+  // Pakistani local (11 digits, starts with 03) → 92XXXXXXXXXX
+  const number = raw.length === 11 && raw.startsWith("03")
+    ? `92${raw.slice(1)}`
+    : raw || "923011234567";
   return `https://wa.me/${number}?text=${encodeURIComponent(text)}`;
 }
 
