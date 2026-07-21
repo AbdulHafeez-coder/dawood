@@ -14,7 +14,7 @@ import {
   Tag,
   LayoutDashboard,
   RotateCcw,
-  DollarSign,
+  Wallet,
   UploadCloud,
   ImageIcon,
   Download,
