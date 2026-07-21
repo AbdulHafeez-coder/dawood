@@ -26,9 +26,11 @@ import productWallpaper from "@/assets/product-wallpaper.jpg";
 import productCloth from "@/assets/product-cloth.jpg";
 import productSponge from "@/assets/product-sponge.jpg";
 import { useProducts, useCategories, useCart, useFavourites, type Category, type Product } from "@/lib/shop";
+import { useSettings } from "@/lib/settings";
 import { CartDrawer } from "@/components/CartDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
 import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -72,6 +74,8 @@ function Index() {
   const [cartOpen, setCartOpen] = useState(false);
   const { addToCart: addToCartShared, cartCount } = useCart();
   const { toggleFav, isFav, favCount } = useFavourites();
+  const settings = useSettings();
+
   const { orderCount } = useOrders();
   const { products } = useProducts();
   const { categories: liveCategories } = useCategories();
@@ -146,9 +150,11 @@ function Index() {
         }}
       >
         <nav className="relative z-20 flex items-center justify-between px-5 py-4 sm:px-8 lg:px-10 lg:py-5 animate-fade-in">
-          <div className="animate-slide-left delay-200 text-white" style={{ ...dmSans, fontWeight: 500, fontSize: 30, letterSpacing: "-0.05em" }}>
-            Maison Terra
+          <div className="animate-slide-left delay-200 text-white flex items-center gap-2" style={{ ...dmSans, fontWeight: 500, fontSize: 30, letterSpacing: "-0.05em" }}>
+            {settings.logoUrl ? <img src={settings.logoUrl} alt="" className="w-8 h-8 rounded-md object-cover bg-white/20" /> : null}
+            {settings.brandName}
           </div>
+
           <div className="hidden md:flex items-center gap-6 lg:gap-10 animate-fade-in delay-400" style={dmSans}>
             {navLinks.map((l) => (
               <a key={l} href={`#${l.toLowerCase()}`} className="text-white/90 hover:text-white transition-colors" style={{ fontWeight: 500, fontSize: 18 }}>
