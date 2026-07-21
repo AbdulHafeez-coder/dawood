@@ -108,6 +108,8 @@ function AdminDashboard() {
   const [confirmResetCategories, setConfirmResetCategories] = useState(false);
   const productImportRef = useRef<HTMLInputElement>(null);
   const categoryImportRef = useRef<HTMLInputElement>(null);
+  const [productImportPlan, setProductImportPlan] = useState<ProductImportPlan | null>(null);
+  const [categoryImportPlan, setCategoryImportPlan] = useState<CategoryImportPlan | null>(null);
 
   // Product filters + pagination
   const [pQuery, setPQuery] = useState("");
