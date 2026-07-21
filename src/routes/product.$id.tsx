@@ -161,7 +161,7 @@ function ProductPage() {
       variantColorSwatch: selectedColor!.swatch,
     });
     toast.success(`${variantProduct.name} added to cart`, {
-      description: `Qty ${qty} · PKR PKR {(product.price * qty).toFixed(2)}`,
+      description: `Qty ${qty} · ${formatPKR(product.price * qty)}`,
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 1600);
