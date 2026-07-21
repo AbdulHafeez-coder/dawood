@@ -412,7 +412,7 @@ function Index() {
                   />
                 </Link>
                 <button
-                  onClick={() => toggleFav(p.id)}
+                  onClick={() => handleFav(p)}
                   aria-label={isFav(p.id) ? "Remove from favourites" : "Add to favourites"}
                   aria-pressed={isFav(p.id)}
                   className="absolute top-3 right-3 z-10 h-9 w-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center hover:bg-white transition-colors shadow-sm"
