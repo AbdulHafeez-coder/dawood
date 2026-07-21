@@ -88,15 +88,23 @@ function Index() {
 
 
   const visibleProducts = useMemo(() => {
+    const q = query.trim().toLowerCase();
     let list = products.filter((p) => (activeCat === "All" ? true : p.category === activeCat));
     list = list.filter((p) => p.price <= maxPrice);
+    if (q) {
+      list = list.filter((p) =>
+        [p.name, p.category, p.tag, p.tagline, ...(p.features ?? [])]
+          .filter(Boolean)
+          .some((s) => String(s).toLowerCase().includes(q))
+      );
+    }
     switch (sort) {
       case "price-asc": list = [...list].sort((a, b) => a.price - b.price); break;
       case "price-desc": list = [...list].sort((a, b) => b.price - a.price); break;
       case "rating": list = [...list].sort((a, b) => b.rating - a.rating); break;
     }
     return list;
-  }, [activeCat, maxPrice, sort]);
+  }, [activeCat, maxPrice, sort, query]);
 
   return (
     <div className="flex min-h-screen flex-col" style={inter}>
