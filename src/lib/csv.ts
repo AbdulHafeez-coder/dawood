@@ -15,12 +15,80 @@ export function stringifyCsv(rows: (string | number)[][]): string {
     .join("\r\n");
 }
 
-export function parseCsv(text: string): string[][] {
+// Candidate delimiters, in preference order when counts tie.
+const DELIMITER_CANDIDATES = [",", ";", "\t", "|"] as const;
+export type CsvDelimiter = (typeof DELIMITER_CANDIDATES)[number];
+
+/**
+ * Detect the most likely delimiter from a CSV sample.
+ * Counts occurrences of each candidate OUTSIDE quoted fields on the first
+ * ~10 non-empty lines and picks the one with the most consistent count.
+ */
+export function detectDelimiter(text: string): CsvDelimiter {
+  const src = text.replace(/^\uFEFF/, "");
+  // Collect up to 10 logical lines respecting quotes.
+  const lines: string[] = [];
+  let buf = "";
+  let inQuotes = false;
+  for (let i = 0; i < src.length && lines.length < 10; i++) {
+    const c = src[i];
+    if (c === '"') {
+      if (inQuotes && src[i + 1] === '"') {
+        buf += '""';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+        buf += c;
+      }
+    } else if (!inQuotes && (c === "\n" || c === "\r")) {
+      if (buf.trim()) lines.push(buf);
+      buf = "";
+      if (c === "\r" && src[i + 1] === "\n") i++;
+    } else {
+      buf += c;
+    }
+  }
+  if (buf.trim()) lines.push(buf);
+  if (lines.length === 0) return ",";
+
+  const countOutside = (line: string, delim: string) => {
+    let n = 0;
+    let q = false;
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (c === '"') {
+        if (q && line[i + 1] === '"') i++;
+        else q = !q;
+      } else if (!q && c === delim) n++;
+    }
+    return n;
+  };
+
+  let best: CsvDelimiter = ",";
+  let bestScore = -1;
+  for (const d of DELIMITER_CANDIDATES) {
+    const counts = lines.map((l) => countOutside(l, d));
+    const first = counts[0];
+    if (first === 0) continue;
+    const consistent = counts.every((n) => n === first);
+    // Score rewards higher count and consistency across lines.
+    const score = first * (consistent ? 2 : 1);
+    if (score > bestScore) {
+      bestScore = score;
+      best = d;
+    }
+  }
+  return best;
+}
+
+export function parseCsv(text: string, delimiter?: CsvDelimiter): string[][] {
+  const delim = delimiter ?? detectDelimiter(text);
   const rows: string[][] = [];
   let row: string[] = [];
   let field = "";
   let inQuotes = false;
-  const src = text.replace(/^\uFEFF/, ""); // strip BOM
+  // Strip BOM and normalize Excel-style line endings (\r\n, lone \r).
+  const src = text.replace(/^\uFEFF/, "");
   for (let i = 0; i < src.length; i++) {
     const c = src[i];
     if (inQuotes) {
@@ -37,7 +105,7 @@ export function parseCsv(text: string): string[][] {
     } else {
       if (c === '"') {
         inQuotes = true;
-      } else if (c === ",") {
+      } else if (c === delim) {
         row.push(field);
         field = "";
       } else if (c === "\n" || c === "\r") {
