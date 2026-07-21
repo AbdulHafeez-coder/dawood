@@ -59,6 +59,14 @@ export function useAdminAuth() {
 
   const logout = useCallback(() => {
     authed = false;
+    if (typeof window !== "undefined") {
+      try {
+        // Clear cached admin UI state (active tab, etc.)
+        window.localStorage.removeItem("mt_admin_tab");
+      } catch {
+        /* ignore */
+      }
+    }
     emit();
   }, []);
 
