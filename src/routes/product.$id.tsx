@@ -193,7 +193,7 @@ function ProductPage() {
             </h2>
             <Link to="/" className="text-sm text-black/60 hover:text-black">View all</Link>
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
             {related.map((p) => (
               <RelatedCard key={p.id} product={p} />
             ))}
