@@ -40,14 +40,23 @@ export function whatsappCartUrl(cart: CartItem[], subtotal: number) {
   const total = subtotal + shipping;
   const itemCount = cart.reduce((n, i) => n + i.qty, 0);
 
-  const itemBlocks = cart.flatMap((i, idx) => [
-    `*${idx + 1}. ${i.name}*`,
-    `   Category:  ${i.category}`,
-    `   Quantity:  ${i.qty}`,
-    `   Price:     ${money(i.price)} each`,
-    `   Subtotal:  ${money(i.price * i.qty)}`,
-    "",
-  ]);
+  const itemBlocks = cart.flatMap((i, idx) => {
+    const displayName = i.baseName ?? i.name;
+    const sizeLine = i.variantSizeLabel
+      ? `   Size:      ${i.variantSizeLabel}${i.variantSizeNote ? ` (${i.variantSizeNote})` : ""}`
+      : null;
+    const colorLine = i.variantColorLabel ? `   Colour:    ${i.variantColorLabel}` : null;
+    return [
+      `*${idx + 1}. ${displayName}*`,
+      `   Category:  ${i.category}`,
+      sizeLine,
+      colorLine,
+      `   Quantity:  ${i.qty}`,
+      `   Price:     ${money(i.price)} each`,
+      `   Subtotal:  ${money(i.price * i.qty)}`,
+      "",
+    ].filter((x): x is string => x !== null);
+  });
 
   const lines = [
     "*Maison Terra — New Order*",
