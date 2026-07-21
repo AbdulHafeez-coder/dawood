@@ -414,7 +414,10 @@ function Index() {
                     <div className="text-black shrink-0" style={{ ...dmSans, fontWeight: 500, fontSize: 20 }}>${p.price}</div>
                   </div>
                   <button
-                    onClick={() => addToCart(p)}
+                    onClick={() => {
+                      addToCart(p);
+                      toast.success(`${p.name} added to cart`, { description: `$${p.price.toFixed(2)} · ${p.category}` });
+                    }}
                     className="mt-auto inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-11 text-sm hover:bg-black/85"
                     style={{ fontWeight: 500 }}
                   >
