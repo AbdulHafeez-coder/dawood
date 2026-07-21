@@ -16,6 +16,7 @@ import {
   Leaf,
   Truck,
   ShieldCheck,
+  Heart,
 } from "lucide-react";
 import heroBg from "@/assets/hero-home.jpg";
 import productTowel from "@/assets/product-towel.jpg";
