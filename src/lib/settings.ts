@@ -6,7 +6,7 @@ export type Settings = {
   brandName: string;
   tagline: string;
   logoUrl: string;
-  whatsappNumber: string; // international, digits only
+  whatsappNumber: string; // Pakistani local digits, 11 digits starting with 03
   contactEmail: string;
   contactPhone: string;
   address: string;
@@ -19,9 +19,9 @@ const DEFAULTS: Settings = {
   brandName: "Maison Terra",
   tagline: "Essentials for a tactile home",
   logoUrl: "",
-  whatsappNumber: "15551234567",
+  whatsappNumber: "03011234567",
   contactEmail: "hello@maisonterra.co",
-  contactPhone: "+1 (555) 123-4567",
+  contactPhone: "0301-1234567",
   address: "12 Linden Row, Copenhagen",
   socials: {
     instagram: "https://instagram.com/maisonterra",
