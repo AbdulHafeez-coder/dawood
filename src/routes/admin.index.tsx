@@ -444,7 +444,30 @@ function AdminDashboard() {
             <section className="bg-white border border-black/10 rounded-2xl p-5 sm:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                 <SectionTitle icon={<Tag className="w-3.5 h-3.5" />} label={`Categories (${categories.length})`} />
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <input
+                    ref={categoryImportRef}
+                    type="file"
+                    accept=".csv,text/csv"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) handleImportCategories(f);
+                      e.target.value = "";
+                    }}
+                  />
+                  <button
+                    onClick={() => categoryImportRef.current?.click()}
+                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em]"
+                  >
+                    <Upload className="w-3 h-3" /> Import CSV
+                  </button>
+                  <button
+                    onClick={handleExportCategories}
+                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em]"
+                  >
+                    <Download className="w-3 h-3" /> Export CSV
+                  </button>
                   <button
                     onClick={() => setConfirmResetCategories(true)}
                     className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em]"
