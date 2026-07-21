@@ -380,18 +380,24 @@ function Index() {
 
         <div className="bg-white rounded-2xl p-4 lg:p-5 mb-8 lg:mb-10 flex flex-col md:flex-row md:items-center md:flex-wrap gap-4 md:gap-5 lg:gap-8">
           <div className="flex flex-wrap items-center gap-2">
-            {(["All", ...CATEGORY_LIST] as const).map((c) => (
-              <button
-                key={c}
-                onClick={() => setActiveCat(c)}
-                className={`px-4 h-9 rounded-full text-sm transition-colors ${
-                  activeCat === c ? "bg-black text-white" : "bg-black/5 text-black hover:bg-black/10"
-                }`}
-                style={{ fontWeight: 500 }}
-              >
-                {c}
-              </button>
-            ))}
+            {(["All", ...CATEGORY_LIST] as const).map((c) => {
+              const active = activeCat === c;
+              return (
+                <button
+                  key={c}
+                  onClick={() => setActiveCat(c)}
+                  aria-pressed={active}
+                  className={`mt-chip px-4 h-9 rounded-full text-sm ${
+                    active
+                      ? "bg-black text-white hover:bg-black/90"
+                      : "bg-black/5 text-black hover:bg-black/10 hover:text-black"
+                  }`}
+                  style={{ fontWeight: 500 }}
+                >
+                  {c}
+                </button>
+              );
+            })}
           </div>
 
           <div className="flex items-center gap-3 flex-1 min-w-0 md:min-w-[200px] md:max-w-xs">
@@ -412,8 +418,9 @@ function Index() {
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value as SortKey)}
-              className="h-9 rounded-full bg-black/5 hover:bg-black/10 text-sm px-3 pr-8 text-black outline-none"
+              className="mt-select h-9 rounded-full bg-black/5 text-sm px-3 text-black cursor-pointer"
               style={{ fontWeight: 500 }}
+              aria-label="Sort products"
             >
               <option value="featured">Featured</option>
               <option value="price-asc">Price: low to high</option>
