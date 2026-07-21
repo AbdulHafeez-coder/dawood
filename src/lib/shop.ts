@@ -24,7 +24,17 @@ export type Product = {
   gallery: string[];
 };
 
-export type CartItem = Product & { qty: number };
+export type CartItem = Product & {
+  qty: number;
+  baseId?: string;
+  baseName?: string;
+  variantSize?: string;
+  variantColor?: string;
+  variantSizeLabel?: string;
+  variantSizeNote?: string;
+  variantColorLabel?: string;
+  variantColorSwatch?: string;
+};
 
 export type VariantOptions = {
   sizes: { id: string; label: string; note?: string }[];
