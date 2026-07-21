@@ -89,9 +89,16 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
               <span>Total</span>
               <span>${(subtotal + (subtotal >= 50 || subtotal === 0 ? 0 : 5)).toFixed(2)}</span>
             </div>
-            <button className="mt-2 inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-12 text-base hover:bg-black/85" style={{ fontWeight: 500 }}>
-              Checkout <ArrowUpRight size={18} />
-            </button>
+            <a
+              href={whatsappCartUrl(cart, subtotal)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 inline-flex items-center justify-center gap-2 bg-[#25D366] text-white rounded-md h-12 text-base hover:bg-[#1ebe57] transition-colors"
+              style={{ fontWeight: 500 }}
+            >
+              <MessageCircle size={18} /> Order on WhatsApp
+            </a>
+            <p className="text-[11px] text-black/50 text-center">You'll be redirected to WhatsApp with your order details pre-filled.</p>
           </div>
         )}
       </aside>
