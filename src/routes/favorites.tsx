@@ -136,13 +136,14 @@ function FavoritesPage() {
                     </div>
                     <div className="text-black shrink-0" style={{ ...dmSans, fontWeight: 500, fontSize: 20 }}>{formatPKR(p.price)}</div>
                   </div>
-                  <button
-                    onClick={() => handleAdd(p)}
+                  <Link
+                    to="/product/$id"
+                    params={{ id: p.id }}
                     className="mt-auto inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-11 text-sm hover:bg-black/85 transition-colors"
                     style={{ fontWeight: 500 }}
                   >
-                    <Plus size={16} /> Add to cart
-                  </button>
+                    <Plus size={16} /> Choose options
+                  </Link>
                 </div>
               </div>
             ))}
