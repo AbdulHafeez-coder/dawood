@@ -145,7 +145,7 @@ function AdminDashboard() {
   const [pShowFilters, setPShowFilters] = useState(false);
 
   const filteredProducts = useMemo(() => {
-    const q = pQuery.trim().toLowerCase();
+    const q = debouncedPQuery.trim().toLowerCase();
     const min = pMinPrice === "" ? -Infinity : Number(pMinPrice);
     const max = pMaxPrice === "" ? Infinity : Number(pMaxPrice);
     const rMin = pMinRating === "" ? -Infinity : Number(pMinRating);
@@ -162,7 +162,8 @@ function AdminDashboard() {
       }
       return true;
     });
-  }, [products, pQuery, pCategory, pMinPrice, pMaxPrice, pMinRating, pMaxRating]);
+  }, [products, debouncedPQuery, pCategory, pMinPrice, pMaxPrice, pMinRating, pMaxRating]);
+
 
   const pTotalPages = Math.max(1, Math.ceil(filteredProducts.length / pPageSize));
   const pCurrentPage = Math.min(pPage, pTotalPages);
