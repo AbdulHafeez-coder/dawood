@@ -17,7 +17,9 @@ import {
   Truck,
   ShieldCheck,
   Heart,
+  ScrollText,
 } from "lucide-react";
+import { useOrders } from "@/lib/orders";
 import heroBg from "@/assets/hero-home.jpg";
 import productTowel from "@/assets/product-towel.jpg";
 import productWallpaper from "@/assets/product-wallpaper.jpg";
