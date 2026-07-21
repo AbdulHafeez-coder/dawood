@@ -14,6 +14,8 @@ import {
   Tag,
   LayoutDashboard,
   RotateCcw,
+  Settings as SettingsIcon,
+
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAdminAuth } from "@/lib/admin-auth";
@@ -27,7 +29,9 @@ import {
   type Product,
 } from "@/lib/shop";
 import { useOrders, removeOrder } from "@/lib/orders";
+import { useSettings, updateSettings, resetSettings, type SocialKey } from "@/lib/settings";
 import { SiteFooter } from "@/components/SiteFooter";
+
 import {
   Dialog,
   DialogContent,
@@ -50,7 +54,7 @@ import {
 const dmSans = { fontFamily: "'DM Sans', sans-serif" };
 const inter = { fontFamily: "'Inter', sans-serif" };
 
-type TabId = "overview" | "products" | "categories";
+type TabId = "overview" | "products" | "categories" | "settings";
 
 export const Route = createFileRoute("/admin/")({
   head: () => ({
@@ -147,6 +151,10 @@ function AdminDashboard() {
             <TabButton active={tab === "categories"} onClick={() => setTab("categories")} icon={<Tag className="w-3.5 h-3.5" />}>
               Categories <span className="ml-1 text-black/40">{categories.length}</span>
             </TabButton>
+            <TabButton active={tab === "settings"} onClick={() => setTab("settings")} icon={<SettingsIcon className="w-3.5 h-3.5" />}>
+              Settings
+            </TabButton>
+
           </nav>
         </div>
       </header>
