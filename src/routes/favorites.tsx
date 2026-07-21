@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { ArrowLeft, Heart, ShoppingBag, Star, Plus, X } from "lucide-react";
-import { products, useCart, useFavourites, type Product } from "@/lib/shop";
+import { useProducts, useCart, useFavourites, type Product } from "@/lib/shop";
 import { CartDrawer } from "@/components/CartDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
 import { toast } from "sonner";
@@ -25,6 +25,7 @@ const inter = { fontFamily: "'Inter', sans-serif" };
 function FavoritesPage() {
   const { favs, toggleFav, favCount } = useFavourites();
   const { addToCart, cartCount } = useCart();
+  const { products } = useProducts();
   const [cartOpen, setCartOpen] = useState(false);
 
   const items = products.filter((p) => favs.includes(p.id));

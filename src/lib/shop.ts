@@ -6,8 +6,18 @@ import productSponge from "@/assets/product-sponge.jpg";
 import productBathset from "@/assets/product-bathset.jpg";
 import heroBg from "@/assets/hero-home.jpg";
 
-export const CATEGORY_LIST = ["Towels", "Wallpaper", "Cloths", "Sponges"] as const;
-export type Category = (typeof CATEGORY_LIST)[number];
+// Category is a free-form string so admins can add/rename categories.
+export type Category = string;
+
+export const SEED_CATEGORIES: readonly string[] = [
+  "Towels",
+  "Wallpaper",
+  "Cloths",
+  "Sponges",
+];
+
+// Kept for backwards-compat imports in existing components; treat as seed.
+export const CATEGORY_LIST = SEED_CATEGORIES;
 
 export type Product = {
   id: string;
@@ -41,7 +51,20 @@ export type VariantOptions = {
   colors: { id: string; label: string; swatch: string }[];
 };
 
-const VARIANTS_BY_CATEGORY: Record<Category, VariantOptions> = {
+const DEFAULT_VARIANTS: VariantOptions = {
+  sizes: [
+    { id: "s", label: "Small" },
+    { id: "m", label: "Medium" },
+    { id: "l", label: "Large" },
+  ],
+  colors: [
+    { id: "natural", label: "Natural", swatch: "#D9C6AA" },
+    { id: "sage", label: "Sage", swatch: "#A9B79A" },
+    { id: "ink", label: "Ink", swatch: "#2A2E33" },
+  ],
+};
+
+const VARIANTS_BY_CATEGORY: Record<string, VariantOptions> = {
   Towels: {
     sizes: [
       { id: "hand", label: "Hand", note: "50 × 90 cm" },
@@ -94,11 +117,11 @@ const VARIANTS_BY_CATEGORY: Record<Category, VariantOptions> = {
 };
 
 export function getVariants(category: Category): VariantOptions {
-  return VARIANTS_BY_CATEGORY[category];
+  return VARIANTS_BY_CATEGORY[category] ?? DEFAULT_VARIANTS;
 }
 
-
-export const products: Product[] = [
+// ---------- SEED PRODUCTS ----------
+const SEED_PRODUCTS: Product[] = [
   {
     id: "p1",
     name: "Aegean Bath Towel",
@@ -131,12 +154,7 @@ export const products: Product[] = [
     tagline: "A three-piece rollup for slow weekend rituals.",
     description:
       "A hand, face and bath towel set rolled into a linen band — pared-back palettes designed to sit on an open shelf. Made from the same combed cotton as our Aegean sheet.",
-    details: [
-      "Set of 3 (hand, face, bath)",
-      "500 GSM combed cotton",
-      "Gift-ready linen band",
-      "Machine wash cool",
-    ],
+    details: ["Set of 3 (hand, face, bath)", "500 GSM combed cotton", "Gift-ready linen band", "Machine wash cool"],
     gallery: [productBathset, productTowel, productCloth, heroBg],
   },
   {
@@ -151,12 +169,7 @@ export const products: Product[] = [
     tagline: "Hand-drawn stems, peel-and-stick in minutes.",
     description:
       "Illustrated in our studio and printed on removable matte vinyl. Reposition as you go — no paste, no drips, no landlord letters. Each sheet covers 0.9 × 2.4 m.",
-    details: [
-      "Removable matte vinyl",
-      "0.9 × 2.4 m per sheet",
-      "PVC-free, low-VOC inks",
-      "Repositionable up to 5×",
-    ],
+    details: ["Removable matte vinyl", "0.9 × 2.4 m per sheet", "PVC-free, low-VOC inks", "Repositionable up to 5×"],
     gallery: [productWallpaper, heroBg, productCloth, productTowel],
   },
   {
@@ -171,12 +184,7 @@ export const products: Product[] = [
     tagline: "The look of raw linen, on any wall.",
     description:
       "A woven-linen texture reproduced in fine detail on removable vinyl. Warms up hallways and nurseries without the commitment of paste-up paper.",
-    details: [
-      "Removable matte vinyl",
-      "0.9 × 2.4 m per sheet",
-      "PVC-free, low-VOC inks",
-      "Warm oat colourway",
-    ],
+    details: ["Removable matte vinyl", "0.9 × 2.4 m per sheet", "PVC-free, low-VOC inks", "Warm oat colourway"],
     gallery: [productWallpaper, heroBg, productBathset, productCloth],
   },
   {
@@ -191,12 +199,7 @@ export const products: Product[] = [
     tagline: "Five reusable microfibre cloths, colour-coded by room.",
     description:
       "Replace weeks of paper towels with a set of five soft microfibre cloths — one for each zone of the home. Washable up to 300 times.",
-    details: [
-      "Set of 5, colour-coded",
-      "300+ machine washes",
-      "Streak-free on glass",
-      "Recycled poly-blend fibre",
-    ],
+    details: ["Set of 5, colour-coded", "300+ machine washes", "Streak-free on glass", "Recycled poly-blend fibre"],
     gallery: [productCloth, productSponge, productTowel, heroBg],
   },
   {
@@ -211,12 +214,7 @@ export const products: Product[] = [
     tagline: "The lint-free finish for glass, screens and chrome.",
     description:
       "A tight-weave microfibre cloth engineered for a streak-free finish. Use dry on screens, damp on mirrors, and pair with our vinegar spray for windows.",
-    details: [
-      "40 × 40 cm, tight weave",
-      "Lint-free on screens & glass",
-      "Machine washable",
-      "Sold as a pair",
-    ],
+    details: ["40 × 40 cm, tight weave", "Lint-free on screens & glass", "Machine washable", "Sold as a pair"],
     gallery: [productCloth, productSponge, heroBg, productTowel],
   },
   {
@@ -231,12 +229,7 @@ export const products: Product[] = [
     tagline: "Plant-based sponges that compost when they're done.",
     description:
       "Cellulose and loofah pressed into a soft-firm sponge that tackles dishes without shredding. Snip in half and drop into home compost at end of life.",
-    details: [
-      "100% plant-based",
-      "Home-compostable",
-      "Pack of 4",
-      "Boil to sanitise",
-    ],
+    details: ["100% plant-based", "Home-compostable", "Pack of 4", "Boil to sanitise"],
     gallery: [productSponge, productCloth, heroBg, productBathset],
   },
   {
@@ -251,23 +244,210 @@ export const products: Product[] = [
     tagline: "Two-sided scrubs for pans, tile and grout days.",
     description:
       "A dense cellulose base bonded to a coconut-fibre scour — tough on baked-on grease, gentle enough for enamel. Comes as a duo, one for kitchen, one for bath.",
-    details: [
-      "Pack of 2",
-      "Coconut-fibre scour side",
-      "Safe on enamel",
-      "Home-compostable base",
-    ],
+    details: ["Pack of 2", "Coconut-fibre scour side", "Safe on enamel", "Home-compostable base"],
     gallery: [productSponge, productCloth, heroBg, productTowel],
   },
 ];
 
+export const PRODUCT_IMAGE_CHOICES = [
+  { id: "towel", label: "Towel", url: productTowel },
+  { id: "wallpaper", label: "Wallpaper", url: productWallpaper },
+  { id: "cloth", label: "Cloth", url: productCloth },
+  { id: "sponge", label: "Sponge", url: productSponge },
+  { id: "bathset", label: "Bath set", url: productBathset },
+  { id: "hero", label: "Hero", url: heroBg },
+];
+
+export const PRODUCT_BG_CHOICES = [
+  "bg-[#F3ECE3]",
+  "bg-[#F5EFE4]",
+  "bg-[#EFEBE3]",
+  "bg-[#EDE7DB]",
+  "bg-[#EAEEE6]",
+  "bg-[#E8EFEA]",
+  "bg-[#F5EEDF]",
+  "bg-[#F3E9D8]",
+];
+
+// ---------- LIVE STORE (products + categories) ----------
+const PRODUCTS_KEY = "maison-terra-products-v1";
+const CATEGORIES_KEY = "maison-terra-categories-v1";
+
+// Exported live arrays. Mutated in place so module-level readers see updates.
+export const products: Product[] = [...SEED_PRODUCTS];
+export const categoriesLive: string[] = [...SEED_CATEGORIES];
+
+let storeHydrated = false;
+const productListeners = new Set<(p: Product[]) => void>();
+const categoryListeners = new Set<(c: string[]) => void>();
+
+function persistProducts() {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+  } catch {
+    /* ignore */
+  }
+}
+function persistCategories() {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(CATEGORIES_KEY, JSON.stringify(categoriesLive));
+  } catch {
+    /* ignore */
+  }
+}
+function emitProducts() {
+  persistProducts();
+  for (const l of productListeners) l([...products]);
+}
+function emitCategories() {
+  persistCategories();
+  for (const l of categoryListeners) l([...categoriesLive]);
+}
+
+function ensureStoreHydrated() {
+  if (storeHydrated || typeof window === "undefined") return;
+  storeHydrated = true;
+  try {
+    const rawP = window.localStorage.getItem(PRODUCTS_KEY);
+    if (rawP) {
+      const parsed = JSON.parse(rawP) as Product[];
+      if (Array.isArray(parsed) && parsed.length) {
+        products.splice(0, products.length, ...parsed);
+      }
+    }
+  } catch {
+    /* ignore */
+  }
+  try {
+    const rawC = window.localStorage.getItem(CATEGORIES_KEY);
+    if (rawC) {
+      const parsed = JSON.parse(rawC) as string[];
+      if (Array.isArray(parsed) && parsed.length) {
+        categoriesLive.splice(0, categoriesLive.length, ...parsed);
+      }
+    }
+  } catch {
+    /* ignore */
+  }
+}
+
 export function getProduct(id: string): Product | undefined {
+  ensureStoreHydrated();
   return products.find((p) => p.id === id);
 }
 
-const STORAGE_KEY = "maison-terra-cart";
+// ---------- REACTIVE HOOKS ----------
+export function useProducts() {
+  ensureStoreHydrated();
+  const [list, setList] = useState<Product[]>([...products]);
 
-// Module-level store so cart state is shared across routes without a provider.
+  useEffect(() => {
+    ensureStoreHydrated();
+    setList([...products]);
+    const l = (p: Product[]) => setList(p);
+    productListeners.add(l);
+    return () => {
+      productListeners.delete(l);
+    };
+  }, []);
+
+  const addProduct = useCallback((p: Omit<Product, "id"> & { id?: string }) => {
+    const id = p.id ?? `p-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+    const gallery = p.gallery && p.gallery.length ? p.gallery : [p.img];
+    products.unshift({ ...p, id, gallery });
+    emitProducts();
+    return id;
+  }, []);
+
+  const updateProduct = useCallback((id: string, patch: Partial<Product>) => {
+    const idx = products.findIndex((p) => p.id === id);
+    if (idx < 0) return;
+    const next = { ...products[idx], ...patch };
+    if (!next.gallery || next.gallery.length === 0) next.gallery = [next.img];
+    products[idx] = next;
+    emitProducts();
+  }, []);
+
+  const deleteProduct = useCallback((id: string) => {
+    const idx = products.findIndex((p) => p.id === id);
+    if (idx < 0) return;
+    products.splice(idx, 1);
+    emitProducts();
+  }, []);
+
+  const resetProducts = useCallback(() => {
+    products.splice(0, products.length, ...SEED_PRODUCTS);
+    emitProducts();
+  }, []);
+
+  return { products: list, addProduct, updateProduct, deleteProduct, resetProducts };
+}
+
+export function useCategories() {
+  ensureStoreHydrated();
+  const [list, setList] = useState<string[]>([...categoriesLive]);
+
+  useEffect(() => {
+    ensureStoreHydrated();
+    setList([...categoriesLive]);
+    const l = (c: string[]) => setList(c);
+    categoryListeners.add(l);
+    return () => {
+      categoryListeners.delete(l);
+    };
+  }, []);
+
+  const addCategory = useCallback((name: string) => {
+    const clean = name.trim();
+    if (!clean) return false;
+    if (categoriesLive.some((c) => c.toLowerCase() === clean.toLowerCase())) return false;
+    categoriesLive.push(clean);
+    emitCategories();
+    return true;
+  }, []);
+
+  const renameCategory = useCallback((oldName: string, newName: string) => {
+    const clean = newName.trim();
+    if (!clean) return false;
+    const idx = categoriesLive.indexOf(oldName);
+    if (idx < 0) return false;
+    if (categoriesLive.some((c, i) => i !== idx && c.toLowerCase() === clean.toLowerCase())) return false;
+    categoriesLive[idx] = clean;
+    // cascade to products
+    for (const p of products) {
+      if (p.category === oldName) p.category = clean;
+    }
+    emitCategories();
+    emitProducts();
+    return true;
+  }, []);
+
+  const deleteCategory = useCallback((name: string) => {
+    const idx = categoriesLive.indexOf(name);
+    if (idx < 0) return { ok: false as const, orphaned: 0 };
+    const orphaned = products.filter((p) => p.category === name).length;
+    categoriesLive.splice(idx, 1);
+    // remove products in this category to keep data consistent
+    for (let i = products.length - 1; i >= 0; i--) {
+      if (products[i].category === name) products.splice(i, 1);
+    }
+    emitCategories();
+    emitProducts();
+    return { ok: true as const, orphaned };
+  }, []);
+
+  const resetCategories = useCallback(() => {
+    categoriesLive.splice(0, categoriesLive.length, ...SEED_CATEGORIES);
+    emitCategories();
+  }, []);
+
+  return { categories: list, addCategory, renameCategory, deleteCategory, resetCategories };
+}
+
+// ---------- CART (unchanged behaviour) ----------
+const STORAGE_KEY = "maison-terra-cart";
 let cartState: CartItem[] = [];
 const listeners = new Set<(c: CartItem[]) => void>();
 
@@ -319,10 +499,11 @@ function loadInitial(): CartItem[] {
   }
 }
 
-let hydrated = false;
+let cartHydrated = false;
 function ensureHydrated() {
-  if (hydrated || typeof window === "undefined") return;
-  hydrated = true;
+  if (cartHydrated || typeof window === "undefined") return;
+  cartHydrated = true;
+  ensureStoreHydrated();
   cartState = loadInitial();
 }
 
@@ -358,18 +539,15 @@ export function useCart() {
     };
   }, []);
 
-  const addToCart = useCallback(
-    (p: Product, qty = 1, extras: Partial<CartItem> = {}) => {
-      const found = cartState.find((i) => i.id === p.id);
-      if (found) {
-        cartState = cartState.map((i) => (i.id === p.id ? { ...i, qty: i.qty + qty } : i));
-      } else {
-        cartState = [...cartState, { ...p, ...extras, qty }];
-      }
-      emit();
-    },
-    [],
-  );
+  const addToCart = useCallback((p: Product, qty = 1, extras: Partial<CartItem> = {}) => {
+    const found = cartState.find((i) => i.id === p.id);
+    if (found) {
+      cartState = cartState.map((i) => (i.id === p.id ? { ...i, qty: i.qty + qty } : i));
+    } else {
+      cartState = [...cartState, { ...p, ...extras, qty }];
+    }
+    emit();
+  }, []);
 
   const changeQty = useCallback((id: string, delta: number) => {
     cartState = cartState.flatMap((i) =>
@@ -446,4 +624,3 @@ export function useFavourites() {
 
   return { favs, toggleFav, isFav, favCount: favs.length };
 }
-

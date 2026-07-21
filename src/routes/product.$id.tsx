@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, ShoppingBag, Star, Plus, Minus, Check, Truck, ShieldCheck, Leaf, Heart, MessageCircle } from "lucide-react";
 import { buildWhatsappProductOrder } from "@/lib/whatsapp";
 import { saveOrder } from "@/lib/orders";
-import { getProduct, getVariants, products, useCart, useFavourites, type Product } from "@/lib/shop";
+import { getProduct, getVariants, useProducts, useCart, useFavourites, type Product } from "@/lib/shop";
 import { CartDrawer } from "@/components/CartDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
 import { toast } from "sonner";
@@ -140,7 +140,8 @@ function ProductPage() {
       }
     : product;
 
-  const related = products.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4);
+  const { products: liveProducts } = useProducts();
+  const related = liveProducts.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4);
 
   const handleAdd = () => {
     if (!canAdd) {
