@@ -1923,7 +1923,7 @@ function ImageUploader({ value, onChange }: { value: string; onChange: (url: str
       return;
     }
     if (file.size > MAX_IMAGE_BYTES) {
-      toast.error("File too large", { description: `Max PKR {(MAX_IMAGE_BYTES / 1024 / 1024).toFixed(0)} MB. Yours is PKR {(file.size / 1024 / 1024).toFixed(2)} MB.` });
+      toast.error("File too large", { description: `Max ${(MAX_IMAGE_BYTES / 1024 / 1024).toFixed(0)} MB. Yours is ${(file.size / 1024 / 1024).toFixed(2)} MB.` });
       return;
     }
     setLoading(true);
