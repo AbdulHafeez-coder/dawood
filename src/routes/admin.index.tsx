@@ -143,6 +143,10 @@ function AdminDashboard() {
   const [pPage, setPPage] = useState(1);
   const [pPageSize, setPPageSize] = useState(10);
   const [pShowFilters, setPShowFilters] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkTag, setBulkTag] = useState("");
+  const [bulkCategory, setBulkCategory] = useState("");
+  const [confirmBulkDelete, setConfirmBulkDelete] = useState(false);
 
   const filteredProducts = useMemo(() => {
     const q = debouncedPQuery.trim().toLowerCase();
