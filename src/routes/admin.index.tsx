@@ -133,6 +133,8 @@ function AdminDashboard() {
 
   // Product filters + pagination
   const [pQuery, setPQuery] = useState("");
+  const debouncedPQuery = useDebouncedValue(pQuery, 250);
+
   const [pCategory, setPCategory] = useState<string>("all");
   const [pMinPrice, setPMinPrice] = useState<string>("");
   const [pMaxPrice, setPMaxPrice] = useState<string>("");
