@@ -42,7 +42,7 @@ const inter = { fontFamily: "'Inter', sans-serif" };
 
 const cards = [
   { Icon: Leaf, bg: "bg-emerald-800", text: "OEKO-TEX certified fabrics, kind to skin and planet" },
-  { Icon: Truck, bg: "bg-stone-800", text: "Free carbon-neutral delivery on orders over $50" },
+  { Icon: Truck, bg: "bg-stone-800", text: "Free carbon-neutral delivery on orders over PKR 50" },
   { Icon: ShieldCheck, bg: "bg-amber-800", text: "60-day home trial — return anything, no questions" },
   { Icon: Sparkles, bg: "bg-rose-800", text: "Small-batch made in family-run European mills" },
 ];
@@ -414,7 +414,7 @@ function Index() {
           </div>
 
           <div className="flex items-center gap-3 flex-1 min-w-0 md:min-w-[200px] md:max-w-xs">
-            <span className="text-sm text-black/60 whitespace-nowrap">Max ${maxPrice}</span>
+            <span className="text-sm text-black/60 whitespace-nowrap">Max PKR {maxPrice}</span>
             <input
               type="range"
               min={priceMin}
@@ -487,12 +487,12 @@ function Index() {
                         <Star size={12} className="fill-black text-black" /> {p.rating}
                       </div>
                     </div>
-                    <div className="text-black shrink-0" style={{ ...dmSans, fontWeight: 500, fontSize: 20 }}>${p.price}</div>
+                    <div className="text-black shrink-0" style={{ ...dmSans, fontWeight: 500, fontSize: 20 }}>PKR {p.price}</div>
                   </div>
                   <button
                     onClick={() => {
                       addToCart(p);
-                      toast.success(`${p.name} added to cart`, { description: `$${p.price.toFixed(2)} · ${p.category}` });
+                      toast.success(`${p.name} added to cart`, { description: `PKR PKR {p.price.toFixed(2)} · ${p.category}` });
                     }}
                     className="mt-auto inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-11 text-sm hover:bg-black/85"
                     style={{ fontWeight: 500 }}

@@ -11,7 +11,7 @@ function buildUrl(text: string) {
 }
 
 
-const money = (n: number) => `$${n.toFixed(2)}`;
+const money = (n: number) => `PKR ${n.toFixed(2)}`;
 const DIVIDER = "━━━━━━━━━━━━━━";
 
 export function buildWhatsappProductOrder(product: Product, qty: number = 1) {

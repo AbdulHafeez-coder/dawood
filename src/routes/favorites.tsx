@@ -32,7 +32,7 @@ function FavoritesPage() {
 
   const handleAdd = (p: Product) => {
     addToCart(p, 1);
-    toast.success(`${p.name} added to cart`, { description: `$${p.price.toFixed(2)} · ${p.category}` });
+    toast.success(`${p.name} added to cart`, { description: `PKR PKR {p.price.toFixed(2)} · ${p.category}` });
   };
 
   const handleRemove = (p: Product) => {
@@ -142,7 +142,7 @@ function FavoritesPage() {
                         <Star size={12} className="fill-black text-black" /> {p.rating}
                       </div>
                     </div>
-                    <div className="text-black shrink-0" style={{ ...dmSans, fontWeight: 500, fontSize: 20 }}>${p.price}</div>
+                    <div className="text-black shrink-0" style={{ ...dmSans, fontWeight: 500, fontSize: 20 }}>PKR {p.price}</div>
                   </div>
                   <button
                     onClick={() => handleAdd(p)}
