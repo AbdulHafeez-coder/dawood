@@ -144,7 +144,7 @@ function OrdersPage() {
                         ) : null}
                       </div>
                       <div className="text-sm text-black/60">
-                        {o.itemCount} item{o.itemCount === 1 ? "" : "s"} · <span className="text-black">${o.total.toFixed(2)}</span>
+                        {o.itemCount} item{o.itemCount === 1 ? "" : "s"} · <span className="text-black">PKR {o.total.toFixed(2)}</span>
                       </div>
                       <div className="mt-auto flex flex-wrap gap-2 pt-2">
                         <button

@@ -414,7 +414,7 @@ function Index() {
           </div>
 
           <div className="flex items-center gap-3 flex-1 min-w-0 md:min-w-[200px] md:max-w-xs">
-            <span className="text-sm text-black/60 whitespace-nowrap">Max ${maxPrice}</span>
+            <span className="text-sm text-black/60 whitespace-nowrap">Max PKR {maxPrice}</span>
             <input
               type="range"
               min={priceMin}
@@ -492,7 +492,7 @@ function Index() {
                   <button
                     onClick={() => {
                       addToCart(p);
-                      toast.success(`${p.name} added to cart`, { description: `PKR ${p.price.toFixed(2)} · ${p.category}` });
+                      toast.success(`${p.name} added to cart`, { description: `PKR PKR {p.price.toFixed(2)} · ${p.category}` });
                     }}
                     className="mt-auto inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-11 text-sm hover:bg-black/85"
                     style={{ fontWeight: 500 }}

@@ -160,7 +160,7 @@ function ProductPage() {
       variantColorSwatch: selectedColor!.swatch,
     });
     toast.success(`${variantProduct.name} added to cart`, {
-      description: `Qty ${qty} · PKR ${(product.price * qty).toFixed(2)}`,
+      description: `Qty ${qty} · PKR PKR {(product.price * qty).toFixed(2)}`,
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 1600);
@@ -326,7 +326,7 @@ function ProductPage() {
                 className="w-full inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-12 text-base hover:bg-black/85 transition-colors disabled:bg-black/25 disabled:cursor-not-allowed"
                 style={{ fontWeight: 500 }}
               >
-                {!canAdd ? "Select size & colour" : added ? (<><Check size={18} /> Added</>) : (<>Add to cart · ${(product.price * qty).toFixed(2)}</>)}
+                {!canAdd ? "Select size & colour" : added ? (<><Check size={18} /> Added</>) : (<>Add to cart · PKR {(product.price * qty).toFixed(2)}</>)}
               </button>
             </div>
             <button

@@ -500,7 +500,7 @@ function AdminDashboard() {
                 <KpiCard icon={<Package className="w-4 h-4" />} label="Products" value={products.length.toString()} hint={`${categories.length} categories`} />
                 <KpiCard icon={<Tag className="w-4 h-4" />} label="Categories" value={categories.length.toString()} hint="Active collections" accent="#FEF3C7" />
                 <KpiCard icon={<ScrollText className="w-4 h-4" />} label="Orders" value={orders.length.toString()} hint="WhatsApp drafts" accent="#ECEDEC" />
-                <KpiCard icon={<DollarSign className="w-4 h-4" />} label="Revenue" value={`PKR ${revenue.toFixed(2)}`} hint="From saved orders" accent="#EAEEE6" />
+                <KpiCard icon={<DollarSign className="w-4 h-4" />} label="Revenue" value={`PKR PKR {revenue.toFixed(2)}`} hint="From saved orders" accent="#EAEEE6" />
               </section>
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -554,7 +554,7 @@ function AdminDashboard() {
                               <span>{o.itemCount} item{o.itemCount === 1 ? "" : "s"}</span>
                             </div>
                           </div>
-                          <div className="text-sm tabular-nums shrink-0">${o.total.toFixed(2)}</div>
+                          <div className="text-sm tabular-nums shrink-0">PKR {o.total.toFixed(2)}</div>
                           <button
                             onClick={() => {
                               removeOrder(o.id);
@@ -806,7 +806,7 @@ function AdminDashboard() {
                                 <td className="py-3 pr-3 text-black/70">{p.category}</td>
                                 <td className="py-3 pr-3 text-black/70">{p.tag}</td>
                                 <td className="py-3 pr-3 text-black/70 tabular-nums">{p.rating.toFixed(1)}</td>
-                                <td className="py-3 pr-3 text-right tabular-nums">${p.price.toFixed(2)}</td>
+                                <td className="py-3 pr-3 text-right tabular-nums">PKR {p.price.toFixed(2)}</td>
                                 <td className="py-3 pl-3">
                                   <div className="flex items-center justify-end gap-1">
                                     <button
@@ -1037,7 +1037,7 @@ function AdminDashboard() {
               <div className="min-w-0 text-sm">
                 <div className="truncate font-medium">{confirmProduct.name}</div>
                 <div className="text-[11px] text-black/50 truncate">
-                  {confirmProduct.category} · ${confirmProduct.price.toFixed(2)}
+                  {confirmProduct.category} · PKR {confirmProduct.price.toFixed(2)}
                 </div>
               </div>
             </div>
@@ -1904,7 +1904,7 @@ function ImageUploader({ value, onChange }: { value: string; onChange: (url: str
       return;
     }
     if (file.size > MAX_IMAGE_BYTES) {
-      toast.error("File too large", { description: `Max ${(MAX_IMAGE_BYTES / 1024 / 1024).toFixed(0)} MB. Yours is ${(file.size / 1024 / 1024).toFixed(2)} MB.` });
+      toast.error("File too large", { description: `Max PKR {(MAX_IMAGE_BYTES / 1024 / 1024).toFixed(0)} MB. Yours is PKR {(file.size / 1024 / 1024).toFixed(2)} MB.` });
       return;
     }
     setLoading(true);
