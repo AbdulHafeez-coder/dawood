@@ -573,7 +573,7 @@ function AdminDashboard() {
                               <span>{o.itemCount} item{o.itemCount === 1 ? "" : "s"}</span>
                             </div>
                           </div>
-                          <div className="text-sm tabular-nums shrink-0">PKR {o.total.toFixed(2)}</div>
+                          <div className="text-sm tabular-nums shrink-0">{formatPKR(o.total)}</div>
                           <button
                             onClick={() => {
                               removeOrder(o.id);
