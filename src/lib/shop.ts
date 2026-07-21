@@ -26,6 +26,68 @@ export type Product = {
 
 export type CartItem = Product & { qty: number };
 
+export type VariantOptions = {
+  sizes: { id: string; label: string; note?: string }[];
+  colors: { id: string; label: string; swatch: string }[];
+};
+
+const VARIANTS_BY_CATEGORY: Record<Category, VariantOptions> = {
+  Towels: {
+    sizes: [
+      { id: "hand", label: "Hand", note: "50 × 90 cm" },
+      { id: "bath", label: "Bath", note: "70 × 140 cm" },
+      { id: "sheet", label: "Bath Sheet", note: "90 × 170 cm" },
+    ],
+    colors: [
+      { id: "sand", label: "Sand", swatch: "#D9C6AA" },
+      { id: "clay", label: "Clay", swatch: "#B57B5A" },
+      { id: "sage", label: "Sage", swatch: "#A9B79A" },
+      { id: "ivory", label: "Ivory", swatch: "#F2ECDE" },
+    ],
+  },
+  Wallpaper: {
+    sizes: [
+      { id: "single", label: "Single Roll", note: "0.9 × 2.4 m" },
+      { id: "double", label: "Double Roll", note: "1.8 × 2.4 m" },
+      { id: "wall", label: "Wall Pack", note: "3 rolls" },
+    ],
+    colors: [
+      { id: "oat", label: "Oat", swatch: "#E8DBC2" },
+      { id: "moss", label: "Moss", swatch: "#7A8567" },
+      { id: "ink", label: "Ink", swatch: "#2A2E33" },
+    ],
+  },
+  Cloths: {
+    sizes: [
+      { id: "pack3", label: "Pack of 3" },
+      { id: "pack5", label: "Pack of 5" },
+      { id: "pack10", label: "Pack of 10" },
+    ],
+    colors: [
+      { id: "mixed", label: "Mixed", swatch: "linear-gradient(135deg,#D9C6AA,#A9B79A,#B57B5A)" },
+      { id: "neutral", label: "Neutral", swatch: "#E8DBC2" },
+      { id: "grey", label: "Slate", swatch: "#8A8F94" },
+    ],
+  },
+  Sponges: {
+    sizes: [
+      { id: "pack2", label: "Pack of 2" },
+      { id: "pack4", label: "Pack of 4" },
+      { id: "pack8", label: "Pack of 8" },
+    ],
+    colors: [
+      { id: "natural", label: "Natural", swatch: "#D9C6AA" },
+      { id: "kitchen", label: "Kitchen", swatch: "#A9B79A" },
+      { id: "bath", label: "Bath", swatch: "#B7C7D6" },
+    ],
+  },
+};
+
+export function getVariants(category: Category): VariantOptions {
+  return VARIANTS_BY_CATEGORY[category];
+}
+
+
 export const products: Product[] = [
   {
     id: "p1",
