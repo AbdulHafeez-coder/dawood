@@ -383,11 +383,20 @@ export function useCart() {
     emit();
   }, []);
 
+  const restoreItem = useCallback((item: CartItem) => {
+    const exists = cartState.find((i) => i.id === item.id);
+    if (exists) {
+      cartState = cartState.map((i) => (i.id === item.id ? { ...i, qty: i.qty + item.qty } : i));
+    } else {
+      cartState = [...cartState, item];
+    }
+    emit();
+  }, []);
 
   const cartCount = cart.reduce((s, i) => s + i.qty, 0);
   const subtotal = cart.reduce((s, i) => s + i.qty * i.price, 0);
 
-  return { cart, addToCart, changeQty, removeItem, cartCount, subtotal };
+  return { cart, addToCart, changeQty, removeItem, restoreItem, cartCount, subtotal };
 }
 
 // ---------- FAVOURITES ----------

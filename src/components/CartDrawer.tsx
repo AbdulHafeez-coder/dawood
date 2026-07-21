@@ -7,12 +7,12 @@ import { saveOrder } from "@/lib/orders";
 const dmSans = { fontFamily: "'DM Sans', sans-serif" };
 
 export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { cart, changeQty, removeItem, cartCount, subtotal } = useCart();
+  const { cart, changeQty, removeItem, restoreItem, cartCount, subtotal } = useCart();
 
   const handleQty = (item: (typeof cart)[number], delta: number) => {
     const nextQty = item.qty + delta;
+    const prevSnapshot = { ...item };
     changeQty(item.id, delta);
-    // Compute new cart total from current cart state
     const newSubtotal = cart.reduce(
       (s, i) => s + (i.id === item.id ? Math.max(0, nextQty) * i.price : i.qty * i.price),
       0,
@@ -24,20 +24,33 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
     if (nextQty <= 0) {
       toast.success(`Removed ${item.name} from cart`, {
         description: `Cart total: $${newSubtotal.toFixed(2)} · ${newCount} item${newCount === 1 ? "" : "s"}`,
+        action: {
+          label: "Undo",
+          onClick: () => restoreItem(prevSnapshot),
+        },
       });
     } else {
       toast.success(`${item.name} — qty ${nextQty}`, {
         description: `Line $${(item.price * nextQty).toFixed(2)} · Cart total $${newSubtotal.toFixed(2)}`,
+        action: {
+          label: "Undo",
+          onClick: () => changeQty(item.id, -delta),
+        },
       });
     }
   };
 
   const handleRemove = (item: (typeof cart)[number]) => {
+    const snapshot = { ...item };
     const newSubtotal = cart.reduce((s, i) => s + (i.id === item.id ? 0 : i.qty * i.price), 0);
     const newCount = cart.reduce((n, i) => n + (i.id === item.id ? 0 : i.qty), 0);
     removeItem(item.id);
     toast.success(`Removed ${item.name} from cart`, {
       description: `Cart total: $${newSubtotal.toFixed(2)} · ${newCount} item${newCount === 1 ? "" : "s"}`,
+      action: {
+        label: "Undo",
+        onClick: () => restoreItem(snapshot),
+      },
     });
   };
 
