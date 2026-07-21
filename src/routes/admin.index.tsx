@@ -443,8 +443,19 @@ function AdminDashboard() {
 
   function handleLogout() {
     const here = typeof window !== "undefined" ? window.location.pathname : "/admin";
+    // Reset in-memory admin UI state before signing out
+    setSelectedIds(new Set());
+    setSearch("");
+    setPage(1);
+    setPriceMin("");
+    setPriceMax("");
+    setRatingMin("");
+    setRatingMax("");
+    setFilterCategory("all");
     logout();
-    toast.success("Signed out");
+    toast.success("Signed out successfully", {
+      description: "Your admin session and cached dashboard state have been cleared.",
+    });
     navigate({ to: "/admin/login", search: { redirect: here } });
   }
 
