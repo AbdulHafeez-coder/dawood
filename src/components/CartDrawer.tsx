@@ -161,15 +161,15 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
           <div className="border-t border-black/10 px-5 py-4 flex flex-col gap-3">
             <div className="flex justify-between text-sm text-black/60">
               <span>Subtotal</span>
-              <span>PKR {subtotal.toFixed(2)}</span>
+              <span>{formatPKR(subtotal)}</span>
             </div>
             <div className="flex justify-between text-sm text-black/60">
               <span>Shipping</span>
-              <span>{subtotal >= 50 ? "Free" : "PKR 5.00"}</span>
+              <span>{subtotal >= 50 ? "Free" : formatPKR(5)}</span>
             </div>
             <div className="flex justify-between text-black pt-2 border-t border-black/10" style={{ ...dmSans, fontWeight: 500, fontSize: 18 }}>
               <span>Total</span>
-              <span>PKR {(subtotal + (subtotal >= 50 || subtotal === 0 ? 0 : 5)).toFixed(2)}</span>
+              <span>{formatPKR(subtotal + (subtotal >= 50 || subtotal === 0 ? 0 : 5))}</span>
             </div>
             <button
               type="button"
