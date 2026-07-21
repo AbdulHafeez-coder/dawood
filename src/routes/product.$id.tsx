@@ -240,7 +240,7 @@ function ProductPage() {
           <p className="mt-3 text-black/70 max-w-md">{product.tagline}</p>
 
           <div className="mt-6 flex items-center gap-4">
-            <div className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 32 }}>PKR {product.price}</div>
+            <div className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 32 }}>{formatPKR(product.price)}</div>
             <div className="flex items-center gap-1 text-black/60 text-sm">
               <Star size={14} className="fill-black text-black" /> {product.rating} · 240 reviews
             </div>
