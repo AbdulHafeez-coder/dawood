@@ -61,7 +61,7 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
     const newCount = cart.reduce((n, i) => n + (i.id === item.id ? 0 : i.qty), 0);
     removeItem(item.id);
     toast.success(`Removed ${item.name} from cart`, {
-      description: `Cart total: PKR PKR {newSubtotal.toFixed(2)} · ${newCount} item${newCount === 1 ? "" : "s"}`,
+      description: `Cart total: ${formatPKR(newSubtotal)} · ${newCount} item${newCount === 1 ? "" : "s"}`,
       action: {
         label: "Undo",
         onClick: () => restoreItem(snapshot),
