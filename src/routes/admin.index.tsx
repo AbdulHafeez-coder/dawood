@@ -291,10 +291,11 @@ function AdminDashboard() {
           </div>
           <button
             onClick={handleLogout}
-            className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full border border-black/15 hover:border-black hover:bg-black hover:text-white transition text-[10px] uppercase tracking-[0.18em]"
+            className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full bg-black text-white hover:bg-red-600 focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 focus-visible:outline-none transition text-[10px] uppercase tracking-[0.18em] font-medium active:scale-[0.98] shadow-sm"
+            aria-label="Logout of admin dashboard"
           >
             <LogOut className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Sign out</span>
+            <span>Logout</span>
           </button>
         </div>
 
