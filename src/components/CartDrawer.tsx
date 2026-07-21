@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { useCart } from "@/lib/shop";
 import { buildWhatsappCartOrder } from "@/lib/whatsapp";
 import { saveOrder } from "@/lib/orders";
+import { formatPKR } from "@/lib/format";
 
 const dmSans = { fontFamily: "'DM Sans', sans-serif" };
 
