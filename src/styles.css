@@ -261,7 +261,27 @@ select.mt-select:active {
   background-color: color-mix(in oklab, #000 14%, transparent);
 }
 
-/* Chip / pill polish helper */
+/* Text/number/textarea input for admin forms */
+.mt-input {
+  width: 100%;
+  background: #fff;
+  border: 1px solid color-mix(in oklab, #000 12%, transparent);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #111;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+  outline: none;
+}
+.mt-input::placeholder { color: color-mix(in oklab, #000 35%, transparent); }
+.mt-input:hover { border-color: color-mix(in oklab, #000 22%, transparent); }
+.mt-input:focus-visible {
+  border-color: #111;
+  box-shadow: 0 0 0 3px color-mix(in oklab, #000 10%, transparent);
+}
+.mt-input:disabled { opacity: 0.55; cursor: not-allowed; }
+
+
 .mt-chip {
   position: relative;
   isolation: isolate;

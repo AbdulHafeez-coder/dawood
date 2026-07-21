@@ -25,7 +25,7 @@ import productTowel from "@/assets/product-towel.jpg";
 import productWallpaper from "@/assets/product-wallpaper.jpg";
 import productCloth from "@/assets/product-cloth.jpg";
 import productSponge from "@/assets/product-sponge.jpg";
-import { products, CATEGORY_LIST, useCart, useFavourites, type Category, type Product } from "@/lib/shop";
+import { useProducts, useCategories, useCart, useFavourites, type Category, type Product } from "@/lib/shop";
 import { CartDrawer } from "@/components/CartDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
 import { toast } from "sonner";
@@ -73,6 +73,8 @@ function Index() {
   const { addToCart: addToCartShared, cartCount } = useCart();
   const { toggleFav, isFav, favCount } = useFavourites();
   const { orderCount } = useOrders();
+  const { products } = useProducts();
+  const { categories: liveCategories } = useCategories();
 
   const handleFav = (p: Product) => {
     const wasFav = isFav(p.id);
@@ -85,9 +87,10 @@ function Index() {
   };
 
   const [activeCat, setActiveCat] = useState<Category | "All">("All");
-  const priceMax = Math.max(...products.map((p) => p.price));
-  const priceMin = Math.min(...products.map((p) => p.price));
+  const priceMax = products.length ? Math.max(...products.map((p) => p.price)) : 100;
+  const priceMin = products.length ? Math.min(...products.map((p) => p.price)) : 0;
   const [maxPrice, setMaxPrice] = useState(priceMax);
+  useEffect(() => { setMaxPrice(priceMax); }, [priceMax]);
   const [sort, setSort] = useState<SortKey>("featured");
   const [query, setQuery] = useState("");
 
@@ -380,7 +383,7 @@ function Index() {
 
         <div className="bg-white rounded-2xl p-4 lg:p-5 mb-8 lg:mb-10 flex flex-col md:flex-row md:items-center md:flex-wrap gap-4 md:gap-5 lg:gap-8">
           <div className="flex flex-wrap items-center gap-2">
-            {(["All", ...CATEGORY_LIST] as const).map((c) => {
+            {(["All", ...liveCategories] as const).map((c) => {
               const active = activeCat === c;
               return (
                 <button
