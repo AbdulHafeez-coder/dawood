@@ -147,6 +147,14 @@ function Index() {
           </div>
           <div className="flex items-center gap-3 sm:gap-4 animate-slide-right delay-300">
             <button aria-label="Search" onClick={focusSearch} className="text-white/90 hover:text-white"><Search size={20} strokeWidth={1.5} /></button>
+            <Link to="/favorites" aria-label="Favourites" className="relative text-white/90 hover:text-white">
+              <Heart size={20} strokeWidth={1.5} />
+              {favCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 bg-white text-black text-[10px] font-medium min-w-4 h-4 px-1 rounded-full flex items-center justify-center">
+                  {favCount}
+                </span>
+              )}
+            </Link>
             <button aria-label="Cart" onClick={() => setCartOpen(true)} className="relative text-white/90 hover:text-white">
               <ShoppingBag size={20} strokeWidth={1.5} />
               {cartCount > 0 && (
