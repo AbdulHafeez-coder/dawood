@@ -46,16 +46,24 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
 
+  const isChunkError = /chunk|Loading chunk|dynamically imported module/i.test(error?.message ?? "");
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <div className="flex flex-1 items-center justify-center px-4 py-20">
-        <div className="max-w-md text-center">
-          <h1 className="text-xl font-semibold tracking-tight text-foreground">
-            This page didn't load
+        <div className="w-full max-w-lg text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-black/10 bg-white text-2xl">
+            ⚠️
+          </div>
+          <h1 className="mt-6 text-2xl font-semibold tracking-tight text-foreground">
+            Something interrupted your shop
           </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Something went wrong on our end. You can try refreshing or head back home.
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+            {isChunkError
+              ? "A newer version of Maison Terra is available. A quick refresh will load the latest files."
+              : "We hit an unexpected snag while loading this page. Your cart and favourites are safely saved — nothing was lost."}
           </p>
+
           <div className="mt-6 flex flex-wrap justify-center gap-2">
             <button
               onClick={() => {
@@ -66,13 +74,36 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
             >
               Try again
             </button>
+            <button
+              onClick={() => {
+                if (typeof window !== "undefined") window.location.reload();
+              }}
+              className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+            >
+              Refresh page
+            </button>
             <a
               href="/"
               className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
             >
-              Go home
+              Back to shop
             </a>
           </div>
+
+          {error?.message ? (
+            <details className="mx-auto mt-8 max-w-md text-left">
+              <summary className="cursor-pointer text-xs text-muted-foreground hover:text-foreground">
+                Technical details
+              </summary>
+              <pre className="mt-2 max-h-40 overflow-auto rounded-md border border-black/10 bg-black/5 p-3 text-[11px] leading-relaxed text-foreground/80">
+                {error.message}
+              </pre>
+            </details>
+          ) : null}
+
+          <p className="mt-6 text-xs text-muted-foreground">
+            Still stuck? Message us on WhatsApp and we'll help you place your order.
+          </p>
         </div>
       </div>
       <SiteFooter />
