@@ -32,6 +32,13 @@ import {
 } from "@/lib/shop";
 import { useOrders, removeOrder } from "@/lib/orders";
 import { useSettings, updateSettings, resetSettings, type SocialKey } from "@/lib/settings";
+import {
+  productsToCsv,
+  parseProductsCsv,
+  categoriesToCsv,
+  parseCategoriesCsv,
+  downloadCsv,
+} from "@/lib/csv";
 
 
 import {
