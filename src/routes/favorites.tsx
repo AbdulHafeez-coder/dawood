@@ -143,7 +143,7 @@ function FavoritesPage() {
                         <Star size={12} className="fill-black text-black" /> {p.rating}
                       </div>
                     </div>
-                    <div className="text-black shrink-0" style={{ ...dmSans, fontWeight: 500, fontSize: 20 }}>PKR {p.price}</div>
+                    <div className="text-black shrink-0" style={{ ...dmSans, fontWeight: 500, fontSize: 20 }}>{formatPKR(p.price)}</div>
                   </div>
                   <button
                     onClick={() => handleAdd(p)}
