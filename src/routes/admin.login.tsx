@@ -9,6 +9,9 @@ const dmSans = { fontFamily: "'DM Sans', sans-serif" };
 const inter = { fontFamily: "'Inter', sans-serif" };
 
 export const Route = createFileRoute("/admin/login")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    redirect: typeof search.redirect === "string" ? search.redirect : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Admin Login — Maison Terra" },
@@ -21,23 +24,29 @@ export const Route = createFileRoute("/admin/login")({
 
 function AdminLogin() {
   const navigate = useNavigate();
+  const { redirect } = Route.useSearch();
   const { isAuthed, ready, login } = useAdminAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [copied, setCopied] = useState<"email" | "password" | null>(null);
 
+  const safeRedirect =
+    redirect && redirect.startsWith("/admin") && redirect !== "/admin/login"
+      ? redirect
+      : "/admin";
+
   useEffect(() => {
     if (ready && isAuthed) {
-      navigate({ to: "/admin" });
+      navigate({ to: safeRedirect });
     }
-  }, [ready, isAuthed, navigate]);
+  }, [ready, isAuthed, navigate, safeRedirect]);
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     const ok = login(email, password);
     if (ok) {
       toast.success("Welcome back, admin", { description: "Redirecting to dashboard…" });
-      navigate({ to: "/admin" });
+      navigate({ to: safeRedirect });
     } else {
       toast.error("Invalid credentials", {
         description: "Use the demo account shown below.",

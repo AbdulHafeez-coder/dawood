@@ -417,7 +417,10 @@ function AdminDashboard() {
   }
 
   useEffect(() => {
-    if (ready && !isAuthed) navigate({ to: "/admin/login" });
+    if (ready && !isAuthed) {
+      const here = typeof window !== "undefined" ? window.location.pathname : "/admin";
+      navigate({ to: "/admin/login", search: { redirect: here } });
+    }
   }, [ready, isAuthed, navigate]);
 
   const revenue = useMemo(() => orders.reduce((s, o) => s + (o.total || 0), 0), [orders]);
@@ -439,9 +442,10 @@ function AdminDashboard() {
   }
 
   function handleLogout() {
+    const here = typeof window !== "undefined" ? window.location.pathname : "/admin";
     logout();
     toast.success("Signed out");
-    navigate({ to: "/admin/login" });
+    navigate({ to: "/admin/login", search: { redirect: here } });
   }
 
   return (
