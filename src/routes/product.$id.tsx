@@ -79,6 +79,9 @@ function ProductPage() {
   const handleAdd = () => {
     if (!canAdd) return;
     addToCart(variantProduct, qty);
+    toast.success(`${variantProduct.name} added to cart`, {
+      description: `Qty ${qty} · $${(product.price * qty).toFixed(2)}`,
+    });
     setAdded(true);
     setTimeout(() => setAdded(false), 1600);
   };
