@@ -768,14 +768,28 @@ function AdminDashboard() {
       <AlertDialog open={!!confirmProduct} onOpenChange={(o) => !o && setConfirmProduct(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete this product?</AlertDialogTitle>
+            <AlertDialogTitle>Delete “{confirmProduct?.name}”?</AlertDialogTitle>
             <AlertDialogDescription>
-              “{confirmProduct?.name}” will be removed from the shop. This cannot be undone.
+              This product will be permanently removed from the shop. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
+          {confirmProduct && (
+            <div className="flex items-center gap-3 p-3 rounded-lg border border-black/10 bg-black/[0.02]">
+              <div className={`w-10 h-10 rounded-lg ${confirmProduct.bg} grid place-items-center overflow-hidden shrink-0`}>
+                <img src={confirmProduct.img} alt="" className="w-full h-full object-cover" />
+              </div>
+              <div className="min-w-0 text-sm">
+                <div className="truncate font-medium">{confirmProduct.name}</div>
+                <div className="text-[11px] text-black/50 truncate">
+                  {confirmProduct.category} · ${confirmProduct.price.toFixed(2)}
+                </div>
+              </div>
+            </div>
+          )}
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
+              className="bg-red-600 hover:bg-red-700 text-white focus-visible:ring-red-600"
               onClick={() => {
                 if (confirmProduct) {
                   deleteProduct(confirmProduct.id);
@@ -784,7 +798,7 @@ function AdminDashboard() {
                 setConfirmProduct(null);
               }}
             >
-              Delete
+              Delete product
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -794,17 +808,52 @@ function AdminDashboard() {
       <AlertDialog open={!!confirmCategory} onOpenChange={(o) => !o && setConfirmCategory(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete this category?</AlertDialogTitle>
+            <AlertDialogTitle>Delete “{confirmCategory}” category?</AlertDialogTitle>
             <AlertDialogDescription>
-              Products in “{confirmCategory}” will also be removed
-              {confirmCategory
-                ? ` (${products.filter((p) => p.category === confirmCategory).length} affected).`
-                : "."}
+              This category will be permanently removed. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
+          {confirmCategory && (() => {
+            const affected = products.filter((p) => p.category === confirmCategory);
+            if (affected.length === 0) {
+              return (
+                <div className="p-3 rounded-lg border border-black/10 bg-black/[0.02] text-[12px] text-black/60">
+                  No products are assigned to this category.
+                </div>
+              );
+            }
+            return (
+              <div className="p-3 rounded-lg border border-red-200 bg-red-50 space-y-2">
+                <div className="flex items-start gap-2 text-[12px] text-red-800">
+                  <Trash2 className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                  <div>
+                    <div className="font-medium uppercase tracking-[0.12em] text-[10px] mb-1">
+                      Cascade warning
+                    </div>
+                    <div>
+                      Deleting this category will also permanently remove{" "}
+                      <span className="font-semibold">
+                        {affected.length} product{affected.length === 1 ? "" : "s"}
+                      </span>{" "}
+                      assigned to it.
+                    </div>
+                  </div>
+                </div>
+                <ul className="max-h-32 overflow-y-auto text-[12px] text-red-900/80 space-y-0.5 pl-5 list-disc">
+                  {affected.slice(0, 6).map((p) => (
+                    <li key={p.id} className="truncate">{p.name}</li>
+                  ))}
+                  {affected.length > 6 && (
+                    <li className="list-none text-red-800/70">+{affected.length - 6} more…</li>
+                  )}
+                </ul>
+              </div>
+            );
+          })()}
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
+              className="bg-red-600 hover:bg-red-700 text-white focus-visible:ring-red-600"
               onClick={() => {
                 if (confirmCategory) {
                   const res = deleteCategory(confirmCategory);
@@ -819,7 +868,9 @@ function AdminDashboard() {
                 setConfirmCategory(null);
               }}
             >
-              Delete
+              {confirmCategory && products.some((p) => p.category === confirmCategory)
+                ? "Delete category & products"
+                : "Delete category"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
