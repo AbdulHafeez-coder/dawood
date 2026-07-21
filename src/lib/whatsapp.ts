@@ -11,7 +11,8 @@ function buildUrl(text: string) {
 }
 
 
-const money = (n: number) => `PKR ${n.toFixed(2)}`;
+import { formatPKR } from "@/lib/format";
+const money = (n: number) => formatPKR(n);
 const DIVIDER = "━━━━━━━━━━━━━━";
 
 export function buildWhatsappProductOrder(product: Product, qty: number = 1) {
