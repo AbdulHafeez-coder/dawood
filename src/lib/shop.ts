@@ -383,17 +383,6 @@ export function useCart() {
     emit();
   }, []);
 
-  const changeQty = useCallback((id: string, delta: number) => {
-    cartState = cartState.flatMap((i) =>
-      i.id === id ? (i.qty + delta <= 0 ? [] : [{ ...i, qty: i.qty + delta }]) : [i],
-    );
-    emit();
-  }, []);
-
-  const removeItem = useCallback((id: string) => {
-    cartState = cartState.filter((i) => i.id !== id);
-    emit();
-  }, []);
 
   const cartCount = cart.reduce((s, i) => s + i.qty, 0);
   const subtotal = cart.reduce((s, i) => s + i.qty * i.price, 0);
