@@ -335,7 +335,7 @@ function Index() {
             ))}
           </div>
 
-          <div className="flex items-center gap-3 flex-1 min-w-0 lg:max-w-xs">
+          <div className="flex items-center gap-3 flex-1 min-w-0 md:min-w-[200px] md:max-w-xs">
             <span className="text-sm text-black/60 whitespace-nowrap">Max ${maxPrice}</span>
             <input
               type="range"
