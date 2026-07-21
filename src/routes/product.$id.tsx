@@ -4,6 +4,7 @@ import { ArrowLeft, ShoppingBag, Star, Plus, Minus, Check, Truck, ShieldCheck, L
 import { whatsappProductUrl } from "@/lib/whatsapp";
 import { getProduct, getVariants, products, useCart, useFavourites, type Product } from "@/lib/shop";
 import { CartDrawer } from "@/components/CartDrawer";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/product/$id")({
   loader: ({ params }) => {
@@ -78,6 +79,9 @@ function ProductPage() {
   const handleAdd = () => {
     if (!canAdd) return;
     addToCart(variantProduct, qty);
+    toast.success(`${variantProduct.name} added to cart`, {
+      description: `Qty ${qty} · $${(product.price * qty).toFixed(2)}`,
+    });
     setAdded(true);
     setTimeout(() => setAdded(false), 1600);
   };
