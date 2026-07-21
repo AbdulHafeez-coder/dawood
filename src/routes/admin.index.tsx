@@ -70,6 +70,25 @@ const inter = { fontFamily: "'Inter', sans-serif" };
 
 type TabId = "overview" | "products" | "categories" | "settings";
 
+type ProductImportItem = {
+  id?: string;
+  name: string;
+  category: string;
+  payload: Omit<Product, "id">;
+};
+type ProductImportPlan = {
+  fileName: string;
+  create: ProductImportItem[];
+  update: ProductImportItem[];
+  skip: { row: number; error: string }[];
+  newCategories: string[];
+};
+type CategoryImportPlan = {
+  fileName: string;
+  create: string[];
+  skip: string[];
+};
+
 export const Route = createFileRoute("/admin/")({
   head: () => ({
     meta: [
