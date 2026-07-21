@@ -87,7 +87,18 @@ function AdminDashboard() {
   const { products, addProduct, updateProduct, deleteProduct, resetProducts } = useProducts();
   const { categories, addCategory, renameCategory, deleteCategory, resetCategories } = useCategories();
 
-  const [tab, setTab] = useState<TabId>("overview");
+  const [tab, setTab] = useState<TabId>(() => {
+    if (typeof window === "undefined") return "overview";
+    const saved = window.localStorage.getItem("mt_admin_tab") as TabId | null;
+    return saved && ["overview", "products", "categories", "settings"].includes(saved)
+      ? saved
+      : "overview";
+  });
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("mt_admin_tab", tab);
+    }
+  }, [tab]);
   const [productDialog, setProductDialog] = useState<{ mode: "create" | "edit"; product?: Product } | null>(null);
   const [categoryDialog, setCategoryDialog] = useState<{ mode: "create" | "edit"; name?: string } | null>(null);
   const [confirmProduct, setConfirmProduct] = useState<Product | null>(null);
