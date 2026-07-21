@@ -19,6 +19,9 @@ import {
 } from "lucide-react";
 import heroBg from "@/assets/hero-home.jpg";
 import productTowel from "@/assets/product-towel.jpg";
+import productWallpaper from "@/assets/product-wallpaper.jpg";
+import productCloth from "@/assets/product-cloth.jpg";
+import productSponge from "@/assets/product-sponge.jpg";
 import { products, CATEGORY_LIST, useCart, type Category, type Product } from "@/lib/shop";
 import { CartDrawer } from "@/components/CartDrawer";
 
