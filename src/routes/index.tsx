@@ -98,10 +98,6 @@ function Index() {
   };
 
   const [activeCat, setActiveCat] = useState<Category | "All">("All");
-  const priceMax = products.length ? Math.max(...products.map((p) => p.price)) : 100;
-  const priceMin = products.length ? Math.min(...products.map((p) => p.price)) : 0;
-  const [maxPrice, setMaxPrice] = useState(priceMax);
-  useEffect(() => { setMaxPrice(priceMax); }, [priceMax]);
   const { priceMin, priceMax } = useMemo(() => {
     if (!products.length) return { priceMin: 0, priceMax: 100 };
     let lo = products[0].price;
