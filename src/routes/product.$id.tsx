@@ -94,7 +94,7 @@ function ProductPage() {
       </div>
 
       {/* MAIN */}
-      <section className="px-5 sm:px-8 lg:px-10 py-8 lg:py-12 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-14">
+      <section className="px-5 sm:px-8 lg:px-10 py-8 lg:py-12 grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-14">
         {/* GALLERY */}
         <div className="flex flex-col-reverse lg:flex-row gap-4">
           <div className="flex lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto lg:max-h-[560px] pb-1 lg:pb-0">
