@@ -1,4 +1,5 @@
 import { ShoppingBag, X, Plus, Minus, Trash2, MessageCircle } from "lucide-react";
+import { toast } from "sonner";
 import { useCart } from "@/lib/shop";
 import { whatsappCartUrl } from "@/lib/whatsapp";
 
