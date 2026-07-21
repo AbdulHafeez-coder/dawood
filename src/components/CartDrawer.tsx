@@ -97,7 +97,7 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                           <Plus size={14} />
                         </button>
                       </div>
-                      <button onClick={() => removeItem(i.id)} className="text-black/50 hover:text-black inline-flex items-center gap-1 text-xs" aria-label={`Remove ${i.name}`}>
+                      <button onClick={() => { removeItem(i.id); toast.success(`Removed ${i.name} from cart`); }} className="text-black/50 hover:text-black inline-flex items-center gap-1 text-xs" aria-label={`Remove ${i.name}`}>
                         <Trash2 size={14} /> Remove
                       </button>
                     </div>
