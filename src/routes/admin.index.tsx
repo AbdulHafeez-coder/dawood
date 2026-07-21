@@ -733,6 +733,12 @@ function AdminDashboard() {
                               Apply
                             </button>
                             <button
+                              onClick={applyBulkExport}
+                              className="px-3 py-1.5 rounded-full bg-white text-black text-[10px] uppercase tracking-[0.18em] hover:bg-white/90 transition inline-flex items-center gap-1.5"
+                            >
+                              <Download className="w-3 h-3" /> Export CSV
+                            </button>
+                            <button
                               onClick={() => setConfirmBulkDelete(true)}
                               className="px-3 py-1.5 rounded-full bg-red-600 text-white text-[10px] uppercase tracking-[0.18em] hover:bg-red-700 transition inline-flex items-center gap-1.5"
                             >
