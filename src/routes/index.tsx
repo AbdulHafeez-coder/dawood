@@ -293,6 +293,28 @@ function Index() {
           </div>
         </div>
 
+        <div className="bg-white rounded-2xl p-4 lg:p-5 mb-4 flex items-center gap-3">
+          <Search size={18} strokeWidth={1.75} className="text-black/50 shrink-0" />
+          <input
+            id="product-search"
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search towels, wallpaper, cloths, sponges…"
+            className="flex-1 bg-transparent outline-none text-black placeholder:text-black/40 text-sm sm:text-base"
+            style={{ fontWeight: 400 }}
+          />
+          {query && (
+            <button
+              onClick={() => setQuery("")}
+              className="text-black/50 hover:text-black shrink-0"
+              aria-label="Clear search"
+            >
+              <X size={16} />
+            </button>
+          )}
+        </div>
+
         <div className="bg-white rounded-2xl p-4 lg:p-5 mb-8 lg:mb-10 flex flex-col lg:flex-row lg:items-center gap-5 lg:gap-8">
           <div className="flex flex-wrap items-center gap-2">
             {(["All", ...CATEGORY_LIST] as const).map((c) => (
