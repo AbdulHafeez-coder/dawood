@@ -235,8 +235,24 @@ function AdminDashboard() {
 
   function applyBulkDelete() {
     const ids = Array.from(selectedIds);
+    const snapshot = ids
+      .map((id) => products.find((p) => p.id === id))
+      .filter((p): p is Product => Boolean(p));
     ids.forEach((id) => deleteProduct(id));
-    toast.success(`${ids.length} product${ids.length === 1 ? "" : "s"} deleted`);
+    const names = snapshot.map((p) => p.name);
+    const preview =
+      names.slice(0, 3).join(", ") + (names.length > 3 ? ` +${names.length - 3} more` : "");
+    toast.success(`${ids.length} product${ids.length === 1 ? "" : "s"} deleted`, {
+      description: `Undo within 6s to restore: ${preview}`,
+      duration: 6000,
+      action: {
+        label: "Undo",
+        onClick: () => {
+          snapshot.forEach((p) => addProduct(p));
+          toast.success(`Restored ${snapshot.length} product${snapshot.length === 1 ? "" : "s"}`);
+        },
+      },
+    });
     clearSelection();
     setConfirmBulkDelete(false);
   }
