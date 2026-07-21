@@ -3,38 +3,38 @@ const inter = { fontFamily: "'Inter', sans-serif" };
 
 export function SiteFooter() {
   return (
-    <footer className="bg-[#FEFDF9] px-4 sm:px-6 md:px-8 lg:px-12 py-6 lg:py-8" style={inter}>
-      <div className="mx-auto max-w-7xl bg-[#ECEDEC] rounded-[1.5rem] lg:rounded-[2rem] overflow-hidden text-black shadow-sm">
+    <footer className="bg-[#FEFDF9] px-3 sm:px-6 md:px-8 lg:px-12 py-4 sm:py-6 lg:py-8" style={inter}>
+      <div className="mx-auto max-w-7xl bg-[#ECEDEC] rounded-2xl lg:rounded-[2rem] overflow-hidden text-black shadow-sm">
         {/* Newsletter row */}
         <div className="grid grid-cols-1 md:grid-cols-2 border-b border-black/10">
-          <div className="p-6 sm:p-8 md:p-10 border-b md:border-b-0 md:border-r border-black/10">
+          <div className="p-4 sm:p-8 md:p-10 border-b md:border-b-0 md:border-r border-black/10">
             <h2
               className="text-black"
               style={{
                 ...dmSans,
                 fontWeight: 300,
                 letterSpacing: "-0.03em",
-                fontSize: "clamp(22px, 2.4vw, 32px)",
-                lineHeight: 1.1,
+                fontSize: "clamp(18px, 2.4vw, 32px)",
+                lineHeight: 1.15,
               }}
             >
               Invite nature into your inbox.
             </h2>
-            <p className="mt-3 text-black/55 max-w-sm text-sm leading-relaxed">
+            <p className="mt-2 sm:mt-3 text-black/55 max-w-sm text-xs sm:text-sm leading-relaxed">
               Seasonal rituals and early access to limited runs.
             </p>
           </div>
-          <div className="p-6 sm:p-8 md:p-10 flex flex-col justify-center bg-[#FEF3C7]">
-            <form onSubmit={(e) => e.preventDefault()} className="flex flex-col sm:flex-row gap-3">
+          <div className="p-4 sm:p-8 md:p-10 flex flex-col justify-center bg-[#FEF3C7]">
+            <form onSubmit={(e) => e.preventDefault()} className="flex flex-col sm:flex-row gap-2 sm:gap-3">
               <input
                 type="email"
                 placeholder="Email address"
                 aria-label="Email address"
-                className="flex-1 bg-transparent border-b border-black/20 pb-2 focus:outline-none focus:border-black placeholder:text-black/40 text-sm sm:text-base transition-colors"
+                className="flex-1 min-w-0 bg-transparent border-b border-black/20 pb-2 focus:outline-none focus:border-black placeholder:text-black/40 text-sm sm:text-base transition-colors"
               />
               <button
                 type="submit"
-                className="px-5 py-2.5 bg-black text-white rounded-full hover:bg-black/85 transition-colors uppercase tracking-[0.18em] text-[10px]"
+                className="shrink-0 px-4 sm:px-5 py-2 sm:py-2.5 bg-black text-white rounded-full hover:bg-black/85 transition-colors uppercase tracking-[0.18em] text-[10px]"
                 style={{ ...inter, fontWeight: 500 }}
               >
                 Join Terra
@@ -44,24 +44,24 @@ export function SiteFooter() {
         </div>
 
         {/* Link columns */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 p-6 sm:p-8 md:p-10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-4 sm:gap-6 md:gap-8 p-4 sm:p-8 md:p-10">
           {[
             { title: "Shop", links: ["Towels", "Wallpaper", "Cloths", "Sponges"] },
             { title: "Collections", links: ["Spring Edit", "Core Series", "Limited"] },
             { title: "Company", links: ["Journal", "Sustainability", "Studio"] },
             { title: "Contact", links: ["Help Center", "Shipping", "Instagram"] },
           ].map((col) => (
-            <div key={col.title} className="space-y-3">
+            <div key={col.title} className="space-y-2 sm:space-y-3 min-w-0">
               <h4
                 className="text-[10px] uppercase tracking-[0.2em] text-black/40"
                 style={{ ...dmSans, fontWeight: 700 }}
               >
                 {col.title}
               </h4>
-              <ul className="space-y-2">
+              <ul className="space-y-1.5 sm:space-y-2">
                 {col.links.map((l) => (
                   <li key={l}>
-                    <a href="#" className="text-sm text-black hover:text-black/55 transition-colors">
+                    <a href="#" className="text-xs sm:text-sm text-black hover:text-black/55 transition-colors">
                       {l}
                     </a>
                   </li>
@@ -72,10 +72,10 @@ export function SiteFooter() {
         </div>
 
         {/* Legal row */}
-        <div className="px-6 sm:px-8 md:px-10 pb-6 md:pb-8">
-          <div className="w-full pt-5 border-t border-black/10 flex flex-col md:flex-row justify-between items-center gap-3 md:gap-6 text-[10px] uppercase tracking-[0.18em] text-black/50">
-            <div>Essentials for a tactile home</div>
-            <div className="flex gap-5 sm:gap-6">
+        <div className="px-4 sm:px-8 md:px-10 pb-4 sm:pb-6 md:pb-8">
+          <div className="w-full pt-4 sm:pt-5 border-t border-black/10 flex flex-col md:flex-row justify-between items-center gap-2 md:gap-6 text-[9px] sm:text-[10px] uppercase tracking-[0.15em] sm:tracking-[0.18em] text-black/50 text-center md:text-left">
+            <div className="hidden sm:block">Essentials for a tactile home</div>
+            <div className="flex gap-4 sm:gap-6">
               <a href="#" className="hover:text-black transition-colors">Privacy</a>
               <a href="#" className="hover:text-black transition-colors">Terms</a>
               <a href="#" className="hover:text-black transition-colors">Cookies</a>
