@@ -25,6 +25,7 @@ import productCloth from "@/assets/product-cloth.jpg";
 import productSponge from "@/assets/product-sponge.jpg";
 import { products, CATEGORY_LIST, useCart, useFavourites, type Category, type Product } from "@/lib/shop";
 import { CartDrawer } from "@/components/CartDrawer";
+import { SiteFooter } from "@/components/SiteFooter";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/")({
