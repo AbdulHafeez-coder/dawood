@@ -12,7 +12,6 @@ function buildUrl(text: string) {
 }
 
 
-import { formatPKR } from "@/lib/format";
 const money = (n: number) => formatPKR(n);
 const DIVIDER = "━━━━━━━━━━━━━━";
 
