@@ -161,9 +161,9 @@ function AdminDashboard() {
             <>
               <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 <KpiCard icon={<Package className="w-4 h-4" />} label="Products" value={products.length.toString()} hint={`${categories.length} categories`} />
-                <KpiCard icon={<Heart className="w-4 h-4" />} label="Favorites" value={favCount.toString()} hint="Saved by visitors" accent="#FEF3C7" />
-                <KpiCard icon={<ShoppingBag className="w-4 h-4" />} label="Cart items" value={cartCount.toString()} hint={`Subtotal $${subtotal.toFixed(2)}`} accent="#ECEDEC" />
-                <KpiCard icon={<ScrollText className="w-4 h-4" />} label="Saved orders" value={orders.length.toString()} hint={`Revenue $${revenue.toFixed(2)}`} accent="#EAEEE6" />
+                <KpiCard icon={<Tag className="w-4 h-4" />} label="Categories" value={categories.length.toString()} hint="Active collections" accent="#FEF3C7" />
+                <KpiCard icon={<ScrollText className="w-4 h-4" />} label="Orders" value={orders.length.toString()} hint="WhatsApp drafts" accent="#ECEDEC" />
+                <KpiCard icon={<DollarSign className="w-4 h-4" />} label="Revenue" value={`$${revenue.toFixed(2)}`} hint="From saved orders" accent="#EAEEE6" />
               </section>
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
