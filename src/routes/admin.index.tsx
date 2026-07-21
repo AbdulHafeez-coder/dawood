@@ -286,9 +286,9 @@ function AdminDashboard() {
       const s = String(v ?? "");
       return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
     };
-    const header = ["name", "price", "category", "tags"];
+    const header = ["name", "price_pkr", "price_formatted", "currency", "category", "tags"];
     const body = rows.map((p) =>
-      [esc(p.name), String(p.price), esc(p.category), esc(p.tag ?? "")].join(","),
+      [esc(p.name), p.price.toFixed(2), esc(formatPKR(p.price)), "PKR", esc(p.category), esc(p.tag ?? "")].join(","),
     );
     const csv = [header.join(","), ...body].join("\n");
     downloadCsv(`maison-terra-selected-${new Date().toISOString().slice(0, 10)}.csv`, csv);
