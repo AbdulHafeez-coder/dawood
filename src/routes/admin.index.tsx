@@ -1110,7 +1110,7 @@ const MAX_IMAGE_BYTES = 3 * 1024 * 1024; // 3 MB
 function ImageUploader({ value, onChange }: { value: string; onChange: (url: string) => void }) {
   const [dragging, setDragging] = useState(false);
   const [loading, setLoading] = useState(false);
-  const inputRef = React.useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   function handleFile(file: File | undefined | null) {
     if (!file) return;
