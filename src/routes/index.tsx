@@ -86,7 +86,7 @@ function Index() {
 
   const addToCart = (p: Product) => {
     addToCartShared(p, 1);
-    setCartOpen(true);
+    
   };
 
 
