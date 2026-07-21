@@ -68,7 +68,17 @@ function Index() {
   const [activeCard, setActiveCard] = useState(0);
   const [cartOpen, setCartOpen] = useState(false);
   const { addToCart: addToCartShared, cartCount } = useCart();
-  const { toggleFav, isFav } = useFavourites();
+  const { toggleFav, isFav, favCount } = useFavourites();
+
+  const handleFav = (p: Product) => {
+    const wasFav = isFav(p.id);
+    toggleFav(p.id);
+    if (wasFav) {
+      toast(`${p.name} removed from favourites`);
+    } else {
+      toast.success(`${p.name} added to favourites`, { description: p.category });
+    }
+  };
 
   const [activeCat, setActiveCat] = useState<Category | "All">("All");
   const priceMax = Math.max(...products.map((p) => p.price));
