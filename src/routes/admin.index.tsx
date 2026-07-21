@@ -392,6 +392,9 @@ function AdminDashboard() {
               )}
             </section>
           )}
+
+          {tab === "settings" && <SettingsPanel />}
+
         </div>
       </main>
 
