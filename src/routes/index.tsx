@@ -319,7 +319,7 @@ function Index() {
           )}
         </div>
 
-        <div className="bg-white rounded-2xl p-4 lg:p-5 mb-8 lg:mb-10 flex flex-col lg:flex-row lg:items-center gap-5 lg:gap-8">
+        <div className="bg-white rounded-2xl p-4 lg:p-5 mb-8 lg:mb-10 flex flex-col md:flex-row md:items-center md:flex-wrap gap-4 md:gap-5 lg:gap-8">
           <div className="flex flex-wrap items-center gap-2">
             {(["All", ...CATEGORY_LIST] as const).map((c) => (
               <button
