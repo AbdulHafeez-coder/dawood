@@ -147,6 +147,7 @@ function AdminDashboard() {
   const [bulkTag, setBulkTag] = useState("");
   const [bulkCategory, setBulkCategory] = useState("");
   const [confirmBulkDelete, setConfirmBulkDelete] = useState(false);
+  const [confirmLogout, setConfirmLogout] = useState(false);
 
   const filteredProducts = useMemo(() => {
     const q = debouncedPQuery.trim().toLowerCase();
