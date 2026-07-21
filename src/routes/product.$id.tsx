@@ -50,6 +50,7 @@ function NotFoundProduct() {
 function ProductPage() {
   const { product } = Route.useLoaderData();
   const { addToCart, cartCount } = useCart();
+  const { toggleFav, isFav } = useFavourites();
   const [cartOpen, setCartOpen] = useState(false);
   const [qty, setQty] = useState(1);
   const [activeImg, setActiveImg] = useState(0);
