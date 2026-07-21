@@ -69,6 +69,12 @@ function Index() {
   const priceMin = Math.min(...products.map((p) => p.price));
   const [maxPrice, setMaxPrice] = useState(priceMax);
   const [sort, setSort] = useState<SortKey>("featured");
+  const [query, setQuery] = useState("");
+
+  const focusSearch = () => {
+    document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" });
+    setTimeout(() => document.getElementById("product-search")?.focus(), 400);
+  };
 
   useEffect(() => {
     const id = setInterval(() => setActiveCard((c) => (c + 1) % cards.length), 3500);
