@@ -4,7 +4,7 @@ import { ArrowLeft, ShoppingBag, Star, Plus, Minus, Check, Truck, ShieldCheck, L
 import { buildWhatsappProductOrder } from "@/lib/whatsapp";
 import { saveOrder } from "@/lib/orders";
 import { getProduct, getVariants, useProducts, useCart, useFavourites, type Product } from "@/lib/shop";
-import { CartDrawer } from "@/components/CartDrawer";
+import { LazyCartDrawer as CartDrawer } from "@/components/LazyCartDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
 import { toast } from "sonner";
 import { formatPKR } from "@/lib/format";

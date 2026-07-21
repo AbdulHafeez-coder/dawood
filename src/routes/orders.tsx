@@ -3,7 +3,7 @@ import { useState } from "react";
 import { ArrowLeft, ShoppingBag, MessageCircle, Trash2, ClipboardCopy, ScrollText, Check } from "lucide-react";
 import { useCart } from "@/lib/shop";
 import { useOrders, type SavedOrder } from "@/lib/orders";
-import { CartDrawer } from "@/components/CartDrawer";
+import { LazyCartDrawer as CartDrawer } from "@/components/LazyCartDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
 import { toast } from "sonner";
 import { formatPKR } from "@/lib/format";

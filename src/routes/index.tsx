@@ -28,7 +28,7 @@ import productCloth from "@/assets/product-cloth.jpg";
 import productSponge from "@/assets/product-sponge.jpg";
 import { useProducts, useCategories, useCart, useFavourites, type Category, type Product } from "@/lib/shop";
 import { useSettings } from "@/lib/settings";
-import { CartDrawer } from "@/components/CartDrawer";
+import { LazyCartDrawer as CartDrawer } from "@/components/LazyCartDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
 import { toast } from "sonner";
 import { formatPKR } from "@/lib/format";
