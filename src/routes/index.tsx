@@ -17,7 +17,9 @@ import {
   Truck,
   ShieldCheck,
   Heart,
+  ScrollText,
 } from "lucide-react";
+import { useOrders } from "@/lib/orders";
 import heroBg from "@/assets/hero-home.jpg";
 import productTowel from "@/assets/product-towel.jpg";
 import productWallpaper from "@/assets/product-wallpaper.jpg";
@@ -70,6 +72,7 @@ function Index() {
   const [cartOpen, setCartOpen] = useState(false);
   const { addToCart: addToCartShared, cartCount } = useCart();
   const { toggleFav, isFav, favCount } = useFavourites();
+  const { orderCount } = useOrders();
 
   const handleFav = (p: Product) => {
     const wasFav = isFav(p.id);
@@ -153,6 +156,14 @@ function Index() {
               {favCount > 0 && (
                 <span className="absolute -top-1.5 -right-1.5 bg-white text-black text-[10px] font-medium min-w-4 h-4 px-1 rounded-full flex items-center justify-center">
                   {favCount}
+                </span>
+              )}
+            </Link>
+            <Link to="/orders" aria-label="Orders" className="relative text-white/90 hover:text-white">
+              <ScrollText size={20} strokeWidth={1.5} />
+              {orderCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 bg-white text-black text-[10px] font-medium min-w-4 h-4 px-1 rounded-full flex items-center justify-center">
+                  {orderCount}
                 </span>
               )}
             </Link>

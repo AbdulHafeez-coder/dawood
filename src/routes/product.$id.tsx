@@ -1,7 +1,8 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowLeft, ShoppingBag, Star, Plus, Minus, Check, Truck, ShieldCheck, Leaf, Heart, MessageCircle } from "lucide-react";
-import { whatsappProductUrl } from "@/lib/whatsapp";
+import { buildWhatsappProductOrder } from "@/lib/whatsapp";
+import { saveOrder } from "@/lib/orders";
 import { getProduct, getVariants, products, useCart, useFavourites, type Product } from "@/lib/shop";
 import { CartDrawer } from "@/components/CartDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -315,9 +316,18 @@ function ProductPage() {
             <button
               type="button"
               onClick={() => {
-                // Regenerate the WhatsApp URL on click so it always reflects
-                // the latest variant selection and quantity.
-                const url = whatsappProductUrl(variantProduct, qty);
+                const { text, url, total } = buildWhatsappProductOrder(variantProduct, qty);
+                saveOrder({
+                  kind: "product",
+                  url,
+                  message: text,
+                  total,
+                  itemCount: qty,
+                  primaryName: variantProduct.name,
+                  primaryImg: product.img,
+                  primaryBg: product.bg,
+                });
+                toast.success("Order draft saved", { description: "You can resend it any time from Orders." });
                 window.open(url, "_blank", "noopener,noreferrer");
               }}
               className="mt-3 inline-flex items-center justify-center gap-2 bg-[#25D366] text-white rounded-md h-12 text-base w-full hover:bg-[#1ebe57] transition-colors"

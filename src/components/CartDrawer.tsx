@@ -1,7 +1,8 @@
 import { ShoppingBag, X, Plus, Minus, Trash2, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useCart } from "@/lib/shop";
-import { whatsappCartUrl } from "@/lib/whatsapp";
+import { buildWhatsappCartOrder } from "@/lib/whatsapp";
+import { saveOrder } from "@/lib/orders";
 
 const dmSans = { fontFamily: "'DM Sans', sans-serif" };
 
@@ -125,9 +126,20 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
             <button
               type="button"
               onClick={() => {
-                // Rebuild the WhatsApp URL from the latest cart + subtotal at click time
-                // so any last-second qty/remove changes are always reflected.
-                const url = whatsappCartUrl(cart, subtotal);
+                const { text, url, total, itemCount } = buildWhatsappCartOrder(cart, subtotal);
+                const primary = cart[0];
+                saveOrder({
+                  kind: "cart",
+                  url,
+                  message: text,
+                  total,
+                  itemCount,
+                  primaryName: primary?.baseName ?? primary?.name ?? "Order",
+                  primaryImg: primary?.img,
+                  primaryBg: primary?.bg,
+                  extraCount: Math.max(0, cart.length - 1),
+                });
+                toast.success("Order draft saved", { description: "You can resend it any time from Orders." });
                 window.open(url, "_blank", "noopener,noreferrer");
               }}
               className="mt-2 inline-flex items-center justify-center gap-2 bg-[#25D366] text-white rounded-md h-12 text-base hover:bg-[#1ebe57] transition-colors"
