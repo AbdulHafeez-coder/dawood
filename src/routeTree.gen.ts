@@ -12,7 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
 
 const OrdersRoute = OrdersRouteImport.update({
   id: '/orders',
@@ -29,9 +31,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProductIdRoute = ProductIdRouteImport.update({
   id: '/product/$id',
   path: '/product/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -39,34 +51,61 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/favorites': typeof FavoritesRoute
   '/orders': typeof OrdersRoute
+  '/admin/login': typeof AdminLoginRoute
   '/product/$id': typeof ProductIdRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/favorites': typeof FavoritesRoute
   '/orders': typeof OrdersRoute
+  '/admin/login': typeof AdminLoginRoute
   '/product/$id': typeof ProductIdRoute
+  '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/favorites': typeof FavoritesRoute
   '/orders': typeof OrdersRoute
+  '/admin/login': typeof AdminLoginRoute
   '/product/$id': typeof ProductIdRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/favorites' | '/orders' | '/product/$id'
+  fullPaths:
+    | '/'
+    | '/favorites'
+    | '/orders'
+    | '/admin/login'
+    | '/product/$id'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/favorites' | '/orders' | '/product/$id'
-  id: '__root__' | '/' | '/favorites' | '/orders' | '/product/$id'
+  to:
+    | '/'
+    | '/favorites'
+    | '/orders'
+    | '/admin/login'
+    | '/product/$id'
+    | '/admin'
+  id:
+    | '__root__'
+    | '/'
+    | '/favorites'
+    | '/orders'
+    | '/admin/login'
+    | '/product/$id'
+    | '/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   FavoritesRoute: typeof FavoritesRoute
   OrdersRoute: typeof OrdersRoute
+  AdminLoginRoute: typeof AdminLoginRoute
   ProductIdRoute: typeof ProductIdRoute
+  AdminIndexRoute: typeof AdminIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -92,11 +131,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/product/$id': {
       id: '/product/$id'
       path: '/product/$id'
       fullPath: '/product/$id'
       preLoaderRoute: typeof ProductIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -106,7 +159,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   FavoritesRoute: FavoritesRoute,
   OrdersRoute: OrdersRoute,
+  AdminLoginRoute: AdminLoginRoute,
   ProductIdRoute: ProductIdRoute,
+  AdminIndexRoute: AdminIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

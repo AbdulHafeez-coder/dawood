@@ -79,6 +79,7 @@ export function SiteFooter() {
               <a href="#" className="hover:text-black transition-colors">Privacy</a>
               <a href="#" className="hover:text-black transition-colors">Terms</a>
               <a href="#" className="hover:text-black transition-colors">Cookies</a>
+              <a href="/admin" className="hover:text-black transition-colors">Admin</a>
             </div>
             <div>© {new Date().getFullYear()} Maison Terra</div>
           </div>
