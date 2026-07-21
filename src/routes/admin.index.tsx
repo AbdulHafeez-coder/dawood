@@ -1511,14 +1511,20 @@ function ProductFormDialog({
               </select>
             </Field>
             <Field label="Price (PKR)">
-              <input
-                type="number"
-                min={0}
-                step="0.01"
-                value={form.price}
-                onChange={(e) => set("price", Number(e.target.value))}
-                className="mt-input"
-              />
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-medium text-black/50 pointer-events-none">PKR</span>
+                <input
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  value={form.price}
+                  onChange={(e) => set("price", Number(e.target.value))}
+                  className="mt-input pl-12"
+                />
+              </div>
+              <div className="mt-1 text-[11px] text-black/55 tabular-nums">
+                Displays as <span className="text-black font-medium">{formatPKR(Number(form.price) || 0)}</span>
+              </div>
             </Field>
             <Field label="Rating">
               <input
