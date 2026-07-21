@@ -21,9 +21,18 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
       (n, i) => n + (i.id === item.id ? Math.max(0, nextQty) : i.qty),
       0,
     );
+    const prevQty = item.qty;
+    const newQty = Math.max(0, nextQty);
+    const prevLine = item.price * prevQty;
+    const newLine = item.price * newQty;
     if (nextQty <= 0) {
       toast.success(`Removed ${item.name} from cart`, {
-        description: `Cart total: $${newSubtotal.toFixed(2)} · ${newCount} item${newCount === 1 ? "" : "s"}`,
+        description: (
+          <div className="text-xs leading-relaxed">
+            <div>Qty <b>{prevQty}</b> → <b>0</b> · Line <b>${prevLine.toFixed(2)}</b> → <b>$0.00</b></div>
+            <div className="opacity-70">Cart total ${newSubtotal.toFixed(2)} · {newCount} item{newCount === 1 ? "" : "s"}</div>
+          </div>
+        ),
         action: {
           label: "Undo",
           onClick: () => restoreItem(prevSnapshot),
@@ -31,7 +40,12 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
       });
     } else {
       toast.success(`${item.name} — qty ${nextQty}`, {
-        description: `Line $${(item.price * nextQty).toFixed(2)} · Cart total $${newSubtotal.toFixed(2)}`,
+        description: (
+          <div className="text-xs leading-relaxed">
+            <div>Qty <b>{prevQty}</b> → <b>{newQty}</b> · Line <b>${prevLine.toFixed(2)}</b> → <b>${newLine.toFixed(2)}</b></div>
+            <div className="opacity-70">Cart total ${newSubtotal.toFixed(2)}</div>
+          </div>
+        ),
         action: {
           label: "Undo",
           onClick: () => changeQty(item.id, -delta),
