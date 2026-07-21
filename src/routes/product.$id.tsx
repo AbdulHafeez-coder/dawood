@@ -98,7 +98,7 @@ function ProductPage() {
         {/* GALLERY */}
         <div className="flex flex-col-reverse lg:flex-row gap-4">
           <div className="flex lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto lg:max-h-[560px] pb-1 lg:pb-0">
-            {product.gallery.map((src, i) => (
+            {product.gallery.map((src: string, i: number) => (
               <button
                 key={i}
                 onClick={() => setActiveImg(i)}
