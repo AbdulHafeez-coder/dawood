@@ -116,7 +116,11 @@ function ProductPage() {
   const related = products.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4);
 
   const handleAdd = () => {
-    if (!canAdd) return;
+    if (!canAdd) {
+      const missing = !size && !color ? "a size and colour" : !size ? "a size" : "a colour";
+      toast.error(`Please select ${missing} first`);
+      return;
+    }
     addToCart(variantProduct, qty, {
       baseId: product.id,
       baseName: product.name,
