@@ -262,15 +262,19 @@ function ProductPage() {
           </div>
 
           {canAdd ? (
-            <a
-              href={whatsappProductUrl(variantProduct, qty)}
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              type="button"
+              onClick={() => {
+                // Regenerate the WhatsApp URL on click so it always reflects
+                // the latest variant selection and quantity.
+                const url = whatsappProductUrl(variantProduct, qty);
+                window.open(url, "_blank", "noopener,noreferrer");
+              }}
               className="mt-3 inline-flex items-center justify-center gap-2 bg-[#25D366] text-white rounded-md h-12 text-base w-full hover:bg-[#1ebe57] transition-colors"
               style={{ fontWeight: 500 }}
             >
               <MessageCircle size={18} /> Order on WhatsApp
-            </a>
+            </button>
           ) : (
             <button
               disabled
