@@ -171,6 +171,14 @@ function ProductPage() {
             >
               {added ? (<><Check size={18} /> Added</>) : (<>Add to cart · ${(product.price * qty).toFixed(2)}</>)}
             </button>
+            <button
+              onClick={() => toggleFav(product.id)}
+              aria-label={isFav(product.id) ? "Remove from favourites" : "Add to favourites"}
+              aria-pressed={isFav(product.id)}
+              className="h-12 w-12 shrink-0 inline-flex items-center justify-center rounded-full border border-black/15 hover:border-black transition-colors"
+            >
+              <Heart size={18} className={isFav(product.id) ? "fill-black text-black" : "text-black"} />
+            </button>
           </div>
 
           <div className="mt-8 grid grid-cols-3 gap-3 max-w-md">
