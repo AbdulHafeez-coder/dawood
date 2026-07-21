@@ -86,15 +86,6 @@ function FavoritesPage() {
                 : `${favCount} piece${favCount === 1 ? "" : "s"} you've saved for later.`}
             </p>
           </div>
-          {items.length > 0 && (
-            <button
-              onClick={addAllToCart}
-              className="inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-12 px-6 text-sm hover:bg-black/85 transition-colors self-start sm:self-auto"
-              style={{ fontWeight: 500 }}
-            >
-              <ShoppingBag size={16} /> Add all to cart
-            </button>
-          )}
         </div>
 
         {items.length === 0 ? (
