@@ -89,15 +89,19 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
               <span>Total</span>
               <span>${(subtotal + (subtotal >= 50 || subtotal === 0 ? 0 : 5)).toFixed(2)}</span>
             </div>
-            <a
-              href={whatsappCartUrl(cart, subtotal)}
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              type="button"
+              onClick={() => {
+                // Rebuild the WhatsApp URL from the latest cart + subtotal at click time
+                // so any last-second qty/remove changes are always reflected.
+                const url = whatsappCartUrl(cart, subtotal);
+                window.open(url, "_blank", "noopener,noreferrer");
+              }}
               className="mt-2 inline-flex items-center justify-center gap-2 bg-[#25D366] text-white rounded-md h-12 text-base hover:bg-[#1ebe57] transition-colors"
               style={{ fontWeight: 500 }}
             >
               <MessageCircle size={18} /> Order on WhatsApp
-            </a>
+            </button>
             <p className="text-[11px] text-black/50 text-center">You'll be redirected to WhatsApp with your order details pre-filled.</p>
           </div>
         )}
