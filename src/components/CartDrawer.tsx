@@ -46,9 +46,29 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
                         <div className="text-black truncate" style={{ ...dmSans, fontWeight: 500, fontSize: 16, letterSpacing: "-0.02em" }}>
-                          {i.name}
+                          {i.baseName ?? i.name}
                         </div>
                         <div className="text-black/50 text-xs">{i.category}</div>
+                        {(i.variantSizeLabel || i.variantColorLabel) && (
+                          <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                            {i.variantSizeLabel && (
+                              <span className="inline-flex items-center rounded-full border border-black/10 bg-black/[0.03] px-2 py-0.5 text-[11px] text-black/70">
+                                {i.variantSizeLabel}
+                                {i.variantSizeNote ? ` · ${i.variantSizeNote}` : ""}
+                              </span>
+                            )}
+                            {i.variantColorLabel && (
+                              <span className="inline-flex items-center gap-1 rounded-full border border-black/10 bg-black/[0.03] px-2 py-0.5 text-[11px] text-black/70">
+                                <span
+                                  aria-hidden
+                                  className="inline-block h-2.5 w-2.5 rounded-full border border-black/10"
+                                  style={{ background: i.variantColorSwatch ?? "#000" }}
+                                />
+                                {i.variantColorLabel}
+                              </span>
+                            )}
+                          </div>
+                        )}
                       </div>
                       <div className="text-black text-sm whitespace-nowrap" style={{ fontWeight: 500 }}>
                         ${(i.price * i.qty).toFixed(2)}

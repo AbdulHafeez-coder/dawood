@@ -24,7 +24,17 @@ export type Product = {
   gallery: string[];
 };
 
-export type CartItem = Product & { qty: number };
+export type CartItem = Product & {
+  qty: number;
+  baseId?: string;
+  baseName?: string;
+  variantSize?: string;
+  variantColor?: string;
+  variantSizeLabel?: string;
+  variantSizeNote?: string;
+  variantColorLabel?: string;
+  variantColorSwatch?: string;
+};
 
 export type VariantOptions = {
   sizes: { id: string; label: string; note?: string }[];
@@ -261,16 +271,47 @@ const STORAGE_KEY = "maison-terra-cart";
 let cartState: CartItem[] = [];
 const listeners = new Set<(c: CartItem[]) => void>();
 
+type PersistedRow = {
+  id: string;
+  qty: number;
+  baseId?: string;
+  variantSize?: string;
+  variantColor?: string;
+};
+
 function loadInitial(): CartItem[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
-    const parsed = JSON.parse(raw) as { id: string; qty: number }[];
+    const parsed = JSON.parse(raw) as PersistedRow[];
     return parsed
       .map((row) => {
-        const p = getProduct(row.id);
-        return p ? { ...p, qty: row.qty } : null;
+        const baseId = row.baseId ?? row.id.split("::")[0];
+        const base = getProduct(baseId);
+        if (!base) return null;
+        if (row.variantSize && row.variantColor) {
+          const v = getVariants(base.category);
+          const s = v.sizes.find((x) => x.id === row.variantSize);
+          const c = v.colors.find((x) => x.id === row.variantColor);
+          if (s && c) {
+            return {
+              ...base,
+              id: row.id,
+              name: `${base.name} — ${s.label} / ${c.label}`,
+              qty: row.qty,
+              baseId: base.id,
+              baseName: base.name,
+              variantSize: s.id,
+              variantColor: c.id,
+              variantSizeLabel: s.label,
+              variantSizeNote: s.note,
+              variantColorLabel: c.label,
+              variantColorSwatch: c.swatch,
+            } satisfies CartItem;
+          }
+        }
+        return { ...base, qty: row.qty } satisfies CartItem;
       })
       .filter((x): x is CartItem => !!x);
   } catch {
@@ -289,7 +330,15 @@ function emit() {
   if (typeof window !== "undefined") {
     window.localStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify(cartState.map(({ id, qty }) => ({ id, qty }))),
+      JSON.stringify(
+        cartState.map(({ id, qty, baseId, variantSize, variantColor }) => ({
+          id,
+          qty,
+          baseId,
+          variantSize,
+          variantColor,
+        })),
+      ),
     );
   }
   for (const l of listeners) l(cartState);
@@ -309,15 +358,18 @@ export function useCart() {
     };
   }, []);
 
-  const addToCart = useCallback((p: Product, qty = 1) => {
-    const found = cartState.find((i) => i.id === p.id);
-    if (found) {
-      cartState = cartState.map((i) => (i.id === p.id ? { ...i, qty: i.qty + qty } : i));
-    } else {
-      cartState = [...cartState, { ...p, qty }];
-    }
-    emit();
-  }, []);
+  const addToCart = useCallback(
+    (p: Product, qty = 1, extras: Partial<CartItem> = {}) => {
+      const found = cartState.find((i) => i.id === p.id);
+      if (found) {
+        cartState = cartState.map((i) => (i.id === p.id ? { ...i, qty: i.qty + qty } : i));
+      } else {
+        cartState = [...cartState, { ...p, ...extras, qty }];
+      }
+      emit();
+    },
+    [],
+  );
 
   const changeQty = useCallback((id: string, delta: number) => {
     cartState = cartState.flatMap((i) =>
@@ -330,6 +382,7 @@ export function useCart() {
     cartState = cartState.filter((i) => i.id !== id);
     emit();
   }, []);
+
 
   const cartCount = cart.reduce((s, i) => s + i.qty, 0);
   const subtotal = cart.reduce((s, i) => s + i.qty * i.price, 0);
