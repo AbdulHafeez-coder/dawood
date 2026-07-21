@@ -91,3 +91,17 @@ export function useOrders() {
     orderCount: orders.length,
   };
 }
+
+if (typeof window !== "undefined") {
+  window.addEventListener("storage", (e) => {
+    if (e.key !== STORAGE_KEY) return;
+    try {
+      const parsed = e.newValue ? JSON.parse(e.newValue) : [];
+      state = Array.isArray(parsed) ? parsed : [];
+      listeners.forEach((l) => l(state));
+    } catch {
+      /* ignore */
+    }
+  });
+}
+

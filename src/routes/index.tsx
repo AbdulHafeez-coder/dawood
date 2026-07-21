@@ -490,16 +490,14 @@ function Index() {
                     </div>
                     <div className="text-black shrink-0" style={{ ...dmSans, fontWeight: 500, fontSize: 20 }}>{formatPKR(p.price)}</div>
                   </div>
-                  <button
-                    onClick={() => {
-                      addToCart(p);
-                      toast.success(`${p.name} added to cart`, { description: `${formatPKR(p.price)} · ${p.category}` });
-                    }}
-                    className="mt-auto inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-11 text-sm hover:bg-black/85"
+                  <Link
+                    to="/product/$id"
+                    params={{ id: p.id }}
+                    className="mt-auto inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-11 text-sm hover:bg-black/85 transition-colors"
                     style={{ fontWeight: 500 }}
                   >
-                    Add to cart <Plus size={16} />
-                  </button>
+                    Choose options <Plus size={16} />
+                  </Link>
                 </div>
               </div>
             ))}

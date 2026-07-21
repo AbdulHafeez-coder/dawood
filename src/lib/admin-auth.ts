@@ -72,3 +72,12 @@ export function useAdminAuth() {
 
   return { isAuthed, ready, login, logout };
 }
+
+if (typeof window !== "undefined") {
+  window.addEventListener("storage", (e) => {
+    if (e.key !== KEY) return;
+    authed = e.newValue === "1";
+    for (const l of listeners) l(authed);
+  });
+}
+

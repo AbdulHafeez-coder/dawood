@@ -25,25 +25,15 @@ const inter = { fontFamily: "'Inter', sans-serif" };
 
 function FavoritesPage() {
   const { favs, toggleFav, favCount } = useFavourites();
-  const { addToCart, cartCount } = useCart();
+  const { cartCount } = useCart();
   const { products } = useProducts();
   const [cartOpen, setCartOpen] = useState(false);
 
   const items = products.filter((p) => favs.includes(p.id));
 
-  const handleAdd = (p: Product) => {
-    addToCart(p, 1);
-    toast.success(`${p.name} added to cart`, { description: `${formatPKR(p.price)} · ${p.category}` });
-  };
-
   const handleRemove = (p: Product) => {
     toggleFav(p.id);
     toast(`${p.name} removed from favourites`);
-  };
-
-  const addAllToCart = () => {
-    items.forEach((p) => addToCart(p, 1));
-    toast.success(`${items.length} item${items.length === 1 ? "" : "s"} added to cart`);
   };
 
   return (
@@ -86,15 +76,6 @@ function FavoritesPage() {
                 : `${favCount} piece${favCount === 1 ? "" : "s"} you've saved for later.`}
             </p>
           </div>
-          {items.length > 0 && (
-            <button
-              onClick={addAllToCart}
-              className="inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-12 px-6 text-sm hover:bg-black/85 transition-colors self-start sm:self-auto"
-              style={{ fontWeight: 500 }}
-            >
-              <ShoppingBag size={16} /> Add all to cart
-            </button>
-          )}
         </div>
 
         {items.length === 0 ? (
@@ -145,13 +126,14 @@ function FavoritesPage() {
                     </div>
                     <div className="text-black shrink-0" style={{ ...dmSans, fontWeight: 500, fontSize: 20 }}>{formatPKR(p.price)}</div>
                   </div>
-                  <button
-                    onClick={() => handleAdd(p)}
+                  <Link
+                    to="/product/$id"
+                    params={{ id: p.id }}
                     className="mt-auto inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-11 text-sm hover:bg-black/85 transition-colors"
                     style={{ fontWeight: 500 }}
                   >
-                    <Plus size={16} /> Add to cart
-                  </button>
+                    <Plus size={16} /> Choose options
+                  </Link>
                 </div>
               </div>
             ))}
