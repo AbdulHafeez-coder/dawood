@@ -442,9 +442,10 @@ function AdminDashboard() {
   }
 
   function handleLogout() {
+    const here = typeof window !== "undefined" ? window.location.pathname : "/admin";
     logout();
     toast.success("Signed out");
-    navigate({ to: "/admin/login" });
+    navigate({ to: "/admin/login", search: { redirect: here } });
   }
 
   return (
