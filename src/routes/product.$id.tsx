@@ -143,7 +143,7 @@ function ProductPage() {
           <p className="mt-6 text-black/80 leading-relaxed max-w-md">{product.description}</p>
 
           <ul className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-6 max-w-md">
-            {product.details.map((d) => (
+            {product.details.map((d: string) => (
               <li key={d} className="flex items-start gap-2 text-sm text-black/70">
                 <Check size={16} className="mt-0.5 shrink-0 text-black" /> {d}
               </li>
