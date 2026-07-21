@@ -1018,6 +1018,27 @@ function AdminDashboard() {
         </AlertDialogContent>
       </AlertDialog>
 
+      {/* Bulk delete confirm */}
+      <AlertDialog open={confirmBulkDelete} onOpenChange={(o) => !o && setConfirmBulkDelete(false)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete {selectedCount} product{selectedCount === 1 ? "" : "s"}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              These products will be permanently removed from the shop. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-600 hover:bg-red-700 text-white focus-visible:ring-red-600"
+              onClick={applyBulkDelete}
+            >
+              Delete {selectedCount}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* Delete category confirm */}
       <AlertDialog open={!!confirmCategory} onOpenChange={(o) => !o && setConfirmCategory(null)}>
         <AlertDialogContent>
