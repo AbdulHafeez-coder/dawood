@@ -274,6 +274,25 @@ function AdminDashboard() {
     setBulkTag("");
   }
 
+  function applyBulkExport() {
+    const ids = Array.from(selectedIds);
+    const rows = ids
+      .map((id) => products.find((p) => p.id === id))
+      .filter((p): p is Product => Boolean(p));
+    if (rows.length === 0) return toast.error("Nothing selected to export");
+    const esc = (v: string) => {
+      const s = String(v ?? "");
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const header = ["name", "price", "category", "tags"];
+    const body = rows.map((p) =>
+      [esc(p.name), String(p.price), esc(p.category), esc(p.tag ?? "")].join(","),
+    );
+    const csv = [header.join(","), ...body].join("\n");
+    downloadCsv(`maison-terra-selected-${new Date().toISOString().slice(0, 10)}.csv`, csv);
+    toast.success(`Exported ${rows.length} product${rows.length === 1 ? "" : "s"}`);
+  }
+
 
   function handleExportProducts() {
     if (products.length === 0) return toast.error("No products to export");
@@ -712,6 +731,12 @@ function AdminDashboard() {
                               className="px-3 py-1.5 rounded-full bg-white text-black text-[10px] uppercase tracking-[0.18em] disabled:opacity-40 hover:bg-white/90 transition"
                             >
                               Apply
+                            </button>
+                            <button
+                              onClick={applyBulkExport}
+                              className="px-3 py-1.5 rounded-full bg-white text-black text-[10px] uppercase tracking-[0.18em] hover:bg-white/90 transition inline-flex items-center gap-1.5"
+                            >
+                              <Download className="w-3 h-3" /> Export CSV
                             </button>
                             <button
                               onClick={() => setConfirmBulkDelete(true)}
