@@ -97,6 +97,8 @@ function Index() {
   useEffect(() => { setMaxPrice(priceMax); }, [priceMax]);
   const [sort, setSort] = useState<SortKey>("featured");
   const [query, setQuery] = useState("");
+  const debouncedQuery = useDebouncedValue(query, 250);
+
 
   const [searchOpen, setSearchOpen] = useState(false);
   const focusSearch = () => {
