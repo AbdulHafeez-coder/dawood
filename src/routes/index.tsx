@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
   Search,
@@ -12,8 +12,6 @@ import {
   SprayCan,
   Star,
   Plus,
-  Minus,
-  Trash2,
   SlidersHorizontal,
   Leaf,
   Truck,
@@ -21,10 +19,8 @@ import {
 } from "lucide-react";
 import heroBg from "@/assets/hero-home.jpg";
 import productTowel from "@/assets/product-towel.jpg";
-import productWallpaper from "@/assets/product-wallpaper.jpg";
-import productCloth from "@/assets/product-cloth.jpg";
-import productSponge from "@/assets/product-sponge.jpg";
-import productBathset from "@/assets/product-bathset.jpg";
+import { products, CATEGORY_LIST, useCart, type Category, type Product } from "@/lib/shop";
+import { CartDrawer } from "@/components/CartDrawer";
 
 export const Route = createFileRoute("/")({
   component: Index,
