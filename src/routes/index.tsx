@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
   Search,
@@ -12,8 +12,6 @@ import {
   SprayCan,
   Star,
   Plus,
-  Minus,
-  Trash2,
   SlidersHorizontal,
   Leaf,
   Truck,
@@ -21,10 +19,8 @@ import {
 } from "lucide-react";
 import heroBg from "@/assets/hero-home.jpg";
 import productTowel from "@/assets/product-towel.jpg";
-import productWallpaper from "@/assets/product-wallpaper.jpg";
-import productCloth from "@/assets/product-cloth.jpg";
-import productSponge from "@/assets/product-sponge.jpg";
-import productBathset from "@/assets/product-bathset.jpg";
+import { products, CATEGORY_LIST, useCart, type Category, type Product } from "@/lib/shop";
+import { CartDrawer } from "@/components/CartDrawer";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -42,9 +38,6 @@ const cards = [
 
 const navLinks = ["Shop", "Collections", "Journal", "Contact"];
 
-const CATEGORY_LIST = ["Towels", "Wallpaper", "Cloths", "Sponges"] as const;
-type Category = (typeof CATEGORY_LIST)[number];
-
 const categories: { Icon: typeof Bath; name: Category; count: number; bg: string; accent: string; desc: string }[] = [
   { Icon: Bath, name: "Towels", count: 18, bg: "bg-orange-100", accent: "text-orange-800", desc: "Plush cotton, quick-dry" },
   { Icon: Wallpaper, name: "Wallpaper", count: 24, bg: "bg-stone-200", accent: "text-stone-800", desc: "Peel-and-stick sheets" },
@@ -52,30 +45,8 @@ const categories: { Icon: typeof Bath; name: Category; count: number; bg: string
   { Icon: SprayCan, name: "Sponges", count: 9, bg: "bg-amber-100", accent: "text-amber-800", desc: "Plant-based scrubs" },
 ];
 
-type Product = {
-  id: string;
-  name: string;
-  tag: string;
-  price: number;
-  rating: number;
-  img: string;
-  bg: string;
-  category: Category;
-};
-
-const products: Product[] = [
-  { id: "p1", name: "Aegean Bath Towel", tag: "Bestseller", price: 38, rating: 4.9, img: productTowel, bg: "bg-[#F3ECE3]", category: "Towels" },
-  { id: "p2", name: "Sunday Roll", tag: "New", price: 24, rating: 4.8, img: productBathset, bg: "bg-[#F5EFE4]", category: "Towels" },
-  { id: "p3", name: "Botanical Wallpaper", tag: "Popular", price: 46, rating: 4.7, img: productWallpaper, bg: "bg-[#EFEBE3]", category: "Wallpaper" },
-  { id: "p4", name: "Linen Peel-Stick", tag: "New", price: 52, rating: 4.8, img: productWallpaper, bg: "bg-[#EDE7DB]", category: "Wallpaper" },
-  { id: "p5", name: "Everyday Cloth Set", tag: "Bestseller", price: 18, rating: 4.9, img: productCloth, bg: "bg-[#EAEEE6]", category: "Cloths" },
-  { id: "p6", name: "Glass & Mirror Cloth", tag: "Popular", price: 14, rating: 4.7, img: productCloth, bg: "bg-[#E8EFEA]", category: "Cloths" },
-  { id: "p7", name: "Cellulose Kitchen Sponge", tag: "Eco", price: 9, rating: 4.6, img: productSponge, bg: "bg-[#F5EEDF]", category: "Sponges" },
-  { id: "p8", name: "Heavy-Duty Scrub Duo", tag: "Limited", price: 12, rating: 4.8, img: productSponge, bg: "bg-[#F3E9D8]", category: "Sponges" },
-];
-
-type CartItem = Product & { qty: number };
 type SortKey = "featured" | "price-asc" | "price-desc" | "rating";
+
 
 function Word({ children, delay, className = "" }: { children: React.ReactNode; delay: string; className?: string }) {
   return (
@@ -91,7 +62,7 @@ function Index() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeCard, setActiveCard] = useState(0);
   const [cartOpen, setCartOpen] = useState(false);
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const { addToCart: addToCartShared, cartCount } = useCart();
 
   const [activeCat, setActiveCat] = useState<Category | "All">("All");
   const priceMax = Math.max(...products.map((p) => p.price));
@@ -105,21 +76,10 @@ function Index() {
   }, []);
 
   const addToCart = (p: Product) => {
-    setCart((prev) => {
-      const found = prev.find((i) => i.id === p.id);
-      if (found) return prev.map((i) => (i.id === p.id ? { ...i, qty: i.qty + 1 } : i));
-      return [...prev, { ...p, qty: 1 }];
-    });
+    addToCartShared(p, 1);
     setCartOpen(true);
   };
-  const changeQty = (id: string, delta: number) =>
-    setCart((prev) =>
-      prev.flatMap((i) => (i.id === id ? (i.qty + delta <= 0 ? [] : [{ ...i, qty: i.qty + delta }]) : [i]))
-    );
-  const removeItem = (id: string) => setCart((prev) => prev.filter((i) => i.id !== id));
 
-  const cartCount = cart.reduce((s, i) => s + i.qty, 0);
-  const subtotal = cart.reduce((s, i) => s + i.qty * i.price, 0);
 
   const visibleProducts = useMemo(() => {
     let list = products.filter((p) => (activeCat === "All" ? true : p.category === activeCat));
@@ -378,7 +338,7 @@ function Index() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
             {visibleProducts.map((p) => (
               <div key={p.id} className="bg-white rounded-2xl overflow-hidden flex flex-col group">
-                <div className={`${p.bg} relative aspect-square overflow-hidden`}>
+                <Link to="/product/$id" params={{ id: p.id }} className={`${p.bg} relative aspect-square overflow-hidden block`}>
                   <span className="absolute top-4 left-4 z-10 bg-black text-white text-xs px-3 py-1 rounded-full">{p.tag}</span>
                   <span className="absolute top-4 right-4 z-10 bg-white/85 text-black text-[11px] px-2 py-1 rounded-full">{p.category}</span>
                   <img
@@ -389,13 +349,13 @@ function Index() {
                     loading="lazy"
                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                </div>
+                </Link>
                 <div className="p-5 flex flex-col gap-3">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <div className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 20, letterSpacing: "-0.03em" }}>
+                      <Link to="/product/$id" params={{ id: p.id }} className="text-black hover:underline block" style={{ ...dmSans, fontWeight: 500, fontSize: 20, letterSpacing: "-0.03em" }}>
                         {p.name}
-                      </div>
+                      </Link>
                       <div className="flex items-center gap-1 mt-1 text-black/60 text-xs">
                         <Star size={12} className="fill-black text-black" /> {p.rating}
                       </div>
@@ -430,94 +390,8 @@ function Index() {
       </footer>
 
       {/* CART DRAWER */}
-      <div
-        className={`fixed inset-0 z-40 transition-opacity ${cartOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
-        aria-hidden={!cartOpen}
-      >
-        <div className="absolute inset-0 bg-black/50" onClick={() => setCartOpen(false)} />
-        <aside
-          className={`absolute top-0 right-0 h-full w-full sm:w-[420px] bg-white flex flex-col shadow-2xl transition-transform duration-300 ${cartOpen ? "translate-x-0" : "translate-x-full"}`}
-          role="dialog"
-          aria-label="Shopping cart"
-        >
-          <div className="flex items-center justify-between px-5 py-4 border-b border-black/10">
-            <div className="flex items-center gap-2 text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 22, letterSpacing: "-0.03em" }}>
-              <ShoppingBag size={20} strokeWidth={1.75} /> Your basket
-              <span className="text-black/40 text-sm">({cartCount})</span>
-            </div>
-            <button onClick={() => setCartOpen(false)} aria-label="Close cart" className="text-black/60 hover:text-black">
-              <X size={22} />
-            </button>
-          </div>
+      <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
 
-          <div className="flex-1 overflow-y-auto px-5 py-4">
-            {cart.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center text-center text-black/50 gap-3">
-                <ShoppingBag size={36} strokeWidth={1.25} />
-                <p>Your basket is empty.</p>
-                <button onClick={() => setCartOpen(false)} className="text-black underline text-sm">Keep shopping</button>
-              </div>
-            ) : (
-              <ul className="flex flex-col gap-4">
-                {cart.map((i) => (
-                  <li key={i.id} className="flex gap-3">
-                    <div className={`${i.bg} w-20 h-20 rounded-xl shrink-0 overflow-hidden`}>
-                      <img src={i.img} alt={i.name} width={1024} height={1024} loading="lazy" className="w-full h-full object-cover" />
-                    </div>
-                    <div className="flex-1 min-w-0 flex flex-col">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0">
-                          <div className="text-black truncate" style={{ ...dmSans, fontWeight: 500, fontSize: 16, letterSpacing: "-0.02em" }}>
-                            {i.name}
-                          </div>
-                          <div className="text-black/50 text-xs">{i.category}</div>
-                        </div>
-                        <div className="text-black text-sm whitespace-nowrap" style={{ fontWeight: 500 }}>
-                          ${(i.price * i.qty).toFixed(2)}
-                        </div>
-                      </div>
-                      <div className="mt-auto pt-2 flex items-center justify-between">
-                        <div className="inline-flex items-center border border-black/10 rounded-full h-8">
-                          <button onClick={() => changeQty(i.id, -1)} className="w-8 h-8 flex items-center justify-center text-black/70 hover:text-black" aria-label="Decrease">
-                            <Minus size={14} />
-                          </button>
-                          <span className="w-6 text-center text-sm text-black">{i.qty}</span>
-                          <button onClick={() => changeQty(i.id, 1)} className="w-8 h-8 flex items-center justify-center text-black/70 hover:text-black" aria-label="Increase">
-                            <Plus size={14} />
-                          </button>
-                        </div>
-                        <button onClick={() => removeItem(i.id)} className="text-black/50 hover:text-black inline-flex items-center gap-1 text-xs" aria-label={`Remove ${i.name}`}>
-                          <Trash2 size={14} /> Remove
-                        </button>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-
-          {cart.length > 0 && (
-            <div className="border-t border-black/10 px-5 py-4 flex flex-col gap-3">
-              <div className="flex justify-between text-sm text-black/60">
-                <span>Subtotal</span>
-                <span>${subtotal.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-sm text-black/60">
-                <span>Shipping</span>
-                <span>{subtotal >= 50 ? "Free" : "$5.00"}</span>
-              </div>
-              <div className="flex justify-between text-black pt-2 border-t border-black/10" style={{ ...dmSans, fontWeight: 500, fontSize: 18 }}>
-                <span>Total</span>
-                <span>${(subtotal + (subtotal >= 50 || subtotal === 0 ? 0 : 5)).toFixed(2)}</span>
-              </div>
-              <button className="mt-2 inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-12 text-base hover:bg-black/85" style={{ fontWeight: 500 }}>
-                Checkout <ArrowUpRight size={18} />
-              </button>
-            </div>
-          )}
-        </aside>
-      </div>
     </div>
   );
 }

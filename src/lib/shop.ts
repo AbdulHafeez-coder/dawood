@@ -1,0 +1,276 @@
+import { useCallback, useEffect, useState } from "react";
+import productTowel from "@/assets/product-towel.jpg";
+import productWallpaper from "@/assets/product-wallpaper.jpg";
+import productCloth from "@/assets/product-cloth.jpg";
+import productSponge from "@/assets/product-sponge.jpg";
+import productBathset from "@/assets/product-bathset.jpg";
+import heroBg from "@/assets/hero-home.jpg";
+
+export const CATEGORY_LIST = ["Towels", "Wallpaper", "Cloths", "Sponges"] as const;
+export type Category = (typeof CATEGORY_LIST)[number];
+
+export type Product = {
+  id: string;
+  name: string;
+  tag: string;
+  price: number;
+  rating: number;
+  img: string;
+  bg: string;
+  category: Category;
+  tagline: string;
+  description: string;
+  details: string[];
+  gallery: string[];
+};
+
+export type CartItem = Product & { qty: number };
+
+export const products: Product[] = [
+  {
+    id: "p1",
+    name: "Aegean Bath Towel",
+    tag: "Bestseller",
+    price: 38,
+    rating: 4.9,
+    img: productTowel,
+    bg: "bg-[#F3ECE3]",
+    category: "Towels",
+    tagline: "Long-staple Turkish cotton, woven for daily softness.",
+    description:
+      "Woven in a family-run Aegean mill from long-staple Turkish cotton, the Aegean towel gets plusher with every wash. A generous 70×140 cm sheet that dries fast and folds neatly onto any shelf.",
+    details: [
+      "600 GSM combed cotton",
+      "OEKO-TEX certified, low-impact dyes",
+      "Machine wash cool, tumble dry low",
+      "Dimensions: 70 × 140 cm",
+    ],
+    gallery: [productTowel, productBathset, productCloth, heroBg],
+  },
+  {
+    id: "p2",
+    name: "Sunday Roll",
+    tag: "New",
+    price: 24,
+    rating: 4.8,
+    img: productBathset,
+    bg: "bg-[#F5EFE4]",
+    category: "Towels",
+    tagline: "A three-piece rollup for slow weekend rituals.",
+    description:
+      "A hand, face and bath towel set rolled into a linen band — pared-back palettes designed to sit on an open shelf. Made from the same combed cotton as our Aegean sheet.",
+    details: [
+      "Set of 3 (hand, face, bath)",
+      "500 GSM combed cotton",
+      "Gift-ready linen band",
+      "Machine wash cool",
+    ],
+    gallery: [productBathset, productTowel, productCloth, heroBg],
+  },
+  {
+    id: "p3",
+    name: "Botanical Wallpaper",
+    tag: "Popular",
+    price: 46,
+    rating: 4.7,
+    img: productWallpaper,
+    bg: "bg-[#EFEBE3]",
+    category: "Wallpaper",
+    tagline: "Hand-drawn stems, peel-and-stick in minutes.",
+    description:
+      "Illustrated in our studio and printed on removable matte vinyl. Reposition as you go — no paste, no drips, no landlord letters. Each sheet covers 0.9 × 2.4 m.",
+    details: [
+      "Removable matte vinyl",
+      "0.9 × 2.4 m per sheet",
+      "PVC-free, low-VOC inks",
+      "Repositionable up to 5×",
+    ],
+    gallery: [productWallpaper, heroBg, productCloth, productTowel],
+  },
+  {
+    id: "p4",
+    name: "Linen Peel-Stick",
+    tag: "New",
+    price: 52,
+    rating: 4.8,
+    img: productWallpaper,
+    bg: "bg-[#EDE7DB]",
+    category: "Wallpaper",
+    tagline: "The look of raw linen, on any wall.",
+    description:
+      "A woven-linen texture reproduced in fine detail on removable vinyl. Warms up hallways and nurseries without the commitment of paste-up paper.",
+    details: [
+      "Removable matte vinyl",
+      "0.9 × 2.4 m per sheet",
+      "PVC-free, low-VOC inks",
+      "Warm oat colourway",
+    ],
+    gallery: [productWallpaper, heroBg, productBathset, productCloth],
+  },
+  {
+    id: "p5",
+    name: "Everyday Cloth Set",
+    tag: "Bestseller",
+    price: 18,
+    rating: 4.9,
+    img: productCloth,
+    bg: "bg-[#EAEEE6]",
+    category: "Cloths",
+    tagline: "Five reusable microfibre cloths, colour-coded by room.",
+    description:
+      "Replace weeks of paper towels with a set of five soft microfibre cloths — one for each zone of the home. Washable up to 300 times.",
+    details: [
+      "Set of 5, colour-coded",
+      "300+ machine washes",
+      "Streak-free on glass",
+      "Recycled poly-blend fibre",
+    ],
+    gallery: [productCloth, productSponge, productTowel, heroBg],
+  },
+  {
+    id: "p6",
+    name: "Glass & Mirror Cloth",
+    tag: "Popular",
+    price: 14,
+    rating: 4.7,
+    img: productCloth,
+    bg: "bg-[#E8EFEA]",
+    category: "Cloths",
+    tagline: "The lint-free finish for glass, screens and chrome.",
+    description:
+      "A tight-weave microfibre cloth engineered for a streak-free finish. Use dry on screens, damp on mirrors, and pair with our vinegar spray for windows.",
+    details: [
+      "40 × 40 cm, tight weave",
+      "Lint-free on screens & glass",
+      "Machine washable",
+      "Sold as a pair",
+    ],
+    gallery: [productCloth, productSponge, heroBg, productTowel],
+  },
+  {
+    id: "p7",
+    name: "Cellulose Kitchen Sponge",
+    tag: "Eco",
+    price: 9,
+    rating: 4.6,
+    img: productSponge,
+    bg: "bg-[#F5EEDF]",
+    category: "Sponges",
+    tagline: "Plant-based sponges that compost when they're done.",
+    description:
+      "Cellulose and loofah pressed into a soft-firm sponge that tackles dishes without shredding. Snip in half and drop into home compost at end of life.",
+    details: [
+      "100% plant-based",
+      "Home-compostable",
+      "Pack of 4",
+      "Boil to sanitise",
+    ],
+    gallery: [productSponge, productCloth, heroBg, productBathset],
+  },
+  {
+    id: "p8",
+    name: "Heavy-Duty Scrub Duo",
+    tag: "Limited",
+    price: 12,
+    rating: 4.8,
+    img: productSponge,
+    bg: "bg-[#F3E9D8]",
+    category: "Sponges",
+    tagline: "Two-sided scrubs for pans, tile and grout days.",
+    description:
+      "A dense cellulose base bonded to a coconut-fibre scour — tough on baked-on grease, gentle enough for enamel. Comes as a duo, one for kitchen, one for bath.",
+    details: [
+      "Pack of 2",
+      "Coconut-fibre scour side",
+      "Safe on enamel",
+      "Home-compostable base",
+    ],
+    gallery: [productSponge, productCloth, heroBg, productTowel],
+  },
+];
+
+export function getProduct(id: string): Product | undefined {
+  return products.find((p) => p.id === id);
+}
+
+const STORAGE_KEY = "maison-terra-cart";
+
+// Module-level store so cart state is shared across routes without a provider.
+let cartState: CartItem[] = [];
+const listeners = new Set<(c: CartItem[]) => void>();
+
+function loadInitial(): CartItem[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as { id: string; qty: number }[];
+    return parsed
+      .map((row) => {
+        const p = getProduct(row.id);
+        return p ? { ...p, qty: row.qty } : null;
+      })
+      .filter((x): x is CartItem => !!x);
+  } catch {
+    return [];
+  }
+}
+
+let hydrated = false;
+function ensureHydrated() {
+  if (hydrated || typeof window === "undefined") return;
+  hydrated = true;
+  cartState = loadInitial();
+}
+
+function emit() {
+  if (typeof window !== "undefined") {
+    window.localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(cartState.map(({ id, qty }) => ({ id, qty }))),
+    );
+  }
+  for (const l of listeners) l(cartState);
+}
+
+export function useCart() {
+  ensureHydrated();
+  const [cart, setCart] = useState<CartItem[]>(cartState);
+
+  useEffect(() => {
+    ensureHydrated();
+    setCart(cartState);
+    const l = (c: CartItem[]) => setCart(c);
+    listeners.add(l);
+    return () => {
+      listeners.delete(l);
+    };
+  }, []);
+
+  const addToCart = useCallback((p: Product, qty = 1) => {
+    const found = cartState.find((i) => i.id === p.id);
+    if (found) {
+      cartState = cartState.map((i) => (i.id === p.id ? { ...i, qty: i.qty + qty } : i));
+    } else {
+      cartState = [...cartState, { ...p, qty }];
+    }
+    emit();
+  }, []);
+
+  const changeQty = useCallback((id: string, delta: number) => {
+    cartState = cartState.flatMap((i) =>
+      i.id === id ? (i.qty + delta <= 0 ? [] : [{ ...i, qty: i.qty + delta }]) : [i],
+    );
+    emit();
+  }, []);
+
+  const removeItem = useCallback((id: string) => {
+    cartState = cartState.filter((i) => i.id !== id);
+    emit();
+  }, []);
+
+  const cartCount = cart.reduce((s, i) => s + i.qty, 0);
+  const subtotal = cart.reduce((s, i) => s + i.qty * i.price, 0);
+
+  return { cart, addToCart, changeQty, removeItem, cartCount, subtotal };
+}
