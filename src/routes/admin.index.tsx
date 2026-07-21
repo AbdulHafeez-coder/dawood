@@ -922,3 +922,180 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
     </label>
   );
 }
+
+/* -------------------------------- SETTINGS -------------------------------- */
+
+const SOCIAL_FIELDS: { key: SocialKey; label: string; placeholder: string }[] = [
+  { key: "instagram", label: "Instagram", placeholder: "https://instagram.com/yourbrand" },
+  { key: "facebook", label: "Facebook", placeholder: "https://facebook.com/yourbrand" },
+  { key: "twitter", label: "Twitter / X", placeholder: "https://x.com/yourbrand" },
+  { key: "tiktok", label: "TikTok", placeholder: "https://tiktok.com/@yourbrand" },
+  { key: "pinterest", label: "Pinterest", placeholder: "https://pinterest.com/yourbrand" },
+  { key: "youtube", label: "YouTube", placeholder: "https://youtube.com/@yourbrand" },
+];
+
+function SettingsPanel() {
+  const saved = useSettings();
+  const [draft, setDraft] = useState(saved);
+  const [confirmReset, setConfirmReset] = useState(false);
+
+  useEffect(() => {
+    setDraft(saved);
+  }, [saved]);
+
+  const dirty = JSON.stringify(draft) !== JSON.stringify(saved);
+
+  const save = () => {
+    updateSettings(draft);
+    toast.success("Settings saved", { description: "Site brand, contact and socials updated." });
+  };
+
+  return (
+    <>
+      <section className="bg-white border border-black/10 rounded-2xl p-5 sm:p-6 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <SectionTitle icon={<SettingsIcon className="w-3.5 h-3.5" />} label="Site settings" />
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setConfirmReset(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em]"
+            >
+              <RotateCcw className="w-3 h-3" /> Reset
+            </button>
+            <button
+              onClick={save}
+              disabled={!dirty}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-black text-white hover:bg-black/85 transition text-[10px] uppercase tracking-[0.18em] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              Save changes
+            </button>
+          </div>
+        </div>
+
+        {/* Brand */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Field label="Brand name">
+            <input
+              className="mt-input"
+              value={draft.brandName}
+              onChange={(e) => setDraft({ ...draft, brandName: e.target.value })}
+              placeholder="Maison Terra"
+            />
+          </Field>
+          <Field label="Tagline">
+            <input
+              className="mt-input"
+              value={draft.tagline}
+              onChange={(e) => setDraft({ ...draft, tagline: e.target.value })}
+              placeholder="Essentials for a tactile home"
+            />
+          </Field>
+          <Field label="Logo URL">
+            <div className="flex items-center gap-3">
+              <input
+                className="mt-input flex-1"
+                value={draft.logoUrl}
+                onChange={(e) => setDraft({ ...draft, logoUrl: e.target.value })}
+                placeholder="https://…/logo.png"
+              />
+              {draft.logoUrl && (
+                <img src={draft.logoUrl} alt="logo preview" className="w-10 h-10 rounded-lg object-cover bg-black/5 border border-black/10" />
+              )}
+            </div>
+          </Field>
+          <Field label="WhatsApp number (digits, e.g. 15551234567)">
+            <input
+              className="mt-input"
+              value={draft.whatsappNumber}
+              onChange={(e) => setDraft({ ...draft, whatsappNumber: e.target.value.replace(/\D/g, "") })}
+              inputMode="numeric"
+              placeholder="15551234567"
+            />
+          </Field>
+        </div>
+      </section>
+
+      {/* Contact */}
+      <section className="bg-white border border-black/10 rounded-2xl p-5 sm:p-6 space-y-4">
+        <SectionTitle icon={<SettingsIcon className="w-3.5 h-3.5" />} label="Contact" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Field label="Email">
+            <input
+              type="email"
+              className="mt-input"
+              value={draft.contactEmail}
+              onChange={(e) => setDraft({ ...draft, contactEmail: e.target.value })}
+              placeholder="hello@brand.com"
+            />
+          </Field>
+          <Field label="Phone">
+            <input
+              className="mt-input"
+              value={draft.contactPhone}
+              onChange={(e) => setDraft({ ...draft, contactPhone: e.target.value })}
+              placeholder="+1 555 123 4567"
+            />
+          </Field>
+          <Field label="Address">
+            <input
+              className="mt-input"
+              value={draft.address}
+              onChange={(e) => setDraft({ ...draft, address: e.target.value })}
+              placeholder="Street, City"
+            />
+          </Field>
+        </div>
+      </section>
+
+      {/* Socials */}
+      <section className="bg-white border border-black/10 rounded-2xl p-5 sm:p-6 space-y-4">
+        <SectionTitle icon={<SettingsIcon className="w-3.5 h-3.5" />} label="Social media" />
+        <p className="text-xs text-black/50 -mt-1">Leave blank to hide the icon from the footer.</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {SOCIAL_FIELDS.map((f) => (
+            <Field key={f.key} label={f.label}>
+              <input
+                className="mt-input"
+                value={draft.socials[f.key]}
+                onChange={(e) => setDraft({ ...draft, socials: { ...draft.socials, [f.key]: e.target.value } })}
+                placeholder={f.placeholder}
+              />
+            </Field>
+          ))}
+        </div>
+
+        <div className="pt-2 flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2">
+          <button
+            onClick={save}
+            disabled={!dirty}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-black text-white hover:bg-black/85 transition text-[10px] uppercase tracking-[0.18em] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Save changes
+          </button>
+        </div>
+      </section>
+
+      <AlertDialog open={confirmReset} onOpenChange={setConfirmReset}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reset settings to defaults?</AlertDialogTitle>
+            <AlertDialogDescription>Brand, contact, WhatsApp number and social links will be restored to defaults.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                resetSettings();
+                toast.success("Settings reset");
+                setConfirmReset(false);
+              }}
+            >
+              Reset
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+}
+
