@@ -67,6 +67,7 @@ function Index() {
   const [activeCard, setActiveCard] = useState(0);
   const [cartOpen, setCartOpen] = useState(false);
   const { addToCart: addToCartShared, cartCount } = useCart();
+  const { toggleFav, isFav } = useFavourites();
 
   const [activeCat, setActiveCat] = useState<Category | "All">("All");
   const priceMax = Math.max(...products.map((p) => p.price));
