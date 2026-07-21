@@ -133,7 +133,7 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                         )}
                       </div>
                       <div className="text-black text-sm whitespace-nowrap" style={{ fontWeight: 500 }}>
-                        PKR {(i.price * i.qty).toFixed(2)}
+                        {formatPKR(i.price * i.qty)}
                       </div>
                     </div>
                     <div className="mt-auto pt-2 flex items-center justify-between">
