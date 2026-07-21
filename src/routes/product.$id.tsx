@@ -40,12 +40,17 @@ const inter = { fontFamily: "'Inter', sans-serif" };
 function NotFoundProduct() {
   return (
     <div className="min-h-screen flex flex-col bg-[#FEFDF9]" style={inter}>
-      <div className="flex-1 flex flex-col items-center justify-center gap-4 px-4 py-20">
+      <div className="flex-1 flex flex-col items-center justify-center gap-4 px-4 py-20 text-center">
         <div style={{ ...dmSans, fontWeight: 500, fontSize: 42, letterSpacing: "-0.04em" }}>Not in the catalogue</div>
         <p className="text-black/60">We couldn't find that piece.</p>
-        <Link to="/" className="inline-flex items-center gap-2 bg-black text-white rounded-md h-11 px-5 text-sm">
-          <ArrowLeft size={16} /> Back to shop
-        </Link>
+        <div className="flex flex-wrap justify-center gap-2 mt-2">
+          <Link to="/" className="inline-flex items-center gap-2 bg-black text-white rounded-md h-11 px-5 text-sm">
+            <ArrowLeft size={16} /> Back to home
+          </Link>
+          <a href="/#shop" className="inline-flex items-center gap-2 border border-black/15 rounded-md h-11 px-5 text-sm hover:bg-black/[0.03]">
+            <ShoppingBag size={16} /> Browse products
+          </a>
+        </div>
       </div>
       <SiteFooter />
     </div>
@@ -58,9 +63,14 @@ function ProductError() {
       <div className="flex-1 flex flex-col items-center justify-center gap-4 px-4 py-20 text-center">
         <div style={{ ...dmSans, fontWeight: 500, fontSize: 32, letterSpacing: "-0.04em" }}>Something went wrong</div>
         <p className="text-black/60">We couldn't load this product. Please try again.</p>
-        <Link to="/" className="inline-flex items-center gap-2 bg-black text-white rounded-md h-11 px-5 text-sm">
-          <ArrowLeft size={16} /> Back to shop
-        </Link>
+        <div className="flex flex-wrap justify-center gap-2 mt-2">
+          <Link to="/" className="inline-flex items-center gap-2 bg-black text-white rounded-md h-11 px-5 text-sm">
+            <ArrowLeft size={16} /> Back to home
+          </Link>
+          <a href="/#shop" className="inline-flex items-center gap-2 border border-black/15 rounded-md h-11 px-5 text-sm hover:bg-black/[0.03]">
+            <ShoppingBag size={16} /> Browse products
+          </a>
+        </div>
       </div>
       <SiteFooter />
     </div>
