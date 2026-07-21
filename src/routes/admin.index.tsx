@@ -14,7 +14,6 @@ import {
   Tag,
   LayoutDashboard,
   RotateCcw,
-  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAdminAuth } from "@/lib/admin-auth";
