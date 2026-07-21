@@ -392,6 +392,14 @@ function Index() {
                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </Link>
+                <button
+                  onClick={() => toggleFav(p.id)}
+                  aria-label={isFav(p.id) ? "Remove from favourites" : "Add to favourites"}
+                  aria-pressed={isFav(p.id)}
+                  className="absolute top-3 right-3 z-10 h-9 w-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center hover:bg-white transition-colors"
+                >
+                  <Heart size={16} className={isFav(p.id) ? "fill-black text-black" : "text-black/60"} />
+                </button>
                 <div className="p-5 flex flex-col gap-3 flex-1">
                   <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
                     <div className="min-w-0">
