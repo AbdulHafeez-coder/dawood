@@ -71,9 +71,6 @@ function ProductPage() {
         <Link to="/" className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 26, letterSpacing: "-0.05em" }}>
           Maison Terra
         </Link>
-        <Link to="/" className="hidden sm:inline-flex items-center gap-2 text-sm text-black/70 hover:text-black">
-          <ArrowLeft size={16} /> Back to shop
-        </Link>
         <button aria-label="Cart" onClick={() => setCartOpen(true)} className="relative text-black">
           <ShoppingBag size={22} strokeWidth={1.5} />
           {cartCount > 0 && (
@@ -84,14 +81,20 @@ function ProductPage() {
         </button>
       </nav>
 
-      {/* BREADCRUMB */}
-      <div className="px-5 sm:px-8 lg:px-10 pt-6 text-xs text-black/50 flex items-center gap-2">
-        <Link to="/" className="hover:text-black">Shop</Link>
-        <span>/</span>
-        <span>{product.category}</span>
-        <span>/</span>
-        <span className="text-black/80">{product.name}</span>
+      {/* BACK + BREADCRUMB */}
+      <div className="px-5 sm:px-8 lg:px-10 pt-6 flex flex-col gap-3">
+        <Link to="/" className="inline-flex items-center gap-2 text-sm text-black/70 hover:text-black w-fit">
+          <ArrowLeft size={16} /> Back to shop
+        </Link>
+        <div className="text-xs text-black/50 flex items-center gap-2">
+          <Link to="/" className="hover:text-black">Shop</Link>
+          <span>/</span>
+          <span>{product.category}</span>
+          <span>/</span>
+          <span className="text-black/80">{product.name}</span>
+        </div>
       </div>
+
 
       {/* MAIN */}
       <section className="px-5 sm:px-8 lg:px-10 py-8 lg:py-12 grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-14">
