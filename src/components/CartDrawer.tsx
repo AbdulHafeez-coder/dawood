@@ -29,7 +29,7 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
       toast.success(`Removed ${item.name} from cart`, {
         description: (
           <div className="text-xs leading-relaxed">
-            <div>Qty <b>{prevQty}</b> → <b>0</b> · Line <b>${prevLine.toFixed(2)}</b> → <b>$0.00</b></div>
+            <div>Qty <b>{prevQty}</b> → <b>0</b> · Line <b>${prevLine.toFixed(2)}</b> → <b>PKR 0.00</b></div>
             <div className="opacity-70">Cart total ${newSubtotal.toFixed(2)} · {newCount} item{newCount === 1 ? "" : "s"}</div>
           </div>
         ),
@@ -60,7 +60,7 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
     const newCount = cart.reduce((n, i) => n + (i.id === item.id ? 0 : i.qty), 0);
     removeItem(item.id);
     toast.success(`Removed ${item.name} from cart`, {
-      description: `Cart total: $${newSubtotal.toFixed(2)} · ${newCount} item${newCount === 1 ? "" : "s"}`,
+      description: `Cart total: PKR ${newSubtotal.toFixed(2)} · ${newCount} item${newCount === 1 ? "" : "s"}`,
       action: {
         label: "Undo",
         onClick: () => restoreItem(snapshot),
@@ -164,7 +164,7 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
             </div>
             <div className="flex justify-between text-sm text-black/60">
               <span>Shipping</span>
-              <span>{subtotal >= 50 ? "Free" : "$5.00"}</span>
+              <span>{subtotal >= 50 ? "Free" : "PKR 5.00"}</span>
             </div>
             <div className="flex justify-between text-black pt-2 border-t border-black/10" style={{ ...dmSans, fontWeight: 500, fontSize: 18 }}>
               <span>Total</span>
