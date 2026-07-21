@@ -116,7 +116,11 @@ function ProductPage() {
   const related = products.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4);
 
   const handleAdd = () => {
-    if (!canAdd) return;
+    if (!canAdd) {
+      const missing = !size && !color ? "a size and colour" : !size ? "a size" : "a colour";
+      toast.error(`Please select ${missing} first`);
+      return;
+    }
     addToCart(variantProduct, qty, {
       baseId: product.id,
       baseName: product.name,
@@ -281,14 +285,21 @@ function ProductPage() {
                 <Plus size={16} />
               </button>
             </div>
-            <button
-              onClick={handleAdd}
-              disabled={!canAdd}
-              className="flex-1 inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-12 text-base hover:bg-black/85 transition-colors disabled:bg-black/25 disabled:cursor-not-allowed"
-              style={{ fontWeight: 500 }}
+            <div
+              className="flex-1"
+              onClick={() => {
+                if (!canAdd) handleAdd();
+              }}
             >
-              {!canAdd ? "Select size & colour" : added ? (<><Check size={18} /> Added</>) : (<>Add to cart · ${(product.price * qty).toFixed(2)}</>)}
-            </button>
+              <button
+                onClick={handleAdd}
+                disabled={!canAdd}
+                className="w-full inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-12 text-base hover:bg-black/85 transition-colors disabled:bg-black/25 disabled:cursor-not-allowed"
+                style={{ fontWeight: 500 }}
+              >
+                {!canAdd ? "Select size & colour" : added ? (<><Check size={18} /> Added</>) : (<>Add to cart · ${(product.price * qty).toFixed(2)}</>)}
+              </button>
+            </div>
             <button
               onClick={handleFav}
               aria-label={isFav(product.id) ? "Remove from favourites" : "Add to favourites"}
