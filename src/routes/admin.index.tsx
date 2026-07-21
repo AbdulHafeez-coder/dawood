@@ -189,23 +189,21 @@ function AdminDashboard() {
       if (rows.length === 0) return toast.error("CSV is empty");
       const headerError = rows.find((r) => r.error && r.row === 1);
       if (headerError) return toast.error("Invalid CSV", { description: headerError.error });
-      let created = 0;
-      let updated = 0;
-      let skipped = 0;
-      const errors: string[] = [];
       const fallbackImg = PRODUCT_IMAGE_CHOICES[0]?.url ?? "";
       const fallbackBg = PRODUCT_BG_CHOICES[0] ?? "";
-      const knownCategories = new Set(categories.map((c) => c.toLowerCase()));
+      const knownCats = new Set(categories.map((c) => c.toLowerCase()));
+      const createRows: ProductImportItem[] = [];
+      const updateRows: ProductImportItem[] = [];
+      const skipRows: { row: number; error: string }[] = [];
+      const newCats = new Set<string>();
       for (const r of rows) {
         if (r.error || !r.data) {
-          skipped++;
-          errors.push(`Row ${r.row}: ${r.error}`);
+          skipRows.push({ row: r.row, error: r.error ?? "Invalid row" });
           continue;
         }
         const d = r.data;
-        if (!knownCategories.has(d.category.toLowerCase())) {
-          addCategory(d.category);
-          knownCategories.add(d.category.toLowerCase());
+        if (!knownCats.has(d.category.toLowerCase()) && !newCats.has(d.category.toLowerCase())) {
+          newCats.add(d.category.toLowerCase());
         }
         const payload = {
           name: d.name,
@@ -222,20 +220,43 @@ function AdminDashboard() {
         };
         const existing = d.id ? products.find((p) => p.id === d.id) : undefined;
         if (existing) {
-          updateProduct(existing.id, payload);
-          updated++;
+          updateRows.push({ id: existing.id, name: d.name, category: d.category, payload });
         } else {
-          addProduct(d.id ? { id: d.id, ...payload } : payload);
-          created++;
+          createRows.push({ id: d.id, name: d.name, category: d.category, payload });
         }
       }
-      toast.success("Products imported", {
-        description: `${created} created · ${updated} updated${skipped ? ` · ${skipped} skipped` : ""}`,
+      if (createRows.length + updateRows.length + skipRows.length === 0) {
+        return toast.error("No rows to import");
+      }
+      setProductImportPlan({
+        fileName: file.name,
+        create: createRows,
+        update: updateRows,
+        skip: skipRows,
+        newCategories: Array.from(newCats),
       });
-      if (errors.length) console.warn("CSV import issues:\n" + errors.join("\n"));
     } catch (err) {
       toast.error("Import failed", { description: err instanceof Error ? err.message : "Could not read file" });
     }
+  }
+
+  function applyProductImport(plan: ProductImportPlan) {
+    const known = new Set(categories.map((c) => c.toLowerCase()));
+    // Create missing categories first (preserve original casing from first occurrence)
+    for (const item of [...plan.create, ...plan.update]) {
+      const key = item.category.toLowerCase();
+      if (!known.has(key)) {
+        addCategory(item.category);
+        known.add(key);
+      }
+    }
+    for (const item of plan.update) updateProduct(item.id!, item.payload);
+    for (const item of plan.create) addProduct(item.id ? { id: item.id, ...item.payload } : item.payload);
+    toast.success("Products imported", {
+      description: `${plan.create.length} created · ${plan.update.length} updated${plan.skip.length ? ` · ${plan.skip.length} skipped` : ""}`,
+    });
+    if (plan.skip.length) console.warn("CSV import issues:\n" + plan.skip.map((s) => `Row ${s.row}: ${s.error}`).join("\n"));
+    setProductImportPlan(null);
   }
 
   async function handleImportCategories(file: File) {
@@ -243,18 +264,31 @@ function AdminDashboard() {
       const text = await file.text();
       const names = parseCategoriesCsv(text);
       if (names.length === 0) return toast.error("No category rows found");
-      let created = 0;
-      let skipped = 0;
+      const known = new Set(categories.map((c) => c.toLowerCase()));
+      const create: string[] = [];
+      const skip: string[] = [];
+      const seen = new Set<string>();
       for (const n of names) {
-        if (addCategory(n)) created++;
-        else skipped++;
+        const key = n.toLowerCase();
+        if (known.has(key) || seen.has(key)) skip.push(n);
+        else {
+          create.push(n);
+          seen.add(key);
+        }
       }
-      toast.success("Categories imported", {
-        description: `${created} added${skipped ? ` · ${skipped} duplicates skipped` : ""}`,
-      });
+      setCategoryImportPlan({ fileName: file.name, create, skip });
     } catch (err) {
       toast.error("Import failed", { description: err instanceof Error ? err.message : "Could not read file" });
     }
+  }
+
+  function applyCategoryImport(plan: CategoryImportPlan) {
+    let created = 0;
+    for (const n of plan.create) if (addCategory(n)) created++;
+    toast.success("Categories imported", {
+      description: `${created} added${plan.skip.length ? ` · ${plan.skip.length} duplicates skipped` : ""}`,
+    });
+    setCategoryImportPlan(null);
   }
 
   useEffect(() => {
