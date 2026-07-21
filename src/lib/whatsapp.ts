@@ -1,11 +1,11 @@
 import type { Product, CartItem } from "@/lib/shop";
-
-// Update this number to your WhatsApp business line (international format, digits only).
-export const WHATSAPP_NUMBER = "15551234567";
+import { getSettings } from "@/lib/settings";
 
 function buildUrl(text: string) {
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+  const number = (getSettings().whatsappNumber || "").replace(/\D/g, "") || "15551234567";
+  return `https://wa.me/${number}?text=${encodeURIComponent(text)}`;
 }
+
 
 const money = (n: number) => `$${n.toFixed(2)}`;
 const DIVIDER = "━━━━━━━━━━━━━━";
@@ -14,8 +14,10 @@ export function buildWhatsappProductOrder(product: Product, qty: number = 1) {
   const url = typeof window !== "undefined" ? window.location.href : "";
   const subtotal = product.price * qty;
 
+  const brand = getSettings().brandName || "Store";
   const lines = [
-    "*Maison Terra — New Order*",
+    `*${brand} — New Order*`,
+
     "Hi! I'd like to order the following item:",
     "",
     DIVIDER,
@@ -59,8 +61,10 @@ export function buildWhatsappCartOrder(cart: CartItem[], subtotal: number) {
     ].filter((x): x is string => x !== null);
   });
 
+  const brand = getSettings().brandName || "Store";
   const lines = [
-    "*Maison Terra — New Order*",
+    `*${brand} — New Order*`,
+
     `Hi! I'd like to place an order for ${itemCount} item${itemCount === 1 ? "" : "s"}:`,
     "",
     DIVIDER,
