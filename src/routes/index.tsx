@@ -364,7 +364,7 @@ function Index() {
           <div className="bg-white rounded-2xl p-10 text-center text-black/60">
             No products match your filters.{" "}
             <button
-              onClick={() => { setActiveCat("All"); setMaxPrice(priceMax); setSort("featured"); }}
+              onClick={() => { setActiveCat("All"); setMaxPrice(priceMax); setSort("featured"); setQuery(""); }}
               className="underline text-black"
             >
               Reset
