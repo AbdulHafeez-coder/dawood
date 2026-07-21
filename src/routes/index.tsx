@@ -250,7 +250,7 @@ function Index() {
             Four small edits with big impact — bath, walls, kitchen, and the daily reset.
           </p>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
           {categories.map(({ Icon, name, count, bg, accent, desc, img }) => (
             <button
               key={name}
