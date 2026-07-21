@@ -1056,7 +1056,7 @@ function AdminDashboard() {
               <div className="min-w-0 text-sm">
                 <div className="truncate font-medium">{confirmProduct.name}</div>
                 <div className="text-[11px] text-black/50 truncate">
-                  {confirmProduct.category} · PKR {confirmProduct.price.toFixed(2)}
+                  {confirmProduct.category} · {formatPKR(confirmProduct.price)}
                 </div>
               </div>
             </div>
