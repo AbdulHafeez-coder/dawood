@@ -16,6 +16,8 @@ import {
   DollarSign,
   UploadCloud,
   ImageIcon,
+  Download,
+  Upload,
   Settings as SettingsIcon,
 
 } from "lucide-react";
