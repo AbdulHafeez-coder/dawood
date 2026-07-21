@@ -18,6 +18,10 @@ import {
   ImageIcon,
   Download,
   Upload,
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  X as XIcon,
   Settings as SettingsIcon,
 
 } from "lucide-react";
