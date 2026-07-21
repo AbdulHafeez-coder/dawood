@@ -4,7 +4,6 @@ import {
   ArrowLeft,
   LogOut,
   Package,
-  Heart,
   ShoppingBag,
   ScrollText,
   TrendingUp,
@@ -14,14 +13,13 @@ import {
   Tag,
   LayoutDashboard,
   RotateCcw,
+  DollarSign,
   Settings as SettingsIcon,
 
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAdminAuth } from "@/lib/admin-auth";
 import {
-  useCart,
-  useFavourites,
   useProducts,
   useCategories,
   PRODUCT_IMAGE_CHOICES,
@@ -70,8 +68,6 @@ export const Route = createFileRoute("/admin/")({
 function AdminDashboard() {
   const navigate = useNavigate();
   const { isAuthed, ready, logout } = useAdminAuth();
-  const { cartCount, subtotal } = useCart();
-  const { favs, favCount } = useFavourites();
   const { orders } = useOrders();
   const { products, addProduct, updateProduct, deleteProduct, resetProducts } = useProducts();
   const { categories, addCategory, renameCategory, deleteCategory, resetCategories } = useCategories();
@@ -165,9 +161,9 @@ function AdminDashboard() {
             <>
               <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 <KpiCard icon={<Package className="w-4 h-4" />} label="Products" value={products.length.toString()} hint={`${categories.length} categories`} />
-                <KpiCard icon={<Heart className="w-4 h-4" />} label="Favorites" value={favCount.toString()} hint="Saved by visitors" accent="#FEF3C7" />
-                <KpiCard icon={<ShoppingBag className="w-4 h-4" />} label="Cart items" value={cartCount.toString()} hint={`Subtotal $${subtotal.toFixed(2)}`} accent="#ECEDEC" />
-                <KpiCard icon={<ScrollText className="w-4 h-4" />} label="Saved orders" value={orders.length.toString()} hint={`Revenue $${revenue.toFixed(2)}`} accent="#EAEEE6" />
+                <KpiCard icon={<Tag className="w-4 h-4" />} label="Categories" value={categories.length.toString()} hint="Active collections" accent="#FEF3C7" />
+                <KpiCard icon={<ScrollText className="w-4 h-4" />} label="Orders" value={orders.length.toString()} hint="WhatsApp drafts" accent="#ECEDEC" />
+                <KpiCard icon={<DollarSign className="w-4 h-4" />} label="Revenue" value={`$${revenue.toFixed(2)}`} hint="From saved orders" accent="#EAEEE6" />
               </section>
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -273,7 +269,6 @@ function AdminDashboard() {
                         <th className="py-2 pr-3 font-medium">Tag</th>
                         <th className="py-2 pr-3 font-medium">Rating</th>
                         <th className="py-2 pr-3 font-medium text-right">Price</th>
-                        <th className="py-2 pr-3 font-medium text-right">Fav</th>
                         <th className="py-2 pl-3 font-medium text-right">Actions</th>
                       </tr>
                     </thead>
@@ -295,15 +290,6 @@ function AdminDashboard() {
                           <td className="py-3 pr-3 text-black/70">{p.tag}</td>
                           <td className="py-3 pr-3 text-black/70 tabular-nums">{p.rating.toFixed(1)}</td>
                           <td className="py-3 pr-3 text-right tabular-nums">${p.price.toFixed(2)}</td>
-                          <td className="py-3 pr-3 text-right">
-                            {favs.includes(p.id) ? (
-                              <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-[0.15em] px-2 py-0.5 rounded-full bg-black text-white">
-                                <Heart className="w-3 h-3 fill-current" />
-                              </span>
-                            ) : (
-                              <span className="text-black/30 text-xs">—</span>
-                            )}
-                          </td>
                           <td className="py-3 pl-3">
                             <div className="flex items-center justify-end gap-1">
                               <button
