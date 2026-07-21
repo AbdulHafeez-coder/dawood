@@ -103,14 +103,24 @@ function ProductPage() {
         <Link to="/" className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 26, letterSpacing: "-0.05em" }}>
           Maison Terra
         </Link>
-        <button aria-label="Cart" onClick={() => setCartOpen(true)} className="relative text-black">
-          <ShoppingBag size={22} strokeWidth={1.5} />
-          {cartCount > 0 && (
-            <span className="absolute -top-1.5 -right-1.5 bg-black text-white text-[10px] font-medium min-w-4 h-4 px-1 rounded-full flex items-center justify-center">
-              {cartCount}
-            </span>
-          )}
-        </button>
+        <div className="flex items-center gap-4">
+          <Link to="/favorites" aria-label="Favourites" className="relative text-black">
+            <Heart size={22} strokeWidth={1.5} />
+            {favCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 bg-black text-white text-[10px] font-medium min-w-4 h-4 px-1 rounded-full flex items-center justify-center">
+                {favCount}
+              </span>
+            )}
+          </Link>
+          <button aria-label="Cart" onClick={() => setCartOpen(true)} className="relative text-black">
+            <ShoppingBag size={22} strokeWidth={1.5} />
+            {cartCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 bg-black text-white text-[10px] font-medium min-w-4 h-4 px-1 rounded-full flex items-center justify-center">
+                {cartCount}
+              </span>
+            )}
+          </button>
+        </div>
       </nav>
 
       {/* BACK + BREADCRUMB */}
