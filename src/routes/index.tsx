@@ -130,7 +130,7 @@ function Index() {
             ))}
           </div>
           <div className="flex items-center gap-3 sm:gap-4 animate-slide-right delay-300">
-            <button aria-label="Search" className="text-white/90 hover:text-white"><Search size={20} strokeWidth={1.5} /></button>
+            <button aria-label="Search" onClick={focusSearch} className="text-white/90 hover:text-white"><Search size={20} strokeWidth={1.5} /></button>
             <button aria-label="Cart" onClick={() => setCartOpen(true)} className="relative text-white/90 hover:text-white">
               <ShoppingBag size={20} strokeWidth={1.5} />
               {cartCount > 0 && (
