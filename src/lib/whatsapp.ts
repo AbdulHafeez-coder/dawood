@@ -1,5 +1,6 @@
 import type { Product, CartItem } from "@/lib/shop";
 import { getSettings } from "@/lib/settings";
+import { formatPKR } from "@/lib/format";
 
 function buildUrl(text: string) {
   const raw = (getSettings().whatsappNumber || "").replace(/\D/g, "");
@@ -11,7 +12,7 @@ function buildUrl(text: string) {
 }
 
 
-const money = (n: number) => `PKR ${n.toFixed(2)}`;
+const money = (n: number) => formatPKR(n);
 const DIVIDER = "━━━━━━━━━━━━━━";
 
 export function buildWhatsappProductOrder(product: Product, qty: number = 1) {

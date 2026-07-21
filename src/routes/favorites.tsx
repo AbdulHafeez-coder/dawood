@@ -5,6 +5,7 @@ import { useProducts, useCart, useFavourites, type Product } from "@/lib/shop";
 import { CartDrawer } from "@/components/CartDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
 import { toast } from "sonner";
+import { formatPKR } from "@/lib/format";
 
 export const Route = createFileRoute("/favorites")({
   head: () => ({
@@ -32,7 +33,7 @@ function FavoritesPage() {
 
   const handleAdd = (p: Product) => {
     addToCart(p, 1);
-    toast.success(`${p.name} added to cart`, { description: `PKR PKR {p.price.toFixed(2)} · ${p.category}` });
+    toast.success(`${p.name} added to cart`, { description: `${formatPKR(p.price)} · ${p.category}` });
   };
 
   const handleRemove = (p: Product) => {
@@ -142,7 +143,7 @@ function FavoritesPage() {
                         <Star size={12} className="fill-black text-black" /> {p.rating}
                       </div>
                     </div>
-                    <div className="text-black shrink-0" style={{ ...dmSans, fontWeight: 500, fontSize: 20 }}>PKR {p.price}</div>
+                    <div className="text-black shrink-0" style={{ ...dmSans, fontWeight: 500, fontSize: 20 }}>{formatPKR(p.price)}</div>
                   </div>
                   <button
                     onClick={() => handleAdd(p)}

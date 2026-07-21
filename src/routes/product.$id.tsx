@@ -7,6 +7,7 @@ import { getProduct, getVariants, useProducts, useCart, useFavourites, type Prod
 import { CartDrawer } from "@/components/CartDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
 import { toast } from "sonner";
+import { formatPKR } from "@/lib/format";
 
 export const Route = createFileRoute("/product/$id")({
   loader: ({ params }) => {
@@ -160,7 +161,7 @@ function ProductPage() {
       variantColorSwatch: selectedColor!.swatch,
     });
     toast.success(`${variantProduct.name} added to cart`, {
-      description: `Qty ${qty} · PKR PKR {(product.price * qty).toFixed(2)}`,
+      description: `Qty ${qty} · ${formatPKR(product.price * qty)}`,
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 1600);
@@ -239,7 +240,7 @@ function ProductPage() {
           <p className="mt-3 text-black/70 max-w-md">{product.tagline}</p>
 
           <div className="mt-6 flex items-center gap-4">
-            <div className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 32 }}>PKR {product.price}</div>
+            <div className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 32 }}>{formatPKR(product.price)}</div>
             <div className="flex items-center gap-1 text-black/60 text-sm">
               <Star size={14} className="fill-black text-black" /> {product.rating} · 240 reviews
             </div>
@@ -326,7 +327,7 @@ function ProductPage() {
                 className="w-full inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-12 text-base hover:bg-black/85 transition-colors disabled:bg-black/25 disabled:cursor-not-allowed"
                 style={{ fontWeight: 500 }}
               >
-                {!canAdd ? "Select size & colour" : added ? (<><Check size={18} /> Added</>) : (<>Add to cart · PKR {(product.price * qty).toFixed(2)}</>)}
+                {!canAdd ? "Select size & colour" : added ? (<><Check size={18} /> Added</>) : (<>Add to cart · {formatPKR(product.price * qty)}</>)}
               </button>
             </div>
             <button
@@ -428,7 +429,7 @@ function RelatedCard({ product: p }: { product: Product }) {
       </div>
       <div className="p-4 flex items-start justify-between gap-2">
         <div className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 16, letterSpacing: "-0.02em" }}>{p.name}</div>
-        <div className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 16 }}>PKR {p.price}</div>
+        <div className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 16 }}>{formatPKR(p.price)}</div>
       </div>
     </Link>
   );

@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { useCart } from "@/lib/shop";
 import { buildWhatsappCartOrder } from "@/lib/whatsapp";
 import { saveOrder } from "@/lib/orders";
+import { formatPKR } from "@/lib/format";
 
 const dmSans = { fontFamily: "'DM Sans', sans-serif" };
 
@@ -29,8 +30,8 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
       toast.success(`Removed ${item.name} from cart`, {
         description: (
           <div className="text-xs leading-relaxed">
-            <div>Qty <b>{prevQty}</b> → <b>0</b> · Line <b>PKR {prevLine.toFixed(2)}</b> → <b>PKR 0.00</b></div>
-            <div className="opacity-70">Cart total PKR {newSubtotal.toFixed(2)} · {newCount} item{newCount === 1 ? "" : "s"}</div>
+            <div>Qty <b>{prevQty}</b> → <b>0</b> · Line <b>{formatPKR(prevLine)}</b> → <b>{formatPKR(0)}</b></div>
+            <div className="opacity-70">Cart total {formatPKR(newSubtotal)} · {newCount} item{newCount === 1 ? "" : "s"}</div>
           </div>
         ),
         action: {
@@ -42,8 +43,8 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
       toast.success(`${item.name} — qty ${nextQty}`, {
         description: (
           <div className="text-xs leading-relaxed">
-            <div>Qty <b>{prevQty}</b> → <b>{newQty}</b> · Line <b>PKR {prevLine.toFixed(2)}</b> → <b>PKR {newLine.toFixed(2)}</b></div>
-            <div className="opacity-70">Cart total PKR {newSubtotal.toFixed(2)}</div>
+            <div>Qty <b>{prevQty}</b> → <b>{newQty}</b> · Line <b>{formatPKR(prevLine)}</b> → <b>{formatPKR(newLine)}</b></div>
+            <div className="opacity-70">Cart total {formatPKR(newSubtotal)}</div>
           </div>
         ),
         action: {
@@ -60,7 +61,7 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
     const newCount = cart.reduce((n, i) => n + (i.id === item.id ? 0 : i.qty), 0);
     removeItem(item.id);
     toast.success(`Removed ${item.name} from cart`, {
-      description: `Cart total: PKR PKR {newSubtotal.toFixed(2)} · ${newCount} item${newCount === 1 ? "" : "s"}`,
+      description: `Cart total: ${formatPKR(newSubtotal)} · ${newCount} item${newCount === 1 ? "" : "s"}`,
       action: {
         label: "Undo",
         onClick: () => restoreItem(snapshot),
@@ -132,7 +133,7 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                         )}
                       </div>
                       <div className="text-black text-sm whitespace-nowrap" style={{ fontWeight: 500 }}>
-                        PKR {(i.price * i.qty).toFixed(2)}
+                        {formatPKR(i.price * i.qty)}
                       </div>
                     </div>
                     <div className="mt-auto pt-2 flex items-center justify-between">
@@ -160,15 +161,15 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
           <div className="border-t border-black/10 px-5 py-4 flex flex-col gap-3">
             <div className="flex justify-between text-sm text-black/60">
               <span>Subtotal</span>
-              <span>PKR {subtotal.toFixed(2)}</span>
+              <span>{formatPKR(subtotal)}</span>
             </div>
             <div className="flex justify-between text-sm text-black/60">
               <span>Shipping</span>
-              <span>{subtotal >= 50 ? "Free" : "PKR 5.00"}</span>
+              <span>{subtotal >= 50 ? "Free" : formatPKR(5)}</span>
             </div>
             <div className="flex justify-between text-black pt-2 border-t border-black/10" style={{ ...dmSans, fontWeight: 500, fontSize: 18 }}>
               <span>Total</span>
-              <span>PKR {(subtotal + (subtotal >= 50 || subtotal === 0 ? 0 : 5)).toFixed(2)}</span>
+              <span>{formatPKR(subtotal + (subtotal >= 50 || subtotal === 0 ? 0 : 5))}</span>
             </div>
             <button
               type="button"

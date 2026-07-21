@@ -6,6 +6,7 @@ import { useOrders, type SavedOrder } from "@/lib/orders";
 import { CartDrawer } from "@/components/CartDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
 import { toast } from "sonner";
+import { formatPKR } from "@/lib/format";
 
 export const Route = createFileRoute("/orders")({
   head: () => ({
@@ -144,7 +145,7 @@ function OrdersPage() {
                         ) : null}
                       </div>
                       <div className="text-sm text-black/60">
-                        {o.itemCount} item{o.itemCount === 1 ? "" : "s"} · <span className="text-black">PKR {o.total.toFixed(2)}</span>
+                        {o.itemCount} item{o.itemCount === 1 ? "" : "s"} · <span className="text-black">{formatPKR(o.total)}</span>
                       </div>
                       <div className="mt-auto flex flex-wrap gap-2 pt-2">
                         <button

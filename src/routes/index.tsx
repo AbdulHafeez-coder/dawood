@@ -31,6 +31,7 @@ import { useSettings } from "@/lib/settings";
 import { CartDrawer } from "@/components/CartDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
 import { toast } from "sonner";
+import { formatPKR } from "@/lib/format";
 
 
 export const Route = createFileRoute("/")({
@@ -487,12 +488,12 @@ function Index() {
                         <Star size={12} className="fill-black text-black" /> {p.rating}
                       </div>
                     </div>
-                    <div className="text-black shrink-0" style={{ ...dmSans, fontWeight: 500, fontSize: 20 }}>PKR {p.price}</div>
+                    <div className="text-black shrink-0" style={{ ...dmSans, fontWeight: 500, fontSize: 20 }}>{formatPKR(p.price)}</div>
                   </div>
                   <button
                     onClick={() => {
                       addToCart(p);
-                      toast.success(`${p.name} added to cart`, { description: `PKR PKR {p.price.toFixed(2)} · ${p.category}` });
+                      toast.success(`${p.name} added to cart`, { description: `${formatPKR(p.price)} · ${p.category}` });
                     }}
                     className="mt-auto inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-11 text-sm hover:bg-black/85"
                     style={{ fontWeight: 500 }}
