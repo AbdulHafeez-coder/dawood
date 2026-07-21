@@ -3,6 +3,7 @@ import { useState } from "react";
 import { ArrowLeft, Heart, ShoppingBag, Star, Plus, X } from "lucide-react";
 import { products, useCart, useFavourites, type Product } from "@/lib/shop";
 import { CartDrawer } from "@/components/CartDrawer";
+import { SiteFooter } from "@/components/SiteFooter";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/favorites")({
