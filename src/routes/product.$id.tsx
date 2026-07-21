@@ -52,7 +52,17 @@ function NotFoundProduct() {
 function ProductPage() {
   const { product } = Route.useLoaderData();
   const { addToCart, cartCount } = useCart();
-  const { toggleFav, isFav } = useFavourites();
+  const { toggleFav, isFav, favCount } = useFavourites();
+
+  const handleFav = () => {
+    const wasFav = isFav(product.id);
+    toggleFav(product.id);
+    if (wasFav) {
+      toast(`${product.name} removed from favourites`);
+    } else {
+      toast.success(`${product.name} added to favourites`, { description: product.category });
+    }
+  };
   const [cartOpen, setCartOpen] = useState(false);
   const [qty, setQty] = useState(1);
   const [activeImg, setActiveImg] = useState(0);
