@@ -182,6 +182,17 @@ function ProductPage() {
             </button>
           </div>
 
+          <a
+            href={whatsappProductUrl(product, qty)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 inline-flex items-center justify-center gap-2 bg-[#25D366] text-white rounded-md h-12 text-base w-full hover:bg-[#1ebe57] transition-colors"
+            style={{ fontWeight: 500 }}
+          >
+            <MessageCircle size={18} /> Order on WhatsApp
+          </a>
+          <p className="mt-2 text-[11px] text-black/50">Chat with us on WhatsApp — product details pre-filled.</p>
+
           <div className="mt-8 grid grid-cols-3 gap-3 max-w-md">
             {[
               { Icon: Truck, label: "Free over $50" },
