@@ -60,7 +60,7 @@ function ProductPage() {
   const handleAdd = () => {
     addToCart(product, qty);
     setAdded(true);
-    setCartOpen(true);
+    
     setTimeout(() => setAdded(false), 1600);
   };
 
