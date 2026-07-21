@@ -92,7 +92,13 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
               href="/"
               className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
             >
-              Back to shop
+              Back to home
+            </a>
+            <a
+              href="/#shop"
+              className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+            >
+              Browse products
             </a>
           </div>
 
