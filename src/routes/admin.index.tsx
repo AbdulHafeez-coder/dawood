@@ -661,10 +661,73 @@ function AdminDashboard() {
                     </div>
                   ) : (
                     <>
+                      {selectedCount > 0 && (
+                        <div className="mb-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3 p-3 rounded-xl bg-black text-white">
+                          <div className="text-[11px] uppercase tracking-[0.18em]">
+                            {selectedCount} selected
+                          </div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <select
+                              value={bulkCategory}
+                              onChange={(e) => setBulkCategory(e.target.value)}
+                              className="px-3 py-1.5 text-xs rounded-full bg-white text-black border border-white/20 focus:outline-none"
+                            >
+                              <option value="">Move to category…</option>
+                              {categories.map((c) => (
+                                <option key={c} value={c}>{c}</option>
+                              ))}
+                            </select>
+                            <button
+                              onClick={applyBulkCategory}
+                              disabled={!bulkCategory}
+                              className="px-3 py-1.5 rounded-full bg-white text-black text-[10px] uppercase tracking-[0.18em] disabled:opacity-40 hover:bg-white/90 transition"
+                            >
+                              Apply
+                            </button>
+                            <input
+                              value={bulkTag}
+                              onChange={(e) => setBulkTag(e.target.value)}
+                              placeholder="Set tag…"
+                              className="px-3 py-1.5 text-xs rounded-full bg-white text-black border border-white/20 focus:outline-none placeholder:text-black/40 w-32"
+                            />
+                            <button
+                              onClick={applyBulkTag}
+                              disabled={!bulkTag.trim()}
+                              className="px-3 py-1.5 rounded-full bg-white text-black text-[10px] uppercase tracking-[0.18em] disabled:opacity-40 hover:bg-white/90 transition"
+                            >
+                              Apply
+                            </button>
+                            <button
+                              onClick={() => setConfirmBulkDelete(true)}
+                              className="px-3 py-1.5 rounded-full bg-red-600 text-white text-[10px] uppercase tracking-[0.18em] hover:bg-red-700 transition inline-flex items-center gap-1.5"
+                            >
+                              <Trash2 className="w-3 h-3" /> Delete
+                            </button>
+                            <button
+                              onClick={clearSelection}
+                              className="px-3 py-1.5 rounded-full border border-white/30 text-white text-[10px] uppercase tracking-[0.18em] hover:bg-white/10 transition"
+                            >
+                              Clear
+                            </button>
+                          </div>
+                        </div>
+                      )}
                       <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
-                        <table className="w-full text-sm min-w-[720px]">
+                        <table className="w-full text-sm min-w-[760px]">
                           <thead>
                             <tr className="text-left text-[10px] uppercase tracking-[0.18em] text-black/45 border-b border-black/10">
+                              <th className="py-2 pr-3 font-medium w-8">
+                                <input
+                                  type="checkbox"
+                                  checked={allPageSelected}
+                                  ref={(el) => {
+                                    if (el) el.indeterminate = !allPageSelected && somePageSelected;
+                                  }}
+                                  onChange={togglePageSelection}
+                                  aria-label="Select all on this page"
+                                  className="w-4 h-4 accent-black cursor-pointer"
+                                />
+                              </th>
                               <th className="py-2 pr-3 font-medium">Item</th>
                               <th className="py-2 pr-3 font-medium">Category</th>
                               <th className="py-2 pr-3 font-medium">Tag</th>
@@ -674,8 +737,19 @@ function AdminDashboard() {
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-black/5">
-                            {pagedProducts.map((p) => (
-                              <tr key={p.id} className="hover:bg-black/[0.02]">
+                            {pagedProducts.map((p) => {
+                              const checked = selectedIds.has(p.id);
+                              return (
+                              <tr key={p.id} className={`hover:bg-black/[0.02] ${checked ? "bg-black/[0.03]" : ""}`}>
+                                <td className="py-3 pr-3">
+                                  <input
+                                    type="checkbox"
+                                    checked={checked}
+                                    onChange={() => toggleSelect(p.id)}
+                                    aria-label={`Select ${p.name}`}
+                                    className="w-4 h-4 accent-black cursor-pointer"
+                                  />
+                                </td>
                                 <td className="py-3 pr-3">
                                   <div className="flex items-center gap-3 min-w-0">
                                     <div className={`w-10 h-10 rounded-lg ${p.bg} grid place-items-center overflow-hidden shrink-0`}>
@@ -710,10 +784,12 @@ function AdminDashboard() {
                                   </div>
                                 </td>
                               </tr>
-                            ))}
+                              );
+                            })}
                           </tbody>
                         </table>
                       </div>
+
 
                       <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-[11px] text-black/60">
                         <div className="flex items-center gap-2">
