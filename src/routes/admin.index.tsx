@@ -1060,6 +1060,30 @@ function AdminDashboard() {
         </AlertDialogContent>
       </AlertDialog>
 
+      {/* Logout confirm */}
+      <AlertDialog open={confirmLogout} onOpenChange={setConfirmLogout}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Sign out of admin?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You'll be returned to the login screen. Unsaved changes in open dialogs will be lost.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Stay signed in</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setConfirmLogout(false);
+                handleLogout();
+              }}
+              className="bg-black text-white hover:bg-red-600"
+            >
+              <LogOut className="w-3.5 h-3.5 mr-1.5" /> Sign out
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* Bulk delete confirm */}
       <AlertDialog open={confirmBulkDelete} onOpenChange={(o) => !o && setConfirmBulkDelete(false)}>
         <AlertDialogContent>
