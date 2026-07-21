@@ -68,7 +68,17 @@ function Index() {
   const [activeCard, setActiveCard] = useState(0);
   const [cartOpen, setCartOpen] = useState(false);
   const { addToCart: addToCartShared, cartCount } = useCart();
-  const { toggleFav, isFav } = useFavourites();
+  const { toggleFav, isFav, favCount } = useFavourites();
+
+  const handleFav = (p: Product) => {
+    const wasFav = isFav(p.id);
+    toggleFav(p.id);
+    if (wasFav) {
+      toast(`${p.name} removed from favourites`);
+    } else {
+      toast.success(`${p.name} added to favourites`, { description: p.category });
+    }
+  };
 
   const [activeCat, setActiveCat] = useState<Category | "All">("All");
   const priceMax = Math.max(...products.map((p) => p.price));
@@ -137,6 +147,14 @@ function Index() {
           </div>
           <div className="flex items-center gap-3 sm:gap-4 animate-slide-right delay-300">
             <button aria-label="Search" onClick={focusSearch} className="text-white/90 hover:text-white"><Search size={20} strokeWidth={1.5} /></button>
+            <Link to="/favorites" aria-label="Favourites" className="relative text-white/90 hover:text-white">
+              <Heart size={20} strokeWidth={1.5} />
+              {favCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 bg-white text-black text-[10px] font-medium min-w-4 h-4 px-1 rounded-full flex items-center justify-center">
+                  {favCount}
+                </span>
+              )}
+            </Link>
             <button aria-label="Cart" onClick={() => setCartOpen(true)} className="relative text-white/90 hover:text-white">
               <ShoppingBag size={20} strokeWidth={1.5} />
               {cartCount > 0 && (
@@ -394,7 +412,7 @@ function Index() {
                   />
                 </Link>
                 <button
-                  onClick={() => toggleFav(p.id)}
+                  onClick={() => handleFav(p)}
                   aria-label={isFav(p.id) ? "Remove from favourites" : "Add to favourites"}
                   aria-pressed={isFav(p.id)}
                   className="absolute top-3 right-3 z-10 h-9 w-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center hover:bg-white transition-colors shadow-sm"
