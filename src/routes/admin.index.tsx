@@ -1811,7 +1811,16 @@ function SettingsPanel() {
         <section className="bg-white border border-black/10 rounded-2xl p-5 sm:p-6 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <SectionTitle icon={<SettingsIcon className="w-3.5 h-3.5" />} label="Site settings" />
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              <label className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-black/60 select-none cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="accent-black"
+                  checked={simulateFailure}
+                  onChange={(e) => setSimulateFailure(e.target.checked)}
+                />
+                Simulate failure
+              </label>
               <button
                 onClick={() => setConfirmReset(true)}
                 className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em]"
@@ -1819,15 +1828,15 @@ function SettingsPanel() {
                 <RotateCcw className="w-3 h-3" /> Reset
               </button>
               <button
-                onClick={() => save("brand")}
+                onClick={() => void save("brand")}
                 disabled={!dirty || savingSection !== null}
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-black text-white hover:bg-black/85 transition text-[10px] uppercase tracking-[0.18em] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Save changes
               </button>
-
             </div>
           </div>
+
 
           {/* Brand */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
