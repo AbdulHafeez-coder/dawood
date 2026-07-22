@@ -1685,6 +1685,8 @@ function CategoryFormDialog({
     value.trim().length > 0 &&
     existing.some((c) => c.toLowerCase() === value.trim().toLowerCase() && c !== name);
 
+  const ready = useMounted();
+
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="sm:max-w-md">
@@ -1698,6 +1700,9 @@ function CategoryFormDialog({
               : `Rename the “${name}” category — products will follow.`}
           </DialogDescription>
         </DialogHeader>
+        {!ready ? (
+          <CategoryFormSkeleton mode={mode} />
+        ) : (
         <form onSubmit={submit} className="space-y-3" style={inter}>
           <Field label="Name">
             <input
@@ -1722,6 +1727,7 @@ function CategoryFormDialog({
             </button>
           </DialogFooter>
         </form>
+        )}
       </DialogContent>
     </Dialog>
   );
