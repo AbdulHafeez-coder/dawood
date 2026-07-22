@@ -5,6 +5,7 @@ import { useCart } from "@/lib/shop";
 import { useOrders, type SavedOrder } from "@/lib/orders";
 import { LazyCartDrawer as CartDrawer } from "@/components/LazyCartDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
+import { OrdersListSkeleton, useMounted } from "@/components/skeletons";
 import { toast } from "sonner";
 import { formatPKR } from "@/lib/format";
 
@@ -37,6 +38,7 @@ function OrdersPage() {
   const [cartOpen, setCartOpen] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const mounted = useMounted();
 
   const resend = (o: SavedOrder) => {
     window.open(o.url, "_blank", "noopener,noreferrer");
@@ -112,7 +114,9 @@ function OrdersPage() {
           )}
         </div>
 
-        {orderCount === 0 ? (
+        {!mounted ? (
+          <OrdersListSkeleton count={3} />
+        ) : orderCount === 0 ? (
           <div className="border border-dashed border-black/15 rounded-2xl p-10 text-center text-black/60">
             <p className="mb-4">Your WhatsApp order drafts will appear here after your first order.</p>
             <Link to="/" className="inline-flex items-center gap-2 bg-black text-white rounded-full px-5 py-2.5 text-sm hover:bg-black/85">
