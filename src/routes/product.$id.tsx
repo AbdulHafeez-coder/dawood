@@ -6,6 +6,7 @@ import { saveOrder } from "@/lib/orders";
 import { getProduct, getVariants, useProducts, useCart, useFavourites, type Product } from "@/lib/shop";
 import { LazyCartDrawer as CartDrawer } from "@/components/LazyCartDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
+import { AddToCartSkeleton, ProductGallerySkeleton, VariantOptionsSkeleton, useMounted } from "@/components/skeletons";
 import { toast } from "sonner";
 import { formatPKR } from "@/lib/format";
 
