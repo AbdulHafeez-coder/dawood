@@ -1882,9 +1882,12 @@ function SettingsPanel() {
     }
   };
 
-  const showBrand = !ready || savingSection === "brand" || savingSection === "all" || refreshingSection === "brand";
-  const showContact = !ready || savingSection === "contact" || savingSection === "all" || refreshingSection === "contact";
-  const showSocials = !ready || savingSection === "socials" || savingSection === "all" || refreshingSection === "socials";
+  const brandBusy = savingSection === "brand" || savingSection === "all" || refreshingSection === "brand";
+  const contactBusy = savingSection === "contact" || savingSection === "all" || refreshingSection === "contact";
+  const socialsBusy = savingSection === "socials" || savingSection === "all" || refreshingSection === "socials";
+  const showBrand = !ready || brandBusy;
+  const showContact = !ready || contactBusy;
+  const showSocials = !ready || socialsBusy;
 
 
 
