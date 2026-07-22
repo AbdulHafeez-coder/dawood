@@ -1648,6 +1648,7 @@ function ProductFormDialog({
             </button>
           </DialogFooter>
         </form>
+        )}
       </DialogContent>
     </Dialog>
   );
