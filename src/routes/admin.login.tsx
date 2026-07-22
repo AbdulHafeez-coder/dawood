@@ -4,6 +4,7 @@ import { ArrowLeft, Lock, Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 import { useAdminAuth, ADMIN_EMAIL, ADMIN_PASSWORD } from "@/lib/admin-auth";
 import { AdminLoginSkeleton, useMounted } from "@/components/skeletons";
+import { AdminError, AdminNotFound } from "@/components/AdminFallback";
 
 
 const dmSans = { fontFamily: "'DM Sans', sans-serif" };
@@ -21,6 +22,9 @@ export const Route = createFileRoute("/admin/login")({
     ],
   }),
   component: AdminLogin,
+  pendingComponent: AdminLoginSkeleton,
+  errorComponent: AdminError,
+  notFoundComponent: AdminNotFound,
 });
 
 function AdminLogin() {
