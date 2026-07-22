@@ -1933,9 +1933,25 @@ function SettingsPanel() {
   const showBrand = !ready || brandBusy;
   const showContact = !ready || contactBusy;
   const showSocials = !ready || socialsBusy;
+  const brandFirstRef = useRef<HTMLInputElement>(null);
+  const contactFirstRef = useRef<HTMLInputElement>(null);
+  const socialsFirstRef = useRef<HTMLInputElement>(null);
 
+  const focusField = (ref: React.RefObject<HTMLInputElement>) => {
+    const el = ref.current;
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    setTimeout(() => el.focus(), 250);
+  };
 
-
+  const brandEmpty =
+    !saved.brandName.trim() &&
+    !saved.tagline.trim() &&
+    !saved.logoUrl.trim() &&
+    !saved.whatsappNumber.trim();
+  const contactEmpty =
+    !saved.contactEmail.trim() && !saved.contactPhone.trim() && !saved.address.trim();
+  const socialsEmpty = SOCIAL_FIELDS.every((f) => !saved.socials[f.key]?.trim());
 
 
   return (
