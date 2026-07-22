@@ -6,6 +6,7 @@ import { saveOrder } from "@/lib/orders";
 import { getProduct, getVariants, useProducts, useCart, useFavourites, type Product } from "@/lib/shop";
 import { LazyCartDrawer as CartDrawer } from "@/components/LazyCartDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
+import { AddToCartSkeleton, ProductGallerySkeleton, VariantOptionsSkeleton, useMounted } from "@/components/skeletons";
 import { toast } from "sonner";
 import { formatPKR } from "@/lib/format";
 
@@ -80,6 +81,7 @@ function ProductError() {
 
 function ProductPage() {
   const { product } = Route.useLoaderData();
+  const mounted = useMounted();
   const { addToCart, cartCount } = useCart();
   const { toggleFav, isFav, favCount } = useFavourites();
 
@@ -213,23 +215,27 @@ function ProductPage() {
       {/* PRODUCT */}
       <section className="px-5 sm:px-8 lg:px-10 py-8 lg:py-12 grid md:grid-cols-2 gap-8 lg:gap-14">
         {/* GALLERY */}
-        <div className="flex flex-col gap-3">
-          <div className={`${product.bg} rounded-2xl aspect-square overflow-hidden`}>
-            <img src={product.gallery[activeImg] ?? product.img} alt={product.name} width={1600} height={1600} className="w-full h-full object-cover" />
+        {!mounted ? (
+          <ProductGallerySkeleton />
+        ) : (
+          <div className="flex flex-col gap-3">
+            <div className={`${product.bg} rounded-2xl aspect-square overflow-hidden`}>
+              <img src={product.gallery[activeImg] ?? product.img} alt={product.name} width={1600} height={1600} className="w-full h-full object-cover" />
+            </div>
+            <div className="grid grid-cols-4 gap-3">
+              {product.gallery.map((g: string, i: number) => (
+                <button
+                  key={i}
+                  onClick={() => setActiveImg(i)}
+                  aria-label={`Show image ${i + 1}`}
+                  className={`aspect-square rounded-xl overflow-hidden border-2 transition-colors ${activeImg === i ? "border-black" : "border-transparent hover:border-black/20"} ${product.bg}`}
+                >
+                  <img src={g} alt="" className="w-full h-full object-cover" loading="lazy" decoding="async" />
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="grid grid-cols-4 gap-3">
-            {product.gallery.map((g: string, i: number) => (
-              <button
-                key={i}
-                onClick={() => setActiveImg(i)}
-                aria-label={`Show image ${i + 1}`}
-                className={`aspect-square rounded-xl overflow-hidden border-2 transition-colors ${activeImg === i ? "border-black" : "border-transparent hover:border-black/20"} ${product.bg}`}
-              >
-                <img src={g} alt="" className="w-full h-full object-cover" loading="lazy" decoding="async" />
-              </button>
-            ))}
-          </div>
-        </div>
+        )}
 
         {/* INFO */}
         <div>
@@ -256,125 +262,141 @@ function ProductPage() {
             ))}
           </ul>
 
-          {/* SIZE */}
-          <div className="mt-8 max-w-md">
-            <div className="flex items-baseline justify-between mb-2">
-              <div className="text-sm text-black" style={{ fontWeight: 500 }}>Size</div>
-              <div className="text-xs text-black/50">{selectedSize ? selectedSize.note ?? selectedSize.label : "Select a size"}</div>
+          {!mounted ? (
+            <div className="mt-8">
+              <VariantOptionsSkeleton />
             </div>
-            <div className="flex flex-wrap gap-2">
-              {variants.sizes.map((s) => {
-                const active = size === s.id;
-                return (
-                  <button
-                    key={s.id}
-                    onClick={() => setSize(s.id)}
-                    aria-pressed={active}
-                    className={`px-4 h-10 rounded-full border text-sm transition-colors ${active ? "border-black bg-black text-white" : "border-black/15 text-black hover:border-black"}`}
-                  >
-                    {s.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* COLOR */}
-          <div className="mt-6 max-w-md">
-            <div className="flex items-baseline justify-between mb-2">
-              <div className="text-sm text-black" style={{ fontWeight: 500 }}>Colour</div>
-              <div className="text-xs text-black/50">{selectedColor ? selectedColor.label : "Select a colour"}</div>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              {variants.colors.map((c) => {
-                const active = color === c.id;
-                const isGradient = c.swatch.startsWith("linear-gradient");
-                return (
-                  <button
-                    key={c.id}
-                    onClick={() => setColor(c.id)}
-                    aria-label={c.label}
-                    aria-pressed={active}
-                    title={c.label}
-                    className={`h-9 w-9 rounded-full border-2 transition-colors ${active ? "border-black" : "border-black/15 hover:border-black/40"}`}
-                    style={isGradient ? { backgroundImage: c.swatch } : { backgroundColor: c.swatch }}
-                  />
-                );
-              })}
-            </div>
-          </div>
-
-          {/* QUANTITY + ADD */}
-          <div className="mt-8 flex items-center gap-3">
-            <div className="inline-flex items-center border border-black/15 rounded-full h-12">
-              <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="w-10 h-12 flex items-center justify-center text-black/70 hover:text-black" aria-label="Decrease">
-                <Minus size={16} />
-              </button>
-              <span className="w-8 text-center text-sm text-black">{qty}</span>
-              <button onClick={() => setQty((q) => q + 1)} className="w-10 h-12 flex items-center justify-center text-black/70 hover:text-black" aria-label="Increase">
-                <Plus size={16} />
-              </button>
-            </div>
-            <div
-              className="flex-1"
-              onClick={() => {
-                if (!canAdd) handleAdd();
-              }}
-            >
-              <button
-                onClick={handleAdd}
-                disabled={!canAdd}
-                className="w-full inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-12 text-base hover:bg-black/85 transition-colors disabled:bg-black/25 disabled:cursor-not-allowed"
-                style={{ fontWeight: 500 }}
-              >
-                {!canAdd ? "Select size & colour" : added ? (<><Check size={18} /> Added</>) : (<>Add to cart · {formatPKR(product.price * qty)}</>)}
-              </button>
-            </div>
-            <button
-              onClick={handleFav}
-              aria-label={isFav(product.id) ? "Remove from favourites" : "Add to favourites"}
-              aria-pressed={isFav(product.id)}
-              className="h-12 w-12 shrink-0 inline-flex items-center justify-center rounded-full border border-black/15 hover:border-black transition-colors"
-            >
-              <Heart size={18} className={isFav(product.id) ? "fill-black text-black" : "text-black"} />
-            </button>
-          </div>
-
-          {canAdd ? (
-            <button
-              type="button"
-              onClick={() => {
-                const { text, url, total } = buildWhatsappProductOrder(variantProduct, qty);
-                saveOrder({
-                  kind: "product",
-                  url,
-                  message: text,
-                  total,
-                  itemCount: qty,
-                  primaryName: variantProduct.name,
-                  primaryImg: product.img,
-                  primaryBg: product.bg,
-                });
-                toast.success("Order draft saved", { description: "You can resend it any time from Orders." });
-                window.open(url, "_blank", "noopener,noreferrer");
-              }}
-              className="mt-3 inline-flex items-center justify-center gap-2 bg-[#25D366] text-white rounded-md h-12 text-base w-full hover:bg-[#1ebe57] transition-colors"
-              style={{ fontWeight: 500 }}
-            >
-              <MessageCircle size={18} /> Order on WhatsApp
-            </button>
           ) : (
-            <button
-              disabled
-              className="mt-3 inline-flex items-center justify-center gap-2 bg-[#25D366]/30 text-white rounded-md h-12 text-base w-full cursor-not-allowed"
-              style={{ fontWeight: 500 }}
-            >
-              <MessageCircle size={18} /> Order on WhatsApp
-            </button>
+            <>
+              {/* SIZE */}
+              <div className="mt-8 max-w-md">
+                <div className="flex items-baseline justify-between mb-2">
+                  <div className="text-sm text-black" style={{ fontWeight: 500 }}>Size</div>
+                  <div className="text-xs text-black/50">{selectedSize ? selectedSize.note ?? selectedSize.label : "Select a size"}</div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {variants.sizes.map((s) => {
+                    const active = size === s.id;
+                    return (
+                      <button
+                        key={s.id}
+                        onClick={() => setSize(s.id)}
+                        aria-pressed={active}
+                        className={`px-4 h-10 rounded-full border text-sm transition-colors ${active ? "border-black bg-black text-white" : "border-black/15 text-black hover:border-black"}`}
+                      >
+                        {s.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* COLOR */}
+              <div className="mt-6 max-w-md">
+                <div className="flex items-baseline justify-between mb-2">
+                  <div className="text-sm text-black" style={{ fontWeight: 500 }}>Colour</div>
+                  <div className="text-xs text-black/50">{selectedColor ? selectedColor.label : "Select a colour"}</div>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  {variants.colors.map((c) => {
+                    const active = color === c.id;
+                    const isGradient = c.swatch.startsWith("linear-gradient");
+                    return (
+                      <button
+                        key={c.id}
+                        onClick={() => setColor(c.id)}
+                        aria-label={c.label}
+                        aria-pressed={active}
+                        title={c.label}
+                        className={`h-9 w-9 rounded-full border-2 transition-colors ${active ? "border-black" : "border-black/15 hover:border-black/40"}`}
+                        style={isGradient ? { backgroundImage: c.swatch } : { backgroundColor: c.swatch }}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            </>
           )}
-          <p className="mt-2 text-[11px] text-black/50">
-            {canAdd ? "Chat with us on WhatsApp — product details pre-filled." : "Pick a size and colour to continue."}
-          </p>
+
+          {!mounted ? (
+            <div className="mt-8">
+              <AddToCartSkeleton />
+            </div>
+          ) : (
+            <>
+              {/* QUANTITY + ADD */}
+              <div className="mt-8 flex items-center gap-3">
+                <div className="inline-flex items-center border border-black/15 rounded-full h-12">
+                  <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="w-10 h-12 flex items-center justify-center text-black/70 hover:text-black" aria-label="Decrease">
+                    <Minus size={16} />
+                  </button>
+                  <span className="w-8 text-center text-sm text-black">{qty}</span>
+                  <button onClick={() => setQty((q) => q + 1)} className="w-10 h-12 flex items-center justify-center text-black/70 hover:text-black" aria-label="Increase">
+                    <Plus size={16} />
+                  </button>
+                </div>
+                <div
+                  className="flex-1"
+                  onClick={() => {
+                    if (!canAdd) handleAdd();
+                  }}
+                >
+                  <button
+                    onClick={handleAdd}
+                    disabled={!canAdd}
+                    className="w-full inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-12 text-base hover:bg-black/85 transition-colors disabled:bg-black/25 disabled:cursor-not-allowed"
+                    style={{ fontWeight: 500 }}
+                  >
+                    {!canAdd ? "Select size & colour" : added ? (<><Check size={18} /> Added</>) : (<>Add to cart · {formatPKR(product.price * qty)}</>)}
+                  </button>
+                </div>
+                <button
+                  onClick={handleFav}
+                  aria-label={isFav(product.id) ? "Remove from favourites" : "Add to favourites"}
+                  aria-pressed={isFav(product.id)}
+                  className="h-12 w-12 shrink-0 inline-flex items-center justify-center rounded-full border border-black/15 hover:border-black transition-colors"
+                >
+                  <Heart size={18} className={isFav(product.id) ? "fill-black text-black" : "text-black"} />
+                </button>
+              </div>
+
+              {canAdd ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const { text, url, total } = buildWhatsappProductOrder(variantProduct, qty);
+                    saveOrder({
+                      kind: "product",
+                      url,
+                      message: text,
+                      total,
+                      itemCount: qty,
+                      primaryName: variantProduct.name,
+                      primaryImg: product.img,
+                      primaryBg: product.bg,
+                    });
+                    toast.success("Order draft saved", { description: "You can resend it any time from Orders." });
+                    window.open(url, "_blank", "noopener,noreferrer");
+                  }}
+                  className="mt-3 inline-flex items-center justify-center gap-2 bg-[#25D366] text-white rounded-md h-12 text-base w-full hover:bg-[#1ebe57] transition-colors"
+                  style={{ fontWeight: 500 }}
+                >
+                  <MessageCircle size={18} /> Order on WhatsApp
+                </button>
+              ) : (
+                <button
+                  disabled
+                  className="mt-3 inline-flex items-center justify-center gap-2 bg-[#25D366]/30 text-white rounded-md h-12 text-base w-full cursor-not-allowed"
+                  style={{ fontWeight: 500 }}
+                >
+                  <MessageCircle size={18} /> Order on WhatsApp
+                </button>
+              )}
+              <p className="mt-2 text-[11px] text-black/50">
+                {canAdd ? "Chat with us on WhatsApp — product details pre-filled." : "Pick a size and colour to continue."}
+              </p>
+            </>
+          )}
 
           <div className="mt-8 grid grid-cols-3 gap-3 max-w-md">
             {[

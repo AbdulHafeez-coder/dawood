@@ -137,3 +137,59 @@ export function CartDrawerSkeleton() {
     </div>
   );
 }
+
+export function ProductGallerySkeleton() {
+  return (
+    <div className="flex flex-col gap-3" aria-busy="true">
+      <Shimmer className="aspect-square w-full rounded-2xl" />
+      <div className="grid grid-cols-4 gap-3">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Shimmer key={i} className="aspect-square rounded-xl" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function VariantOptionsSkeleton() {
+  return (
+    <div className="space-y-6 max-w-md" aria-busy="true">
+      <div>
+        <div className="flex items-baseline justify-between mb-2">
+          <Shimmer className="h-4 w-12 rounded" />
+          <Shimmer className="h-3 w-20 rounded" />
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Shimmer key={i} className="h-10 w-16 rounded-full" />
+          ))}
+        </div>
+      </div>
+      <div>
+        <div className="flex items-baseline justify-between mb-2">
+          <Shimmer className="h-4 w-16 rounded" />
+          <Shimmer className="h-3 w-20 rounded" />
+        </div>
+        <div className="flex flex-wrap gap-3">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Shimmer key={i} className="h-9 w-9 rounded-full" />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function AddToCartSkeleton() {
+  return (
+    <div className="space-y-3 max-w-md" aria-busy="true">
+      <div className="flex items-center gap-3">
+        <Shimmer className="h-12 w-28 rounded-full" />
+        <Shimmer className="h-12 flex-1 rounded-md" />
+        <Shimmer className="h-12 w-12 rounded-full shrink-0" />
+      </div>
+      <Shimmer className="h-12 w-full rounded-md" />
+      <Shimmer className="h-3 w-2/3 rounded" />
+    </div>
+  );
+}
