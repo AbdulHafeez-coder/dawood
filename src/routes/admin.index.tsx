@@ -24,6 +24,9 @@ import {
   ChevronRight,
   X as XIcon,
   Settings as SettingsIcon,
+  AlertTriangle,
+  RefreshCw,
+
 
 } from "lucide-react";
 import { toast } from "sonner";
