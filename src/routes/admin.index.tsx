@@ -1756,12 +1756,20 @@ const SOCIAL_FIELDS: { key: SocialKey; label: string; placeholder: string }[] = 
   { key: "youtube", label: "YouTube", placeholder: "https://youtube.com/@yourbrand" },
 ];
 
+type SettingsSection = "brand" | "contact" | "socials";
+
 function SettingsPanel() {
   const ready = useMounted();
   const saved = useSettings();
   const [draft, setDraft] = useState(saved);
   const [confirmReset, setConfirmReset] = useState(false);
-  const [savingSection, setSavingSection] = useState<null | "brand" | "contact" | "socials" | "all">(null);
+  const [savingSection, setSavingSection] = useState<null | SettingsSection | "all">(null);
+  const [refreshingSection, setRefreshingSection] = useState<null | SettingsSection>(null);
+  const [sectionErrors, setSectionErrors] = useState<Record<SettingsSection, string | null>>({
+    brand: null,
+    contact: null,
+    socials: null,
+  });
   const [simulateFailure, setSimulateFailure] = useState(false);
 
   useEffect(() => {
@@ -1770,11 +1778,19 @@ function SettingsPanel() {
 
   const dirty = JSON.stringify(draft) !== JSON.stringify(saved);
 
-  const save = async (section: "brand" | "contact" | "socials" | "all" = "all") => {
+  const setError = (section: SettingsSection, msg: string | null) =>
+    setSectionErrors((prev) => ({ ...prev, [section]: msg }));
+
+  const targetsForScope = (scope: SettingsSection | "all"): SettingsSection[] =>
+    scope === "all" ? ["brand", "contact", "socials"] : [scope];
+
+  const save = async (scope: SettingsSection | "all" = "all") => {
     if (savingSection) return;
     const prev = saved;
     const next = draft;
-    setSavingSection(section);
+    const targets = targetsForScope(scope);
+    setSavingSection(scope);
+    targets.forEach((s) => setError(s, null));
     // Optimistic: apply immediately so UI reflects the new values.
     updateSettings(next);
     try {
@@ -1788,18 +1804,41 @@ function SettingsPanel() {
       updateSettings(prev);
       setDraft(prev);
       const message = err instanceof Error ? err.message : "Save failed. Changes reverted.";
+      targets.forEach((s) => setError(s, message));
       toast.error("Save failed — changes reverted", {
         description: message,
-        action: { label: "Retry", onClick: () => void save(section) },
+        action: { label: "Retry", onClick: () => void save(scope) },
       });
     } finally {
       setSavingSection(null);
     }
   };
 
-  const showBrand = !ready || savingSection === "brand" || savingSection === "all";
-  const showContact = !ready || savingSection === "contact" || savingSection === "all";
-  const showSocials = !ready || savingSection === "socials" || savingSection === "all";
+  const refresh = async (section: SettingsSection) => {
+    if (refreshingSection) return;
+    setRefreshingSection(section);
+    setError(section, null);
+    try {
+      await saveSettingsAsync(saved, {
+        latencyMs: 400,
+        failureRate: simulateFailure ? 1 : 0,
+      });
+      setDraft(saved);
+      toast.success("Section refreshed");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Could not load latest values.";
+      setError(section, message);
+      toast.error("Refresh failed", { description: message });
+    } finally {
+      setRefreshingSection(null);
+    }
+  };
+
+  const showBrand = !ready || savingSection === "brand" || savingSection === "all" || refreshingSection === "brand";
+  const showContact = !ready || savingSection === "contact" || savingSection === "all" || refreshingSection === "contact";
+  const showSocials = !ready || savingSection === "socials" || savingSection === "all" || refreshingSection === "socials";
+
+
 
 
 
