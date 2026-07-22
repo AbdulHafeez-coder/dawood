@@ -262,53 +262,61 @@ function ProductPage() {
             ))}
           </ul>
 
-          {/* SIZE */}
-          <div className="mt-8 max-w-md">
-            <div className="flex items-baseline justify-between mb-2">
-              <div className="text-sm text-black" style={{ fontWeight: 500 }}>Size</div>
-              <div className="text-xs text-black/50">{selectedSize ? selectedSize.note ?? selectedSize.label : "Select a size"}</div>
+          {!mounted ? (
+            <div className="mt-8">
+              <VariantOptionsSkeleton />
             </div>
-            <div className="flex flex-wrap gap-2">
-              {variants.sizes.map((s) => {
-                const active = size === s.id;
-                return (
-                  <button
-                    key={s.id}
-                    onClick={() => setSize(s.id)}
-                    aria-pressed={active}
-                    className={`px-4 h-10 rounded-full border text-sm transition-colors ${active ? "border-black bg-black text-white" : "border-black/15 text-black hover:border-black"}`}
-                  >
-                    {s.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+          ) : (
+            <>
+              {/* SIZE */}
+              <div className="mt-8 max-w-md">
+                <div className="flex items-baseline justify-between mb-2">
+                  <div className="text-sm text-black" style={{ fontWeight: 500 }}>Size</div>
+                  <div className="text-xs text-black/50">{selectedSize ? selectedSize.note ?? selectedSize.label : "Select a size"}</div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {variants.sizes.map((s) => {
+                    const active = size === s.id;
+                    return (
+                      <button
+                        key={s.id}
+                        onClick={() => setSize(s.id)}
+                        aria-pressed={active}
+                        className={`px-4 h-10 rounded-full border text-sm transition-colors ${active ? "border-black bg-black text-white" : "border-black/15 text-black hover:border-black"}`}
+                      >
+                        {s.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
 
-          {/* COLOR */}
-          <div className="mt-6 max-w-md">
-            <div className="flex items-baseline justify-between mb-2">
-              <div className="text-sm text-black" style={{ fontWeight: 500 }}>Colour</div>
-              <div className="text-xs text-black/50">{selectedColor ? selectedColor.label : "Select a colour"}</div>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              {variants.colors.map((c) => {
-                const active = color === c.id;
-                const isGradient = c.swatch.startsWith("linear-gradient");
-                return (
-                  <button
-                    key={c.id}
-                    onClick={() => setColor(c.id)}
-                    aria-label={c.label}
-                    aria-pressed={active}
-                    title={c.label}
-                    className={`h-9 w-9 rounded-full border-2 transition-colors ${active ? "border-black" : "border-black/15 hover:border-black/40"}`}
-                    style={isGradient ? { backgroundImage: c.swatch } : { backgroundColor: c.swatch }}
-                  />
-                );
-              })}
-            </div>
-          </div>
+              {/* COLOR */}
+              <div className="mt-6 max-w-md">
+                <div className="flex items-baseline justify-between mb-2">
+                  <div className="text-sm text-black" style={{ fontWeight: 500 }}>Colour</div>
+                  <div className="text-xs text-black/50">{selectedColor ? selectedColor.label : "Select a colour"}</div>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  {variants.colors.map((c) => {
+                    const active = color === c.id;
+                    const isGradient = c.swatch.startsWith("linear-gradient");
+                    return (
+                      <button
+                        key={c.id}
+                        onClick={() => setColor(c.id)}
+                        aria-label={c.label}
+                        aria-pressed={active}
+                        title={c.label}
+                        className={`h-9 w-9 rounded-full border-2 transition-colors ${active ? "border-black" : "border-black/15 hover:border-black/40"}`}
+                        style={isGradient ? { backgroundImage: c.swatch } : { backgroundColor: c.swatch }}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            </>
+          )}
 
           {/* QUANTITY + ADD */}
           <div className="mt-8 flex items-center gap-3">
