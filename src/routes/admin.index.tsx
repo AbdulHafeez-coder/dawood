@@ -2006,14 +2006,31 @@ function SettingsPanel() {
         <section className="bg-white border border-black/10 rounded-2xl p-5 sm:p-6 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <SectionTitle icon={<SettingsIcon className="w-3.5 h-3.5" />} label="Contact" />
-            <button
-              onClick={() => void save("contact")}
-              disabled={!dirty || savingSection !== null}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-black text-white hover:bg-black/85 transition text-[10px] uppercase tracking-[0.18em] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              Save changes
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => void refresh("contact")}
+                disabled={refreshingSection !== null || savingSection !== null}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em] disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <RefreshCw className={`w-3 h-3 ${contactBusy && refreshingSection ? "animate-spin" : ""}`} /> Refresh
+              </button>
+              <button
+                onClick={() => void save("contact")}
+                disabled={!dirty || savingSection !== null}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-black text-white hover:bg-black/85 transition text-[10px] uppercase tracking-[0.18em] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Save changes
+              </button>
+            </div>
           </div>
+          {sectionErrors.contact && (
+            <SectionErrorBanner
+              message={sectionErrors.contact}
+              busy={contactBusy}
+              onRetry={() => void save("contact")}
+              onDismiss={() => setError("contact", null)}
+            />
+          )}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Field label="Email">
               <input
