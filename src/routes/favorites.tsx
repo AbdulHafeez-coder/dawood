@@ -4,6 +4,7 @@ import { ArrowLeft, Heart, ShoppingBag, Star, Plus, X } from "lucide-react";
 import { useProducts, useCart, useFavourites, type Product } from "@/lib/shop";
 import { LazyCartDrawer as CartDrawer } from "@/components/LazyCartDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
+import { ProductGridSkeleton, useMounted } from "@/components/skeletons";
 import { toast } from "sonner";
 import { formatPKR } from "@/lib/format";
 
@@ -28,6 +29,7 @@ function FavoritesPage() {
   const { cartCount } = useCart();
   const { products } = useProducts();
   const [cartOpen, setCartOpen] = useState(false);
+  const mounted = useMounted();
 
   const items = products.filter((p) => favs.includes(p.id));
 
@@ -78,7 +80,9 @@ function FavoritesPage() {
           </div>
         </div>
 
-        {items.length === 0 ? (
+        {!mounted ? (
+          <ProductGridSkeleton count={4} />
+        ) : items.length === 0 ? (
           <div className="bg-white rounded-2xl p-10 sm:p-16 text-center flex flex-col items-center gap-4">
             <div className="h-16 w-16 rounded-full bg-black/5 flex items-center justify-center">
               <Heart size={26} className="text-black/50" />
