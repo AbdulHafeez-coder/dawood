@@ -2076,8 +2076,25 @@ function SettingsPanel() {
         <SettingsSectionSkeleton rows={3} cols={2} />
       ) : (
         <section className="bg-white border border-black/10 rounded-2xl p-5 sm:p-6 space-y-4">
-          <SectionTitle icon={<SettingsIcon className="w-3.5 h-3.5" />} label="Social media" />
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <SectionTitle icon={<SettingsIcon className="w-3.5 h-3.5" />} label="Social media" />
+            <button
+              onClick={() => void refresh("socials")}
+              disabled={refreshingSection !== null || savingSection !== null}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em] disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <RefreshCw className={`w-3 h-3 ${socialsBusy && refreshingSection ? "animate-spin" : ""}`} /> Refresh
+            </button>
+          </div>
           <p className="text-xs text-black/50 -mt-1">Leave blank to hide the icon from the footer.</p>
+          {sectionErrors.socials && (
+            <SectionErrorBanner
+              message={sectionErrors.socials}
+              busy={socialsBusy}
+              onRetry={() => void save("socials")}
+              onDismiss={() => setError("socials", null)}
+            />
+          )}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {SOCIAL_FIELDS.map((f) => (
               <Field key={f.key} label={f.label}>
