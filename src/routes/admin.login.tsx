@@ -21,6 +21,9 @@ export const Route = createFileRoute("/admin/login")({
     ],
   }),
   component: AdminLogin,
+  pendingComponent: AdminLoginSkeleton,
+  errorComponent: AdminError,
+  notFoundComponent: AdminNotFound,
 });
 
 function AdminLogin() {

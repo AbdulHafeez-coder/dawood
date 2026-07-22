@@ -104,6 +104,12 @@ export const Route = createFileRoute("/admin/")({
     ],
   }),
   component: AdminDashboard,
+  pendingComponent: () => {
+    const { AdminDashboardSkeleton } = require("@/components/skeletons");
+    return <AdminDashboardSkeleton tab="overview" />;
+  },
+  errorComponent: AdminError,
+  notFoundComponent: AdminNotFound,
 });
 
 function AdminDashboard() {
