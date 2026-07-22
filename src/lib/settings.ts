@@ -81,6 +81,22 @@ export function resetSettings() {
   emit();
 }
 
+// Async save that simulates network latency and may fail. Callers pair this with
+// an optimistic `updateSettings` and roll back on rejection.
+export async function saveSettingsAsync(
+  patch: Partial<Settings> & { socials?: Partial<Settings["socials"]> },
+  opts: { latencyMs?: number; failureRate?: number } = {},
+): Promise<Settings> {
+  const latency = opts.latencyMs ?? 450;
+  const failureRate = opts.failureRate ?? 0;
+  await new Promise((r) => setTimeout(r, latency));
+  if (Math.random() < failureRate) {
+    throw new Error("Network error while saving settings. Please try again.");
+  }
+  updateSettings(patch);
+  return current;
+}
+
 export function useSettings() {
   const [s, setS] = useState<Settings>(current);
   useEffect(() => {
