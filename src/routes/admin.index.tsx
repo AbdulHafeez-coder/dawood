@@ -48,6 +48,8 @@ import {
 } from "@/lib/csv";
 import {
   AdminDashboardSkeleton,
+  ProductFormSkeleton,
+  CategoryFormSkeleton,
   useMounted,
 } from "@/components/skeletons";
 import { AdminError, AdminNotFound } from "@/components/AdminFallback";
@@ -1472,6 +1474,8 @@ function ProductFormDialog({
     else if (product) onSave(product.id, payload);
   }
 
+  const ready = useMounted();
+
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -1484,6 +1488,9 @@ function ProductFormDialog({
           </DialogDescription>
         </DialogHeader>
 
+        {!ready ? (
+          <ProductFormSkeleton mode={mode} />
+        ) : (
         <form onSubmit={submit} className="space-y-4" style={inter}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Field label="Name">
@@ -1641,6 +1648,7 @@ function ProductFormDialog({
             </button>
           </DialogFooter>
         </form>
+        )}
       </DialogContent>
     </Dialog>
   );
@@ -1677,6 +1685,8 @@ function CategoryFormDialog({
     value.trim().length > 0 &&
     existing.some((c) => c.toLowerCase() === value.trim().toLowerCase() && c !== name);
 
+  const ready = useMounted();
+
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="sm:max-w-md">
@@ -1690,6 +1700,9 @@ function CategoryFormDialog({
               : `Rename the “${name}” category — products will follow.`}
           </DialogDescription>
         </DialogHeader>
+        {!ready ? (
+          <CategoryFormSkeleton mode={mode} />
+        ) : (
         <form onSubmit={submit} className="space-y-3" style={inter}>
           <Field label="Name">
             <input
@@ -1714,6 +1727,7 @@ function CategoryFormDialog({
             </button>
           </DialogFooter>
         </form>
+        )}
       </DialogContent>
     </Dialog>
   );

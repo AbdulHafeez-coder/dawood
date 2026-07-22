@@ -418,3 +418,60 @@ export function AdminLoginSkeleton() {
     </div>
   );
 }
+
+export function ProductFormSkeleton({ mode = "create" }: { mode?: "create" | "edit" }) {
+  return (
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <Shimmer className="h-5 w-40 rounded" />
+        <Shimmer className="h-3 w-64 rounded" />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="space-y-2">
+            <Shimmer className="h-2.5 w-20 rounded" />
+            <Shimmer className="h-9 w-full rounded-md" />
+          </div>
+        ))}
+      </div>
+      <div className="space-y-2">
+        <Shimmer className="h-2.5 w-24 rounded" />
+        <Shimmer className="h-20 w-full rounded-md" />
+      </div>
+      <div className="space-y-2">
+        <Shimmer className="h-2.5 w-28 rounded" />
+        <Shimmer className="h-40 w-full rounded-xl" />
+      </div>
+      <div className="grid grid-cols-4 gap-2">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Shimmer key={i} className="aspect-square rounded-md" />
+        ))}
+      </div>
+      <div className="flex justify-end gap-2 pt-2">
+        <Shimmer className="h-9 w-24 rounded-full" />
+        <Shimmer className="h-9 w-28 rounded-full" />
+      </div>
+      <div className="sr-only">{mode === "edit" ? "Loading product" : "Preparing form"}</div>
+    </div>
+  );
+}
+
+export function CategoryFormSkeleton({ mode = "create" }: { mode?: "create" | "edit" }) {
+  return (
+    <div className="space-y-3">
+      <div className="space-y-2">
+        <Shimmer className="h-5 w-40 rounded" />
+        <Shimmer className="h-3 w-56 rounded" />
+      </div>
+      <div className="space-y-2">
+        <Shimmer className="h-2.5 w-16 rounded" />
+        <Shimmer className="h-9 w-full rounded-md" />
+      </div>
+      <div className="flex justify-end gap-2 pt-2">
+        <Shimmer className="h-9 w-24 rounded-full" />
+        <Shimmer className="h-9 w-28 rounded-full" />
+      </div>
+      <div className="sr-only">{mode === "edit" ? "Loading category" : "Preparing form"}</div>
+    </div>
+  );
+}
