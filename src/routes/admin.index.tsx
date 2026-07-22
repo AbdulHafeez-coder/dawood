@@ -1899,7 +1899,7 @@ function SettingsPanel() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <SectionTitle icon={<SettingsIcon className="w-3.5 h-3.5" />} label="Contact" />
             <button
-              onClick={() => save("contact")}
+              onClick={() => void save("contact")}
               disabled={!dirty || savingSection !== null}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-black text-white hover:bg-black/85 transition text-[10px] uppercase tracking-[0.18em] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
             >
@@ -1968,7 +1968,7 @@ function SettingsPanel() {
 
           <div className="pt-2 flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2">
             <button
-              onClick={() => save("socials")}
+              onClick={() => void save("socials")}
               disabled={!dirty || savingSection !== null}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-black text-white hover:bg-black/85 transition text-[10px] uppercase tracking-[0.18em] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
             >
