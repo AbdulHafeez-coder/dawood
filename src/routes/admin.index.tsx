@@ -1757,9 +1757,11 @@ const SOCIAL_FIELDS: { key: SocialKey; label: string; placeholder: string }[] = 
 ];
 
 function SettingsPanel() {
+  const ready = useMounted();
   const saved = useSettings();
   const [draft, setDraft] = useState(saved);
   const [confirmReset, setConfirmReset] = useState(false);
+  const [savingSection, setSavingSection] = useState<null | "brand" | "contact" | "socials" | "all">(null);
 
   useEffect(() => {
     setDraft(saved);
@@ -1767,10 +1769,20 @@ function SettingsPanel() {
 
   const dirty = JSON.stringify(draft) !== JSON.stringify(saved);
 
-  const save = () => {
-    updateSettings(draft);
-    toast.success("Settings saved", { description: "Site brand, contact and socials updated." });
+  const save = (section: "brand" | "contact" | "socials" | "all" = "all") => {
+    setSavingSection(section);
+    // simulate a brief persistence pass so skeletons register visually
+    setTimeout(() => {
+      updateSettings(draft);
+      setSavingSection(null);
+      toast.success("Settings saved", { description: "Site brand, contact and socials updated." });
+    }, 350);
   };
+
+  const showBrand = !ready || savingSection === "brand" || savingSection === "all";
+  const showContact = !ready || savingSection === "contact" || savingSection === "all";
+  const showSocials = !ready || savingSection === "socials" || savingSection === "all";
+
 
   return (
     <>
