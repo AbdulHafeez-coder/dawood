@@ -2174,10 +2174,20 @@ function SettingsPanel() {
               onDismiss={() => setError("socials", null)}
             />
           )}
+          {socialsEmpty && !sectionErrors.socials && (
+            <EmptySectionPrompt
+              title="No social links added yet"
+              description="Paste full URLs for your social profiles. Only the ones you fill in show up in the footer."
+              suggestions={SOCIAL_FIELDS.map((f) => f.label)}
+              actionLabel={`Add ${SOCIAL_FIELDS[0].label}`}
+              onAction={() => focusField(socialsFirstRef)}
+            />
+          )}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {SOCIAL_FIELDS.map((f) => (
+            {SOCIAL_FIELDS.map((f, i) => (
               <Field key={f.key} label={f.label}>
                 <input
+                  ref={i === 0 ? socialsFirstRef : undefined}
                   className="mt-input"
                   value={draft.socials[f.key]}
                   onChange={(e) => setDraft({ ...draft, socials: { ...draft.socials, [f.key]: e.target.value } })}
@@ -2186,6 +2196,7 @@ function SettingsPanel() {
               </Field>
             ))}
           </div>
+
 
           <div className="pt-2 flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2">
             <button
