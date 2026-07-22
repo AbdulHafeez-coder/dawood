@@ -24,6 +24,9 @@ import {
   ChevronRight,
   X as XIcon,
   Settings as SettingsIcon,
+  AlertTriangle,
+  RefreshCw,
+
 
 } from "lucide-react";
 import { toast } from "sonner";
@@ -1756,12 +1759,65 @@ const SOCIAL_FIELDS: { key: SocialKey; label: string; placeholder: string }[] = 
   { key: "youtube", label: "YouTube", placeholder: "https://youtube.com/@yourbrand" },
 ];
 
+function SectionErrorBanner({
+  message,
+  busy,
+  onRetry,
+  onDismiss,
+}: {
+  message: string;
+  busy?: boolean;
+  onRetry: () => void;
+  onDismiss?: () => void;
+}) {
+  return (
+    <div
+      role="alert"
+      className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl border border-red-200 bg-red-50 text-red-900 px-4 py-3"
+    >
+      <div className="flex items-start gap-2 flex-1 min-w-0">
+        <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
+        <div className="text-[12px] leading-snug">
+          <div className="font-medium">Something went wrong</div>
+          <div className="text-red-800/80 truncate">{message}</div>
+        </div>
+      </div>
+      <div className="flex items-center gap-2">
+        <button
+          onClick={onRetry}
+          disabled={busy}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-900 text-white hover:bg-red-800 transition text-[10px] uppercase tracking-[0.18em] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <RefreshCw className={`w-3 h-3 ${busy ? "animate-spin" : ""}`} /> Retry
+        </button>
+        {onDismiss && (
+          <button
+            onClick={onDismiss}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-red-300 text-red-900 hover:bg-red-100 transition text-[10px] uppercase tracking-[0.18em]"
+          >
+            Dismiss
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+type SettingsSection = "brand" | "contact" | "socials";
+
+
 function SettingsPanel() {
   const ready = useMounted();
   const saved = useSettings();
   const [draft, setDraft] = useState(saved);
   const [confirmReset, setConfirmReset] = useState(false);
-  const [savingSection, setSavingSection] = useState<null | "brand" | "contact" | "socials" | "all">(null);
+  const [savingSection, setSavingSection] = useState<null | SettingsSection | "all">(null);
+  const [refreshingSection, setRefreshingSection] = useState<null | SettingsSection>(null);
+  const [sectionErrors, setSectionErrors] = useState<Record<SettingsSection, string | null>>({
+    brand: null,
+    contact: null,
+    socials: null,
+  });
   const [simulateFailure, setSimulateFailure] = useState(false);
 
   useEffect(() => {
@@ -1770,11 +1826,19 @@ function SettingsPanel() {
 
   const dirty = JSON.stringify(draft) !== JSON.stringify(saved);
 
-  const save = async (section: "brand" | "contact" | "socials" | "all" = "all") => {
+  const setError = (section: SettingsSection, msg: string | null) =>
+    setSectionErrors((prev) => ({ ...prev, [section]: msg }));
+
+  const targetsForScope = (scope: SettingsSection | "all"): SettingsSection[] =>
+    scope === "all" ? ["brand", "contact", "socials"] : [scope];
+
+  const save = async (scope: SettingsSection | "all" = "all") => {
     if (savingSection) return;
     const prev = saved;
     const next = draft;
-    setSavingSection(section);
+    const targets = targetsForScope(scope);
+    setSavingSection(scope);
+    targets.forEach((s) => setError(s, null));
     // Optimistic: apply immediately so UI reflects the new values.
     updateSettings(next);
     try {
@@ -1788,18 +1852,44 @@ function SettingsPanel() {
       updateSettings(prev);
       setDraft(prev);
       const message = err instanceof Error ? err.message : "Save failed. Changes reverted.";
+      targets.forEach((s) => setError(s, message));
       toast.error("Save failed — changes reverted", {
         description: message,
-        action: { label: "Retry", onClick: () => void save(section) },
+        action: { label: "Retry", onClick: () => void save(scope) },
       });
     } finally {
       setSavingSection(null);
     }
   };
 
-  const showBrand = !ready || savingSection === "brand" || savingSection === "all";
-  const showContact = !ready || savingSection === "contact" || savingSection === "all";
-  const showSocials = !ready || savingSection === "socials" || savingSection === "all";
+  const refresh = async (section: SettingsSection) => {
+    if (refreshingSection) return;
+    setRefreshingSection(section);
+    setError(section, null);
+    try {
+      await saveSettingsAsync(saved, {
+        latencyMs: 400,
+        failureRate: simulateFailure ? 1 : 0,
+      });
+      setDraft(saved);
+      toast.success("Section refreshed");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Could not load latest values.";
+      setError(section, message);
+      toast.error("Refresh failed", { description: message });
+    } finally {
+      setRefreshingSection(null);
+    }
+  };
+
+  const brandBusy = savingSection === "brand" || savingSection === "all" || refreshingSection === "brand";
+  const contactBusy = savingSection === "contact" || savingSection === "all" || refreshingSection === "contact";
+  const socialsBusy = savingSection === "socials" || savingSection === "all" || refreshingSection === "socials";
+  const showBrand = !ready || brandBusy;
+  const showContact = !ready || contactBusy;
+  const showSocials = !ready || socialsBusy;
+
+
 
 
 
@@ -1822,6 +1912,13 @@ function SettingsPanel() {
                 Simulate failure
               </label>
               <button
+                onClick={() => void refresh("brand")}
+                disabled={refreshingSection !== null || savingSection !== null}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em] disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <RefreshCw className={`w-3 h-3 ${brandBusy && refreshingSection ? "animate-spin" : ""}`} /> Refresh
+              </button>
+              <button
                 onClick={() => setConfirmReset(true)}
                 className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em]"
               >
@@ -1836,6 +1933,17 @@ function SettingsPanel() {
               </button>
             </div>
           </div>
+
+          {sectionErrors.brand && (
+            <SectionErrorBanner
+              message={sectionErrors.brand}
+              busy={brandBusy}
+              onRetry={() => void save("brand")}
+              onDismiss={() => setError("brand", null)}
+            />
+          )}
+
+
 
 
           {/* Brand */}
@@ -1898,14 +2006,31 @@ function SettingsPanel() {
         <section className="bg-white border border-black/10 rounded-2xl p-5 sm:p-6 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <SectionTitle icon={<SettingsIcon className="w-3.5 h-3.5" />} label="Contact" />
-            <button
-              onClick={() => void save("contact")}
-              disabled={!dirty || savingSection !== null}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-black text-white hover:bg-black/85 transition text-[10px] uppercase tracking-[0.18em] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              Save changes
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => void refresh("contact")}
+                disabled={refreshingSection !== null || savingSection !== null}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em] disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <RefreshCw className={`w-3 h-3 ${contactBusy && refreshingSection ? "animate-spin" : ""}`} /> Refresh
+              </button>
+              <button
+                onClick={() => void save("contact")}
+                disabled={!dirty || savingSection !== null}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-black text-white hover:bg-black/85 transition text-[10px] uppercase tracking-[0.18em] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Save changes
+              </button>
+            </div>
           </div>
+          {sectionErrors.contact && (
+            <SectionErrorBanner
+              message={sectionErrors.contact}
+              busy={contactBusy}
+              onRetry={() => void save("contact")}
+              onDismiss={() => setError("contact", null)}
+            />
+          )}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Field label="Email">
               <input
@@ -1951,8 +2076,25 @@ function SettingsPanel() {
         <SettingsSectionSkeleton rows={3} cols={2} />
       ) : (
         <section className="bg-white border border-black/10 rounded-2xl p-5 sm:p-6 space-y-4">
-          <SectionTitle icon={<SettingsIcon className="w-3.5 h-3.5" />} label="Social media" />
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <SectionTitle icon={<SettingsIcon className="w-3.5 h-3.5" />} label="Social media" />
+            <button
+              onClick={() => void refresh("socials")}
+              disabled={refreshingSection !== null || savingSection !== null}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em] disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <RefreshCw className={`w-3 h-3 ${socialsBusy && refreshingSection ? "animate-spin" : ""}`} /> Refresh
+            </button>
+          </div>
           <p className="text-xs text-black/50 -mt-1">Leave blank to hide the icon from the footer.</p>
+          {sectionErrors.socials && (
+            <SectionErrorBanner
+              message={sectionErrors.socials}
+              busy={socialsBusy}
+              onRetry={() => void save("socials")}
+              onDismiss={() => setError("socials", null)}
+            />
+          )}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {SOCIAL_FIELDS.map((f) => (
               <Field key={f.key} label={f.label}>
