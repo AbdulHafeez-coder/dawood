@@ -1803,6 +1803,51 @@ function SectionErrorBanner({
   );
 }
 
+function EmptySectionPrompt({
+  title,
+  description,
+  suggestions,
+  actionLabel,
+  onAction,
+}: {
+  title: string;
+  description: string;
+  suggestions: string[];
+  actionLabel: string;
+  onAction: () => void;
+}) {
+  return (
+    <div className="rounded-xl border border-dashed border-black/20 bg-black/[0.02] px-4 py-4 flex flex-col sm:flex-row sm:items-start gap-3">
+      <div className="w-8 h-8 rounded-full bg-black/5 border border-black/10 grid place-items-center shrink-0">
+        <SettingsIcon className="w-3.5 h-3.5 text-black/60" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="text-[13px] font-medium text-black">{title}</div>
+        <div className="text-[12px] text-black/60 mt-0.5">{description}</div>
+        {suggestions.length > 0 && (
+          <ul className="mt-2 flex flex-wrap gap-1.5">
+            {suggestions.map((s) => (
+              <li
+                key={s}
+                className="text-[10px] uppercase tracking-[0.16em] text-black/60 border border-black/10 rounded-full px-2 py-1 bg-white"
+              >
+                {s}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      <button
+        onClick={onAction}
+        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-black text-white hover:bg-black/85 transition text-[10px] uppercase tracking-[0.18em] active:scale-[0.98] self-start"
+      >
+        {actionLabel}
+      </button>
+    </div>
+  );
+}
+
+
 type SettingsSection = "brand" | "contact" | "socials";
 
 
@@ -1888,9 +1933,25 @@ function SettingsPanel() {
   const showBrand = !ready || brandBusy;
   const showContact = !ready || contactBusy;
   const showSocials = !ready || socialsBusy;
+  const brandFirstRef = useRef<HTMLInputElement>(null);
+  const contactFirstRef = useRef<HTMLInputElement>(null);
+  const socialsFirstRef = useRef<HTMLInputElement>(null);
 
+  const focusField = (ref: { current: HTMLInputElement | null }) => {
+    const el = ref.current;
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    setTimeout(() => el.focus(), 250);
+  };
 
-
+  const brandEmpty =
+    !saved.brandName.trim() &&
+    !saved.tagline.trim() &&
+    !saved.logoUrl.trim() &&
+    !saved.whatsappNumber.trim();
+  const contactEmpty =
+    !saved.contactEmail.trim() && !saved.contactPhone.trim() && !saved.address.trim();
+  const socialsEmpty = SOCIAL_FIELDS.every((f) => !saved.socials[f.key]?.trim());
 
 
   return (
@@ -1943,13 +2004,21 @@ function SettingsPanel() {
             />
           )}
 
-
-
+          {brandEmpty && !sectionErrors.brand && (
+            <EmptySectionPrompt
+              title="No brand details saved yet"
+              description="Add your brand name, tagline, logo, and WhatsApp number so the storefront and order messages feel like yours."
+              suggestions={["Brand name", "Tagline", "Logo URL", "WhatsApp"]}
+              actionLabel="Set brand name"
+              onAction={() => focusField(brandFirstRef)}
+            />
+          )}
 
           {/* Brand */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Field label="Brand name">
               <input
+                ref={brandFirstRef}
                 className="mt-input"
                 value={draft.brandName}
                 onChange={(e) => setDraft({ ...draft, brandName: e.target.value })}
@@ -2031,9 +2100,19 @@ function SettingsPanel() {
               onDismiss={() => setError("contact", null)}
             />
           )}
+          {contactEmpty && !sectionErrors.contact && (
+            <EmptySectionPrompt
+              title="No contact details saved yet"
+              description="Add an email, phone, and shop address so customers can reach you and orders include a shipping origin."
+              suggestions={["Email", "Phone", "Address"]}
+              actionLabel="Add email"
+              onAction={() => focusField(contactFirstRef)}
+            />
+          )}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Field label="Email">
               <input
+                ref={contactFirstRef}
                 type="email"
                 className="mt-input"
                 value={draft.contactEmail}
@@ -2095,10 +2174,20 @@ function SettingsPanel() {
               onDismiss={() => setError("socials", null)}
             />
           )}
+          {socialsEmpty && !sectionErrors.socials && (
+            <EmptySectionPrompt
+              title="No social links added yet"
+              description="Paste full URLs for your social profiles. Only the ones you fill in show up in the footer."
+              suggestions={SOCIAL_FIELDS.map((f) => f.label)}
+              actionLabel={`Add ${SOCIAL_FIELDS[0].label}`}
+              onAction={() => focusField(socialsFirstRef)}
+            />
+          )}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {SOCIAL_FIELDS.map((f) => (
+            {SOCIAL_FIELDS.map((f, i) => (
               <Field key={f.key} label={f.label}>
                 <input
+                  ref={i === 0 ? socialsFirstRef : undefined}
                   className="mt-input"
                   value={draft.socials[f.key]}
                   onChange={(e) => setDraft({ ...draft, socials: { ...draft.socials, [f.key]: e.target.value } })}
@@ -2107,6 +2196,7 @@ function SettingsPanel() {
               </Field>
             ))}
           </div>
+
 
           <div className="pt-2 flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2">
             <button
