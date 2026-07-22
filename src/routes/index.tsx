@@ -30,6 +30,7 @@ import { useProducts, useCategories, useCart, useFavourites, type Category, type
 import { useSettings } from "@/lib/settings";
 import { LazyCartDrawer as CartDrawer } from "@/components/LazyCartDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
+import { FiltersSkeleton, ProductGridSkeleton, useMounted } from "@/components/skeletons";
 import { toast } from "sonner";
 import { formatPKR } from "@/lib/format";
 
