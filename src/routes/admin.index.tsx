@@ -1916,7 +1916,7 @@ function SettingsPanel() {
                 disabled={refreshingSection !== null || savingSection !== null}
                 className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em] disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                <RefreshCw className={`w-3 h-3 ${refreshingSection === "brand" ? "animate-spin" : ""}`} /> Refresh
+                <RefreshCw className={`w-3 h-3 ${brandBusy && refreshingSection ? "animate-spin" : ""}`} /> Refresh
               </button>
               <button
                 onClick={() => setConfirmReset(true)}
