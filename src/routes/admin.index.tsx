@@ -48,6 +48,8 @@ import {
 } from "@/lib/csv";
 import {
   AdminDashboardSkeleton,
+  ProductFormSkeleton,
+  CategoryFormSkeleton,
   useMounted,
 } from "@/components/skeletons";
 import { AdminError, AdminNotFound } from "@/components/AdminFallback";
@@ -1472,6 +1474,8 @@ function ProductFormDialog({
     else if (product) onSave(product.id, payload);
   }
 
+  const ready = useMounted();
+
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -1484,6 +1488,9 @@ function ProductFormDialog({
           </DialogDescription>
         </DialogHeader>
 
+        {!ready ? (
+          <ProductFormSkeleton mode={mode} />
+        ) : (
         <form onSubmit={submit} className="space-y-4" style={inter}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Field label="Name">
