@@ -50,6 +50,7 @@ import {
   AdminDashboardSkeleton,
   ProductFormSkeleton,
   CategoryFormSkeleton,
+  SettingsSectionSkeleton,
   useMounted,
 } from "@/components/skeletons";
 import { AdminError, AdminNotFound } from "@/components/AdminFallback";
