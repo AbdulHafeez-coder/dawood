@@ -63,6 +63,10 @@ function AdminLogin() {
     });
   }
 
+  if (!mounted || !ready || isAuthed) {
+    return <AdminLoginSkeleton />;
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-[#FEFDF9] text-black" style={inter}>
       <main className="flex-1 px-4 sm:px-6 md:px-8 py-8 sm:py-12">
