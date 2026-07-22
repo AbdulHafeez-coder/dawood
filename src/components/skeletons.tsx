@@ -1,0 +1,139 @@
+import { useEffect, useState } from "react";
+
+/**
+ * Small helper: returns `false` on first client render, then `true` after mount.
+ * Lets synchronous localStorage-backed stores show skeleton placeholders on the
+ * first paint for improved perceived performance and consistent loading UI.
+ */
+export function useMounted(): boolean {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  return mounted;
+}
+
+function Shimmer({ className = "" }: { className?: string }) {
+  return (
+    <div
+      className={`relative overflow-hidden bg-black/[0.06] ${className}`}
+    >
+      <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.4s_infinite] bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+    </div>
+  );
+}
+
+export function ProductCardSkeleton() {
+  return (
+    <div className="bg-white rounded-2xl overflow-hidden flex flex-col h-full">
+      <Shimmer className="aspect-square w-full" />
+      <div className="p-5 flex flex-col gap-3 flex-1">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1 space-y-2">
+            <Shimmer className="h-5 w-3/4 rounded" />
+            <Shimmer className="h-3 w-1/4 rounded" />
+          </div>
+          <Shimmer className="h-5 w-16 rounded" />
+        </div>
+        <Shimmer className="mt-auto h-11 w-full rounded-md" />
+      </div>
+    </div>
+  );
+}
+
+export function ProductGridSkeleton({ count = 8 }: { count?: number }) {
+  return (
+    <div
+      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6"
+      aria-busy="true"
+      aria-live="polite"
+    >
+      {Array.from({ length: count }).map((_, i) => (
+        <ProductCardSkeleton key={i} />
+      ))}
+    </div>
+  );
+}
+
+export function FiltersSkeleton() {
+  return (
+    <div aria-busy="true" className="space-y-4 mb-8 lg:mb-10">
+      <div className="bg-white rounded-2xl p-4 lg:p-5 flex items-center gap-3">
+        <Shimmer className="h-5 w-5 rounded-full" />
+        <Shimmer className="h-5 flex-1 rounded" />
+      </div>
+      <div className="bg-white rounded-2xl p-4 lg:p-5 flex flex-col md:flex-row md:items-center md:flex-wrap gap-4 md:gap-5 lg:gap-8">
+        <div className="flex flex-wrap items-center gap-2">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Shimmer key={i} className="h-9 w-20 rounded-full" />
+          ))}
+        </div>
+        <Shimmer className="h-9 flex-1 min-w-[160px] max-w-xs rounded-full" />
+        <Shimmer className="h-9 w-40 rounded-full" />
+      </div>
+    </div>
+  );
+}
+
+export function OrderCardSkeleton() {
+  return (
+    <li className="border border-black/10 rounded-2xl bg-white overflow-hidden">
+      <div className="flex flex-col sm:flex-row gap-4 p-4 sm:p-5">
+        <Shimmer className="w-full sm:w-24 h-24 rounded-xl shrink-0" />
+        <div className="flex-1 min-w-0 flex flex-col gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <Shimmer className="h-4 w-24 rounded-full" />
+            <Shimmer className="h-3 w-32 rounded" />
+          </div>
+          <Shimmer className="h-5 w-2/3 rounded" />
+          <Shimmer className="h-4 w-1/3 rounded" />
+          <div className="mt-auto flex flex-wrap gap-2 pt-2">
+            <Shimmer className="h-9 w-44 rounded-full" />
+            <Shimmer className="h-9 w-32 rounded-full" />
+            <Shimmer className="h-9 w-24 rounded-full" />
+          </div>
+        </div>
+      </div>
+    </li>
+  );
+}
+
+export function OrdersListSkeleton({ count = 3 }: { count?: number }) {
+  return (
+    <ul className="flex flex-col gap-4" aria-busy="true" aria-live="polite">
+      {Array.from({ length: count }).map((_, i) => (
+        <OrderCardSkeleton key={i} />
+      ))}
+    </ul>
+  );
+}
+
+export function CartDrawerSkeleton() {
+  return (
+    <div className="fixed inset-0 z-50 pointer-events-none" aria-hidden="true">
+      <div className="absolute inset-0 bg-black/30" />
+      <div className="absolute right-0 top-0 h-full w-full sm:w-[420px] bg-[#FEFDF9] shadow-xl flex flex-col">
+        <div className="p-5 border-b border-black/5 flex items-center justify-between">
+          <Shimmer className="h-6 w-24 rounded" />
+          <Shimmer className="h-6 w-6 rounded-full" />
+        </div>
+        <div className="flex-1 p-5 space-y-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="flex gap-3">
+              <Shimmer className="h-20 w-20 rounded-lg shrink-0" />
+              <div className="flex-1 space-y-2">
+                <Shimmer className="h-4 w-3/4 rounded" />
+                <Shimmer className="h-3 w-1/3 rounded" />
+                <Shimmer className="h-8 w-24 rounded-full" />
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="p-5 border-t border-black/5 space-y-3">
+          <Shimmer className="h-4 w-full rounded" />
+          <Shimmer className="h-11 w-full rounded-md" />
+        </div>
+      </div>
+    </div>
+  );
+}
