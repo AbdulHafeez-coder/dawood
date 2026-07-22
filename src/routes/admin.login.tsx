@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, Lock, Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 import { useAdminAuth, ADMIN_EMAIL, ADMIN_PASSWORD } from "@/lib/admin-auth";
+import { AdminLoginSkeleton, useMounted } from "@/components/skeletons";
 
 
 const dmSans = { fontFamily: "'DM Sans', sans-serif" };
