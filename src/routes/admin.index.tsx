@@ -1937,7 +1937,7 @@ function SettingsPanel() {
           {sectionErrors.brand && (
             <SectionErrorBanner
               message={sectionErrors.brand}
-              busy={savingSection === "brand" || refreshingSection === "brand"}
+              busy={brandBusy}
               onRetry={() => void save("brand")}
               onDismiss={() => setError("brand", null)}
             />
