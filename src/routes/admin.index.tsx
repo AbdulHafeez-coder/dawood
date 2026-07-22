@@ -1786,76 +1786,81 @@ function SettingsPanel() {
 
   return (
     <>
-      <section className="bg-white border border-black/10 rounded-2xl p-5 sm:p-6 space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <SectionTitle icon={<SettingsIcon className="w-3.5 h-3.5" />} label="Site settings" />
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setConfirmReset(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em]"
-            >
-              <RotateCcw className="w-3 h-3" /> Reset
-            </button>
-            <button
-              onClick={save}
-              disabled={!dirty}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-black text-white hover:bg-black/85 transition text-[10px] uppercase tracking-[0.18em] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              Save changes
-            </button>
-          </div>
-        </div>
-
-        {/* Brand */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Field label="Brand name">
-            <input
-              className="mt-input"
-              value={draft.brandName}
-              onChange={(e) => setDraft({ ...draft, brandName: e.target.value })}
-              placeholder="Maison Terra"
-            />
-          </Field>
-          <Field label="Tagline">
-            <input
-              className="mt-input"
-              value={draft.tagline}
-              onChange={(e) => setDraft({ ...draft, tagline: e.target.value })}
-              placeholder="Essentials for a tactile home"
-            />
-          </Field>
-          <Field label="Logo URL">
-            <div className="flex items-center gap-3">
-              <input
-                className="mt-input flex-1"
-                value={draft.logoUrl}
-                onChange={(e) => setDraft({ ...draft, logoUrl: e.target.value })}
-                placeholder="https://…/logo.png"
-              />
-              {draft.logoUrl && (
-                <img src={draft.logoUrl} alt="logo preview" className="w-10 h-10 rounded-lg object-cover bg-black/5 border border-black/10" />
-              )}
+      {showBrand ? (
+        <SettingsSectionSkeleton rows={2} cols={2} actions />
+      ) : (
+        <section className="bg-white border border-black/10 rounded-2xl p-5 sm:p-6 space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <SectionTitle icon={<SettingsIcon className="w-3.5 h-3.5" />} label="Site settings" />
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setConfirmReset(true)}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em]"
+              >
+                <RotateCcw className="w-3 h-3" /> Reset
+              </button>
+              <button
+                onClick={() => save("brand")}
+                disabled={!dirty || savingSection !== null}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-black text-white hover:bg-black/85 transition text-[10px] uppercase tracking-[0.18em] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {savingSection === "brand" ? "Saving…" : "Save changes"}
+              </button>
             </div>
-          </Field>
-          <Field label="WhatsApp number (Pakistan, e.g. 0301-1234567)">
-            <input
-              className="mt-input"
-              value={formatPkPhone(draft.whatsappNumber)}
-              onChange={(e) => setDraft({ ...draft, whatsappNumber: normalizePkDigits(e.target.value) })}
-              inputMode="numeric"
-              autoComplete="tel"
-              maxLength={12}
-              placeholder={PK_PHONE_PLACEHOLDER}
-              aria-invalid={draft.whatsappNumber.length > 0 && !isValidPkPhone(draft.whatsappNumber)}
-            />
-            {draft.whatsappNumber.length > 0 && !isValidPkPhone(draft.whatsappNumber) && (
-              <p className="mt-1 text-[11px] text-red-600">
-                Enter an 11-digit Pakistani mobile starting with 03 (e.g. 0301-1234567).
-              </p>
-            )}
-          </Field>
-        </div>
-      </section>
+          </div>
+
+          {/* Brand */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Field label="Brand name">
+              <input
+                className="mt-input"
+                value={draft.brandName}
+                onChange={(e) => setDraft({ ...draft, brandName: e.target.value })}
+                placeholder="Maison Terra"
+              />
+            </Field>
+            <Field label="Tagline">
+              <input
+                className="mt-input"
+                value={draft.tagline}
+                onChange={(e) => setDraft({ ...draft, tagline: e.target.value })}
+                placeholder="Essentials for a tactile home"
+              />
+            </Field>
+            <Field label="Logo URL">
+              <div className="flex items-center gap-3">
+                <input
+                  className="mt-input flex-1"
+                  value={draft.logoUrl}
+                  onChange={(e) => setDraft({ ...draft, logoUrl: e.target.value })}
+                  placeholder="https://…/logo.png"
+                />
+                {draft.logoUrl && (
+                  <img src={draft.logoUrl} alt="logo preview" className="w-10 h-10 rounded-lg object-cover bg-black/5 border border-black/10" />
+                )}
+              </div>
+            </Field>
+            <Field label="WhatsApp number (Pakistan, e.g. 0301-1234567)">
+              <input
+                className="mt-input"
+                value={formatPkPhone(draft.whatsappNumber)}
+                onChange={(e) => setDraft({ ...draft, whatsappNumber: normalizePkDigits(e.target.value) })}
+                inputMode="numeric"
+                autoComplete="tel"
+                maxLength={12}
+                placeholder={PK_PHONE_PLACEHOLDER}
+                aria-invalid={draft.whatsappNumber.length > 0 && !isValidPkPhone(draft.whatsappNumber)}
+              />
+              {draft.whatsappNumber.length > 0 && !isValidPkPhone(draft.whatsappNumber) && (
+                <p className="mt-1 text-[11px] text-red-600">
+                  Enter an 11-digit Pakistani mobile starting with 03 (e.g. 0301-1234567).
+                </p>
+              )}
+            </Field>
+          </div>
+        </section>
+      )}
+
 
       {/* Contact */}
       <section className="bg-white border border-black/10 rounded-2xl p-5 sm:p-6 space-y-4">
