@@ -81,6 +81,7 @@ function ProductError() {
 
 function ProductPage() {
   const { product } = Route.useLoaderData();
+  const mounted = useMounted();
   const { addToCart, cartCount } = useCart();
   const { toggleFav, isFav, favCount } = useFavourites();
 
