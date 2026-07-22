@@ -50,6 +50,7 @@ import {
   AdminDashboardSkeleton,
   useMounted,
 } from "@/components/skeletons";
+import { AdminError, AdminNotFound } from "@/components/AdminFallback";
 
 
 import {
@@ -104,10 +105,7 @@ export const Route = createFileRoute("/admin/")({
     ],
   }),
   component: AdminDashboard,
-  pendingComponent: () => {
-    const { AdminDashboardSkeleton } = require("@/components/skeletons");
-    return <AdminDashboardSkeleton tab="overview" />;
-  },
+  pendingComponent: () => <AdminDashboardSkeleton tab="overview" />,
   errorComponent: AdminError,
   notFoundComponent: AdminNotFound,
 });
