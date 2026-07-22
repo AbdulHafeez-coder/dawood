@@ -2100,9 +2100,19 @@ function SettingsPanel() {
               onDismiss={() => setError("contact", null)}
             />
           )}
+          {contactEmpty && !sectionErrors.contact && (
+            <EmptySectionPrompt
+              title="No contact details saved yet"
+              description="Add an email, phone, and shop address so customers can reach you and orders include a shipping origin."
+              suggestions={["Email", "Phone", "Address"]}
+              actionLabel="Add email"
+              onAction={() => focusField(contactFirstRef)}
+            />
+          )}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Field label="Email">
               <input
+                ref={contactFirstRef}
                 type="email"
                 className="mt-input"
                 value={draft.contactEmail}
