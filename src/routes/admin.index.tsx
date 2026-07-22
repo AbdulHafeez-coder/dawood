@@ -108,6 +108,7 @@ export const Route = createFileRoute("/admin/")({
 
 function AdminDashboard() {
   const navigate = useNavigate();
+  const mounted = useMounted();
   const { isAuthed, ready, logout } = useAdminAuth();
   const { orders } = useOrders();
   const { products, addProduct, updateProduct, deleteProduct, resetProducts } = useProducts();
