@@ -36,7 +36,7 @@ import {
   type Product,
 } from "@/lib/shop";
 import { useOrders, removeOrder } from "@/lib/orders";
-import { useSettings, updateSettings, resetSettings, type SocialKey } from "@/lib/settings";
+import { useSettings, updateSettings, resetSettings, saveSettingsAsync, type SocialKey } from "@/lib/settings";
 import { formatPkPhone, normalizePkDigits, isValidPkPhone, PK_PHONE_PLACEHOLDER } from "@/lib/pk-phone";
 import { formatPKR } from "@/lib/format";
 import {
@@ -1762,6 +1762,7 @@ function SettingsPanel() {
   const [draft, setDraft] = useState(saved);
   const [confirmReset, setConfirmReset] = useState(false);
   const [savingSection, setSavingSection] = useState<null | "brand" | "contact" | "socials" | "all">(null);
+  const [simulateFailure, setSimulateFailure] = useState(false);
 
   useEffect(() => {
     setDraft(saved);
@@ -1769,19 +1770,37 @@ function SettingsPanel() {
 
   const dirty = JSON.stringify(draft) !== JSON.stringify(saved);
 
-  const save = (section: "brand" | "contact" | "socials" | "all" = "all") => {
+  const save = async (section: "brand" | "contact" | "socials" | "all" = "all") => {
+    if (savingSection) return;
+    const prev = saved;
+    const next = draft;
     setSavingSection(section);
-    // simulate a brief persistence pass so skeletons register visually
-    setTimeout(() => {
-      updateSettings(draft);
+    // Optimistic: apply immediately so UI reflects the new values.
+    updateSettings(next);
+    try {
+      await saveSettingsAsync(next, {
+        latencyMs: 500,
+        failureRate: simulateFailure ? 1 : 0,
+      });
+      toast.success("Settings saved", { description: "Changes are live." });
+    } catch (err) {
+      // Rollback to the pre-save snapshot.
+      updateSettings(prev);
+      setDraft(prev);
+      const message = err instanceof Error ? err.message : "Save failed. Changes reverted.";
+      toast.error("Save failed — changes reverted", {
+        description: message,
+        action: { label: "Retry", onClick: () => void save(section) },
+      });
+    } finally {
       setSavingSection(null);
-      toast.success("Settings saved", { description: "Site brand, contact and socials updated." });
-    }, 350);
+    }
   };
 
   const showBrand = !ready || savingSection === "brand" || savingSection === "all";
   const showContact = !ready || savingSection === "contact" || savingSection === "all";
   const showSocials = !ready || savingSection === "socials" || savingSection === "all";
+
 
 
   return (
@@ -1792,7 +1811,16 @@ function SettingsPanel() {
         <section className="bg-white border border-black/10 rounded-2xl p-5 sm:p-6 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <SectionTitle icon={<SettingsIcon className="w-3.5 h-3.5" />} label="Site settings" />
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              <label className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-black/60 select-none cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="accent-black"
+                  checked={simulateFailure}
+                  onChange={(e) => setSimulateFailure(e.target.checked)}
+                />
+                Simulate failure
+              </label>
               <button
                 onClick={() => setConfirmReset(true)}
                 className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em]"
@@ -1800,15 +1828,15 @@ function SettingsPanel() {
                 <RotateCcw className="w-3 h-3" /> Reset
               </button>
               <button
-                onClick={() => save("brand")}
+                onClick={() => void save("brand")}
                 disabled={!dirty || savingSection !== null}
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-black text-white hover:bg-black/85 transition text-[10px] uppercase tracking-[0.18em] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Save changes
               </button>
-
             </div>
           </div>
+
 
           {/* Brand */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1871,7 +1899,7 @@ function SettingsPanel() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <SectionTitle icon={<SettingsIcon className="w-3.5 h-3.5" />} label="Contact" />
             <button
-              onClick={() => save("contact")}
+              onClick={() => void save("contact")}
               disabled={!dirty || savingSection !== null}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-black text-white hover:bg-black/85 transition text-[10px] uppercase tracking-[0.18em] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
             >
@@ -1940,7 +1968,7 @@ function SettingsPanel() {
 
           <div className="pt-2 flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2">
             <button
-              onClick={() => save("socials")}
+              onClick={() => void save("socials")}
               disabled={!dirty || savingSection !== null}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-black text-white hover:bg-black/85 transition text-[10px] uppercase tracking-[0.18em] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
             >
