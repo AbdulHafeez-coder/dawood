@@ -215,23 +215,27 @@ function ProductPage() {
       {/* PRODUCT */}
       <section className="px-5 sm:px-8 lg:px-10 py-8 lg:py-12 grid md:grid-cols-2 gap-8 lg:gap-14">
         {/* GALLERY */}
-        <div className="flex flex-col gap-3">
-          <div className={`${product.bg} rounded-2xl aspect-square overflow-hidden`}>
-            <img src={product.gallery[activeImg] ?? product.img} alt={product.name} width={1600} height={1600} className="w-full h-full object-cover" />
+        {!mounted ? (
+          <ProductGallerySkeleton />
+        ) : (
+          <div className="flex flex-col gap-3">
+            <div className={`${product.bg} rounded-2xl aspect-square overflow-hidden`}>
+              <img src={product.gallery[activeImg] ?? product.img} alt={product.name} width={1600} height={1600} className="w-full h-full object-cover" />
+            </div>
+            <div className="grid grid-cols-4 gap-3">
+              {product.gallery.map((g: string, i: number) => (
+                <button
+                  key={i}
+                  onClick={() => setActiveImg(i)}
+                  aria-label={`Show image ${i + 1}`}
+                  className={`aspect-square rounded-xl overflow-hidden border-2 transition-colors ${activeImg === i ? "border-black" : "border-transparent hover:border-black/20"} ${product.bg}`}
+                >
+                  <img src={g} alt="" className="w-full h-full object-cover" loading="lazy" decoding="async" />
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="grid grid-cols-4 gap-3">
-            {product.gallery.map((g: string, i: number) => (
-              <button
-                key={i}
-                onClick={() => setActiveImg(i)}
-                aria-label={`Show image ${i + 1}`}
-                className={`aspect-square rounded-xl overflow-hidden border-2 transition-colors ${activeImg === i ? "border-black" : "border-transparent hover:border-black/20"} ${product.bg}`}
-              >
-                <img src={g} alt="" className="w-full h-full object-cover" loading="lazy" decoding="async" />
-              </button>
-            ))}
-          </div>
-        </div>
+        )}
 
         {/* INFO */}
         <div>
