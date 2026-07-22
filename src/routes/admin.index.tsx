@@ -1762,6 +1762,7 @@ function SettingsPanel() {
   const [draft, setDraft] = useState(saved);
   const [confirmReset, setConfirmReset] = useState(false);
   const [savingSection, setSavingSection] = useState<null | "brand" | "contact" | "socials" | "all">(null);
+  const [simulateFailure, setSimulateFailure] = useState(false);
 
   useEffect(() => {
     setDraft(saved);
@@ -1769,19 +1770,37 @@ function SettingsPanel() {
 
   const dirty = JSON.stringify(draft) !== JSON.stringify(saved);
 
-  const save = (section: "brand" | "contact" | "socials" | "all" = "all") => {
+  const save = async (section: "brand" | "contact" | "socials" | "all" = "all") => {
+    if (savingSection) return;
+    const prev = saved;
+    const next = draft;
     setSavingSection(section);
-    // simulate a brief persistence pass so skeletons register visually
-    setTimeout(() => {
-      updateSettings(draft);
+    // Optimistic: apply immediately so UI reflects the new values.
+    updateSettings(next);
+    try {
+      await saveSettingsAsync(next, {
+        latencyMs: 500,
+        failureRate: simulateFailure ? 1 : 0,
+      });
+      toast.success("Settings saved", { description: "Changes are live." });
+    } catch (err) {
+      // Rollback to the pre-save snapshot.
+      updateSettings(prev);
+      setDraft(prev);
+      const message = err instanceof Error ? err.message : "Save failed. Changes reverted.";
+      toast.error("Save failed — changes reverted", {
+        description: message,
+        action: { label: "Retry", onClick: () => void save(section) },
+      });
+    } finally {
       setSavingSection(null);
-      toast.success("Settings saved", { description: "Site brand, contact and socials updated." });
-    }, 350);
+    }
   };
 
   const showBrand = !ready || savingSection === "brand" || savingSection === "all";
   const showContact = !ready || savingSection === "contact" || savingSection === "all";
   const showSocials = !ready || savingSection === "socials" || savingSection === "all";
+
 
 
   return (
