@@ -25,6 +25,7 @@ export const Route = createFileRoute("/admin/login")({
 
 function AdminLogin() {
   const navigate = useNavigate();
+  const mounted = useMounted();
   const { redirect } = Route.useSearch();
   const { isAuthed, ready, login } = useAdminAuth();
   const [email, setEmail] = useState("");
