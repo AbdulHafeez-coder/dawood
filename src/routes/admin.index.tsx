@@ -1803,6 +1803,51 @@ function SectionErrorBanner({
   );
 }
 
+function EmptySectionPrompt({
+  title,
+  description,
+  suggestions,
+  actionLabel,
+  onAction,
+}: {
+  title: string;
+  description: string;
+  suggestions: string[];
+  actionLabel: string;
+  onAction: () => void;
+}) {
+  return (
+    <div className="rounded-xl border border-dashed border-black/20 bg-black/[0.02] px-4 py-4 flex flex-col sm:flex-row sm:items-start gap-3">
+      <div className="w-8 h-8 rounded-full bg-black/5 border border-black/10 grid place-items-center shrink-0">
+        <SettingsIcon className="w-3.5 h-3.5 text-black/60" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="text-[13px] font-medium text-black">{title}</div>
+        <div className="text-[12px] text-black/60 mt-0.5">{description}</div>
+        {suggestions.length > 0 && (
+          <ul className="mt-2 flex flex-wrap gap-1.5">
+            {suggestions.map((s) => (
+              <li
+                key={s}
+                className="text-[10px] uppercase tracking-[0.16em] text-black/60 border border-black/10 rounded-full px-2 py-1 bg-white"
+              >
+                {s}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      <button
+        onClick={onAction}
+        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-black text-white hover:bg-black/85 transition text-[10px] uppercase tracking-[0.18em] active:scale-[0.98] self-start"
+      >
+        {actionLabel}
+      </button>
+    </div>
+  );
+}
+
+
 type SettingsSection = "brand" | "contact" | "socials";
 
 
