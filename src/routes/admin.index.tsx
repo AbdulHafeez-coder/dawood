@@ -1804,8 +1804,9 @@ function SettingsPanel() {
                 disabled={!dirty || savingSection !== null}
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-black text-white hover:bg-black/85 transition text-[10px] uppercase tracking-[0.18em] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                {savingSection === "brand" ? "Saving…" : "Save changes"}
+                Save changes
               </button>
+
             </div>
           </div>
 
