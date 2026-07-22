@@ -30,6 +30,7 @@ import { useProducts, useCategories, useCart, useFavourites, type Category, type
 import { useSettings } from "@/lib/settings";
 import { LazyCartDrawer as CartDrawer } from "@/components/LazyCartDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
+import { FiltersSkeleton, ProductGridSkeleton, useMounted } from "@/components/skeletons";
 import { toast } from "sonner";
 import { formatPKR } from "@/lib/format";
 
@@ -82,6 +83,7 @@ function Index() {
   const { addToCart: addToCartShared, cartCount } = useCart();
   const { toggleFav, isFav, favCount } = useFavourites();
   const settings = useSettings();
+  const mounted = useMounted();
 
   const { orderCount } = useOrders();
   const { products } = useProducts();
@@ -379,9 +381,18 @@ function Index() {
             The Home Edit
           </h2>
           <div className="flex items-center gap-2 text-black/60 text-sm">
-            <SlidersHorizontal size={16} /> {visibleProducts.length} of {products.length}
+            <SlidersHorizontal size={16} /> {mounted ? `${visibleProducts.length} of ${products.length}` : "Loading…"}
           </div>
         </div>
+
+        {!mounted ? (
+          <>
+            <FiltersSkeleton />
+            <ProductGridSkeleton count={8} />
+          </>
+        ) : (
+        <>
+
 
         <div className="bg-white rounded-2xl p-4 lg:p-5 mb-4 flex items-center gap-3">
           <Search size={18} strokeWidth={1.75} className="text-black/50 shrink-0" />
@@ -516,10 +527,13 @@ function Index() {
             ))}
           </div>
         )}
+        </>
+        )}
       </section>
 
       {/* FOOTER */}
       <SiteFooter />
+
 
 
       {/* CART DRAWER */}

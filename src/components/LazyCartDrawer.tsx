@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { CartDrawerSkeleton } from "./skeletons";
 
 // Only fetch the cart drawer chunk after the user first opens the cart.
 const CartDrawerImpl = lazy(() =>
@@ -17,8 +18,9 @@ export function LazyCartDrawer({ open, onClose }: { open: boolean; onClose: () =
 
   if (!everOpened) return null;
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={open ? <CartDrawerSkeleton /> : null}>
       <CartDrawerImpl open={open} onClose={onClose} />
     </Suspense>
   );
 }
+
