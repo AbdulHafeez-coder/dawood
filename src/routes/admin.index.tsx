@@ -1937,7 +1937,7 @@ function SettingsPanel() {
   const contactFirstRef = useRef<HTMLInputElement>(null);
   const socialsFirstRef = useRef<HTMLInputElement>(null);
 
-  const focusField = (ref: React.RefObject<HTMLInputElement>) => {
+  const focusField = (ref: { current: HTMLInputElement | null }) => {
     const el = ref.current;
     if (!el) return;
     el.scrollIntoView({ behavior: "smooth", block: "center" });
