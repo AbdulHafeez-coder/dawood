@@ -1759,7 +1759,52 @@ const SOCIAL_FIELDS: { key: SocialKey; label: string; placeholder: string }[] = 
   { key: "youtube", label: "YouTube", placeholder: "https://youtube.com/@yourbrand" },
 ];
 
+function SectionErrorBanner({
+  message,
+  busy,
+  onRetry,
+  onDismiss,
+}: {
+  message: string;
+  busy?: boolean;
+  onRetry: () => void;
+  onDismiss?: () => void;
+}) {
+  return (
+    <div
+      role="alert"
+      className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl border border-red-200 bg-red-50 text-red-900 px-4 py-3"
+    >
+      <div className="flex items-start gap-2 flex-1 min-w-0">
+        <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
+        <div className="text-[12px] leading-snug">
+          <div className="font-medium">Something went wrong</div>
+          <div className="text-red-800/80 truncate">{message}</div>
+        </div>
+      </div>
+      <div className="flex items-center gap-2">
+        <button
+          onClick={onRetry}
+          disabled={busy}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-900 text-white hover:bg-red-800 transition text-[10px] uppercase tracking-[0.18em] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <RefreshCw className={`w-3 h-3 ${busy ? "animate-spin" : ""}`} /> Retry
+        </button>
+        {onDismiss && (
+          <button
+            onClick={onDismiss}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-red-300 text-red-900 hover:bg-red-100 transition text-[10px] uppercase tracking-[0.18em]"
+          >
+            Dismiss
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 type SettingsSection = "brand" | "contact" | "socials";
+
 
 function SettingsPanel() {
   const ready = useMounted();
