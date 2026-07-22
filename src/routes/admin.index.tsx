@@ -1909,6 +1909,13 @@ function SettingsPanel() {
                 Simulate failure
               </label>
               <button
+                onClick={() => void refresh("brand")}
+                disabled={refreshingSection !== null || savingSection !== null}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em] disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <RefreshCw className={`w-3 h-3 ${refreshingSection === "brand" ? "animate-spin" : ""}`} /> Refresh
+              </button>
+              <button
                 onClick={() => setConfirmReset(true)}
                 className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em]"
               >
@@ -1923,6 +1930,17 @@ function SettingsPanel() {
               </button>
             </div>
           </div>
+
+          {sectionErrors.brand && (
+            <SectionErrorBanner
+              message={sectionErrors.brand}
+              busy={savingSection === "brand" || refreshingSection === "brand"}
+              onRetry={() => void save("brand")}
+              onDismiss={() => setError("brand", null)}
+            />
+          )}
+
+
 
 
           {/* Brand */}
