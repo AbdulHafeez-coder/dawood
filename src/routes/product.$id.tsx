@@ -318,77 +318,85 @@ function ProductPage() {
             </>
           )}
 
-          {/* QUANTITY + ADD */}
-          <div className="mt-8 flex items-center gap-3">
-            <div className="inline-flex items-center border border-black/15 rounded-full h-12">
-              <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="w-10 h-12 flex items-center justify-center text-black/70 hover:text-black" aria-label="Decrease">
-                <Minus size={16} />
-              </button>
-              <span className="w-8 text-center text-sm text-black">{qty}</span>
-              <button onClick={() => setQty((q) => q + 1)} className="w-10 h-12 flex items-center justify-center text-black/70 hover:text-black" aria-label="Increase">
-                <Plus size={16} />
-              </button>
+          {!mounted ? (
+            <div className="mt-8">
+              <AddToCartSkeleton />
             </div>
-            <div
-              className="flex-1"
-              onClick={() => {
-                if (!canAdd) handleAdd();
-              }}
-            >
-              <button
-                onClick={handleAdd}
-                disabled={!canAdd}
-                className="w-full inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-12 text-base hover:bg-black/85 transition-colors disabled:bg-black/25 disabled:cursor-not-allowed"
-                style={{ fontWeight: 500 }}
-              >
-                {!canAdd ? "Select size & colour" : added ? (<><Check size={18} /> Added</>) : (<>Add to cart · {formatPKR(product.price * qty)}</>)}
-              </button>
-            </div>
-            <button
-              onClick={handleFav}
-              aria-label={isFav(product.id) ? "Remove from favourites" : "Add to favourites"}
-              aria-pressed={isFav(product.id)}
-              className="h-12 w-12 shrink-0 inline-flex items-center justify-center rounded-full border border-black/15 hover:border-black transition-colors"
-            >
-              <Heart size={18} className={isFav(product.id) ? "fill-black text-black" : "text-black"} />
-            </button>
-          </div>
-
-          {canAdd ? (
-            <button
-              type="button"
-              onClick={() => {
-                const { text, url, total } = buildWhatsappProductOrder(variantProduct, qty);
-                saveOrder({
-                  kind: "product",
-                  url,
-                  message: text,
-                  total,
-                  itemCount: qty,
-                  primaryName: variantProduct.name,
-                  primaryImg: product.img,
-                  primaryBg: product.bg,
-                });
-                toast.success("Order draft saved", { description: "You can resend it any time from Orders." });
-                window.open(url, "_blank", "noopener,noreferrer");
-              }}
-              className="mt-3 inline-flex items-center justify-center gap-2 bg-[#25D366] text-white rounded-md h-12 text-base w-full hover:bg-[#1ebe57] transition-colors"
-              style={{ fontWeight: 500 }}
-            >
-              <MessageCircle size={18} /> Order on WhatsApp
-            </button>
           ) : (
-            <button
-              disabled
-              className="mt-3 inline-flex items-center justify-center gap-2 bg-[#25D366]/30 text-white rounded-md h-12 text-base w-full cursor-not-allowed"
-              style={{ fontWeight: 500 }}
-            >
-              <MessageCircle size={18} /> Order on WhatsApp
-            </button>
+            <>
+              {/* QUANTITY + ADD */}
+              <div className="mt-8 flex items-center gap-3">
+                <div className="inline-flex items-center border border-black/15 rounded-full h-12">
+                  <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="w-10 h-12 flex items-center justify-center text-black/70 hover:text-black" aria-label="Decrease">
+                    <Minus size={16} />
+                  </button>
+                  <span className="w-8 text-center text-sm text-black">{qty}</span>
+                  <button onClick={() => setQty((q) => q + 1)} className="w-10 h-12 flex items-center justify-center text-black/70 hover:text-black" aria-label="Increase">
+                    <Plus size={16} />
+                  </button>
+                </div>
+                <div
+                  className="flex-1"
+                  onClick={() => {
+                    if (!canAdd) handleAdd();
+                  }}
+                >
+                  <button
+                    onClick={handleAdd}
+                    disabled={!canAdd}
+                    className="w-full inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-12 text-base hover:bg-black/85 transition-colors disabled:bg-black/25 disabled:cursor-not-allowed"
+                    style={{ fontWeight: 500 }}
+                  >
+                    {!canAdd ? "Select size & colour" : added ? (<><Check size={18} /> Added</>) : (<>Add to cart · {formatPKR(product.price * qty)}</>)}
+                  </button>
+                </div>
+                <button
+                  onClick={handleFav}
+                  aria-label={isFav(product.id) ? "Remove from favourites" : "Add to favourites"}
+                  aria-pressed={isFav(product.id)}
+                  className="h-12 w-12 shrink-0 inline-flex items-center justify-center rounded-full border border-black/15 hover:border-black transition-colors"
+                >
+                  <Heart size={18} className={isFav(product.id) ? "fill-black text-black" : "text-black"} />
+                </button>
+              </div>
+
+              {canAdd ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const { text, url, total } = buildWhatsappProductOrder(variantProduct, qty);
+                    saveOrder({
+                      kind: "product",
+                      url,
+                      message: text,
+                      total,
+                      itemCount: qty,
+                      primaryName: variantProduct.name,
+                      primaryImg: product.img,
+                      primaryBg: product.bg,
+                    });
+                    toast.success("Order draft saved", { description: "You can resend it any time from Orders." });
+                    window.open(url, "_blank", "noopener,noreferrer");
+                  }}
+                  className="mt-3 inline-flex items-center justify-center gap-2 bg-[#25D366] text-white rounded-md h-12 text-base w-full hover:bg-[#1ebe57] transition-colors"
+                  style={{ fontWeight: 500 }}
+                >
+                  <MessageCircle size={18} /> Order on WhatsApp
+                </button>
+              ) : (
+                <button
+                  disabled
+                  className="mt-3 inline-flex items-center justify-center gap-2 bg-[#25D366]/30 text-white rounded-md h-12 text-base w-full cursor-not-allowed"
+                  style={{ fontWeight: 500 }}
+                >
+                  <MessageCircle size={18} /> Order on WhatsApp
+                </button>
+              )}
+              <p className="mt-2 text-[11px] text-black/50">
+                {canAdd ? "Chat with us on WhatsApp — product details pre-filled." : "Pick a size and colour to continue."}
+              </p>
+            </>
           )}
-          <p className="mt-2 text-[11px] text-black/50">
-            {canAdd ? "Chat with us on WhatsApp — product details pre-filled." : "Pick a size and colour to continue."}
-          </p>
 
           <div className="mt-8 grid grid-cols-3 gap-3 max-w-md">
             {[
