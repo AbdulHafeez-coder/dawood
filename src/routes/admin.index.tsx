@@ -2004,13 +2004,21 @@ function SettingsPanel() {
             />
           )}
 
-
-
+          {brandEmpty && !sectionErrors.brand && (
+            <EmptySectionPrompt
+              title="No brand details saved yet"
+              description="Add your brand name, tagline, logo, and WhatsApp number so the storefront and order messages feel like yours."
+              suggestions={["Brand name", "Tagline", "Logo URL", "WhatsApp"]}
+              actionLabel="Set brand name"
+              onAction={() => focusField(brandFirstRef)}
+            />
+          )}
 
           {/* Brand */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Field label="Brand name">
               <input
+                ref={brandFirstRef}
                 className="mt-input"
                 value={draft.brandName}
                 onChange={(e) => setDraft({ ...draft, brandName: e.target.value })}
