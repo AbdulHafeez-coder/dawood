@@ -439,12 +439,8 @@ function AdminDashboard() {
     [categories, products],
   );
 
-  if (!ready || !isAuthed) {
-    return (
-      <div className="min-h-screen bg-[#FEFDF9] grid place-items-center text-black/40 text-xs uppercase tracking-[0.2em]">
-        Checking access…
-      </div>
-    );
+  if (!ready || !isAuthed || !mounted) {
+    return <AdminDashboardSkeleton tab={tab} />;
   }
 
   function handleLogout() {
