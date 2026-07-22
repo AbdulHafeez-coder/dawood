@@ -475,3 +475,50 @@ export function CategoryFormSkeleton({ mode = "create" }: { mode?: "create" | "e
     </div>
   );
 }
+
+export function SettingsSectionSkeleton({
+  title = true,
+  rows = 2,
+  cols = 2,
+  actions = false,
+}: {
+  title?: boolean;
+  rows?: number;
+  cols?: 1 | 2 | 3;
+  actions?: boolean;
+}) {
+  const colClass = cols === 3 ? "md:grid-cols-3" : cols === 2 ? "md:grid-cols-2" : "";
+  return (
+    <section className="bg-white border border-black/10 rounded-2xl p-5 sm:p-6 space-y-4">
+      {title && (
+        <div className="flex items-center justify-between">
+          <Shimmer className="h-4 w-32 rounded" />
+          {actions && (
+            <div className="flex gap-2">
+              <Shimmer className="h-8 w-20 rounded-full" />
+              <Shimmer className="h-8 w-28 rounded-full" />
+            </div>
+          )}
+        </div>
+      )}
+      <div className={`grid grid-cols-1 ${colClass} gap-4`}>
+        {Array.from({ length: rows * cols }).map((_, i) => (
+          <div key={i} className="space-y-2">
+            <Shimmer className="h-2.5 w-24 rounded" />
+            <Shimmer className="h-9 w-full rounded-md" />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export function SettingsPanelSkeleton() {
+  return (
+    <>
+      <SettingsSectionSkeleton rows={2} cols={2} actions />
+      <SettingsSectionSkeleton rows={1} cols={3} />
+      <SettingsSectionSkeleton rows={3} cols={2} />
+    </>
+  );
+}
