@@ -36,7 +36,7 @@ import {
   type Product,
 } from "@/lib/shop";
 import { useOrders, removeOrder } from "@/lib/orders";
-import { useSettings, updateSettings, resetSettings, type SocialKey } from "@/lib/settings";
+import { useSettings, updateSettings, resetSettings, saveSettingsAsync, type SocialKey } from "@/lib/settings";
 import { formatPkPhone, normalizePkDigits, isValidPkPhone, PK_PHONE_PLACEHOLDER } from "@/lib/pk-phone";
 import { formatPKR } from "@/lib/format";
 import {
