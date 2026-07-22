@@ -46,6 +46,10 @@ import {
   parseCategoriesCsv,
   downloadCsv,
 } from "@/lib/csv";
+import {
+  AdminDashboardSkeleton,
+  useMounted,
+} from "@/components/skeletons";
 
 
 import {
@@ -104,6 +108,7 @@ export const Route = createFileRoute("/admin/")({
 
 function AdminDashboard() {
   const navigate = useNavigate();
+  const mounted = useMounted();
   const { isAuthed, ready, logout } = useAdminAuth();
   const { orders } = useOrders();
   const { products, addProduct, updateProduct, deleteProduct, resetProducts } = useProducts();
@@ -434,12 +439,8 @@ function AdminDashboard() {
     [categories, products],
   );
 
-  if (!ready || !isAuthed) {
-    return (
-      <div className="min-h-screen bg-[#FEFDF9] grid place-items-center text-black/40 text-xs uppercase tracking-[0.2em]">
-        Checking access…
-      </div>
-    );
+  if (!ready || !isAuthed || !mounted) {
+    return <AdminDashboardSkeleton tab={tab} />;
   }
 
   function handleLogout() {

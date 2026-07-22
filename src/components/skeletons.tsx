@@ -193,3 +193,228 @@ export function AddToCartSkeleton() {
     </div>
   );
 }
+
+/* ============================================================================
+ * Admin skeletons
+ * ========================================================================== */
+
+export function AdminHeaderSkeleton() {
+  return (
+    <header className="border-b border-black/10 bg-[#FEFDF9]/95 backdrop-blur sticky top-0 z-20">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 py-4 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+          <Shimmer className="h-3 w-14 rounded" />
+          <div className="h-4 w-px bg-black/15" />
+          <div className="space-y-2">
+            <Shimmer className="h-2.5 w-24 rounded" />
+            <Shimmer className="h-5 w-40 rounded" />
+          </div>
+        </div>
+        <Shimmer className="h-8 w-24 rounded-full" />
+      </div>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
+        <nav className="flex gap-1 -mb-px">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Shimmer key={i} className="h-9 w-28 rounded-t-md" />
+          ))}
+        </nav>
+      </div>
+    </header>
+  );
+}
+
+export function KpiCardSkeleton() {
+  return (
+    <div className="bg-white border border-black/10 rounded-2xl p-4 sm:p-5">
+      <div className="flex items-center gap-2">
+        <Shimmer className="h-6 w-6 rounded-full" />
+        <Shimmer className="h-3 w-16 rounded" />
+      </div>
+      <Shimmer className="mt-4 h-7 w-24 rounded" />
+      <Shimmer className="mt-2 h-3 w-20 rounded" />
+    </div>
+  );
+}
+
+export function AdminOverviewSkeleton() {
+  return (
+    <div className="space-y-6 sm:space-y-8" aria-busy="true" aria-live="polite">
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <KpiCardSkeleton key={i} />
+        ))}
+      </section>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <section className="bg-white border border-black/10 rounded-2xl p-5 sm:p-6 space-y-4">
+          <Shimmer className="h-4 w-32 rounded" />
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Shimmer className="h-3 w-24 rounded" />
+                <Shimmer className="h-3 w-6 rounded" />
+              </div>
+              <Shimmer className="h-1.5 w-full rounded-full" />
+            </div>
+          ))}
+        </section>
+        <section className="lg:col-span-2 bg-white border border-black/10 rounded-2xl p-5 sm:p-6 space-y-4">
+          <Shimmer className="h-4 w-40 rounded" />
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="flex gap-3 items-center">
+              <Shimmer className="h-12 w-12 rounded-lg" />
+              <div className="flex-1 space-y-2">
+                <Shimmer className="h-3 w-2/3 rounded" />
+                <Shimmer className="h-3 w-1/3 rounded" />
+              </div>
+              <Shimmer className="h-5 w-16 rounded" />
+            </div>
+          ))}
+        </section>
+      </div>
+    </div>
+  );
+}
+
+export function AdminProductsSkeleton() {
+  return (
+    <div className="space-y-4" aria-busy="true" aria-live="polite">
+      <div className="bg-white border border-black/10 rounded-2xl p-4 sm:p-5 flex flex-wrap items-center gap-3">
+        <Shimmer className="h-9 flex-1 min-w-[200px] rounded-full" />
+        <Shimmer className="h-9 w-32 rounded-full" />
+        <Shimmer className="h-9 w-28 rounded-full" />
+        <Shimmer className="h-9 w-28 rounded-full" />
+      </div>
+      <div className="bg-white border border-black/10 rounded-2xl overflow-hidden">
+        <div className="p-4 border-b border-black/10 flex items-center gap-3">
+          <Shimmer className="h-4 w-4 rounded" />
+          <Shimmer className="h-4 w-24 rounded" />
+        </div>
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="p-4 border-b border-black/5 flex items-center gap-3">
+            <Shimmer className="h-4 w-4 rounded" />
+            <Shimmer className="h-12 w-12 rounded-lg" />
+            <div className="flex-1 space-y-2">
+              <Shimmer className="h-4 w-2/3 rounded" />
+              <Shimmer className="h-3 w-1/3 rounded" />
+            </div>
+            <Shimmer className="h-5 w-16 rounded" />
+            <Shimmer className="h-8 w-8 rounded-full" />
+            <Shimmer className="h-8 w-8 rounded-full" />
+          </div>
+        ))}
+        <div className="p-4 flex items-center justify-between">
+          <Shimmer className="h-4 w-32 rounded" />
+          <div className="flex gap-2">
+            <Shimmer className="h-8 w-8 rounded" />
+            <Shimmer className="h-8 w-8 rounded" />
+            <Shimmer className="h-8 w-8 rounded" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function AdminCategoriesSkeleton() {
+  return (
+    <div className="space-y-4" aria-busy="true" aria-live="polite">
+      <div className="bg-white border border-black/10 rounded-2xl p-4 sm:p-5 flex items-center gap-3">
+        <Shimmer className="h-9 flex-1 rounded-full" />
+        <Shimmer className="h-9 w-32 rounded-full" />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="bg-white border border-black/10 rounded-2xl p-4 sm:p-5 space-y-3">
+            <div className="flex items-center justify-between">
+              <Shimmer className="h-5 w-32 rounded" />
+              <Shimmer className="h-6 w-6 rounded-full" />
+            </div>
+            <Shimmer className="h-3 w-20 rounded" />
+            <div className="flex gap-2 pt-2">
+              <Shimmer className="h-8 w-20 rounded-full" />
+              <Shimmer className="h-8 w-20 rounded-full" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function AdminSettingsSkeleton() {
+  return (
+    <div className="space-y-4 sm:space-y-6" aria-busy="true" aria-live="polite">
+      {Array.from({ length: 3 }).map((_, s) => (
+        <section key={s} className="bg-white border border-black/10 rounded-2xl p-5 sm:p-6 space-y-4">
+          <div className="flex items-center gap-2">
+            <Shimmer className="h-4 w-4 rounded-full" />
+            <Shimmer className="h-4 w-32 rounded" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="space-y-2">
+                <Shimmer className="h-3 w-24 rounded" />
+                <Shimmer className="h-10 w-full rounded-md" />
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
+      <div className="flex justify-end gap-2">
+        <Shimmer className="h-10 w-28 rounded-full" />
+        <Shimmer className="h-10 w-32 rounded-full" />
+      </div>
+    </div>
+  );
+}
+
+export function AdminDashboardSkeleton({
+  tab = "overview",
+}: {
+  tab?: "overview" | "products" | "categories" | "settings";
+}) {
+  return (
+    <div className="min-h-screen flex flex-col bg-[#FEFDF9] text-black">
+      <AdminHeaderSkeleton />
+      <main className="flex-1 px-4 sm:px-6 md:px-8 py-6 sm:py-10">
+        <div className="mx-auto max-w-7xl">
+          {tab === "overview" && <AdminOverviewSkeleton />}
+          {tab === "products" && <AdminProductsSkeleton />}
+          {tab === "categories" && <AdminCategoriesSkeleton />}
+          {tab === "settings" && <AdminSettingsSkeleton />}
+        </div>
+      </main>
+    </div>
+  );
+}
+
+export function AdminLoginSkeleton() {
+  return (
+    <div className="min-h-screen flex flex-col bg-[#FEFDF9]" aria-busy="true">
+      <main className="flex-1 px-4 sm:px-6 md:px-8 py-8 sm:py-12">
+        <div className="mx-auto max-w-md">
+          <Shimmer className="h-3 w-24 rounded" />
+          <div className="mt-6 sm:mt-10 bg-white border border-black/10 rounded-2xl p-6 sm:p-8 space-y-5">
+            <div className="flex items-center gap-3">
+              <Shimmer className="h-10 w-10 rounded-full" />
+              <div className="space-y-2">
+                <Shimmer className="h-2.5 w-20 rounded" />
+                <Shimmer className="h-5 w-32 rounded" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Shimmer className="h-2.5 w-12 rounded" />
+              <Shimmer className="h-9 w-full rounded" />
+            </div>
+            <div className="space-y-2">
+              <Shimmer className="h-2.5 w-16 rounded" />
+              <Shimmer className="h-9 w-full rounded" />
+            </div>
+            <Shimmer className="h-11 w-full rounded-full" />
+          </div>
+          <Shimmer className="mt-4 h-24 w-full rounded-2xl" />
+        </div>
+      </main>
+    </div>
+  );
+}

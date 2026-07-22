@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, Lock, Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 import { useAdminAuth, ADMIN_EMAIL, ADMIN_PASSWORD } from "@/lib/admin-auth";
+import { AdminLoginSkeleton, useMounted } from "@/components/skeletons";
 
 
 const dmSans = { fontFamily: "'DM Sans', sans-serif" };
@@ -24,6 +25,7 @@ export const Route = createFileRoute("/admin/login")({
 
 function AdminLogin() {
   const navigate = useNavigate();
+  const mounted = useMounted();
   const { redirect } = Route.useSearch();
   const { isAuthed, ready, login } = useAdminAuth();
   const [email, setEmail] = useState("");
@@ -59,6 +61,10 @@ function AdminLogin() {
       setCopied(kind);
       setTimeout(() => setCopied((c) => (c === kind ? null : c)), 1200);
     });
+  }
+
+  if (!mounted || !ready || isAuthed) {
+    return <AdminLoginSkeleton />;
   }
 
   return (
