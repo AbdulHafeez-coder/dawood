@@ -38,7 +38,7 @@ import {
   PRODUCT_BG_CHOICES,
   type Product,
 } from "@/lib/shop";
-import { useOrders, removeOrder } from "@/lib/orders";
+import { useAllOrders } from "@/lib/orders";
 import { useSettings, updateSettings, resetSettings, saveSettingsAsync, type SocialKey } from "@/lib/settings";
 import { formatPkPhone, normalizePkDigits, isValidPkPhone, PK_PHONE_PLACEHOLDER } from "@/lib/pk-phone";
 import { formatPKR } from "@/lib/format";
@@ -120,7 +120,7 @@ function AdminDashboard() {
   const navigate = useNavigate();
   const mounted = useMounted();
   const { isAuthed, ready, logout } = useAdminAuth();
-  const { orders } = useOrders();
+  const { orders, removeOrder } = useAllOrders();
   const { products, addProduct, updateProduct, deleteProduct, resetProducts } = useProducts();
   const { categories, addCategory, renameCategory, deleteCategory, resetCategories } = useCategories();
 
@@ -587,7 +587,7 @@ function AdminDashboard() {
                           <div className="text-sm tabular-nums shrink-0">{formatPKR(o.total)}</div>
                           <button
                             onClick={() => {
-                              removeOrder(o.id);
+                              void removeOrder(o.id);
                               toast.success("Order removed");
                             }}
                             aria-label="Delete order"
