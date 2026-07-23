@@ -315,20 +315,20 @@ function AdminDashboard() {
       [esc(p.name), p.price.toFixed(2), esc(formatPKR(p.price)), "PKR", esc(p.category), esc(p.tag ?? "")].join(","),
     );
     const csv = [header.join(","), ...body].join("\n");
-    downloadCsv(`maison-terra-selected-${new Date().toISOString().slice(0, 10)}.csv`, csv);
+    downloadCsv(`dawood-mart-selected-${new Date().toISOString().slice(0, 10)}.csv`, csv);
     toast.success(`Exported ${rows.length} product${rows.length === 1 ? "" : "s"}`);
   }
 
 
   function handleExportProducts() {
     if (products.length === 0) return toast.error("No products to export");
-    downloadCsv(`maison-terra-products-${new Date().toISOString().slice(0, 10)}.csv`, productsToCsv(products));
+    downloadCsv(`dawood-mart-products-${new Date().toISOString().slice(0, 10)}.csv`, productsToCsv(products));
     toast.success("Products exported", { description: `${products.length} row${products.length === 1 ? "" : "s"}` });
   }
 
   function handleExportCategories() {
     if (categories.length === 0) return toast.error("No categories to export");
-    downloadCsv(`maison-terra-categories-${new Date().toISOString().slice(0, 10)}.csv`, categoriesToCsv(categories));
+    downloadCsv(`dawood-mart-categories-${new Date().toISOString().slice(0, 10)}.csv`, categoriesToCsv(categories));
     toast.success("Categories exported", { description: `${categories.length} row${categories.length === 1 ? "" : "s"}` });
   }
 
