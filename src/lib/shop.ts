@@ -5,6 +5,7 @@ import productCloth from "@/assets/product-cloth.jpg";
 import productSponge from "@/assets/product-sponge.jpg";
 import productBathset from "@/assets/product-bathset.jpg";
 import heroBg from "@/assets/hero-home.jpg";
+import { supabase } from "@/lib/supabase";
 
 // Category is a free-form string so admins can add/rename categories.
 export type Category = string;
@@ -270,67 +271,115 @@ export const PRODUCT_BG_CHOICES = [
 ];
 
 // ---------- LIVE STORE (products + categories) ----------
-const PRODUCTS_KEY = "maison-terra-products-v1";
-const CATEGORIES_KEY = "maison-terra-categories-v1";
+// Backed by Supabase (public.products, public.categories). Cart + favourites
+// stay in localStorage — they're per-visitor session data.
 
-// Exported live arrays. Mutated in place so module-level readers see updates.
+type ProductRow = {
+  id: string;
+  name: string;
+  tag: string;
+  price: number | string;
+  rating: number | string;
+  img: string;
+  bg: string;
+  category: string;
+  tagline: string;
+  description: string;
+  details: string[] | null;
+  gallery: string[] | null;
+};
+
+function rowToProduct(r: ProductRow): Product {
+  return {
+    id: r.id,
+    name: r.name,
+    tag: r.tag ?? "",
+    price: typeof r.price === "string" ? Number(r.price) : r.price,
+    rating: typeof r.rating === "string" ? Number(r.rating) : r.rating,
+    img: r.img ?? "",
+    bg: r.bg ?? "",
+    category: r.category,
+    tagline: r.tagline ?? "",
+    description: r.description ?? "",
+    details: r.details ?? [],
+    gallery: r.gallery && r.gallery.length ? r.gallery : [r.img],
+  };
+}
+
+function productToRow(p: Product): ProductRow {
+  return {
+    id: p.id,
+    name: p.name,
+    tag: p.tag ?? "",
+    price: p.price,
+    rating: p.rating,
+    img: p.img,
+    bg: p.bg,
+    category: p.category,
+    tagline: p.tagline ?? "",
+    description: p.description ?? "",
+    details: p.details ?? [],
+    gallery: p.gallery && p.gallery.length ? p.gallery : [p.img],
+  };
+}
+
+// Exported live arrays. Seeded synchronously so SSR + first paint have data.
 export const products: Product[] = [...SEED_PRODUCTS];
 export const categoriesLive: string[] = [...SEED_CATEGORIES];
 
-let storeHydrated = false;
 const productListeners = new Set<(p: Product[]) => void>();
 const categoryListeners = new Set<(c: string[]) => void>();
 
-function persistProducts() {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-  } catch {
-    /* ignore */
-  }
-}
-function persistCategories() {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(CATEGORIES_KEY, JSON.stringify(categoriesLive));
-  } catch {
-    /* ignore */
-  }
-}
 function emitProducts() {
-  persistProducts();
   for (const l of productListeners) l([...products]);
 }
 function emitCategories() {
-  persistCategories();
   for (const l of categoryListeners) l([...categoriesLive]);
 }
 
+let hydratePromise: Promise<void> | null = null;
+
+async function seedIfEmpty() {
+  const catRows = SEED_CATEGORIES.map((name) => ({ name }));
+  await supabase.from("categories").upsert(catRows, { onConflict: "name" });
+  const prodRows = SEED_PRODUCTS.map(productToRow);
+  await supabase.from("products").upsert(prodRows, { onConflict: "id" });
+}
+
+async function hydrateFromSupabase() {
+  const [{ data: catData, error: catErr }, { data: prodData, error: prodErr }] = await Promise.all([
+    supabase.from("categories").select("name").order("created_at", { ascending: true }),
+    supabase.from("products").select("*").order("created_at", { ascending: false }),
+  ]);
+  if (catErr) console.error("[shop] categories load failed:", catErr.message);
+  if (prodErr) console.error("[shop] products load failed:", prodErr.message);
+
+  const isEmpty = (!catData || catData.length === 0) && (!prodData || prodData.length === 0);
+  if (isEmpty && !catErr && !prodErr) {
+    await seedIfEmpty();
+    const [cats, prods] = await Promise.all([
+      supabase.from("categories").select("name").order("created_at", { ascending: true }),
+      supabase.from("products").select("*").order("created_at", { ascending: false }),
+    ]);
+    if (cats.data)
+      categoriesLive.splice(0, categoriesLive.length, ...cats.data.map((r) => r.name));
+    if (prods.data)
+      products.splice(0, products.length, ...(prods.data as ProductRow[]).map(rowToProduct));
+  } else {
+    if (catData) categoriesLive.splice(0, categoriesLive.length, ...catData.map((r) => r.name));
+    if (prodData)
+      products.splice(0, products.length, ...(prodData as ProductRow[]).map(rowToProduct));
+  }
+  emitCategories();
+  emitProducts();
+}
+
 function ensureStoreHydrated() {
-  if (storeHydrated || typeof window === "undefined") return;
-  storeHydrated = true;
-  try {
-    const rawP = window.localStorage.getItem(PRODUCTS_KEY);
-    if (rawP) {
-      const parsed = JSON.parse(rawP) as Product[];
-      if (Array.isArray(parsed) && parsed.length) {
-        products.splice(0, products.length, ...parsed);
-      }
-    }
-  } catch {
-    /* ignore */
-  }
-  try {
-    const rawC = window.localStorage.getItem(CATEGORIES_KEY);
-    if (rawC) {
-      const parsed = JSON.parse(rawC) as string[];
-      if (Array.isArray(parsed) && parsed.length) {
-        categoriesLive.splice(0, categoriesLive.length, ...parsed);
-      }
-    }
-  } catch {
-    /* ignore */
-  }
+  if (typeof window === "undefined") return;
+  if (hydratePromise) return;
+  hydratePromise = hydrateFromSupabase().catch((e) => {
+    console.error("[shop] hydrate failed:", e);
+  });
 }
 
 export function getProduct(id: string): Product | undefined {
@@ -356,30 +405,78 @@ export function useProducts() {
   const addProduct = useCallback((p: Omit<Product, "id"> & { id?: string }) => {
     const id = p.id ?? `p-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
     const gallery = p.gallery && p.gallery.length ? p.gallery : [p.img];
-    products.unshift({ ...p, id, gallery });
+    const next: Product = { ...p, id, gallery };
+    products.unshift(next);
     emitProducts();
+    supabase
+      .from("products")
+      .insert(productToRow(next))
+      .then(({ error }) => {
+        if (error) {
+          console.error("[shop] addProduct failed:", error.message);
+          const idx = products.findIndex((x) => x.id === id);
+          if (idx >= 0) products.splice(idx, 1);
+          emitProducts();
+        }
+      });
     return id;
   }, []);
 
   const updateProduct = useCallback((id: string, patch: Partial<Product>) => {
     const idx = products.findIndex((p) => p.id === id);
     if (idx < 0) return;
-    const next = { ...products[idx], ...patch };
+    const prev = products[idx];
+    const next = { ...prev, ...patch };
     if (!next.gallery || next.gallery.length === 0) next.gallery = [next.img];
     products[idx] = next;
     emitProducts();
+    supabase
+      .from("products")
+      .update(productToRow(next))
+      .eq("id", id)
+      .then(({ error }) => {
+        if (error) {
+          console.error("[shop] updateProduct failed:", error.message);
+          products[idx] = prev;
+          emitProducts();
+        }
+      });
   }, []);
 
   const deleteProduct = useCallback((id: string) => {
     const idx = products.findIndex((p) => p.id === id);
     if (idx < 0) return;
+    const removed = products[idx];
     products.splice(idx, 1);
     emitProducts();
+    supabase
+      .from("products")
+      .delete()
+      .eq("id", id)
+      .then(({ error }) => {
+        if (error) {
+          console.error("[shop] deleteProduct failed:", error.message);
+          products.splice(idx, 0, removed);
+          emitProducts();
+        }
+      });
   }, []);
 
-  const resetProducts = useCallback(() => {
+  const resetProducts = useCallback(async () => {
+    const snapshot = [...products];
     products.splice(0, products.length, ...SEED_PRODUCTS);
     emitProducts();
+    const { error: delErr } = await supabase.from("products").delete().neq("id", "");
+    if (delErr) {
+      console.error("[shop] resetProducts delete failed:", delErr.message);
+      products.splice(0, products.length, ...snapshot);
+      emitProducts();
+      return;
+    }
+    const { error: insErr } = await supabase
+      .from("products")
+      .insert(SEED_PRODUCTS.map(productToRow));
+    if (insErr) console.error("[shop] resetProducts insert failed:", insErr.message);
   }, []);
 
   return { products: list, addProduct, updateProduct, deleteProduct, resetProducts };
@@ -405,6 +502,17 @@ export function useCategories() {
     if (categoriesLive.some((c) => c.toLowerCase() === clean.toLowerCase())) return false;
     categoriesLive.push(clean);
     emitCategories();
+    supabase
+      .from("categories")
+      .insert({ name: clean })
+      .then(({ error }) => {
+        if (error) {
+          console.error("[shop] addCategory failed:", error.message);
+          const idx = categoriesLive.indexOf(clean);
+          if (idx >= 0) categoriesLive.splice(idx, 1);
+          emitCategories();
+        }
+      });
     return true;
   }, []);
 
@@ -415,12 +523,17 @@ export function useCategories() {
     if (idx < 0) return false;
     if (categoriesLive.some((c, i) => i !== idx && c.toLowerCase() === clean.toLowerCase())) return false;
     categoriesLive[idx] = clean;
-    // cascade to products
-    for (const p of products) {
-      if (p.category === oldName) p.category = clean;
-    }
+    for (const p of products) if (p.category === oldName) p.category = clean;
     emitCategories();
     emitProducts();
+    // ON UPDATE CASCADE on products.category takes care of the FK side.
+    supabase
+      .from("categories")
+      .update({ name: clean })
+      .eq("name", oldName)
+      .then(({ error }) => {
+        if (error) console.error("[shop] renameCategory failed:", error.message);
+      });
     return true;
   }, []);
 
@@ -429,18 +542,28 @@ export function useCategories() {
     if (idx < 0) return { ok: false as const, orphaned: 0 };
     const orphaned = products.filter((p) => p.category === name).length;
     categoriesLive.splice(idx, 1);
-    // remove products in this category to keep data consistent
     for (let i = products.length - 1; i >= 0; i--) {
       if (products[i].category === name) products.splice(i, 1);
     }
     emitCategories();
     emitProducts();
+    // ON DELETE CASCADE on products.category clears the child rows.
+    supabase
+      .from("categories")
+      .delete()
+      .eq("name", name)
+      .then(({ error }) => {
+        if (error) console.error("[shop] deleteCategory failed:", error.message);
+      });
     return { ok: true as const, orphaned };
   }, []);
 
-  const resetCategories = useCallback(() => {
+  const resetCategories = useCallback(async () => {
     categoriesLive.splice(0, categoriesLive.length, ...SEED_CATEGORIES);
     emitCategories();
+    await supabase
+      .from("categories")
+      .upsert(SEED_CATEGORIES.map((name) => ({ name })), { onConflict: "name" });
   }, []);
 
   return { categories: list, addCategory, renameCategory, deleteCategory, resetCategories };
@@ -625,24 +748,12 @@ export function useFavourites() {
   return { favs, toggleFav, isFav, favCount: favs.length };
 }
 
-// Cross-tab sync: react to writes made in other tabs.
+// Cross-tab sync for cart + favourites (products/categories now live in Supabase).
 if (typeof window !== "undefined") {
   window.addEventListener("storage", (e) => {
     if (!e.key) return;
     try {
-      if (e.key === PRODUCTS_KEY) {
-        const parsed = e.newValue ? (JSON.parse(e.newValue) as Product[]) : [];
-        if (Array.isArray(parsed)) {
-          products.splice(0, products.length, ...parsed);
-          for (const l of productListeners) l([...products]);
-        }
-      } else if (e.key === CATEGORIES_KEY) {
-        const parsed = e.newValue ? (JSON.parse(e.newValue) as string[]) : [];
-        if (Array.isArray(parsed)) {
-          categoriesLive.splice(0, categoriesLive.length, ...parsed);
-          for (const l of categoryListeners) l([...categoriesLive]);
-        }
-      } else if (e.key === STORAGE_KEY) {
+      if (e.key === STORAGE_KEY) {
         cartState = loadInitial();
         for (const l of listeners) l(cartState);
       } else if (e.key === FAV_KEY) {
