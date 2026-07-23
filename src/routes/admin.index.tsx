@@ -1060,10 +1060,11 @@ function AdminDashboard() {
         <CategoryFormDialog
           mode={categoryDialog.mode}
           name={categoryDialog.name}
+          initialImageUrl={categoryDialog.name ? categoryInfo[categoryDialog.name]?.imageUrl ?? "" : ""}
           existing={categories}
           onClose={() => setCategoryDialog(null)}
-          onCreate={(name) => {
-            if (addCategory(name)) {
+          onCreate={(name, imageUrl) => {
+            if (addCategory(name, imageUrl)) {
               toast.success("Category created", { description: name });
               setCategoryDialog(null);
             } else {
@@ -1073,13 +1074,18 @@ function AdminDashboard() {
           onSave={(oldName, newName) => {
             if (renameCategory(oldName, newName)) {
               toast.success("Category renamed", { description: `${oldName} → ${newName}` });
-              setCategoryDialog(null);
             } else {
               toast.error("Rename failed", { description: "Name is empty or duplicated." });
             }
           }}
+          onUpdateImage={(name, imageUrl) => {
+            updateCategoryImage(name, imageUrl);
+            toast.success(imageUrl ? "Category image updated" : "Category image removed", { description: name });
+            setCategoryDialog(null);
+          }}
         />
       )}
+
 
       {/* Delete product confirm */}
       <AlertDialog open={!!confirmProduct} onOpenChange={(o) => !o && setConfirmProduct(null)}>
