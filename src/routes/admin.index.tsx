@@ -1048,6 +1048,8 @@ function AdminDashboard() {
             />
           )}
 
+          {tab === "promotions" && <PromotionsPanel categories={categories} />}
+
           {tab === "settings" && <SettingsPanel />}
 
 
