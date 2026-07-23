@@ -36,6 +36,7 @@ import {
   useCategories,
   PRODUCT_IMAGE_CHOICES,
   PRODUCT_BG_CHOICES,
+  computeShipping,
   type Product,
 } from "@/lib/shop";
 import { useAllOrders, ORDER_STATUSES, type OrderStatus, type SavedOrder } from "@/lib/orders";
@@ -2633,8 +2634,11 @@ function OrdersPanel({
           {selected && (() => {
             const s = (selected.status ?? "new") as OrderStatus;
             const b = STATUS_STYLES[s];
-            const shipping = selected.kind === "cart" && selected.total > 0 && selected.total < 50 ? 5 : 0;
-            const subtotal = Math.max(0, selected.total - shipping);
+            const shipping = selected.kind === "cart" ? computeShipping(Math.max(0, selected.total - 0)) : 0;
+            // Reverse-derive subtotal from total: subtotal + shipping = total.
+            // computeShipping is monotone; if free-shipping threshold applies, shipping=0.
+            const subtotalCandidate = selected.total - shipping;
+            const subtotal = shipping > 0 && subtotalCandidate < 0 ? selected.total : Math.max(0, subtotalCandidate);
             return (
               <div className="flex flex-col h-full">
                 <SheetHeader className="px-6 pt-6 pb-4 border-b border-black/10 text-left">
