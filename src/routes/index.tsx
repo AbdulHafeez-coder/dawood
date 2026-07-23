@@ -364,7 +364,7 @@ function Index() {
                       <Sparkles size={22} strokeWidth={1.5} />
                     </div>
                     <div>
-                      <div className="text-white drop-shadow-sm" style={{ ...dmSans, fontWeight: 500, fontSize: "clamp(22px, 3vw, 30px)", letterSpacing: "-0.03em" }}>
+                      <div className="type-h3 text-white drop-shadow-sm">
                         {name}
                       </div>
                       <div className="text-white/70 text-xs mt-2">{catProducts.length} product{catProducts.length === 1 ? "" : "s"}</div>
