@@ -263,25 +263,16 @@ async function hydrateFromSupabase() {
   if (catErr) console.error("[shop] categories load failed:", catErr.message);
   if (prodErr) console.error("[shop] products load failed:", prodErr.message);
 
-  const isEmpty = (!catData || catData.length === 0) && (!prodData || prodData.length === 0);
-  if (isEmpty && !catErr && !prodErr) {
-    await seedIfEmpty();
-    const [cats, prods] = await Promise.all([
-      supabase.from("categories").select("name").order("created_at", { ascending: true }),
-      supabase.from("products").select("*").order("created_at", { ascending: false }),
-    ]);
-    if (cats.data)
-      categoriesLive.splice(0, categoriesLive.length, ...cats.data.map((r) => r.name));
-    if (prods.data)
-      products.splice(0, products.length, ...(prods.data as ProductRow[]).map(rowToProduct));
-  } else {
-    if (catData) categoriesLive.splice(0, categoriesLive.length, ...catData.map((r) => r.name));
-    if (prodData)
-      products.splice(0, products.length, ...(prodData as ProductRow[]).map(rowToProduct));
-  }
+  categoriesLive.splice(0, categoriesLive.length, ...(catData ?? []).map((r) => r.name));
+  products.splice(
+    0,
+    products.length,
+    ...((prodData ?? []) as ProductRow[]).map(rowToProduct),
+  );
   emitCategories();
   emitProducts();
 }
+
 
 function ensureStoreHydrated() {
   if (typeof window === "undefined") return;
