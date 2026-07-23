@@ -311,7 +311,7 @@ function Index() {
                 onClick={(e) => {
                   if (c.linkCategory) {
                     e.preventDefault();
-                    setCategory(c.linkCategory as Category);
+                    setActiveCat(c.linkCategory as Category);
                     document.getElementById("collections")?.scrollIntoView({ behavior: "smooth" });
                   }
                 }}
