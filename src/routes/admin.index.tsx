@@ -130,7 +130,7 @@ function AdminDashboard() {
   const { isAuthed, ready, logout } = useAdminAuth();
   const { orders, removeOrder, updateStatus, loading: ordersLoading, error: ordersError, refetch: refetchOrders } = useAllOrders();
   const { products, addProduct, updateProduct, deleteProduct, resetProducts } = useProducts();
-  const { categories, addCategory, renameCategory, deleteCategory, resetCategories } = useCategories();
+  const { categories, categoryInfo, addCategory, renameCategory, updateCategoryImage, deleteCategory, resetCategories } = useCategories();
 
   const [tab, setTab] = useState<TabId>(() => {
     if (typeof window === "undefined") return "overview";
