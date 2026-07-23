@@ -160,7 +160,7 @@ function Index() {
         }}
       >
         <nav className="relative z-20 flex items-center justify-between px-5 py-4 sm:px-8 lg:px-10 lg:py-5 animate-fade-in">
-          <div className="animate-slide-left delay-200 text-white flex items-center gap-2" style={{ ...dmSans, fontWeight: 500, fontSize: 30, letterSpacing: "-0.05em" }}>
+          <div className="type-wordmark animate-slide-left delay-200 text-white flex items-center gap-2">
             {settings.logoUrl ? <img src={settings.logoUrl} alt="" className="w-8 h-8 rounded-md object-cover bg-white/20" /> : null}
             {settings.brandName}
           </div>
