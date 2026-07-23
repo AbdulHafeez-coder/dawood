@@ -10,15 +10,8 @@ import { supabase } from "@/lib/supabase";
 // Category is a free-form string so admins can add/rename categories.
 export type Category = string;
 
-export const SEED_CATEGORIES: readonly string[] = [
-  "Towels",
-  "Wallpaper",
-  "Cloths",
-  "Sponges",
-  "Candles",
-  "Linens",
-  "Bath",
-];
+export const SEED_CATEGORIES: readonly string[] = [];
+
 
 // Kept for backwards-compat imports in existing components; treat as seed.
 export const CATEGORY_LIST = SEED_CATEGORIES;
@@ -162,223 +155,9 @@ export function getVariants(category: Category): VariantOptions {
 }
 
 // ---------- SEED PRODUCTS ----------
-const SEED_PRODUCTS: Product[] = [
-  {
-    id: "p1",
-    name: "Aegean Bath Towel",
-    tag: "Bestseller",
-    price: 38,
-    rating: 4.9,
-    img: productTowel,
-    bg: "bg-[#F3ECE3]",
-    category: "Towels",
-    tagline: "Long-staple Turkish cotton, woven for daily softness.",
-    description:
-      "Woven in a family-run Aegean mill from long-staple Turkish cotton, the Aegean towel gets plusher with every wash. A generous 70×140 cm sheet that dries fast and folds neatly onto any shelf.",
-    details: [
-      "600 GSM combed cotton",
-      "OEKO-TEX certified, low-impact dyes",
-      "Machine wash cool, tumble dry low",
-      "Dimensions: 70 × 140 cm",
-    ],
-    gallery: [productTowel, productBathset, productCloth, heroBg],
-  },
-  {
-    id: "p2",
-    name: "Sunday Roll",
-    tag: "New",
-    price: 24,
-    rating: 4.8,
-    img: productBathset,
-    bg: "bg-[#F5EFE4]",
-    category: "Towels",
-    tagline: "A three-piece rollup for slow weekend rituals.",
-    description:
-      "A hand, face and bath towel set rolled into a linen band — pared-back palettes designed to sit on an open shelf. Made from the same combed cotton as our Aegean sheet.",
-    details: ["Set of 3 (hand, face, bath)", "500 GSM combed cotton", "Gift-ready linen band", "Machine wash cool"],
-    gallery: [productBathset, productTowel, productCloth, heroBg],
-  },
-  {
-    id: "p3",
-    name: "Botanical Wallpaper",
-    tag: "Popular",
-    price: 46,
-    rating: 4.7,
-    img: productWallpaper,
-    bg: "bg-[#EFEBE3]",
-    category: "Wallpaper",
-    tagline: "Hand-drawn stems, peel-and-stick in minutes.",
-    description:
-      "Illustrated in our studio and printed on removable matte vinyl. Reposition as you go — no paste, no drips, no landlord letters. Each sheet covers 0.9 × 2.4 m.",
-    details: ["Removable matte vinyl", "0.9 × 2.4 m per sheet", "PVC-free, low-VOC inks", "Repositionable up to 5×"],
-    gallery: [productWallpaper, heroBg, productCloth, productTowel],
-  },
-  {
-    id: "p4",
-    name: "Linen Peel-Stick",
-    tag: "New",
-    price: 52,
-    rating: 4.8,
-    img: productWallpaper,
-    bg: "bg-[#EDE7DB]",
-    category: "Wallpaper",
-    tagline: "The look of raw linen, on any wall.",
-    description:
-      "A woven-linen texture reproduced in fine detail on removable vinyl. Warms up hallways and nurseries without the commitment of paste-up paper.",
-    details: ["Removable matte vinyl", "0.9 × 2.4 m per sheet", "PVC-free, low-VOC inks", "Warm oat colourway"],
-    gallery: [productWallpaper, heroBg, productBathset, productCloth],
-  },
-  {
-    id: "p5",
-    name: "Everyday Cloth Set",
-    tag: "Bestseller",
-    price: 18,
-    rating: 4.9,
-    img: productCloth,
-    bg: "bg-[#EAEEE6]",
-    category: "Cloths",
-    tagline: "Five reusable microfibre cloths, colour-coded by room.",
-    description:
-      "Replace weeks of paper towels with a set of five soft microfibre cloths — one for each zone of the home. Washable up to 300 times.",
-    details: ["Set of 5, colour-coded", "300+ machine washes", "Streak-free on glass", "Recycled poly-blend fibre"],
-    gallery: [productCloth, productSponge, productTowel, heroBg],
-  },
-  {
-    id: "p6",
-    name: "Glass & Mirror Cloth",
-    tag: "Popular",
-    price: 14,
-    rating: 4.7,
-    img: productCloth,
-    bg: "bg-[#E8EFEA]",
-    category: "Cloths",
-    tagline: "The lint-free finish for glass, screens and chrome.",
-    description:
-      "A tight-weave microfibre cloth engineered for a streak-free finish. Use dry on screens, damp on mirrors, and pair with our vinegar spray for windows.",
-    details: ["40 × 40 cm, tight weave", "Lint-free on screens & glass", "Machine washable", "Sold as a pair"],
-    gallery: [productCloth, productSponge, heroBg, productTowel],
-  },
-  {
-    id: "p7",
-    name: "Cellulose Kitchen Sponge",
-    tag: "Eco",
-    price: 9,
-    rating: 4.6,
-    img: productSponge,
-    bg: "bg-[#F5EEDF]",
-    category: "Sponges",
-    tagline: "Plant-based sponges that compost when they're done.",
-    description:
-      "Cellulose and loofah pressed into a soft-firm sponge that tackles dishes without shredding. Snip in half and drop into home compost at end of life.",
-    details: ["100% plant-based", "Home-compostable", "Pack of 4", "Boil to sanitise"],
-    gallery: [productSponge, productCloth, heroBg, productBathset],
-  },
-  {
-    id: "p8",
-    name: "Heavy-Duty Scrub Duo",
-    tag: "Limited",
-    price: 12,
-    rating: 4.8,
-    img: productSponge,
-    bg: "bg-[#F3E9D8]",
-    category: "Sponges",
-    tagline: "Two-sided scrubs for pans, tile and grout days.",
-    description:
-      "A dense cellulose base bonded to a coconut-fibre scour — tough on baked-on grease, gentle enough for enamel. Comes as a duo, one for kitchen, one for bath.",
-    details: ["Pack of 2", "Coconut-fibre scour side", "Safe on enamel", "Home-compostable base"],
-    gallery: [productSponge, productCloth, heroBg, productTowel],
-  },
-  {
-    id: "p9",
-    name: "Fig & Cedar Candle",
-    tag: "New",
-    price: 32,
-    rating: 4.9,
-    img: productBathset,
-    bg: "bg-[#EDE4D3]",
-    category: "Candles",
-    tagline: "A slow-burning fig and cedar pour, hand-poured in small batches.",
-    description:
-      "Coconut-soy wax scented with fig leaf, cedarwood and a whisper of smoke. Poured into a reusable stoneware vessel that lives on happily long after the wick is done.",
-    details: ["Coconut-soy wax", "Cotton wick, ~45 hr burn", "Reusable stoneware vessel", "Hand-poured in small batches"],
-    gallery: [productBathset, heroBg, productTowel, productCloth],
-  },
-  {
-    id: "p10",
-    name: "Linen Blossom Votive",
-    tag: "Popular",
-    price: 18,
-    rating: 4.8,
-    img: productBathset,
-    bg: "bg-[#F5EFE4]",
-    category: "Candles",
-    tagline: "A quiet linen-and-white-tea votive for bedside and bath.",
-    description:
-      "A gentle, laundered-linen scent softened with white tea and cotton bloom. Small enough to line along a bath ledge or dinner table.",
-    details: ["Coconut-soy wax", "Cotton wick, ~15 hr burn", "Recycled glass votive", "Set of 1"],
-    gallery: [productBathset, productTowel, heroBg, productCloth],
-  },
-  {
-    id: "p11",
-    name: "Stonewashed Linen Throw",
-    tag: "Bestseller",
-    price: 68,
-    rating: 4.9,
-    img: productTowel,
-    bg: "bg-[#EFE9DC]",
-    category: "Linens",
-    tagline: "A pre-softened European flax throw, made for daily use.",
-    description:
-      "Pure European flax linen, stonewashed for that lived-in softness on day one. Drapes easily over a bed edge, a sofa arm, or a slow Sunday.",
-    details: ["100% European flax linen", "Stonewashed finish", "130 × 170 cm", "Machine wash cool, line dry"],
-    gallery: [productTowel, productBathset, heroBg, productCloth],
-  },
-  {
-    id: "p12",
-    name: "Everyday Linen Duvet Cover",
-    tag: "New",
-    price: 148,
-    rating: 4.8,
-    img: productWallpaper,
-    bg: "bg-[#EDE7DB]",
-    category: "Linens",
-    tagline: "Breathable flax linen bedding that keeps its cool all summer.",
-    description:
-      "A relaxed, gently rumpled duvet cover in washed flax linen. Coconut buttons at the foot, generous overlap at the corners.",
-    details: ["100% European flax linen", "Coconut-shell buttons", "Queen: 220 × 240 cm", "Set of 1 cover"],
-    gallery: [productWallpaper, productTowel, heroBg, productBathset],
-  },
-  {
-    id: "p13",
-    name: "Eucalyptus Bath Soak",
-    tag: "Eco",
-    price: 22,
-    rating: 4.7,
-    img: productSponge,
-    bg: "bg-[#EAEEE6]",
-    category: "Bath",
-    tagline: "A magnesium-rich soak scented with cold-pressed eucalyptus.",
-    description:
-      "Dead sea salt, magnesium flakes and cold-pressed eucalyptus oil. Melts into the tub, leaves skin soft and the bathroom smelling like a spa.",
-    details: ["300 ml glass bottle", "Magnesium + Dead Sea salt", "Cold-pressed eucalyptus oil", "Vegan, cruelty-free"],
-    gallery: [productSponge, productTowel, heroBg, productBathset],
-  },
-  {
-    id: "p14",
-    name: "Rose Clay Hand Wash",
-    tag: "Popular",
-    price: 16,
-    rating: 4.6,
-    img: productSponge,
-    bg: "bg-[#F5E9E4]",
-    category: "Bath",
-    tagline: "A gentle rose-clay wash that lives beside every sink.",
-    description:
-      "Pink kaolin clay and glycerin lather softly without stripping. Rose geranium and a hint of vetiver keep it grown-up, never sugary.",
-    details: ["300 ml refillable bottle", "Kaolin clay + glycerin", "Rose geranium & vetiver", "pH-balanced, sulphate-free"],
-    gallery: [productSponge, productCloth, heroBg, productTowel],
-  },
-];
+// Store starts empty — real products are added through the admin dashboard.
+const SEED_PRODUCTS: Product[] = [];
+
 
 export const PRODUCT_IMAGE_CHOICES = [
   { id: "towel", label: "Towel", url: productTowel },
@@ -469,12 +248,6 @@ function emitCategories() {
 
 let hydratePromise: Promise<void> | null = null;
 
-async function seedIfEmpty() {
-  const catRows = SEED_CATEGORIES.map((name) => ({ name }));
-  await supabase.from("categories").upsert(catRows, { onConflict: "name" });
-  const prodRows = SEED_PRODUCTS.map(productToRow);
-  await supabase.from("products").upsert(prodRows, { onConflict: "id" });
-}
 
 async function hydrateFromSupabase() {
   const [{ data: catData, error: catErr }, { data: prodData, error: prodErr }] = await Promise.all([
@@ -484,25 +257,16 @@ async function hydrateFromSupabase() {
   if (catErr) console.error("[shop] categories load failed:", catErr.message);
   if (prodErr) console.error("[shop] products load failed:", prodErr.message);
 
-  const isEmpty = (!catData || catData.length === 0) && (!prodData || prodData.length === 0);
-  if (isEmpty && !catErr && !prodErr) {
-    await seedIfEmpty();
-    const [cats, prods] = await Promise.all([
-      supabase.from("categories").select("name").order("created_at", { ascending: true }),
-      supabase.from("products").select("*").order("created_at", { ascending: false }),
-    ]);
-    if (cats.data)
-      categoriesLive.splice(0, categoriesLive.length, ...cats.data.map((r) => r.name));
-    if (prods.data)
-      products.splice(0, products.length, ...(prods.data as ProductRow[]).map(rowToProduct));
-  } else {
-    if (catData) categoriesLive.splice(0, categoriesLive.length, ...catData.map((r) => r.name));
-    if (prodData)
-      products.splice(0, products.length, ...(prodData as ProductRow[]).map(rowToProduct));
-  }
+  categoriesLive.splice(0, categoriesLive.length, ...(catData ?? []).map((r) => r.name));
+  products.splice(
+    0,
+    products.length,
+    ...((prodData ?? []) as ProductRow[]).map(rowToProduct),
+  );
   emitCategories();
   emitProducts();
 }
+
 
 function ensureStoreHydrated() {
   if (typeof window === "undefined") return;
