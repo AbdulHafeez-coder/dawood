@@ -67,12 +67,6 @@ function AdminLogin() {
     }
   }
 
-  function copySql() {
-    navigator.clipboard?.writeText(SETUP_SQL).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    });
-  }
 
   if (!mounted || !ready || isAuthed) {
     return <AdminLoginSkeleton />;
