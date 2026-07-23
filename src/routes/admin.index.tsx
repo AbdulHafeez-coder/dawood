@@ -2561,7 +2561,7 @@ function OrdersPanel({
                     </td>
                     <td className="py-3 pr-3 text-black/70 tabular-nums">{o.itemCount}</td>
                     <td className="py-3 pr-3 text-right tabular-nums">{formatPKR(o.total)}</td>
-                    <td className="py-3 pr-3">
+                    <td className="py-3 pr-3" onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center gap-2">
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full border text-[10px] uppercase tracking-[0.15em] ${badge.className}`}>
                           {badge.label}
@@ -2578,7 +2578,7 @@ function OrdersPanel({
                         </select>
                       </div>
                     </td>
-                    <td className="py-3 pr-3 text-right whitespace-nowrap">
+                    <td className="py-3 pr-3 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                       <a
                         href={o.url}
                         target="_blank"
