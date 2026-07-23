@@ -129,7 +129,9 @@ async function pushOrderToSupabase(entry: SavedOrder) {
       primary_img: entry.primaryImg ?? null,
       primary_bg: entry.primaryBg ?? null,
       extra_count: entry.extraCount ?? 0,
+      status: entry.status ?? "new",
     };
+
     await supabase.from("orders").insert(row);
   } catch {
     // best effort — local cache remains source of truth for the shopper.
