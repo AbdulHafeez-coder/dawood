@@ -337,8 +337,10 @@ function Index() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
             {liveCategories.map((name) => {
               const catProducts = products.filter((p) => p.category === name);
-              const img = catProducts.find((p) => p.img)?.img;
+              const customImg = categoryInfo[name]?.imageUrl;
+              const img = customImg || catProducts.find((p) => p.img)?.img;
               const bg = catProducts.find((p) => p.bg)?.bg || "bg-stone-200";
+
               return (
                 <button
                   key={name}
