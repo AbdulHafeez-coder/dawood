@@ -512,7 +512,7 @@ function Index() {
                 </button>
                 <div className="p-4 sm:p-5 flex flex-col gap-2.5 flex-1">
                   <div className="min-w-0">
-                    <Link to="/product/$id" params={{ id: p.id }} className="text-black hover:underline block truncate" style={{ ...dmSans, fontWeight: 500, fontSize: 18, letterSpacing: "-0.03em" }} title={p.name}>
+                    <Link to="/product/$id" params={{ id: p.id }} className="type-title text-black hover:underline block truncate" title={p.name}>
                       {p.name}
                     </Link>
                     <div className="flex items-center gap-1 mt-1 text-black/60 text-xs">
@@ -520,7 +520,7 @@ function Index() {
                     </div>
                   </div>
 
-                  <div className="text-black" style={{ ...dmSans, fontWeight: 600, fontSize: 18 }}>{formatPKR(p.price)}</div>
+                  <div className="type-price text-black">{formatPKR(p.price)}</div>
 
                   <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1.5 min-h-[20px]" aria-label="Available colours">
                     {colors.map((c) => {
