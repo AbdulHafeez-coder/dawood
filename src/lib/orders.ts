@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
+export type OrderStatus = "new" | "processing" | "completed" | "cancelled";
+
+export const ORDER_STATUSES: OrderStatus[] = ["new", "processing", "completed", "cancelled"];
+
 export type SavedOrder = {
   id: string;
   createdAt: number;
@@ -13,7 +17,9 @@ export type SavedOrder = {
   primaryImg?: string;
   primaryBg?: string;
   extraCount?: number;
+  status?: OrderStatus;
 };
+
 
 const STORAGE_KEY = "maison-terra-orders";
 const DEVICE_KEY = "maison-terra-device-id";
