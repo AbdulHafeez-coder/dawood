@@ -22,7 +22,7 @@ import heroBg from "@/assets/hero-home.jpg";
 import productTowel from "@/assets/product-towel.jpg";
 import productWallpaper from "@/assets/product-wallpaper.jpg";
 import productSponge from "@/assets/product-sponge.jpg";
-import { useProducts, useCategories, useCart, useFavourites, type Category, type Product } from "@/lib/shop";
+import { useProducts, useCategories, useCart, useFavourites, getVariants, type Category, type Product } from "@/lib/shop";
 import { useSettings } from "@/lib/settings";
 import { LazyCartDrawer as CartDrawer } from "@/components/LazyCartDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
