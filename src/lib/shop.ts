@@ -309,16 +309,25 @@ let hydratePromise: Promise<void> | null = null;
 
 
 async function hydrateFromSupabase() {
-  const [{ data: catData, error: catErr }, { data: prodData, error: prodErr }] = await Promise.all([
+  const [
+    { data: catData, error: catErr },
+    { data: prodData, error: prodErr },
+    { data: promoData, error: promoErr },
+  ] = await Promise.all([
     supabase
       .from("categories")
       .select("name, image_url, sort_order")
       .order("sort_order", { ascending: true })
       .order("created_at", { ascending: true }),
     supabase.from("products").select("*").order("created_at", { ascending: false }),
+    supabase
+      .from("promotions")
+      .select("*")
+      .order("sort_order", { ascending: true }),
   ]);
   if (catErr) console.error("[shop] categories load failed:", catErr.message);
   if (prodErr) console.error("[shop] products load failed:", prodErr.message);
+  if (promoErr) console.error("[shop] promotions load failed:", promoErr.message);
 
   const rows = (catData ?? []) as { name: string; image_url: string | null; sort_order: number | null }[];
   categoriesLive.splice(0, categoriesLive.length, ...rows.map((r) => r.name));
@@ -335,8 +344,14 @@ async function hydrateFromSupabase() {
     products.length,
     ...((prodData ?? []) as ProductRow[]).map(rowToProduct),
   );
+  promotionsLive.splice(
+    0,
+    promotionsLive.length,
+    ...((promoData ?? []) as PromotionRow[]).map(rowToPromo),
+  );
   emitCategories();
   emitProducts();
+  emitPromotions();
 }
 
 
