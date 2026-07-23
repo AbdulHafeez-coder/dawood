@@ -520,34 +520,35 @@ function Index() {
 
                   <div className="text-black" style={{ ...dmSans, fontWeight: 600, fontSize: 18 }}>{formatPKR(p.price)}</div>
 
-                  <div className="flex items-center gap-1.5 flex-wrap" aria-label="Available colours">
+                  <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1.5 min-h-[20px]" aria-label="Available colours">
                     {colors.map((c) => {
                       const isGradient = c.swatch.startsWith("linear-gradient");
                       return (
                         <span
                           key={c.id}
                           title={c.label}
-                          className="h-4 w-4 rounded-full border border-black/15 ring-1 ring-white shrink-0"
+                          className="h-4 w-4 sm:h-[18px] sm:w-[18px] rounded-full border border-black/15 ring-1 ring-white shrink-0"
                           style={isGradient ? { backgroundImage: c.swatch } : { backgroundColor: c.swatch }}
                         />
                       );
                     })}
                     {extraColors > 0 && (
-                      <span className="text-[11px] text-black/50 ml-0.5">+{extraColors}</span>
+                      <span className="text-[11px] leading-none text-black/50 ml-0.5 shrink-0">+{extraColors}</span>
                     )}
                   </div>
 
-                  <div className="flex items-center gap-1 flex-wrap" aria-label="Available sizes">
+                  <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1.5 min-h-[22px]" aria-label="Available sizes">
                     {sizes.map((s) => (
                       <span
                         key={s.id}
                         title={s.note ?? s.label}
-                        className="text-[10px] uppercase tracking-wider text-black/70 border border-black/15 rounded-full px-1.5 py-0.5 leading-none"
+                        className="text-[10px] uppercase tracking-wider text-black/70 border border-black/15 rounded-full px-1.5 py-0.5 leading-none shrink-0 max-w-full truncate"
                       >
                         {s.label.length > 6 ? s.label.slice(0, 4) : s.label}
                       </span>
                     ))}
                   </div>
+
 
 
                   <Link
