@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Lock, Copy, Check, Loader2 } from "lucide-react";
+import { ArrowLeft, Lock, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAdminAuth } from "@/lib/admin-auth";
 import { AdminLoginSkeleton, useMounted } from "@/components/skeletons";
@@ -9,10 +9,6 @@ import { AdminError, AdminNotFound } from "@/components/AdminFallback";
 const dmSans = { fontFamily: "'DM Sans', sans-serif" };
 const inter = { fontFamily: "'Inter', sans-serif" };
 
-const SETUP_SQL = `insert into public.user_roles (user_id, role)
-select id, 'admin'::public.app_role from auth.users
-where email = 'you@example.com'
-on conflict do nothing;`;
 
 export const Route = createFileRoute("/admin/login")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -39,7 +35,7 @@ function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [copied, setCopied] = useState(false);
+  
 
   const safeRedirect =
     redirect && redirect.startsWith("/admin") && redirect !== "/admin/login"
@@ -71,12 +67,6 @@ function AdminLogin() {
     }
   }
 
-  function copySql() {
-    navigator.clipboard?.writeText(SETUP_SQL).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    });
-  }
 
   if (!mounted || !ready || isAuthed) {
     return <AdminLoginSkeleton />;
@@ -149,48 +139,6 @@ function AdminLogin() {
             </form>
           </div>
 
-          {/* Setup instructions */}
-          <div className="mt-4 rounded-2xl border border-dashed border-black/20 bg-[#FEF3C7] p-4 sm:p-5">
-            <div className="flex items-center justify-between">
-              <div
-                className="text-[10px] uppercase tracking-[0.22em] text-black/60"
-                style={{ ...dmSans, fontWeight: 700 }}
-              >
-                First-time setup
-              </div>
-              <span className="text-[10px] uppercase tracking-[0.18em] text-black/40">
-                One-time
-              </span>
-            </div>
-            <ol className="mt-3 space-y-2 text-[12px] leading-relaxed text-black/75 list-decimal pl-4">
-              <li>
-                Run <code className="font-mono bg-white/60 px-1.5 py-0.5 rounded">db/schema.sql</code> in your
-                Supabase SQL editor.
-              </li>
-              <li>
-                Create a user in <strong>Supabase → Authentication → Users → Add user</strong>{" "}
-                (enable “Auto Confirm User”).
-              </li>
-              <li>
-                Grant that user the <code className="font-mono">admin</code> role by running this SQL
-                (replace the email):
-              </li>
-            </ol>
-            <div className="mt-3 relative">
-              <pre className="text-[11px] font-mono bg-white/70 border border-black/10 rounded-xl p-3 overflow-x-auto whitespace-pre">
-{SETUP_SQL}
-              </pre>
-              <button
-                type="button"
-                onClick={copySql}
-                className="absolute top-2 right-2 inline-flex items-center gap-1 text-[10px] uppercase tracking-[0.18em] px-2.5 py-1.5 rounded-full bg-black text-white hover:bg-black/85 transition"
-                aria-label="Copy SQL"
-              >
-                {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                {copied ? "Copied" : "Copy"}
-              </button>
-            </div>
-          </div>
         </div>
       </main>
     </div>
