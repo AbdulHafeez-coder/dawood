@@ -2537,7 +2537,11 @@ function OrdersPanel({
                 const status = (o.status ?? "new") as OrderStatus;
                 const badge = STATUS_STYLES[status];
                 return (
-                  <tr key={o.id} className="border-b border-black/5 hover:bg-black/[0.015] transition">
+                  <tr
+                    key={o.id}
+                    onClick={() => setSelected(o)}
+                    className="border-b border-black/5 hover:bg-black/[0.02] cursor-pointer transition"
+                  >
                     <td className="py-3 pr-3">
                       <div className="flex items-center gap-3">
                         <div className={`w-10 h-10 rounded-lg overflow-hidden shrink-0 ${o.primaryBg ?? "bg-black/5"} grid place-items-center`}>
