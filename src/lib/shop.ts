@@ -118,6 +118,43 @@ const VARIANTS_BY_CATEGORY: Record<string, VariantOptions> = {
       { id: "bath", label: "Bath", swatch: "#B7C7D6" },
     ],
   },
+  Candles: {
+    sizes: [
+      { id: "votive", label: "Votive", note: "80 g · ~15 hr" },
+      { id: "classic", label: "Classic", note: "220 g · ~45 hr" },
+      { id: "grand", label: "Grand", note: "480 g · ~90 hr" },
+    ],
+    colors: [
+      { id: "fig", label: "Fig & Cedar", swatch: "#6B4A2B" },
+      { id: "linen", label: "Linen Blossom", swatch: "#E8DBC2" },
+      { id: "smoke", label: "Smoke & Amber", swatch: "#4A4038" },
+    ],
+  },
+  Linens: {
+    sizes: [
+      { id: "throw", label: "Throw", note: "130 × 170 cm" },
+      { id: "queen", label: "Queen", note: "220 × 240 cm" },
+      { id: "king", label: "King", note: "260 × 260 cm" },
+    ],
+    colors: [
+      { id: "ivory", label: "Ivory", swatch: "#F2ECDE" },
+      { id: "oat", label: "Oat", swatch: "#E8DBC2" },
+      { id: "stone", label: "Stone", swatch: "#B8B0A4" },
+      { id: "ink", label: "Ink", swatch: "#2A2E33" },
+    ],
+  },
+  Bath: {
+    sizes: [
+      { id: "trial", label: "Trial", note: "100 ml" },
+      { id: "full", label: "Full", note: "300 ml" },
+      { id: "duo", label: "Duo", note: "2 × 300 ml" },
+    ],
+    colors: [
+      { id: "eucalyptus", label: "Eucalyptus", swatch: "#A9B79A" },
+      { id: "rose", label: "Rose Clay", swatch: "#D4A79A" },
+      { id: "cedar", label: "Cedar", swatch: "#7A5A3D" },
+    ],
+  },
 };
 
 export function getVariants(category: Category): VariantOptions {
