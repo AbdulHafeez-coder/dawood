@@ -7,7 +7,56 @@
 @theme {
   --font-display: "DM Sans", ui-sans-serif, system-ui, sans-serif;
   --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* ============================================================
+     Brand color tokens — single source of truth for every
+     component. Reference as bg-brand-ink, text-brand-clay, etc.
+     ============================================================ */
+  --color-brand-ink: oklch(0.16 0 0);              /* near-black, primary text & CTAs */
+  --color-brand-ink-soft: oklch(0.32 0 0);         /* secondary text */
+  --color-brand-mute: oklch(0.55 0 0);             /* tertiary text, meta */
+  --color-brand-line: oklch(0.9 0.005 80);         /* hairline borders */
+  --color-brand-canvas: oklch(0.985 0.008 85);     /* page bg (warm off-white) */
+  --color-brand-paper: oklch(1 0 0);               /* card / surface white */
+  --color-brand-sand: oklch(0.955 0.015 80);       /* muted surface */
+  --color-brand-stone: oklch(0.92 0.012 75);       /* elevated muted surface */
+  --color-brand-clay: oklch(0.7 0.11 55);          /* warm accent (towels/wallpaper hero) */
+  --color-brand-cream: oklch(0.95 0.04 90);        /* soft highlight */
+  --color-brand-butter: oklch(0.93 0.09 95);       /* newsletter panel */
+  --color-brand-whatsapp: oklch(0.72 0.17 148);    /* #25D366 */
+  --color-brand-success: oklch(0.72 0.17 148);
+  --color-brand-danger: oklch(0.6 0.22 27);
+
+  /* Spacing scale — tokens for section rhythm and component gutters.
+     Tailwind spacing utilities (p-4, gap-6, etc.) still apply; these
+     tokens name the intentions so layouts stay in sync. */
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  --space-4xl: 96px;
+  --space-section: clamp(56px, 8vw, 112px);        /* vertical rhythm between sections */
+  --space-gutter: clamp(20px, 4vw, 48px);          /* page horizontal gutter */
+
+  /* Radii — every rounded surface picks from this scale */
+  --radius-xs2: 4px;
+  --radius-sm2: 8px;
+  --radius-md2: 12px;
+  --radius-lg2: 16px;
+  --radius-xl2: 20px;
+  --radius-2xl2: 28px;
+  --radius-pill: 999px;
+
+  /* Elevation — reusable shadow tokens */
+  --shadow-soft: 0 4px 14px -8px color-mix(in oklab, #000 40%, transparent);
+  --shadow-lift: 0 10px 30px -18px color-mix(in oklab, #000 55%, transparent);
+  --shadow-focus: 0 0 0 4px color-mix(in oklab, var(--color-brand-ink) 18%, transparent);
 }
+
 
 /* ============================================================
    Unified type scale — one source of truth for every heading,
