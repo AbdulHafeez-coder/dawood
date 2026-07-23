@@ -417,7 +417,7 @@ function ProductPage() {
       {related.length > 0 && (
         <section className="px-5 sm:px-8 lg:px-10 py-14 lg:py-20 border-t border-black/5">
           <div className="flex items-end justify-between mb-8">
-            <h2 className="text-black" style={{ ...dmSans, fontWeight: 400, letterSpacing: "-0.04em", fontSize: "clamp(28px, 4vw, 44px)", lineHeight: 1 }}>
+            <h2 className="type-h2 text-black">
               More in {product.category}
             </h2>
             <Link to="/" className="text-sm text-black/60 hover:text-black">View all</Link>
