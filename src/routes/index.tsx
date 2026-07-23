@@ -322,7 +322,7 @@ function Index() {
       {/* CATEGORIES SECTION */}
       <section id="collections" className="bg-[#FEFDF9] px-5 sm:px-8 lg:px-10 py-16 lg:py-24">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10 lg:mb-14">
-          <h2 className="text-black" style={{ ...dmSans, fontWeight: 400, letterSpacing: "-0.05em", fontSize: "clamp(36px, 6vw, 72px)", lineHeight: 1 }}>
+          <h2 className="type-h1 text-black">
             Shop by room
           </h2>
           <p className="text-black/60 max-w-md text-sm sm:text-base lg:text-lg">
