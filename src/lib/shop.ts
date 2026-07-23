@@ -268,13 +268,26 @@ let hydratePromise: Promise<void> | null = null;
 
 async function hydrateFromSupabase() {
   const [{ data: catData, error: catErr }, { data: prodData, error: prodErr }] = await Promise.all([
-    supabase.from("categories").select("name").order("created_at", { ascending: true }),
+    supabase
+      .from("categories")
+      .select("name, image_url, sort_order")
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: true }),
     supabase.from("products").select("*").order("created_at", { ascending: false }),
   ]);
   if (catErr) console.error("[shop] categories load failed:", catErr.message);
   if (prodErr) console.error("[shop] products load failed:", prodErr.message);
 
-  categoriesLive.splice(0, categoriesLive.length, ...(catData ?? []).map((r) => r.name));
+  const rows = (catData ?? []) as { name: string; image_url: string | null; sort_order: number | null }[];
+  categoriesLive.splice(0, categoriesLive.length, ...rows.map((r) => r.name));
+  for (const k of Object.keys(categoryInfoLive)) delete categoryInfoLive[k];
+  rows.forEach((r, i) => {
+    categoryInfoLive[r.name] = {
+      name: r.name,
+      imageUrl: r.image_url ?? "",
+      sortOrder: r.sort_order ?? i,
+    };
+  });
   products.splice(
     0,
     products.length,
@@ -283,6 +296,7 @@ async function hydrateFromSupabase() {
   emitCategories();
   emitProducts();
 }
+
 
 
 function ensureStoreHydrated() {
