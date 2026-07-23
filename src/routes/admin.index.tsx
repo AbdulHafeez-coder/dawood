@@ -2627,6 +2627,110 @@ function OrdersPanel({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Sheet open={!!selected} onOpenChange={(open) => { if (!open) setSelected(null); }}>
+        <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto p-0">
+          {selected && (() => {
+            const s = (selected.status ?? "new") as OrderStatus;
+            const b = STATUS_STYLES[s];
+            const shipping = selected.kind === "cart" && selected.total > 0 && selected.total < 50 ? 5 : 0;
+            const subtotal = Math.max(0, selected.total - shipping);
+            return (
+              <div className="flex flex-col h-full">
+                <SheetHeader className="px-6 pt-6 pb-4 border-b border-black/10 text-left">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full border text-[10px] uppercase tracking-[0.15em] ${b.className}`}>{b.label}</span>
+                    <span className="text-[10px] uppercase tracking-[0.18em] text-black/45">{selected.kind === "cart" ? "Cart order" : "Quick order"}</span>
+                  </div>
+                  <SheetTitle className="text-lg" style={dmSans}>Order #{selected.id.slice(0, 8)}</SheetTitle>
+                  <SheetDescription className="text-xs text-black/55">
+                    Placed {new Date(selected.createdAt).toLocaleString()}
+                  </SheetDescription>
+                </SheetHeader>
+
+                <div className="flex-1 px-6 py-5 space-y-5">
+                  {/* Primary line item */}
+                  <div className="flex items-center gap-3 rounded-xl border border-black/10 p-3">
+                    <div className={`w-14 h-14 rounded-lg overflow-hidden shrink-0 ${selected.primaryBg ?? "bg-black/5"} grid place-items-center`}>
+                      {selected.primaryImg ? <img src={selected.primaryImg} alt="" className="w-full h-full object-cover" /> : <ShoppingBag className="w-5 h-5 text-black/40" />}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-sm truncate">{selected.primaryName}</div>
+                      <div className="text-[11px] text-black/55">
+                        {selected.itemCount} item{selected.itemCount === 1 ? "" : "s"}
+                        {selected.extraCount ? ` · +${selected.extraCount} more product${selected.extraCount === 1 ? "" : "s"}` : ""}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Totals */}
+                  <div className="rounded-xl border border-black/10 p-4 text-sm">
+                    <div className="text-[10px] uppercase tracking-[0.18em] text-black/45 mb-2">Totals</div>
+                    <div className="flex justify-between py-1"><span className="text-black/60">Subtotal</span><span className="tabular-nums">{formatPKR(subtotal)}</span></div>
+                    {selected.kind === "cart" && (
+                      <div className="flex justify-between py-1"><span className="text-black/60">Shipping</span><span className="tabular-nums">{shipping === 0 ? "Free" : formatPKR(shipping)}</span></div>
+                    )}
+                    <div className="flex justify-between pt-2 mt-2 border-t border-black/10 font-medium"><span>Total</span><span className="tabular-nums">{formatPKR(selected.total)}</span></div>
+                  </div>
+
+                  {/* Status control */}
+                  <div className="rounded-xl border border-black/10 p-4">
+                    <div className="text-[10px] uppercase tracking-[0.18em] text-black/45 mb-2">Status</div>
+                    <select
+                      value={s}
+                      onChange={(e) => void handleStatusChange(selected, e.target.value as OrderStatus)}
+                      className="w-full px-3 py-2 text-sm rounded-md border border-black/15 focus:border-black focus:outline-none bg-white"
+                    >
+                      {ORDER_STATUSES.map((st) => (
+                        <option key={st} value={st}>{STATUS_STYLES[st].label}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Full message with line items + shipping/payment notes */}
+                  <div className="rounded-xl border border-black/10 p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="text-[10px] uppercase tracking-[0.18em] text-black/45">Order message</div>
+                      <button
+                        onClick={() => {
+                          void navigator.clipboard?.writeText(selected.message);
+                          toast.success("Message copied");
+                        }}
+                        className="text-[10px] uppercase tracking-[0.18em] underline underline-offset-4 text-black/60 hover:text-black"
+                      >
+                        Copy
+                      </button>
+                    </div>
+                    <pre className="whitespace-pre-wrap break-words text-xs text-black/75 font-mono leading-relaxed max-h-72 overflow-y-auto">
+{selected.message}
+                    </pre>
+                    <div className="mt-3 text-[11px] text-black/50">
+                      Customer sends payment &amp; shipping details in the WhatsApp thread after opening the order.
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border-t border-black/10 px-6 py-4 flex items-center gap-2">
+                  <a
+                    href={selected.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full bg-black text-white hover:bg-black/85 transition text-[11px] uppercase tracking-[0.18em]"
+                  >
+                    Open in WhatsApp
+                  </a>
+                  <button
+                    onClick={() => setConfirmDelete(selected)}
+                    className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full border border-black/15 hover:border-black transition text-[11px] uppercase tracking-[0.18em]"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" /> Delete
+                  </button>
+                </div>
+              </div>
+            );
+          })()}
+        </SheetContent>
+      </Sheet>
     </section>
   );
 }
