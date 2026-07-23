@@ -2419,6 +2419,15 @@ function OrdersPanel({
   const debounced = useDebouncedValue(search, 250);
   const [statusFilter, setStatusFilter] = useState<OrderStatus | "all">("all");
   const [confirmDelete, setConfirmDelete] = useState<SavedOrder | null>(null);
+  const [selected, setSelected] = useState<SavedOrder | null>(null);
+
+  // Keep selected order fresh when parent orders update (e.g. status change)
+  useEffect(() => {
+    if (!selected) return;
+    const latest = orders.find((o) => o.id === selected.id);
+    if (latest && latest !== selected) setSelected(latest);
+    else if (!latest) setSelected(null);
+  }, [orders, selected]);
 
   const filtered = useMemo(() => {
     const q = debounced.trim().toLowerCase();
