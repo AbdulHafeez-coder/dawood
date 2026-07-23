@@ -15,6 +15,9 @@ export const SEED_CATEGORIES: readonly string[] = [
   "Wallpaper",
   "Cloths",
   "Sponges",
+  "Candles",
+  "Linens",
+  "Bath",
 ];
 
 // Kept for backwards-compat imports in existing components; treat as seed.
@@ -113,6 +116,43 @@ const VARIANTS_BY_CATEGORY: Record<string, VariantOptions> = {
       { id: "natural", label: "Natural", swatch: "#D9C6AA" },
       { id: "kitchen", label: "Kitchen", swatch: "#A9B79A" },
       { id: "bath", label: "Bath", swatch: "#B7C7D6" },
+    ],
+  },
+  Candles: {
+    sizes: [
+      { id: "votive", label: "Votive", note: "80 g · ~15 hr" },
+      { id: "classic", label: "Classic", note: "220 g · ~45 hr" },
+      { id: "grand", label: "Grand", note: "480 g · ~90 hr" },
+    ],
+    colors: [
+      { id: "fig", label: "Fig & Cedar", swatch: "#6B4A2B" },
+      { id: "linen", label: "Linen Blossom", swatch: "#E8DBC2" },
+      { id: "smoke", label: "Smoke & Amber", swatch: "#4A4038" },
+    ],
+  },
+  Linens: {
+    sizes: [
+      { id: "throw", label: "Throw", note: "130 × 170 cm" },
+      { id: "queen", label: "Queen", note: "220 × 240 cm" },
+      { id: "king", label: "King", note: "260 × 260 cm" },
+    ],
+    colors: [
+      { id: "ivory", label: "Ivory", swatch: "#F2ECDE" },
+      { id: "oat", label: "Oat", swatch: "#E8DBC2" },
+      { id: "stone", label: "Stone", swatch: "#B8B0A4" },
+      { id: "ink", label: "Ink", swatch: "#2A2E33" },
+    ],
+  },
+  Bath: {
+    sizes: [
+      { id: "trial", label: "Trial", note: "100 ml" },
+      { id: "full", label: "Full", note: "300 ml" },
+      { id: "duo", label: "Duo", note: "2 × 300 ml" },
+    ],
+    colors: [
+      { id: "eucalyptus", label: "Eucalyptus", swatch: "#A9B79A" },
+      { id: "rose", label: "Rose Clay", swatch: "#D4A79A" },
+      { id: "cedar", label: "Cedar", swatch: "#7A5A3D" },
     ],
   },
 };
@@ -246,6 +286,96 @@ const SEED_PRODUCTS: Product[] = [
     description:
       "A dense cellulose base bonded to a coconut-fibre scour — tough on baked-on grease, gentle enough for enamel. Comes as a duo, one for kitchen, one for bath.",
     details: ["Pack of 2", "Coconut-fibre scour side", "Safe on enamel", "Home-compostable base"],
+    gallery: [productSponge, productCloth, heroBg, productTowel],
+  },
+  {
+    id: "p9",
+    name: "Fig & Cedar Candle",
+    tag: "New",
+    price: 32,
+    rating: 4.9,
+    img: productBathset,
+    bg: "bg-[#EDE4D3]",
+    category: "Candles",
+    tagline: "A slow-burning fig and cedar pour, hand-poured in small batches.",
+    description:
+      "Coconut-soy wax scented with fig leaf, cedarwood and a whisper of smoke. Poured into a reusable stoneware vessel that lives on happily long after the wick is done.",
+    details: ["Coconut-soy wax", "Cotton wick, ~45 hr burn", "Reusable stoneware vessel", "Hand-poured in small batches"],
+    gallery: [productBathset, heroBg, productTowel, productCloth],
+  },
+  {
+    id: "p10",
+    name: "Linen Blossom Votive",
+    tag: "Popular",
+    price: 18,
+    rating: 4.8,
+    img: productBathset,
+    bg: "bg-[#F5EFE4]",
+    category: "Candles",
+    tagline: "A quiet linen-and-white-tea votive for bedside and bath.",
+    description:
+      "A gentle, laundered-linen scent softened with white tea and cotton bloom. Small enough to line along a bath ledge or dinner table.",
+    details: ["Coconut-soy wax", "Cotton wick, ~15 hr burn", "Recycled glass votive", "Set of 1"],
+    gallery: [productBathset, productTowel, heroBg, productCloth],
+  },
+  {
+    id: "p11",
+    name: "Stonewashed Linen Throw",
+    tag: "Bestseller",
+    price: 68,
+    rating: 4.9,
+    img: productTowel,
+    bg: "bg-[#EFE9DC]",
+    category: "Linens",
+    tagline: "A pre-softened European flax throw, made for daily use.",
+    description:
+      "Pure European flax linen, stonewashed for that lived-in softness on day one. Drapes easily over a bed edge, a sofa arm, or a slow Sunday.",
+    details: ["100% European flax linen", "Stonewashed finish", "130 × 170 cm", "Machine wash cool, line dry"],
+    gallery: [productTowel, productBathset, heroBg, productCloth],
+  },
+  {
+    id: "p12",
+    name: "Everyday Linen Duvet Cover",
+    tag: "New",
+    price: 148,
+    rating: 4.8,
+    img: productWallpaper,
+    bg: "bg-[#EDE7DB]",
+    category: "Linens",
+    tagline: "Breathable flax linen bedding that keeps its cool all summer.",
+    description:
+      "A relaxed, gently rumpled duvet cover in washed flax linen. Coconut buttons at the foot, generous overlap at the corners.",
+    details: ["100% European flax linen", "Coconut-shell buttons", "Queen: 220 × 240 cm", "Set of 1 cover"],
+    gallery: [productWallpaper, productTowel, heroBg, productBathset],
+  },
+  {
+    id: "p13",
+    name: "Eucalyptus Bath Soak",
+    tag: "Eco",
+    price: 22,
+    rating: 4.7,
+    img: productSponge,
+    bg: "bg-[#EAEEE6]",
+    category: "Bath",
+    tagline: "A magnesium-rich soak scented with cold-pressed eucalyptus.",
+    description:
+      "Dead sea salt, magnesium flakes and cold-pressed eucalyptus oil. Melts into the tub, leaves skin soft and the bathroom smelling like a spa.",
+    details: ["300 ml glass bottle", "Magnesium + Dead Sea salt", "Cold-pressed eucalyptus oil", "Vegan, cruelty-free"],
+    gallery: [productSponge, productTowel, heroBg, productBathset],
+  },
+  {
+    id: "p14",
+    name: "Rose Clay Hand Wash",
+    tag: "Popular",
+    price: 16,
+    rating: 4.6,
+    img: productSponge,
+    bg: "bg-[#F5E9E4]",
+    category: "Bath",
+    tagline: "A gentle rose-clay wash that lives beside every sink.",
+    description:
+      "Pink kaolin clay and glycerin lather softly without stripping. Rose geranium and a hint of vetiver keep it grown-up, never sugary.",
+    details: ["300 ml refillable bottle", "Kaolin clay + glycerin", "Rose geranium & vetiver", "pH-balanced, sulphate-free"],
     gallery: [productSponge, productCloth, heroBg, productTowel],
   },
 ];
