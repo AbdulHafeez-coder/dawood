@@ -10,15 +10,8 @@ import { supabase } from "@/lib/supabase";
 // Category is a free-form string so admins can add/rename categories.
 export type Category = string;
 
-export const SEED_CATEGORIES: readonly string[] = [
-  "Towels",
-  "Wallpaper",
-  "Cloths",
-  "Sponges",
-  "Candles",
-  "Linens",
-  "Bath",
-];
+export const SEED_CATEGORIES: readonly string[] = [];
+
 
 // Kept for backwards-compat imports in existing components; treat as seed.
 export const CATEGORY_LIST = SEED_CATEGORIES;
