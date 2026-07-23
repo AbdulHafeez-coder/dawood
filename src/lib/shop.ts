@@ -248,12 +248,6 @@ function emitCategories() {
 
 let hydratePromise: Promise<void> | null = null;
 
-async function seedIfEmpty() {
-  const catRows = SEED_CATEGORIES.map((name) => ({ name }));
-  await supabase.from("categories").upsert(catRows, { onConflict: "name" });
-  const prodRows = SEED_PRODUCTS.map(productToRow);
-  await supabase.from("products").upsert(prodRows, { onConflict: "id" });
-}
 
 async function hydrateFromSupabase() {
   const [{ data: catData, error: catErr }, { data: prodData, error: prodErr }] = await Promise.all([
