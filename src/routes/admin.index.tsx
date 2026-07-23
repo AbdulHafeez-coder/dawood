@@ -2244,7 +2244,7 @@ function ImageUploader({ value, onChange }: { value: string; onChange: (url: str
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  function handleFile(file: File | undefined | null) {
+  async function handleFile(file: File | undefined | null) {
     if (!file) return;
     if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
       toast.error("Unsupported file", { description: "Use PNG, JPG, WEBP, GIF or SVG." });
@@ -2255,17 +2255,17 @@ function ImageUploader({ value, onChange }: { value: string; onChange: (url: str
       return;
     }
     setLoading(true);
-    const reader = new FileReader();
-    reader.onload = () => {
-      onChange(String(reader.result));
-      setLoading(false);
+    try {
+      const { uploadProductImage } = await import("@/lib/storage");
+      const url = await uploadProductImage(file);
+      onChange(url);
       toast.success("Image uploaded", { description: file.name });
-    };
-    reader.onerror = () => {
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Upload failed";
+      toast.error("Could not upload image", { description: msg });
+    } finally {
       setLoading(false);
-      toast.error("Could not read the file");
-    };
-    reader.readAsDataURL(file);
+    }
   }
 
   return (

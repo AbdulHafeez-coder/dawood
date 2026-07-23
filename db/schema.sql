@@ -214,3 +214,45 @@ drop policy if exists "orders self delete" on public.orders;
 create policy "orders self delete" on public.orders
   for delete to authenticated
   using (user_id = auth.uid() or public.has_role(auth.uid(), 'admin'));
+
+-- =============================================================
+-- 5. Storage bucket for product images (public read, admin write)
+-- =============================================================
+
+insert into storage.buckets (id, name, public)
+values ('product-images', 'product-images', true)
+on conflict (id) do update set public = excluded.public;
+
+-- Public can read (bucket is public, but keep an explicit policy for clarity)
+drop policy if exists "product-images public read" on storage.objects;
+create policy "product-images public read" on storage.objects
+  for select
+  using (bucket_id = 'product-images');
+
+drop policy if exists "product-images admin write" on storage.objects;
+create policy "product-images admin write" on storage.objects
+  for insert to authenticated
+  with check (
+    bucket_id = 'product-images'
+    and public.has_role(auth.uid(), 'admin')
+  );
+
+drop policy if exists "product-images admin update" on storage.objects;
+create policy "product-images admin update" on storage.objects
+  for update to authenticated
+  using (
+    bucket_id = 'product-images'
+    and public.has_role(auth.uid(), 'admin')
+  )
+  with check (
+    bucket_id = 'product-images'
+    and public.has_role(auth.uid(), 'admin')
+  );
+
+drop policy if exists "product-images admin delete" on storage.objects;
+create policy "product-images admin delete" on storage.objects
+  for delete to authenticated
+  using (
+    bucket_id = 'product-images'
+    and public.has_role(auth.uid(), 'admin')
+  );
