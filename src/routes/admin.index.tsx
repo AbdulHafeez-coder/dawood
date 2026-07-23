@@ -26,9 +26,9 @@ import {
   Settings as SettingsIcon,
   AlertTriangle,
   RefreshCw,
-
-
+  Megaphone,
 } from "lucide-react";
+import { PromotionsPanel } from "@/components/admin/PromotionsPanel";
 import { toast } from "sonner";
 import { useAdminAuth } from "@/lib/admin-auth";
 import {
@@ -89,7 +89,7 @@ import {
 const dmSans = { fontFamily: "'DM Sans', sans-serif" };
 const inter = { fontFamily: "'Inter', sans-serif" };
 
-type TabId = "overview" | "products" | "categories" | "orders" | "settings";
+type TabId = "overview" | "products" | "categories" | "promotions" | "orders" | "settings";
 
 type ProductImportItem = {
   id?: string;
@@ -135,7 +135,7 @@ function AdminDashboard() {
   const [tab, setTab] = useState<TabId>(() => {
     if (typeof window === "undefined") return "overview";
     const saved = window.localStorage.getItem("mt_admin_tab") as TabId | null;
-    return saved && ["overview", "products", "categories", "orders", "settings"].includes(saved)
+    return saved && ["overview", "products", "categories", "promotions", "orders", "settings"].includes(saved)
       ? saved
       : "overview";
 
@@ -522,6 +522,9 @@ function AdminDashboard() {
             </TabButton>
             <TabButton active={tab === "categories"} onClick={() => setTab("categories")} icon={<Tag className="w-3.5 h-3.5" />}>
               Categories <span className="ml-1 text-black/40">{categories.length}</span>
+            </TabButton>
+            <TabButton active={tab === "promotions"} onClick={() => setTab("promotions")} icon={<Megaphone className="w-3.5 h-3.5" />}>
+              Promotions
             </TabButton>
             <TabButton active={tab === "orders"} onClick={() => setTab("orders")} icon={<ScrollText className="w-3.5 h-3.5" />}>
               Orders <span className="ml-1 text-black/40">{orders.length}</span>
@@ -1044,6 +1047,8 @@ function AdminDashboard() {
               onUpdateStatus={updateStatus}
             />
           )}
+
+          {tab === "promotions" && <PromotionsPanel categories={categories} />}
 
           {tab === "settings" && <SettingsPanel />}
 

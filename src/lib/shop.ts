@@ -262,21 +262,72 @@ function emitCategories() {
   for (const l of categoryInfoListeners) l(snap);
 }
 
+// ---------- PROMOTIONS ----------
+export type Promotion = {
+  id: string;
+  label: string;
+  headline: string;
+  imageUrl: string;
+  bgColor: string;
+  chipStyle: "light" | "dark";
+  linkCategory: string;
+  sortOrder: number;
+  isActive: boolean;
+};
+type PromotionRow = {
+  id: string;
+  label: string;
+  headline: string;
+  image_url: string | null;
+  bg_color: string;
+  chip_style: string | null;
+  link_category: string | null;
+  sort_order: number | null;
+  is_active: boolean | null;
+};
+function rowToPromo(r: PromotionRow): Promotion {
+  return {
+    id: r.id,
+    label: r.label,
+    headline: r.headline,
+    imageUrl: r.image_url ?? "",
+    bgColor: r.bg_color || "#ECEDEC",
+    chipStyle: r.chip_style === "dark" ? "dark" : "light",
+    linkCategory: r.link_category ?? "",
+    sortOrder: r.sort_order ?? 0,
+    isActive: r.is_active ?? true,
+  };
+}
+export const promotionsLive: Promotion[] = [];
+const promotionListeners = new Set<(p: Promotion[]) => void>();
+function emitPromotions() {
+  for (const l of promotionListeners) l([...promotionsLive]);
+}
+
 
 let hydratePromise: Promise<void> | null = null;
 
 
 async function hydrateFromSupabase() {
-  const [{ data: catData, error: catErr }, { data: prodData, error: prodErr }] = await Promise.all([
+  const [
+    { data: catData, error: catErr },
+    { data: prodData, error: prodErr },
+    { data: promoData, error: promoErr },
+  ] = await Promise.all([
     supabase
       .from("categories")
       .select("name, image_url, sort_order")
       .order("sort_order", { ascending: true })
       .order("created_at", { ascending: true }),
     supabase.from("products").select("*").order("created_at", { ascending: false }),
+    supabase
+      .from("promotions")
+      .select("*")
+      .order("sort_order", { ascending: true }),
   ]);
   if (catErr) console.error("[shop] categories load failed:", catErr.message);
   if (prodErr) console.error("[shop] products load failed:", prodErr.message);
+  if (promoErr) console.error("[shop] promotions load failed:", promoErr.message);
 
   const rows = (catData ?? []) as { name: string; image_url: string | null; sort_order: number | null }[];
   categoriesLive.splice(0, categoriesLive.length, ...rows.map((r) => r.name));
@@ -293,8 +344,14 @@ async function hydrateFromSupabase() {
     products.length,
     ...((prodData ?? []) as ProductRow[]).map(rowToProduct),
   );
+  promotionsLive.splice(
+    0,
+    promotionsLive.length,
+    ...((promoData ?? []) as PromotionRow[]).map(rowToPromo),
+  );
   emitCategories();
   emitProducts();
+  emitPromotions();
 }
 
 
@@ -730,3 +787,105 @@ if (typeof window !== "undefined") {
   });
 }
 
+
+// ---------- PROMOTIONS HOOK ----------
+export function usePromotions() {
+  ensureStoreHydrated();
+  const [list, setList] = useState<Promotion[]>([...promotionsLive]);
+  useEffect(() => {
+    ensureStoreHydrated();
+    setList([...promotionsLive]);
+    const l = (p: Promotion[]) => setList(p);
+    promotionListeners.add(l);
+    return () => {
+      promotionListeners.delete(l);
+    };
+  }, []);
+
+  const addPromotion = useCallback((data: Omit<Promotion, "id">) => {
+    const tmpId = `tmp-${Date.now().toString(36)}`;
+    const optimistic: Promotion = { ...data, id: tmpId };
+    promotionsLive.push(optimistic);
+    promotionsLive.sort((a, b) => a.sortOrder - b.sortOrder);
+    emitPromotions();
+    supabase
+      .from("promotions")
+      .insert({
+        label: data.label,
+        headline: data.headline,
+        image_url: data.imageUrl || null,
+        bg_color: data.bgColor,
+        chip_style: data.chipStyle,
+        link_category: data.linkCategory || null,
+        sort_order: data.sortOrder,
+        is_active: data.isActive,
+      })
+      .select()
+      .single()
+      .then(({ data: row, error }) => {
+        const idx = promotionsLive.findIndex((p) => p.id === tmpId);
+        if (error || !row) {
+          console.error("[shop] addPromotion failed:", error?.message);
+          if (idx >= 0) promotionsLive.splice(idx, 1);
+        } else if (idx >= 0) {
+          promotionsLive[idx] = rowToPromo(row as PromotionRow);
+        }
+        emitPromotions();
+      });
+  }, []);
+
+  const updatePromotion = useCallback(
+    (id: string, patch: Partial<Omit<Promotion, "id">>) => {
+      const idx = promotionsLive.findIndex((p) => p.id === id);
+      if (idx < 0) return;
+      const prev = promotionsLive[idx];
+      promotionsLive[idx] = { ...prev, ...patch };
+      promotionsLive.sort((a, b) => a.sortOrder - b.sortOrder);
+      emitPromotions();
+      const dbPatch: Record<string, unknown> = {};
+      if (patch.label !== undefined) dbPatch.label = patch.label;
+      if (patch.headline !== undefined) dbPatch.headline = patch.headline;
+      if (patch.imageUrl !== undefined) dbPatch.image_url = patch.imageUrl || null;
+      if (patch.bgColor !== undefined) dbPatch.bg_color = patch.bgColor;
+      if (patch.chipStyle !== undefined) dbPatch.chip_style = patch.chipStyle;
+      if (patch.linkCategory !== undefined) dbPatch.link_category = patch.linkCategory || null;
+      if (patch.sortOrder !== undefined) dbPatch.sort_order = patch.sortOrder;
+      if (patch.isActive !== undefined) dbPatch.is_active = patch.isActive;
+      supabase
+        .from("promotions")
+        .update(dbPatch)
+        .eq("id", id)
+        .then(({ error }) => {
+          if (error) {
+            console.error("[shop] updatePromotion failed:", error.message);
+            const i2 = promotionsLive.findIndex((p) => p.id === id);
+            if (i2 >= 0) promotionsLive[i2] = prev;
+            promotionsLive.sort((a, b) => a.sortOrder - b.sortOrder);
+            emitPromotions();
+          }
+        });
+    },
+    [],
+  );
+
+  const deletePromotion = useCallback((id: string) => {
+    const idx = promotionsLive.findIndex((p) => p.id === id);
+    if (idx < 0) return;
+    const removed = promotionsLive[idx];
+    promotionsLive.splice(idx, 1);
+    emitPromotions();
+    supabase
+      .from("promotions")
+      .delete()
+      .eq("id", id)
+      .then(({ error }) => {
+        if (error) {
+          console.error("[shop] deletePromotion failed:", error.message);
+          promotionsLive.splice(idx, 0, removed);
+          emitPromotions();
+        }
+      });
+  }, []);
+
+  return { promotions: list, addPromotion, updatePromotion, deletePromotion };
+}

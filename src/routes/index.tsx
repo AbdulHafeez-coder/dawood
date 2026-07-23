@@ -22,7 +22,7 @@ import heroBg from "@/assets/hero-home.jpg";
 import productTowel from "@/assets/product-towel.jpg";
 import productWallpaper from "@/assets/product-wallpaper.jpg";
 import productSponge from "@/assets/product-sponge.jpg";
-import { useProducts, useCategories, useCart, useFavourites, getVariants, type Category, type Product } from "@/lib/shop";
+import { useProducts, useCategories, useCart, useFavourites, usePromotions, getVariants, type Category, type Product } from "@/lib/shop";
 import { useSettings } from "@/lib/settings";
 import { LazyCartDrawer as CartDrawer } from "@/components/LazyCartDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -78,6 +78,7 @@ function Index() {
   const { orderCount } = useOrders();
   const { products } = useProducts();
   const { categories: liveCategories, categoryInfo } = useCategories();
+  const { promotions } = usePromotions();
 
   const handleFav = (p: Product) => {
     const wasFav = isFav(p.id);
@@ -285,36 +286,61 @@ function Index() {
         </section>
 
         <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3">
-          {[
-            { label: "TOWELS", bg: "bg-[#ECEDEC]", chipBg: "bg-white", chipText: "text-black", off: "UP to 40% OFF", img: productTowel },
-            { label: "WALLPAPER", bg: "bg-[#FEF3C7]", chipBg: "bg-black", chipText: "text-white", off: "UP to 60% OFF", img: productWallpaper },
-            { label: "CLEANING", bg: "bg-[#FCE7D8]", chipBg: "bg-white", chipText: "text-black", off: "UP to 35% OFF", img: productSponge },
-          ].map((c, i) => (
-            <div
-              key={c.label}
-              className={`${c.bg} relative overflow-hidden p-5 sm:p-6 md:p-7 lg:p-10 min-h-[180px] sm:min-h-[200px] md:min-h-[220px] lg:min-h-[240px] flex items-center gap-3 sm:gap-4 md:gap-6 animate-fade-up`}
-              style={{ animationDelay: `${900 + i * 100}ms`, animationFillMode: "both" }}
-            >
-              <div className="flex-1 min-w-0 flex flex-col gap-2 sm:gap-3">
-                <span className={`${c.chipBg} ${c.chipText} self-start text-[10px] sm:text-xs tracking-[0.15em] px-3 py-1.5 rounded-md`} style={{ ...inter, fontWeight: 600 }}>
-                  {c.label}
-                </span>
-                <div className="text-black whitespace-nowrap" style={{ ...dmSans, fontWeight: 500, letterSpacing: "-0.03em", lineHeight: 1.1, fontSize: "clamp(16px, 2.2vw, 28px)" }}>
-                  {c.off}
+          {(() => {
+            const active = promotions.filter((p) => p.isActive);
+            const cards = active.length > 0
+              ? active.map((p) => ({
+                  key: p.id,
+                  label: p.label,
+                  bg: p.bgColor,
+                  chipBg: p.chipStyle === "dark" ? "bg-black" : "bg-white",
+                  chipText: p.chipStyle === "dark" ? "text-white" : "text-black",
+                  off: p.headline,
+                  img: p.imageUrl || null,
+                  linkCategory: p.linkCategory,
+                }))
+              : [
+                  { key: "TOWELS", label: "TOWELS", bg: "#ECEDEC", chipBg: "bg-white", chipText: "text-black", off: "UP to 40% OFF", img: productTowel, linkCategory: "Towels" },
+                  { key: "WALLPAPER", label: "WALLPAPER", bg: "#FEF3C7", chipBg: "bg-black", chipText: "text-white", off: "UP to 60% OFF", img: productWallpaper, linkCategory: "Wallpaper" },
+                  { key: "CLEANING", label: "CLEANING", bg: "#FCE7D8", chipBg: "bg-white", chipText: "text-black", off: "UP to 35% OFF", img: productSponge, linkCategory: "Cloths" },
+                ];
+            return cards.map((c, i) => (
+              <a
+                key={c.key}
+                href={c.linkCategory ? `#collections` : undefined}
+                onClick={(e) => {
+                  if (c.linkCategory) {
+                    e.preventDefault();
+                    setActiveCat(c.linkCategory as Category);
+                    document.getElementById("collections")?.scrollIntoView({ behavior: "smooth" });
+                  }
+                }}
+                className="relative overflow-hidden p-5 sm:p-6 md:p-7 lg:p-10 min-h-[180px] sm:min-h-[200px] md:min-h-[220px] lg:min-h-[240px] flex items-center gap-3 sm:gap-4 md:gap-6 animate-fade-up cursor-pointer group"
+                style={{ backgroundColor: c.bg, animationDelay: `${900 + i * 100}ms`, animationFillMode: "both" }}
+              >
+                <div className="flex-1 min-w-0 flex flex-col gap-2 sm:gap-3">
+                  <span className={`${c.chipBg} ${c.chipText} self-start text-[10px] sm:text-xs tracking-[0.15em] px-3 py-1.5 rounded-md`} style={{ ...inter, fontWeight: 600 }}>
+                    {c.label}
+                  </span>
+                  <div className="text-black whitespace-nowrap" style={{ ...dmSans, fontWeight: 500, letterSpacing: "-0.03em", lineHeight: 1.1, fontSize: "clamp(16px, 2.2vw, 28px)" }}>
+                    {c.off}
+                  </div>
                 </div>
-              </div>
-              <div className="absolute -right-6 -top-6 w-40 h-40 sm:w-48 sm:h-48 rounded-full bg-white/40 blur-2xl pointer-events-none" />
-              <img
-                src={c.img}
-                alt=""
-                width={1024}
-                height={1024}
-                loading="lazy" decoding="async"
-                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
-                className="relative w-[80px] h-[80px] sm:w-[110px] sm:h-[110px] md:w-[130px] md:h-[130px] lg:w-[160px] lg:h-[160px] rounded-xl object-cover shrink-0"
-              />
-            </div>
-          ))}
+                <div className="absolute -right-6 -top-6 w-40 h-40 sm:w-48 sm:h-48 rounded-full bg-white/40 blur-2xl pointer-events-none" />
+                {c.img && (
+                  <img
+                    src={c.img}
+                    alt=""
+                    width={1024}
+                    height={1024}
+                    loading="lazy" decoding="async"
+                    onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                    className="relative w-[80px] h-[80px] sm:w-[110px] sm:h-[110px] md:w-[130px] md:h-[130px] lg:w-[160px] lg:h-[160px] rounded-xl object-cover shrink-0 transition-transform group-hover:scale-105"
+                  />
+                )}
+              </a>
+            ));
+          })()}
         </div>
 
       </div>
