@@ -113,7 +113,7 @@ type CategoryImportPlan = {
 export const Route = createFileRoute("/admin/")({
   head: () => ({
     meta: [
-      { title: "Admin Dashboard — Maison Terra" },
+      { title: "Admin Dashboard — Dawood Mart" },
       { name: "description", content: "Manage products, categories and orders." },
       { name: "robots", content: "noindex" },
     ],
@@ -495,7 +495,7 @@ function AdminDashboard() {
             </Link>
             <div className="h-4 w-px bg-black/15" />
             <div className="min-w-0">
-              <div className="text-[10px] uppercase tracking-[0.22em] text-black/45">Maison Terra</div>
+              <div className="text-[10px] uppercase tracking-[0.22em] text-black/45">Dawood Mart</div>
               <h1 className="truncate" style={{ ...dmSans, fontWeight: 400, letterSpacing: "-0.02em", fontSize: 20 }}>
                 Admin dashboard
               </h1>
@@ -1538,7 +1538,7 @@ function ProductFormDialog({
             {mode === "create" ? "New product" : "Edit product"}
           </DialogTitle>
           <DialogDescription>
-            {mode === "create" ? "Add a new item to the Maison Terra catalogue." : `Editing “${product?.name}”.`}
+            {mode === "create" ? "Add a new item to the Dawood Mart catalogue." : `Editing “${product?.name}”.`}
           </DialogDescription>
         </DialogHeader>
 
@@ -2094,7 +2094,7 @@ function SettingsPanel() {
                 className="mt-input"
                 value={draft.brandName}
                 onChange={(e) => setDraft({ ...draft, brandName: e.target.value })}
-                placeholder="Maison Terra"
+                placeholder="Dawood Mart"
               />
             </Field>
             <Field label="Tagline">

@@ -18,15 +18,15 @@ const CACHE_KEY = "maison-terra-settings-v1";
 const SETTINGS_ID = "global";
 
 const DEFAULTS: Settings = {
-  brandName: "Maison Terra",
+  brandName: "Dawood Mart",
   tagline: "Essentials for a tactile home",
   logoUrl: "",
   whatsappNumber: "03011234567",
-  contactEmail: "hello@maisonterra.co",
+  contactEmail: "hello@dawoodmart.co",
   contactPhone: "0301-1234567",
   address: "12 Linden Row, Copenhagen",
   socials: {
-    instagram: "https://instagram.com/maisonterra",
+    instagram: "https://instagram.com/dawoodmart",
     facebook: "",
     twitter: "",
     tiktok: "",

@@ -12,9 +12,9 @@ import { formatPKR } from "@/lib/format";
 export const Route = createFileRoute("/orders")({
   head: () => ({
     meta: [
-      { title: "Your Orders — Maison Terra" },
+      { title: "Your Orders — Dawood Mart" },
       { name: "description", content: "Review your WhatsApp order drafts and resend them in one click." },
-      { property: "og:title", content: "Your Orders — Maison Terra" },
+      { property: "og:title", content: "Your Orders — Dawood Mart" },
       { property: "og:description", content: "Review your WhatsApp order drafts and resend them in one click." },
       { name: "twitter:card", content: "summary" },
     ],
@@ -65,7 +65,7 @@ function OrdersPage() {
     <div className="flex min-h-screen flex-col bg-[#FEFDF9]" style={inter}>
       <nav className="sticky top-0 z-20 bg-[#FEFDF9]/90 backdrop-blur border-b border-black/5 flex items-center justify-between px-5 py-4 sm:px-8 lg:px-10">
         <Link to="/" className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 26, letterSpacing: "-0.05em" }}>
-          Maison Terra
+          Dawood Mart
         </Link>
         <button aria-label="Cart" onClick={() => setCartOpen(true)} className="relative text-black">
           <ShoppingBag size={22} strokeWidth={1.5} />
