@@ -77,7 +77,7 @@ function Index() {
 
   const { orderCount } = useOrders();
   const { products } = useProducts();
-  const { categories: liveCategories } = useCategories();
+  const { categories: liveCategories, categoryInfo } = useCategories();
 
   const handleFav = (p: Product) => {
     const wasFav = isFav(p.id);
