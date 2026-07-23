@@ -1,21 +1,78 @@
 -- Run this in your Supabase SQL editor (Dashboard → SQL → New query → Run).
--- Products + categories tables for the storefront.
+-- Idempotent: safe to re-run.
 --
--- NOTE: RLS is intentionally permissive for now — the admin gate is still a
--- client-only demo (localStorage). Once real Supabase Auth + a user_roles
--- table land, tighten the write policies to admins only.
+-- Contents:
+--   1. app_role enum + user_roles table + has_role() security definer
+--   2. categories, products  (writes: admins only, reads: public)
+--   3. settings              (single-row site settings; writes: admins only)
+
+-- =============================================================
+-- 1. Roles
+-- =============================================================
+
+do $$ begin
+  create type public.app_role as enum ('admin', 'moderator', 'user');
+exception when duplicate_object then null; end $$;
+
+create table if not exists public.user_roles (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete cascade not null,
+  role public.app_role not null,
+  created_at timestamptz not null default now(),
+  unique (user_id, role)
+);
+
+grant select on public.user_roles to authenticated;
+grant all on public.user_roles to service_role;
+
+alter table public.user_roles enable row level security;
+
+drop policy if exists "user_roles self read" on public.user_roles;
+create policy "user_roles self read" on public.user_roles
+  for select to authenticated
+  using (user_id = auth.uid());
+
+-- Security-definer role check. Bypasses RLS to avoid recursion.
+create or replace function public.has_role(_user_id uuid, _role public.app_role)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1 from public.user_roles
+    where user_id = _user_id and role = _role
+  )
+$$;
+
+grant execute on function public.has_role(uuid, public.app_role) to anon, authenticated;
+
+-- =============================================================
+-- 2. Categories + products (public read, admin-only write)
+-- =============================================================
 
 create table if not exists public.categories (
   name text primary key,
   created_at timestamptz not null default now()
 );
 
-grant select, insert, update, delete on public.categories to anon, authenticated;
+grant select on public.categories to anon, authenticated;
+grant insert, update, delete on public.categories to authenticated;
+grant all on public.categories to service_role;
+
 alter table public.categories enable row level security;
+
 drop policy if exists "categories read" on public.categories;
 create policy "categories read" on public.categories for select using (true);
+
+-- Legacy permissive policy — drop if it exists so we can replace with admin-only.
 drop policy if exists "categories write" on public.categories;
-create policy "categories write" on public.categories for all using (true) with check (true);
+drop policy if exists "categories admin write" on public.categories;
+create policy "categories admin write" on public.categories
+  for all to authenticated
+  using (public.has_role(auth.uid(), 'admin'))
+  with check (public.has_role(auth.uid(), 'admin'));
 
 create table if not exists public.products (
   id text primary key,
@@ -35,9 +92,73 @@ create table if not exists public.products (
 
 create index if not exists products_category_idx on public.products(category);
 
-grant select, insert, update, delete on public.products to anon, authenticated;
+grant select on public.products to anon, authenticated;
+grant insert, update, delete on public.products to authenticated;
+grant all on public.products to service_role;
+
 alter table public.products enable row level security;
+
 drop policy if exists "products read" on public.products;
 create policy "products read" on public.products for select using (true);
+
 drop policy if exists "products write" on public.products;
-create policy "products write" on public.products for all using (true) with check (true);
+drop policy if exists "products admin write" on public.products;
+create policy "products admin write" on public.products
+  for all to authenticated
+  using (public.has_role(auth.uid(), 'admin'))
+  with check (public.has_role(auth.uid(), 'admin'));
+
+-- =============================================================
+-- 3. Site settings (single row; public read, admin-only write)
+-- =============================================================
+
+create table if not exists public.settings (
+  id text primary key default 'global',
+  brand_name text not null default 'Maison Terra',
+  tagline text not null default 'Essentials for a tactile home',
+  logo_url text not null default '',
+  whatsapp_number text not null default '03011234567',
+  contact_email text not null default 'hello@maisonterra.co',
+  contact_phone text not null default '0301-1234567',
+  address text not null default '12 Linden Row, Copenhagen',
+  socials jsonb not null default '{
+    "instagram": "https://instagram.com/maisonterra",
+    "facebook": "",
+    "twitter": "",
+    "tiktok": "",
+    "pinterest": "",
+    "youtube": ""
+  }'::jsonb,
+  updated_at timestamptz not null default now(),
+  constraint settings_singleton check (id = 'global')
+);
+
+-- Seed the singleton row if missing.
+insert into public.settings (id) values ('global') on conflict (id) do nothing;
+
+grant select on public.settings to anon, authenticated;
+grant insert, update on public.settings to authenticated;
+grant all on public.settings to service_role;
+
+alter table public.settings enable row level security;
+
+drop policy if exists "settings read" on public.settings;
+create policy "settings read" on public.settings for select using (true);
+
+drop policy if exists "settings admin write" on public.settings;
+create policy "settings admin write" on public.settings
+  for all to authenticated
+  using (public.has_role(auth.uid(), 'admin'))
+  with check (public.has_role(auth.uid(), 'admin'));
+
+-- =============================================================
+-- Making yourself an admin
+-- =============================================================
+-- 1. Create a user: Supabase Dashboard → Authentication → Users → Add user
+--    (use "Auto Confirm User" so you can sign in immediately).
+-- 2. Grant the admin role by running (replace the email):
+--
+--    insert into public.user_roles (user_id, role)
+--    select id, 'admin'::public.app_role from auth.users
+--    where email = 'you@example.com'
+--    on conflict do nothing;
