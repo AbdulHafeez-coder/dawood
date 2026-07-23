@@ -38,7 +38,7 @@ import {
   PRODUCT_BG_CHOICES,
   type Product,
 } from "@/lib/shop";
-import { useAllOrders } from "@/lib/orders";
+import { useAllOrders, ORDER_STATUSES, type OrderStatus, type SavedOrder } from "@/lib/orders";
 import { useSettings, updateSettings, resetSettings, saveSettingsAsync, type SocialKey } from "@/lib/settings";
 import { formatPkPhone, normalizePkDigits, isValidPkPhone, PK_PHONE_PLACEHOLDER } from "@/lib/pk-phone";
 import { formatPKR } from "@/lib/format";
@@ -81,7 +81,7 @@ import {
 const dmSans = { fontFamily: "'DM Sans', sans-serif" };
 const inter = { fontFamily: "'Inter', sans-serif" };
 
-type TabId = "overview" | "products" | "categories" | "settings";
+type TabId = "overview" | "products" | "categories" | "orders" | "settings";
 
 type ProductImportItem = {
   id?: string;
@@ -120,16 +120,17 @@ function AdminDashboard() {
   const navigate = useNavigate();
   const mounted = useMounted();
   const { isAuthed, ready, logout } = useAdminAuth();
-  const { orders, removeOrder } = useAllOrders();
+  const { orders, removeOrder, updateStatus, loading: ordersLoading, error: ordersError, refetch: refetchOrders } = useAllOrders();
   const { products, addProduct, updateProduct, deleteProduct, resetProducts } = useProducts();
   const { categories, addCategory, renameCategory, deleteCategory, resetCategories } = useCategories();
 
   const [tab, setTab] = useState<TabId>(() => {
     if (typeof window === "undefined") return "overview";
     const saved = window.localStorage.getItem("mt_admin_tab") as TabId | null;
-    return saved && ["overview", "products", "categories", "settings"].includes(saved)
+    return saved && ["overview", "products", "categories", "orders", "settings"].includes(saved)
       ? saved
       : "overview";
+
   });
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -514,9 +515,13 @@ function AdminDashboard() {
             <TabButton active={tab === "categories"} onClick={() => setTab("categories")} icon={<Tag className="w-3.5 h-3.5" />}>
               Categories <span className="ml-1 text-black/40">{categories.length}</span>
             </TabButton>
+            <TabButton active={tab === "orders"} onClick={() => setTab("orders")} icon={<ScrollText className="w-3.5 h-3.5" />}>
+              Orders <span className="ml-1 text-black/40">{orders.length}</span>
+            </TabButton>
             <TabButton active={tab === "settings"} onClick={() => setTab("settings")} icon={<SettingsIcon className="w-3.5 h-3.5" />}>
               Settings
             </TabButton>
+
 
           </nav>
         </div>
@@ -1002,7 +1007,19 @@ function AdminDashboard() {
             </section>
           )}
 
+          {tab === "orders" && (
+            <OrdersPanel
+              orders={orders}
+              loading={ordersLoading}
+              error={ordersError}
+              onRefetch={refetchOrders}
+              onRemove={removeOrder}
+              onUpdateStatus={updateStatus}
+            />
+          )}
+
           {tab === "settings" && <SettingsPanel />}
+
 
         </div>
       </main>
@@ -2364,3 +2381,233 @@ function ImportRowList({ title, items, tone }: { title: string; items: string[];
     </div>
   );
 }
+
+// ============================================================
+// Orders panel
+// ============================================================
+
+const STATUS_STYLES: Record<OrderStatus, { label: string; className: string }> = {
+  new: { label: "New", className: "bg-blue-50 text-blue-800 border-blue-200" },
+  processing: { label: "Processing", className: "bg-amber-50 text-amber-800 border-amber-200" },
+  completed: { label: "Completed", className: "bg-emerald-50 text-emerald-800 border-emerald-200" },
+  cancelled: { label: "Cancelled", className: "bg-black/5 text-black/60 border-black/15" },
+};
+
+function OrdersPanel({
+  orders,
+  loading,
+  error,
+  onRefetch,
+  onRemove,
+  onUpdateStatus,
+}: {
+  orders: SavedOrder[];
+  loading: boolean;
+  error: string | null;
+  onRefetch: () => Promise<void> | void;
+  onRemove: (id: string) => Promise<void> | void;
+  onUpdateStatus: (id: string, status: OrderStatus) => Promise<{ ok: boolean; error?: string }>;
+}) {
+  const [search, setSearch] = useState("");
+  const debounced = useDebouncedValue(search, 250);
+  const [statusFilter, setStatusFilter] = useState<OrderStatus | "all">("all");
+  const [confirmDelete, setConfirmDelete] = useState<SavedOrder | null>(null);
+
+  const filtered = useMemo(() => {
+    const q = debounced.trim().toLowerCase();
+    return orders.filter((o) => {
+      if (statusFilter !== "all" && (o.status ?? "new") !== statusFilter) return false;
+      if (!q) return true;
+      return (
+        o.primaryName.toLowerCase().includes(q) ||
+        o.message.toLowerCase().includes(q) ||
+        o.id.toLowerCase().includes(q)
+      );
+    });
+  }, [orders, debounced, statusFilter]);
+
+  const counts = useMemo(() => {
+    const c: Record<OrderStatus | "all", number> = {
+      all: orders.length,
+      new: 0,
+      processing: 0,
+      completed: 0,
+      cancelled: 0,
+    };
+    for (const o of orders) c[(o.status ?? "new") as OrderStatus]++;
+    return c;
+  }, [orders]);
+
+  const handleStatusChange = async (o: SavedOrder, next: OrderStatus) => {
+    const prev = o.status ?? "new";
+    if (prev === next) return;
+    const res = await onUpdateStatus(o.id, next);
+    if (res.ok) {
+      toast.success(`Order marked ${STATUS_STYLES[next].label.toLowerCase()}`);
+    } else {
+      toast.error(res.error ?? "Could not update status");
+    }
+  };
+
+  return (
+    <section className="bg-white border border-black/10 rounded-2xl p-5 sm:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+        <SectionTitle icon={<ScrollText className="w-3.5 h-3.5" />} label={`Orders (${filtered.length}${filtered.length !== orders.length ? ` of ${orders.length}` : ""})`} />
+        <button
+          onClick={() => void onRefetch()}
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em] self-start sm:self-auto"
+        >
+          <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} /> Refresh
+        </button>
+      </div>
+
+      {error && (
+        <div className="mb-4 flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
+          <div className="flex-1">{error}</div>
+          <button onClick={() => void onRefetch()} className="text-[10px] uppercase tracking-[0.18em] underline underline-offset-4">Retry</button>
+        </div>
+      )}
+
+      <div className="flex flex-col sm:flex-row gap-2 sm:items-center mb-4">
+        <div className="relative flex-1">
+          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-black/40" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by product, message or ID"
+            className="w-full pl-9 pr-8 py-2 text-sm rounded-full border border-black/15 focus:border-black focus:outline-none transition"
+          />
+          {search && (
+            <button onClick={() => setSearch("")} className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-black/40 hover:text-black">
+              <XIcon className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+        <div className="flex gap-1.5 flex-wrap">
+          {(["all", ...ORDER_STATUSES] as const).map((s) => (
+            <button
+              key={s}
+              onClick={() => setStatusFilter(s)}
+              className={`px-3 py-1.5 rounded-full border text-[10px] uppercase tracking-[0.18em] transition ${statusFilter === s ? "border-black bg-black text-white" : "border-black/15 hover:border-black"}`}
+            >
+              {s === "all" ? "All" : STATUS_STYLES[s].label} <span className="opacity-60 ml-1">{counts[s]}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {loading && orders.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-black/15 p-8 text-center text-sm text-black/50">Loading orders…</div>
+      ) : filtered.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-black/15 p-8 text-center text-sm text-black/50">
+          {orders.length === 0 ? "No orders yet. WhatsApp drafts will appear here." : "No orders match your filters."}
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[860px]">
+            <thead>
+              <tr className="text-left text-[10px] uppercase tracking-[0.18em] text-black/45 border-b border-black/10">
+                <th className="py-3 pr-3 font-normal">Order</th>
+                <th className="py-3 pr-3 font-normal">Placed</th>
+                <th className="py-3 pr-3 font-normal">Items</th>
+                <th className="py-3 pr-3 font-normal text-right">Total</th>
+                <th className="py-3 pr-3 font-normal">Status</th>
+                <th className="py-3 pr-3 font-normal text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((o) => {
+                const status = (o.status ?? "new") as OrderStatus;
+                const badge = STATUS_STYLES[status];
+                return (
+                  <tr key={o.id} className="border-b border-black/5 hover:bg-black/[0.015] transition">
+                    <td className="py-3 pr-3">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-lg overflow-hidden shrink-0 ${o.primaryBg ?? "bg-black/5"} grid place-items-center`}>
+                          {o.primaryImg ? <img src={o.primaryImg} alt="" className="w-full h-full object-cover" /> : <ShoppingBag className="w-4 h-4 text-black/40" />}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 text-sm">
+                            <span className="truncate max-w-[220px]">{o.primaryName}</span>
+                            {o.extraCount ? <span className="text-[10px] uppercase tracking-[0.15em] text-black/45">+{o.extraCount}</span> : null}
+                          </div>
+                          <div className="text-[10px] text-black/40 tabular-nums">#{o.id.slice(0, 8)}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-3 pr-3 text-black/70 text-xs whitespace-nowrap">
+                      {new Date(o.createdAt).toLocaleString()}
+                    </td>
+                    <td className="py-3 pr-3 text-black/70 tabular-nums">{o.itemCount}</td>
+                    <td className="py-3 pr-3 text-right tabular-nums">{formatPKR(o.total)}</td>
+                    <td className="py-3 pr-3">
+                      <div className="flex items-center gap-2">
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full border text-[10px] uppercase tracking-[0.15em] ${badge.className}`}>
+                          {badge.label}
+                        </span>
+                        <select
+                          value={status}
+                          onChange={(e) => void handleStatusChange(o, e.target.value as OrderStatus)}
+                          className="px-2 py-1 text-xs rounded-md border border-black/15 focus:border-black focus:outline-none bg-white"
+                          aria-label="Update status"
+                        >
+                          {ORDER_STATUSES.map((s) => (
+                            <option key={s} value={s}>{STATUS_STYLES[s].label}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </td>
+                    <td className="py-3 pr-3 text-right whitespace-nowrap">
+                      <a
+                        href={o.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em]"
+                      >
+                        Open WhatsApp
+                      </a>
+                      <button
+                        onClick={() => setConfirmDelete(o)}
+                        aria-label="Delete order"
+                        className="ml-1.5 inline-flex items-center justify-center w-7 h-7 rounded-full text-black/40 hover:text-black hover:bg-black/5 transition"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <AlertDialog open={!!confirmDelete} onOpenChange={(open) => { if (!open) setConfirmDelete(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this order?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This removes the order draft for {confirmDelete?.primaryName ?? "this order"}. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (confirmDelete) {
+                  void onRemove(confirmDelete.id);
+                  toast.success("Order removed");
+                }
+                setConfirmDelete(null);
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </section>
+  );
+}
+

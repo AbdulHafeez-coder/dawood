@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
+export type OrderStatus = "new" | "processing" | "completed" | "cancelled";
+
+export const ORDER_STATUSES: OrderStatus[] = ["new", "processing", "completed", "cancelled"];
+
 export type SavedOrder = {
   id: string;
   createdAt: number;
@@ -13,7 +17,9 @@ export type SavedOrder = {
   primaryImg?: string;
   primaryBg?: string;
   extraCount?: number;
+  status?: OrderStatus;
 };
+
 
 const STORAGE_KEY = "maison-terra-orders";
 const DEVICE_KEY = "maison-terra-device-id";
@@ -83,6 +89,7 @@ type OrderRow = {
   primary_img: string | null;
   primary_bg: string | null;
   extra_count: number;
+  status: OrderStatus | null;
   created_at: string;
 };
 
@@ -99,8 +106,10 @@ function rowToOrder(r: OrderRow): SavedOrder {
     primaryImg: r.primary_img ?? undefined,
     primaryBg: r.primary_bg ?? undefined,
     extraCount: r.extra_count || 0,
+    status: (r.status ?? "new") as OrderStatus,
   };
 }
+
 
 async function pushOrderToSupabase(entry: SavedOrder) {
   try {
@@ -120,7 +129,9 @@ async function pushOrderToSupabase(entry: SavedOrder) {
       primary_img: entry.primaryImg ?? null,
       primary_bg: entry.primaryBg ?? null,
       extra_count: entry.extraCount ?? 0,
+      status: entry.status ?? "new",
     };
+
     await supabase.from("orders").insert(row);
   } catch {
     // best effort — local cache remains source of truth for the shopper.
@@ -236,8 +247,21 @@ export function useAllOrders() {
     }
   };
 
-  return { orders, loading, error, refetch, removeOrder: remove, orderCount: orders.length };
+  const updateStatus = async (id: string, status: OrderStatus): Promise<{ ok: boolean; error?: string }> => {
+    const prev = orders;
+    setOrders((cur) => cur.map((o) => (o.id === id ? { ...o, status } : o)));
+    const { error } = await supabase.from("orders").update({ status }).eq("id", id);
+    if (error) {
+      setOrders(prev);
+      setError(error.message);
+      return { ok: false, error: error.message };
+    }
+    return { ok: true };
+  };
+
+  return { orders, loading, error, refetch, removeOrder: remove, updateStatus, orderCount: orders.length };
 }
+
 
 if (typeof window !== "undefined") {
   window.addEventListener("storage", (e) => {
