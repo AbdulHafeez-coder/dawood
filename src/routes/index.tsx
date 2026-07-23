@@ -56,12 +56,6 @@ const cards = [
 
 const navLinks = ["Shop", "Collections"];
 
-const categories: { Icon: typeof Bath; name: Category; count: number; bg: string; accent: string; desc: string; img: string }[] = [
-  { Icon: Bath, name: "Towels", count: 18, bg: "bg-orange-100", accent: "text-orange-800", desc: "Plush cotton, quick-dry", img: productTowel },
-  { Icon: Wallpaper, name: "Wallpaper", count: 24, bg: "bg-stone-200", accent: "text-stone-800", desc: "Peel-and-stick sheets", img: productWallpaper },
-  { Icon: Sparkles, name: "Cloths", count: 12, bg: "bg-emerald-100", accent: "text-emerald-800", desc: "Reusable microfibre", img: productCloth },
-  { Icon: SprayCan, name: "Sponges", count: 9, bg: "bg-amber-100", accent: "text-amber-800", desc: "Plant-based scrubs", img: productSponge },
-];
 
 type SortKey = "featured" | "price-asc" | "price-desc" | "rating";
 
