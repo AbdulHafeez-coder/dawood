@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { ArrowLeft, Heart, ShoppingBag, Star, Plus, X } from "lucide-react";
-import { useProducts, useCart, useFavourites, type Product } from "@/lib/shop";
+import { useProducts, useCart, useFavourites, getVariants, type Category, type Product } from "@/lib/shop";
 import { LazyCartDrawer as CartDrawer } from "@/components/LazyCartDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
 import { ProductGridSkeleton, useMounted } from "@/components/skeletons";
@@ -97,7 +97,12 @@ function FavoritesPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
-            {items.map((p) => (
+            {items.map((p) => {
+              const v = getVariants(p.category as Category);
+              const colors = v.colors.slice(0, 4);
+              const extraColors = Math.max(0, v.colors.length - colors.length);
+              const sizes = v.sizes.slice(0, 3);
+              return (
               <div key={p.id} className="bg-white rounded-2xl overflow-hidden flex flex-col h-full group relative">
                 <Link to="/product/$id" params={{ id: p.id }} className={`${p.bg} relative aspect-square overflow-hidden block`}>
                   <span className="absolute top-4 left-4 z-10 bg-black text-white text-xs px-3 py-1 rounded-full">{p.tag}</span>
@@ -130,6 +135,37 @@ function FavoritesPage() {
                     </div>
                     <div className="text-black shrink-0" style={{ ...dmSans, fontWeight: 500, fontSize: 20 }}>{formatPKR(p.price)}</div>
                   </div>
+
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5" aria-label="Available colours">
+                      {colors.map((c) => {
+                        const isGradient = c.swatch.startsWith("linear-gradient");
+                        return (
+                          <span
+                            key={c.id}
+                            title={c.label}
+                            className="h-4 w-4 rounded-full border border-black/15 ring-1 ring-white"
+                            style={isGradient ? { backgroundImage: c.swatch } : { backgroundColor: c.swatch }}
+                          />
+                        );
+                      })}
+                      {extraColors > 0 && (
+                        <span className="text-[11px] text-black/50 ml-0.5">+{extraColors}</span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1" aria-label="Available sizes">
+                      {sizes.map((s) => (
+                        <span
+                          key={s.id}
+                          title={s.note ?? s.label}
+                          className="text-[10px] uppercase tracking-wider text-black/70 border border-black/15 rounded-full px-1.5 py-0.5 leading-none"
+                        >
+                          {s.label.length > 6 ? s.label.slice(0, 4) : s.label}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
                   <Link
                     to="/product/$id"
                     params={{ id: p.id }}
@@ -140,7 +176,9 @@ function FavoritesPage() {
                   </Link>
                 </div>
               </div>
-            ))}
+              );
+            })}
+
           </div>
         )}
       </section>
