@@ -26,9 +26,9 @@ import {
   Settings as SettingsIcon,
   AlertTriangle,
   RefreshCw,
-
-
+  Megaphone,
 } from "lucide-react";
+import { PromotionsPanel } from "@/components/admin/PromotionsPanel";
 import { toast } from "sonner";
 import { useAdminAuth } from "@/lib/admin-auth";
 import {
