@@ -5,6 +5,7 @@ import productCloth from "@/assets/product-cloth.jpg";
 import productSponge from "@/assets/product-sponge.jpg";
 import productBathset from "@/assets/product-bathset.jpg";
 import heroBg from "@/assets/hero-home.jpg";
+import { supabase } from "@/lib/supabase";
 
 // Category is a free-form string so admins can add/rename categories.
 export type Category = string;
