@@ -45,7 +45,7 @@ const inter = { fontFamily: "'Inter', sans-serif" };
 
 const cards = [
   { Icon: Leaf, bg: "bg-emerald-800", text: "OEKO-TEX certified fabrics, kind to skin and planet" },
-  { Icon: Truck, bg: "bg-stone-800", text: "Free carbon-neutral delivery on orders over PKR 50" },
+  { Icon: Truck, bg: "bg-stone-800", text: "Free carbon-neutral delivery on orders over PKR 5,000" },
   { Icon: ShieldCheck, bg: "bg-amber-800", text: "60-day home trial — return anything, no questions" },
   { Icon: Sparkles, bg: "bg-rose-800", text: "Small-batch made in family-run European mills" },
 ];
