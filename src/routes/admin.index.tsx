@@ -135,7 +135,7 @@ function AdminDashboard() {
   const [tab, setTab] = useState<TabId>(() => {
     if (typeof window === "undefined") return "overview";
     const saved = window.localStorage.getItem("mt_admin_tab") as TabId | null;
-    return saved && ["overview", "products", "categories", "orders", "settings"].includes(saved)
+    return saved && ["overview", "products", "categories", "promotions", "orders", "settings"].includes(saved)
       ? saved
       : "overview";
 
