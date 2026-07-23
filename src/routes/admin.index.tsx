@@ -1007,7 +1007,19 @@ function AdminDashboard() {
             </section>
           )}
 
+          {tab === "orders" && (
+            <OrdersPanel
+              orders={orders}
+              loading={ordersLoading}
+              error={ordersError}
+              onRefetch={refetchOrders}
+              onRemove={removeOrder}
+              onUpdateStatus={updateStatus}
+            />
+          )}
+
           {tab === "settings" && <SettingsPanel />}
+
 
         </div>
       </main>
