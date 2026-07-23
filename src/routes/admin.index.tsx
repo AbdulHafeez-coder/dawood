@@ -523,6 +523,9 @@ function AdminDashboard() {
             <TabButton active={tab === "categories"} onClick={() => setTab("categories")} icon={<Tag className="w-3.5 h-3.5" />}>
               Categories <span className="ml-1 text-black/40">{categories.length}</span>
             </TabButton>
+            <TabButton active={tab === "promotions"} onClick={() => setTab("promotions")} icon={<Megaphone className="w-3.5 h-3.5" />}>
+              Promotions
+            </TabButton>
             <TabButton active={tab === "orders"} onClick={() => setTab("orders")} icon={<ScrollText className="w-3.5 h-3.5" />}>
               Orders <span className="ml-1 text-black/40">{orders.length}</span>
             </TabButton>
