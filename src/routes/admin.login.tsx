@@ -9,10 +9,6 @@ import { AdminError, AdminNotFound } from "@/components/AdminFallback";
 const dmSans = { fontFamily: "'DM Sans', sans-serif" };
 const inter = { fontFamily: "'Inter', sans-serif" };
 
-const SETUP_SQL = `insert into public.user_roles (user_id, role)
-select id, 'admin'::public.app_role from auth.users
-where email = 'you@example.com'
-on conflict do nothing;`;
 
 export const Route = createFileRoute("/admin/login")({
   validateSearch: (search: Record<string, unknown>) => ({
