@@ -247,8 +247,21 @@ export function useAllOrders() {
     }
   };
 
-  return { orders, loading, error, refetch, removeOrder: remove, orderCount: orders.length };
+  const updateStatus = async (id: string, status: OrderStatus): Promise<{ ok: boolean; error?: string }> => {
+    const prev = orders;
+    setOrders((cur) => cur.map((o) => (o.id === id ? { ...o, status } : o)));
+    const { error } = await supabase.from("orders").update({ status }).eq("id", id);
+    if (error) {
+      setOrders(prev);
+      setError(error.message);
+      return { ok: false, error: error.message };
+    }
+    return { ok: true };
+  };
+
+  return { orders, loading, error, refetch, removeOrder: remove, updateStatus, orderCount: orders.length };
 }
+
 
 if (typeof window !== "undefined") {
   window.addEventListener("storage", (e) => {
