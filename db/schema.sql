@@ -162,3 +162,55 @@ create policy "settings admin write" on public.settings
 --    select id, 'admin'::public.app_role from auth.users
 --    where email = 'you@example.com'
 --    on conflict do nothing;
+
+-- =============================================================
+-- 4. Orders (WhatsApp drafts) — per-user RLS + admin read access
+-- =============================================================
+-- Customer-facing pages keep a fast localStorage cache for their own view.
+-- Every saved draft is ALSO persisted here so admins can review all orders
+-- and signed-in customers can see their history across devices.
+
+create table if not exists public.orders (
+  id text primary key,
+  user_id uuid references auth.users(id) on delete set null,
+  device_id text not null default '',
+  kind text not null check (kind in ('cart', 'product')),
+  url text not null,
+  message text not null,
+  total numeric not null default 0,
+  item_count integer not null default 0,
+  primary_name text not null default '',
+  primary_img text,
+  primary_bg text,
+  extra_count integer not null default 0,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists orders_user_id_idx on public.orders(user_id);
+create index if not exists orders_created_at_idx on public.orders(created_at desc);
+
+-- Anyone (anon or signed in) may create an order draft. When signed in the
+-- client stamps user_id = auth.uid() so RLS can scope reads to their own.
+grant insert on public.orders to anon, authenticated;
+grant select, delete on public.orders to authenticated;
+grant all on public.orders to service_role;
+
+alter table public.orders enable row level security;
+
+drop policy if exists "orders insert any" on public.orders;
+create policy "orders insert any" on public.orders
+  for insert to anon, authenticated
+  with check (
+    -- Authenticated users must stamp their own uid (or leave null).
+    user_id is null or user_id = auth.uid()
+  );
+
+drop policy if exists "orders self read" on public.orders;
+create policy "orders self read" on public.orders
+  for select to authenticated
+  using (user_id = auth.uid() or public.has_role(auth.uid(), 'admin'));
+
+drop policy if exists "orders self delete" on public.orders;
+create policy "orders self delete" on public.orders
+  for delete to authenticated
+  using (user_id = auth.uid() or public.has_role(auth.uid(), 'admin'));
