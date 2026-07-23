@@ -77,6 +77,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 
 const dmSans = { fontFamily: "'DM Sans', sans-serif" };
 const inter = { fontFamily: "'Inter', sans-serif" };
