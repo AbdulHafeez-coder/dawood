@@ -262,6 +262,48 @@ function emitCategories() {
   for (const l of categoryInfoListeners) l(snap);
 }
 
+// ---------- PROMOTIONS ----------
+export type Promotion = {
+  id: string;
+  label: string;
+  headline: string;
+  imageUrl: string;
+  bgColor: string;
+  chipStyle: "light" | "dark";
+  linkCategory: string;
+  sortOrder: number;
+  isActive: boolean;
+};
+type PromotionRow = {
+  id: string;
+  label: string;
+  headline: string;
+  image_url: string | null;
+  bg_color: string;
+  chip_style: string | null;
+  link_category: string | null;
+  sort_order: number | null;
+  is_active: boolean | null;
+};
+function rowToPromo(r: PromotionRow): Promotion {
+  return {
+    id: r.id,
+    label: r.label,
+    headline: r.headline,
+    imageUrl: r.image_url ?? "",
+    bgColor: r.bg_color || "#ECEDEC",
+    chipStyle: r.chip_style === "dark" ? "dark" : "light",
+    linkCategory: r.link_category ?? "",
+    sortOrder: r.sort_order ?? 0,
+    isActive: r.is_active ?? true,
+  };
+}
+export const promotionsLive: Promotion[] = [];
+const promotionListeners = new Set<(p: Promotion[]) => void>();
+function emitPromotions() {
+  for (const l of promotionListeners) l([...promotionsLive]);
+}
+
 
 let hydratePromise: Promise<void> | null = null;
 
