@@ -386,7 +386,7 @@ function ProductPage() {
               ) : (
                 <button
                   disabled
-                  className="mt-3 inline-flex items-center justify-center gap-2 bg-[#25D366]/30 text-white rounded-md h-12 text-base w-full cursor-not-allowed"
+                  className="mt-3 inline-flex items-center justify-center gap-2 bg-black/10 text-black/40 rounded-md h-12 text-base w-full cursor-not-allowed border border-black/10"
                   style={{ fontWeight: 500 }}
                 >
                   <MessageCircle size={18} /> Order on WhatsApp
@@ -400,7 +400,7 @@ function ProductPage() {
 
           <div className="mt-8 grid grid-cols-3 gap-3 max-w-md">
             {[
-              { Icon: Truck, label: "Free over PKR 50" },
+              { Icon: Truck, label: "Free over PKR 5,000" },
               { Icon: ShieldCheck, label: "60-day returns" },
               { Icon: Leaf, label: "OEKO-TEX" },
             ].map(({ Icon, label }) => (
