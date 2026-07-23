@@ -245,9 +245,9 @@ function ProductPage() {
           </h1>
           <p className="mt-3 text-black/70 max-w-md">{product.tagline}</p>
 
-          <div className="mt-6 flex items-center gap-4">
-            <div className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 32 }}>{formatPKR(product.price)}</div>
-            <div className="flex items-center gap-1 text-black/60 text-sm">
+          <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
+            <div className="text-black whitespace-nowrap" style={{ ...dmSans, fontWeight: 500, fontSize: "clamp(24px, 3vw, 32px)" }}>{formatPKR(product.price)}</div>
+            <div className="flex items-center gap-1 text-black/60 text-sm whitespace-nowrap">
               <Star size={14} className="fill-black text-black" /> {product.rating} · 240 reviews
             </div>
           </div>
