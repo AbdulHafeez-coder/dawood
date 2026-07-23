@@ -380,7 +380,7 @@ function Index() {
       {/* PRODUCTS SECTION */}
       <section id="shop" className="bg-[#ECEDEC] px-5 sm:px-8 lg:px-10 py-16 lg:py-24">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8 lg:mb-10">
-          <h2 className="text-black" style={{ ...dmSans, fontWeight: 400, letterSpacing: "-0.05em", fontSize: "clamp(36px, 6vw, 72px)", lineHeight: 1 }}>
+          <h2 className="type-h1 text-black">
             The Home Edit
           </h2>
           <div className="flex items-center gap-2 text-black/60 text-sm">
