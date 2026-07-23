@@ -173,7 +173,7 @@ function ProductPage() {
     <div className="flex min-h-screen flex-col bg-[#FEFDF9]" style={inter}>
       {/* NAV */}
       <nav className="sticky top-0 z-20 bg-[#FEFDF9]/90 backdrop-blur border-b border-black/5 flex items-center justify-between px-5 py-4 sm:px-8 lg:px-10">
-        <Link to="/" className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 26, letterSpacing: "-0.05em" }}>
+        <Link to="/" className="type-wordmark text-black">
           Maison Terra
         </Link>
         <div className="flex items-center gap-4">
@@ -239,14 +239,14 @@ function ProductPage() {
 
         {/* INFO */}
         <div>
-          <div className="text-xs uppercase tracking-widest text-black/50">{product.category}</div>
-          <h1 className="mt-2 text-black" style={{ ...dmSans, fontWeight: 400, letterSpacing: "-0.04em", fontSize: "clamp(32px, 5vw, 52px)", lineHeight: 1 }}>
+          <div className="type-eyebrow text-black/50">{product.category}</div>
+          <h1 className="type-h1 mt-3 text-black">
             {product.name}
           </h1>
           <p className="mt-3 text-black/70 max-w-md">{product.tagline}</p>
 
           <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
-            <div className="text-black whitespace-nowrap" style={{ ...dmSans, fontWeight: 500, fontSize: "clamp(24px, 3vw, 32px)" }}>{formatPKR(product.price)}</div>
+            <div className="type-price-lg text-black whitespace-nowrap">{formatPKR(product.price)}</div>
             <div className="flex items-center gap-1 text-black/60 text-sm whitespace-nowrap">
               <Star size={14} className="fill-black text-black" /> {product.rating} · 240 reviews
             </div>
@@ -417,7 +417,7 @@ function ProductPage() {
       {related.length > 0 && (
         <section className="px-5 sm:px-8 lg:px-10 py-14 lg:py-20 border-t border-black/5">
           <div className="flex items-end justify-between mb-8">
-            <h2 className="text-black" style={{ ...dmSans, fontWeight: 400, letterSpacing: "-0.04em", fontSize: "clamp(28px, 4vw, 44px)", lineHeight: 1 }}>
+            <h2 className="type-h2 text-black">
               More in {product.category}
             </h2>
             <Link to="/" className="text-sm text-black/60 hover:text-black">View all</Link>

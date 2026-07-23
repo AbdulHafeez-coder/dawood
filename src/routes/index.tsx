@@ -160,7 +160,7 @@ function Index() {
         }}
       >
         <nav className="relative z-20 flex items-center justify-between px-5 py-4 sm:px-8 lg:px-10 lg:py-5 animate-fade-in">
-          <div className="animate-slide-left delay-200 text-white flex items-center gap-2" style={{ ...dmSans, fontWeight: 500, fontSize: 30, letterSpacing: "-0.05em" }}>
+          <div className="type-wordmark animate-slide-left delay-200 text-white flex items-center gap-2">
             {settings.logoUrl ? <img src={settings.logoUrl} alt="" className="w-8 h-8 rounded-md object-cover bg-white/20" /> : null}
             {settings.brandName}
           </div>
@@ -322,7 +322,7 @@ function Index() {
       {/* CATEGORIES SECTION */}
       <section id="collections" className="bg-[#FEFDF9] px-5 sm:px-8 lg:px-10 py-16 lg:py-24">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10 lg:mb-14">
-          <h2 className="text-black" style={{ ...dmSans, fontWeight: 400, letterSpacing: "-0.05em", fontSize: "clamp(36px, 6vw, 72px)", lineHeight: 1 }}>
+          <h2 className="type-h1 text-black">
             Shop by room
           </h2>
           <p className="text-black/60 max-w-md text-sm sm:text-base lg:text-lg">
@@ -364,7 +364,7 @@ function Index() {
                       <Sparkles size={22} strokeWidth={1.5} />
                     </div>
                     <div>
-                      <div className="text-white drop-shadow-sm" style={{ ...dmSans, fontWeight: 500, fontSize: "clamp(22px, 3vw, 30px)", letterSpacing: "-0.03em" }}>
+                      <div className="type-h3 text-white drop-shadow-sm">
                         {name}
                       </div>
                       <div className="text-white/70 text-xs mt-2">{catProducts.length} product{catProducts.length === 1 ? "" : "s"}</div>
@@ -380,7 +380,7 @@ function Index() {
       {/* PRODUCTS SECTION */}
       <section id="shop" className="bg-[#ECEDEC] px-5 sm:px-8 lg:px-10 py-16 lg:py-24">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8 lg:mb-10">
-          <h2 className="text-black" style={{ ...dmSans, fontWeight: 400, letterSpacing: "-0.05em", fontSize: "clamp(36px, 6vw, 72px)", lineHeight: 1 }}>
+          <h2 className="type-h1 text-black">
             The Home Edit
           </h2>
           <div className="flex items-center gap-2 text-black/60 text-sm">
@@ -512,7 +512,7 @@ function Index() {
                 </button>
                 <div className="p-4 sm:p-5 flex flex-col gap-2.5 flex-1">
                   <div className="min-w-0">
-                    <Link to="/product/$id" params={{ id: p.id }} className="text-black hover:underline block truncate" style={{ ...dmSans, fontWeight: 500, fontSize: 18, letterSpacing: "-0.03em" }} title={p.name}>
+                    <Link to="/product/$id" params={{ id: p.id }} className="type-title text-black hover:underline block truncate" title={p.name}>
                       {p.name}
                     </Link>
                     <div className="flex items-center gap-1 mt-1 text-black/60 text-xs">
@@ -520,7 +520,7 @@ function Index() {
                     </div>
                   </div>
 
-                  <div className="text-black" style={{ ...dmSans, fontWeight: 600, fontSize: 18 }}>{formatPKR(p.price)}</div>
+                  <div className="type-price text-black">{formatPKR(p.price)}</div>
 
                   <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1.5 min-h-[20px]" aria-label="Available colours">
                     {colors.map((c) => {

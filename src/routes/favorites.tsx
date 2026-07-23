@@ -41,7 +41,7 @@ function FavoritesPage() {
   return (
     <div className="flex min-h-screen flex-col bg-[#FEFDF9]" style={inter}>
       <nav className="sticky top-0 z-20 bg-[#FEFDF9]/90 backdrop-blur border-b border-black/5 flex items-center justify-between px-5 py-4 sm:px-8 lg:px-10">
-        <Link to="/" className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 26, letterSpacing: "-0.05em" }}>
+        <Link to="/" className="type-wordmark text-black">
           Maison Terra
         </Link>
         <button aria-label="Cart" onClick={() => setCartOpen(true)} className="relative text-black">
@@ -69,7 +69,7 @@ function FavoritesPage() {
       <section className="px-5 sm:px-8 lg:px-10 py-8 lg:py-12">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8 lg:mb-10">
           <div>
-            <h1 className="text-black flex items-center gap-3" style={{ ...dmSans, fontWeight: 400, letterSpacing: "-0.04em", fontSize: "clamp(36px, 6vw, 64px)", lineHeight: 1 }}>
+            <h1 className="type-h1 text-black flex items-center gap-3">
               <Heart className="fill-black text-black" size={36} /> Favourites
             </h1>
             <p className="mt-3 text-black/60 max-w-md">
@@ -87,7 +87,7 @@ function FavoritesPage() {
             <div className="h-16 w-16 rounded-full bg-black/5 flex items-center justify-center">
               <Heart size={26} className="text-black/50" />
             </div>
-            <div className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 24, letterSpacing: "-0.03em" }}>
+            <div className="type-h3 text-black">
               No favourites yet
             </div>
             <p className="text-black/60 max-w-sm">Browse the edit and tap the heart on any piece to keep it here for later.</p>
@@ -125,7 +125,7 @@ function FavoritesPage() {
                 </button>
                 <div className="p-4 sm:p-5 flex flex-col gap-2.5 flex-1">
                   <div className="min-w-0">
-                    <Link to="/product/$id" params={{ id: p.id }} className="text-black hover:underline block truncate" style={{ ...dmSans, fontWeight: 500, fontSize: 18, letterSpacing: "-0.03em" }} title={p.name}>
+                    <Link to="/product/$id" params={{ id: p.id }} className="type-title text-black hover:underline block truncate" title={p.name}>
                       {p.name}
                     </Link>
                     <div className="flex items-center gap-1 mt-1 text-black/60 text-xs">
@@ -133,7 +133,7 @@ function FavoritesPage() {
                     </div>
                   </div>
 
-                  <div className="text-black" style={{ ...dmSans, fontWeight: 600, fontSize: 18 }}>{formatPKR(p.price)}</div>
+                  <div className="type-price text-black">{formatPKR(p.price)}</div>
 
                   <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1.5 min-h-[20px]" aria-label="Available colours">
                     {colors.map((c) => {
