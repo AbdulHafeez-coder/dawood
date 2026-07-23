@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Lock, Copy, Check, Loader2 } from "lucide-react";
+import { ArrowLeft, Lock, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAdminAuth } from "@/lib/admin-auth";
 import { AdminLoginSkeleton, useMounted } from "@/components/skeletons";
