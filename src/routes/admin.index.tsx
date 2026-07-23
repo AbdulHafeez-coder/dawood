@@ -1693,26 +1693,36 @@ function ProductFormDialog({
 function CategoryFormDialog({
   mode,
   name,
+  initialImageUrl,
   existing,
   onClose,
   onCreate,
   onSave,
+  onUpdateImage,
 }: {
   mode: "create" | "edit";
   name?: string;
+  initialImageUrl?: string;
   existing: string[];
   onClose: () => void;
-  onCreate: (name: string) => void;
+  onCreate: (name: string, imageUrl: string) => void;
   onSave: (oldName: string, newName: string) => void;
+  onUpdateImage: (name: string, imageUrl: string) => void;
 }) {
   const [value, setValue] = useState(name ?? "");
+  const [imageUrl, setImageUrl] = useState(initialImageUrl ?? "");
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
     const clean = value.trim();
     if (!clean) return toast.error("Name is required");
-    if (mode === "edit" && name) onSave(name, clean);
-    else onCreate(clean);
+    if (mode === "edit" && name) {
+      if (clean !== name) onSave(name, clean);
+      if ((imageUrl ?? "") !== (initialImageUrl ?? "")) onUpdateImage(clean, imageUrl);
+      if (clean === name && (imageUrl ?? "") === (initialImageUrl ?? "")) onClose();
+    } else {
+      onCreate(clean, imageUrl);
+    }
   }
 
   const isDup =
@@ -1726,18 +1736,18 @@ function CategoryFormDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle style={{ ...dmSans, fontWeight: 400, letterSpacing: "-0.02em" }}>
-            {mode === "create" ? "New category" : "Rename category"}
+            {mode === "create" ? "New category" : "Edit category"}
           </DialogTitle>
           <DialogDescription>
             {mode === "create"
-              ? "Group products under a new department name."
-              : `Rename the “${name}” category — products will follow.`}
+              ? "Group products under a new department name and add a hero image."
+              : `Update the “${name}” category name or hero image — products will follow.`}
           </DialogDescription>
         </DialogHeader>
         {!ready ? (
           <CategoryFormSkeleton mode={mode} />
         ) : (
-        <form onSubmit={submit} className="space-y-3" style={inter}>
+        <form onSubmit={submit} className="space-y-4" style={inter}>
           <Field label="Name">
             <input
               autoFocus
@@ -1748,6 +1758,12 @@ function CategoryFormDialog({
             />
             {isDup && <div className="mt-1 text-[11px] text-red-600">This name already exists.</div>}
           </Field>
+          <Field label="Hero image">
+            <ImageUploader value={imageUrl} onChange={setImageUrl} />
+            <div className="mt-1 text-[11px] text-black/50">
+              Shown on the “Shop by room” card. Falls back to a product image when empty.
+            </div>
+          </Field>
           <DialogFooter className="pt-2">
             <button type="button" onClick={onClose} className="px-4 py-2 rounded-full border border-black/15 text-[11px] uppercase tracking-[0.18em] hover:bg-black/5">
               Cancel
@@ -1757,7 +1773,7 @@ function CategoryFormDialog({
               disabled={isDup || !value.trim()}
               className="px-5 py-2 rounded-full bg-black text-white text-[11px] uppercase tracking-[0.18em] hover:bg-black/85 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
             >
-              {mode === "create" ? "Create" : "Rename"}
+              {mode === "create" ? "Create" : "Save"}
             </button>
           </DialogFooter>
         </form>
@@ -1766,6 +1782,7 @@ function CategoryFormDialog({
     </Dialog>
   );
 }
+
 
 /* ---------------------------------- FIELD ---------------------------------- */
 
