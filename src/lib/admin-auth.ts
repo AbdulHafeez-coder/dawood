@@ -1,83 +1,95 @@
 import { useCallback, useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
-export const ADMIN_EMAIL = "admin@mail.com";
-export const ADMIN_PASSWORD = "admin12345";
+// Kept for backwards-compat with the login page. Empty by default now that
+// auth is real — see db/schema.sql for how to create your admin account.
+export const ADMIN_EMAIL = "";
+export const ADMIN_PASSWORD = "";
 
-const KEY = "maison-terra-admin-auth";
-
-let authed: boolean = false;
-let hydrated = false;
+let authed = false;
+let ready = false;
 const listeners = new Set<(v: boolean) => void>();
 
-function ensureHydrated() {
-  if (hydrated || typeof window === "undefined") return;
-  hydrated = true;
-  try {
-    authed = window.localStorage.getItem(KEY) === "1";
-  } catch {
-    authed = false;
-  }
-}
-
 function emit() {
-  if (typeof window !== "undefined") {
-    try {
-      if (authed) window.localStorage.setItem(KEY, "1");
-      else window.localStorage.removeItem(KEY);
-    } catch {
-      /* ignore */
-    }
-  }
   for (const l of listeners) l(authed);
 }
 
+async function checkIsAdmin(userId: string): Promise<boolean> {
+  const { data, error } = await supabase
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", userId)
+    .eq("role", "admin")
+    .maybeSingle();
+  if (error) return false;
+  return !!data;
+}
+
+async function refreshAuthed() {
+  const { data } = await supabase.auth.getSession();
+  const user = data.session?.user;
+  authed = user ? await checkIsAdmin(user.id) : false;
+  ready = true;
+  emit();
+}
+
+if (typeof window !== "undefined") {
+  void refreshAuthed();
+  supabase.auth.onAuthStateChange(() => {
+    void refreshAuthed();
+  });
+}
+
 export function useAdminAuth() {
-  ensureHydrated();
   const [isAuthed, setIsAuthed] = useState<boolean>(authed);
-  const [ready, setReady] = useState(false);
+  const [readyState, setReadyState] = useState<boolean>(ready);
 
   useEffect(() => {
-    ensureHydrated();
     setIsAuthed(authed);
-    setReady(true);
-    const l = (v: boolean) => setIsAuthed(v);
+    setReadyState(ready);
+    const l = (v: boolean) => {
+      setIsAuthed(v);
+      setReadyState(ready);
+    };
     listeners.add(l);
     return () => {
       listeners.delete(l);
     };
   }, []);
 
-  const login = useCallback((email: string, password: string) => {
-    const ok =
-      email.trim().toLowerCase() === ADMIN_EMAIL && password === ADMIN_PASSWORD;
-    if (ok) {
+  const login = useCallback(
+    async (email: string, password: string): Promise<{ ok: boolean; error?: string }> => {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+      if (error || !data.user) {
+        return { ok: false, error: error?.message ?? "Invalid credentials" };
+      }
+      const isAdmin = await checkIsAdmin(data.user.id);
+      if (!isAdmin) {
+        await supabase.auth.signOut();
+        return { ok: false, error: "This account is not an admin. Grant it the 'admin' role in user_roles." };
+      }
       authed = true;
       emit();
-    }
-    return ok;
-  }, []);
+      return { ok: true };
+    },
+    [],
+  );
 
-  const logout = useCallback(() => {
-    authed = false;
+  const logout = useCallback(async () => {
     if (typeof window !== "undefined") {
       try {
-        // Clear cached admin UI state (active tab, etc.)
         window.localStorage.removeItem("mt_admin_tab");
       } catch {
         /* ignore */
       }
     }
+    await supabase.auth.signOut();
+    authed = false;
     emit();
   }, []);
 
-  return { isAuthed, ready, login, logout };
+  return { isAuthed, ready: readyState, login, logout };
 }
-
-if (typeof window !== "undefined") {
-  window.addEventListener("storage", (e) => {
-    if (e.key !== KEY) return;
-    authed = e.newValue === "1";
-    for (const l of listeners) l(authed);
-  });
-}
-
