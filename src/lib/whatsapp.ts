@@ -1,6 +1,8 @@
 import type { Product, CartItem } from "@/lib/shop";
+import { computeShipping } from "@/lib/shop";
 import { getSettings } from "@/lib/settings";
 import { formatPKR } from "@/lib/format";
+
 
 function buildUrl(text: string) {
   const raw = (getSettings().whatsappNumber || "").replace(/\D/g, "");
@@ -44,7 +46,7 @@ export function buildWhatsappProductOrder(product: Product, qty: number = 1) {
 }
 
 export function buildWhatsappCartOrder(cart: CartItem[], subtotal: number) {
-  const shipping = subtotal >= 50 || subtotal === 0 ? 0 : 5;
+  const shipping = computeShipping(subtotal);
   const total = subtotal + shipping;
   const itemCount = cart.reduce((n, i) => n + i.qty, 0);
 
