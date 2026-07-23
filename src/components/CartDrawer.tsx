@@ -1,6 +1,6 @@
 import { ShoppingBag, X, Plus, Minus, Trash2, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
-import { useCart } from "@/lib/shop";
+import { useCart, computeShipping } from "@/lib/shop";
 import { buildWhatsappCartOrder } from "@/lib/whatsapp";
 import { saveOrder } from "@/lib/orders";
 import { formatPKR } from "@/lib/format";
@@ -165,11 +165,11 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
             </div>
             <div className="flex justify-between text-sm text-black/60">
               <span>Shipping</span>
-              <span>{subtotal >= 50 ? "Free" : formatPKR(5)}</span>
+              <span>{computeShipping(subtotal) === 0 ? "Free" : formatPKR(computeShipping(subtotal))}</span>
             </div>
             <div className="flex justify-between text-black pt-2 border-t border-black/10" style={{ ...dmSans, fontWeight: 500, fontSize: 18 }}>
               <span>Total</span>
-              <span>{formatPKR(subtotal + (subtotal >= 50 || subtotal === 0 ? 0 : 5))}</span>
+              <span>{formatPKR(subtotal + computeShipping(subtotal))}</span>
             </div>
             <button
               type="button"

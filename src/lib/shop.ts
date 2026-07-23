@@ -154,6 +154,15 @@ export function getVariants(category: Category): VariantOptions {
   return VARIANTS_BY_CATEGORY[category] ?? DEFAULT_VARIANTS;
 }
 
+// ---------- SHIPPING (single source of truth, in PKR) ----------
+export const FREE_SHIPPING_THRESHOLD = 5000;
+export const SHIPPING_FEE = 500;
+export function computeShipping(subtotal: number): number {
+  if (subtotal <= 0) return 0;
+  return subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+}
+
+
 // ---------- SEED PRODUCTS ----------
 // Store starts empty — real products are added through the admin dashboard.
 const SEED_PRODUCTS: Product[] = [];
