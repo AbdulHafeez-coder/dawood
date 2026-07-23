@@ -587,7 +587,7 @@ function AdminDashboard() {
                           <div className="text-sm tabular-nums shrink-0">{formatPKR(o.total)}</div>
                           <button
                             onClick={() => {
-                              removeOrder(o.id);
+                              void removeOrder(o.id);
                               toast.success("Order removed");
                             }}
                             aria-label="Delete order"
