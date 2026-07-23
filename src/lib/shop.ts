@@ -245,15 +245,23 @@ function productToRow(p: Product): ProductRow {
 export const products: Product[] = [...SEED_PRODUCTS];
 export const categoriesLive: string[] = [...SEED_CATEGORIES];
 
+// Per-category metadata (image, sort order). Keyed by category name.
+export type CategoryInfo = { name: string; imageUrl: string; sortOrder: number };
+export const categoryInfoLive: Record<string, CategoryInfo> = {};
+
 const productListeners = new Set<(p: Product[]) => void>();
 const categoryListeners = new Set<(c: string[]) => void>();
+const categoryInfoListeners = new Set<(m: Record<string, CategoryInfo>) => void>();
 
 function emitProducts() {
   for (const l of productListeners) l([...products]);
 }
 function emitCategories() {
   for (const l of categoryListeners) l([...categoriesLive]);
+  const snap = { ...categoryInfoLive };
+  for (const l of categoryInfoListeners) l(snap);
 }
+
 
 let hydratePromise: Promise<void> | null = null;
 
