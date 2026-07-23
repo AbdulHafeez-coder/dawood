@@ -351,9 +351,10 @@ function Index() {
                   {img && (
                     <img
                       src={img}
-                      alt={name}
+                      alt=""
                       loading="lazy"
                       decoding="async"
+                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
                       className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-80 group-hover:scale-105 transition-all duration-500"
                     />
                   )}
