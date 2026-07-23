@@ -1553,14 +1553,19 @@ function ProductFormDialog({
             </Field>
             <Field label="Price (PKR)">
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-medium text-black/50 pointer-events-none">PKR</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold tracking-wide text-black/55 pointer-events-none">PKR</span>
                 <input
                   type="number"
+                  inputMode="decimal"
                   min={0}
                   step="0.01"
-                  value={form.price}
-                  onChange={(e) => set("price", Number(e.target.value))}
-                  className="mt-input pl-12"
+                  value={form.price === 0 ? "" : form.price}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    set("price", v === "" ? 0 : Number(v));
+                  }}
+                  placeholder="0.00"
+                  className="mt-input pl-14 tabular-nums"
                 />
               </div>
               <div className="mt-1 text-[11px] text-black/55 tabular-nums">
