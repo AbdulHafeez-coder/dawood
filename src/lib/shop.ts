@@ -158,7 +158,6 @@ export function getVariants(category: Category): VariantOptions {
 // Store starts empty — real products are added through the admin dashboard.
 const SEED_PRODUCTS: Product[] = [];
 
-];
 
 export const PRODUCT_IMAGE_CHOICES = [
   { id: "towel", label: "Towel", url: productTowel },
