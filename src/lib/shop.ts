@@ -15,6 +15,9 @@ export const SEED_CATEGORIES: readonly string[] = [
   "Wallpaper",
   "Cloths",
   "Sponges",
+  "Candles",
+  "Linens",
+  "Bath",
 ];
 
 // Kept for backwards-compat imports in existing components; treat as seed.
