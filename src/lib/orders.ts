@@ -89,6 +89,7 @@ type OrderRow = {
   primary_img: string | null;
   primary_bg: string | null;
   extra_count: number;
+  status: OrderStatus | null;
   created_at: string;
 };
 
@@ -105,8 +106,10 @@ function rowToOrder(r: OrderRow): SavedOrder {
     primaryImg: r.primary_img ?? undefined,
     primaryBg: r.primary_bg ?? undefined,
     extraCount: r.extra_count || 0,
+    status: (r.status ?? "new") as OrderStatus,
   };
 }
+
 
 async function pushOrderToSupabase(entry: SavedOrder) {
   try {
