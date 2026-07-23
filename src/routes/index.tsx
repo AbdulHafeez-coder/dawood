@@ -8,9 +8,6 @@ import {
   X,
   ArrowUpRight,
   Sparkles,
-  Bath,
-  Wallpaper,
-  SprayCan,
   Star,
   Plus,
   SlidersHorizontal,
@@ -24,7 +21,6 @@ import { useOrders } from "@/lib/orders";
 import heroBg from "@/assets/hero-home.jpg";
 import productTowel from "@/assets/product-towel.jpg";
 import productWallpaper from "@/assets/product-wallpaper.jpg";
-import productCloth from "@/assets/product-cloth.jpg";
 import productSponge from "@/assets/product-sponge.jpg";
 import { useProducts, useCategories, useCart, useFavourites, type Category, type Product } from "@/lib/shop";
 import { useSettings } from "@/lib/settings";
@@ -56,12 +52,6 @@ const cards = [
 
 const navLinks = ["Shop", "Collections"];
 
-const categories: { Icon: typeof Bath; name: Category; count: number; bg: string; accent: string; desc: string; img: string }[] = [
-  { Icon: Bath, name: "Towels", count: 18, bg: "bg-orange-100", accent: "text-orange-800", desc: "Plush cotton, quick-dry", img: productTowel },
-  { Icon: Wallpaper, name: "Wallpaper", count: 24, bg: "bg-stone-200", accent: "text-stone-800", desc: "Peel-and-stick sheets", img: productWallpaper },
-  { Icon: Sparkles, name: "Cloths", count: 12, bg: "bg-emerald-100", accent: "text-emerald-800", desc: "Reusable microfibre", img: productCloth },
-  { Icon: SprayCan, name: "Sponges", count: 9, bg: "bg-amber-100", accent: "text-amber-800", desc: "Plant-based scrubs", img: productSponge },
-];
 
 type SortKey = "featured" | "price-asc" | "price-desc" | "rating";
 
@@ -338,40 +328,51 @@ function Index() {
             Four small edits with big impact — bath, walls, kitchen, and the daily reset.
           </p>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
-          {categories.map(({ Icon, name, count, bg, accent, desc, img }) => (
-            <button
-              key={name}
-              onClick={() => {
-                setActiveCat(name);
-                document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" });
-              }}
-              className={`${bg} group relative text-left rounded-2xl overflow-hidden flex flex-col justify-between min-h-[240px] lg:min-h-[300px] hover:-translate-y-1 transition-transform`}
-            >
-              <img
-                src={img}
-                alt={name}
-                width={1024}
-                height={1024}
-                loading="lazy" decoding="async"
-                className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-80 group-hover:scale-105 transition-all duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
-              <div className="relative p-6 lg:p-8 flex flex-col justify-between h-full min-h-[240px] lg:min-h-[300px]">
-                <div className={`${accent} w-12 h-12 rounded-full bg-white/85 backdrop-blur-sm flex items-center justify-center`}>
-                  <Icon size={22} strokeWidth={1.5} />
-                </div>
-                <div>
-                  <div className="text-white drop-shadow-sm" style={{ ...dmSans, fontWeight: 500, fontSize: "clamp(22px, 3vw, 30px)", letterSpacing: "-0.03em" }}>
-                    {name}
+        {liveCategories.length === 0 ? (
+          <div className="rounded-2xl bg-white/60 border border-black/5 p-10 text-center text-black/60">
+            No categories yet. Add some from the admin dashboard.
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
+            {liveCategories.map((name) => {
+              const catProducts = products.filter((p) => p.category === name);
+              const img = catProducts.find((p) => p.img)?.img;
+              const bg = catProducts.find((p) => p.bg)?.bg || "bg-stone-200";
+              return (
+                <button
+                  key={name}
+                  onClick={() => {
+                    setActiveCat(name);
+                    document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className={`${bg} group relative text-left rounded-2xl overflow-hidden flex flex-col justify-between min-h-[240px] lg:min-h-[300px] hover:-translate-y-1 transition-transform`}
+                >
+                  {img && (
+                    <img
+                      src={img}
+                      alt={name}
+                      loading="lazy"
+                      decoding="async"
+                      className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-80 group-hover:scale-105 transition-all duration-500"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
+                  <div className="relative p-6 lg:p-8 flex flex-col justify-between h-full min-h-[240px] lg:min-h-[300px]">
+                    <div className="w-12 h-12 rounded-full bg-white/85 backdrop-blur-sm flex items-center justify-center text-black">
+                      <Sparkles size={22} strokeWidth={1.5} />
+                    </div>
+                    <div>
+                      <div className="text-white drop-shadow-sm" style={{ ...dmSans, fontWeight: 500, fontSize: "clamp(22px, 3vw, 30px)", letterSpacing: "-0.03em" }}>
+                        {name}
+                      </div>
+                      <div className="text-white/70 text-xs mt-2">{catProducts.length} product{catProducts.length === 1 ? "" : "s"}</div>
+                    </div>
                   </div>
-                  <div className="text-white/85 text-sm mt-1">{desc}</div>
-                  <div className="text-white/70 text-xs mt-2">{count} products</div>
-                </div>
-              </div>
-            </button>
-          ))}
-        </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       {/* PRODUCTS SECTION */}
