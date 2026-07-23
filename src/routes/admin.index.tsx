@@ -81,7 +81,7 @@ import {
 const dmSans = { fontFamily: "'DM Sans', sans-serif" };
 const inter = { fontFamily: "'Inter', sans-serif" };
 
-type TabId = "overview" | "products" | "categories" | "settings";
+type TabId = "overview" | "products" | "categories" | "orders" | "settings";
 
 type ProductImportItem = {
   id?: string;
