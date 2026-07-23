@@ -410,31 +410,38 @@ export function useProducts() {
 export function useCategories() {
   ensureStoreHydrated();
   const [list, setList] = useState<string[]>([...categoriesLive]);
+  const [info, setInfo] = useState<Record<string, CategoryInfo>>({ ...categoryInfoLive });
 
   useEffect(() => {
     ensureStoreHydrated();
     setList([...categoriesLive]);
+    setInfo({ ...categoryInfoLive });
     const l = (c: string[]) => setList(c);
+    const il = (m: Record<string, CategoryInfo>) => setInfo(m);
     categoryListeners.add(l);
+    categoryInfoListeners.add(il);
     return () => {
       categoryListeners.delete(l);
+      categoryInfoListeners.delete(il);
     };
   }, []);
 
-  const addCategory = useCallback((name: string) => {
+  const addCategory = useCallback((name: string, imageUrl = "") => {
     const clean = name.trim();
     if (!clean) return false;
     if (categoriesLive.some((c) => c.toLowerCase() === clean.toLowerCase())) return false;
     categoriesLive.push(clean);
+    categoryInfoLive[clean] = { name: clean, imageUrl, sortOrder: categoriesLive.length };
     emitCategories();
     supabase
       .from("categories")
-      .insert({ name: clean })
+      .insert({ name: clean, image_url: imageUrl, sort_order: categoriesLive.length })
       .then(({ error }) => {
         if (error) {
           console.error("[shop] addCategory failed:", error.message);
           const idx = categoriesLive.indexOf(clean);
           if (idx >= 0) categoriesLive.splice(idx, 1);
+          delete categoryInfoLive[clean];
           emitCategories();
         }
       });
@@ -448,6 +455,11 @@ export function useCategories() {
     if (idx < 0) return false;
     if (categoriesLive.some((c, i) => i !== idx && c.toLowerCase() === clean.toLowerCase())) return false;
     categoriesLive[idx] = clean;
+    const prevInfo = categoryInfoLive[oldName];
+    if (prevInfo) {
+      categoryInfoLive[clean] = { ...prevInfo, name: clean };
+      delete categoryInfoLive[oldName];
+    }
     for (const p of products) if (p.category === oldName) p.category = clean;
     emitCategories();
     emitProducts();
@@ -462,11 +474,36 @@ export function useCategories() {
     return true;
   }, []);
 
+  const updateCategoryImage = useCallback((name: string, imageUrl: string) => {
+    const prev = categoryInfoLive[name];
+    if (!prev) {
+      // Row may exist without an info entry yet — create one.
+      categoryInfoLive[name] = { name, imageUrl, sortOrder: categoriesLive.indexOf(name) };
+    } else {
+      categoryInfoLive[name] = { ...prev, imageUrl };
+    }
+    emitCategories();
+    supabase
+      .from("categories")
+      .update({ image_url: imageUrl })
+      .eq("name", name)
+      .then(({ error }) => {
+        if (error) {
+          console.error("[shop] updateCategoryImage failed:", error.message);
+          if (prev) categoryInfoLive[name] = prev;
+          else delete categoryInfoLive[name];
+          emitCategories();
+        }
+      });
+    return true;
+  }, []);
+
   const deleteCategory = useCallback((name: string) => {
     const idx = categoriesLive.indexOf(name);
     if (idx < 0) return { ok: false as const, orphaned: 0 };
     const orphaned = products.filter((p) => p.category === name).length;
     categoriesLive.splice(idx, 1);
+    delete categoryInfoLive[name];
     for (let i = products.length - 1; i >= 0; i--) {
       if (products[i].category === name) products.splice(i, 1);
     }
@@ -485,14 +522,16 @@ export function useCategories() {
 
   const resetCategories = useCallback(async () => {
     categoriesLive.splice(0, categoriesLive.length, ...SEED_CATEGORIES);
+    for (const k of Object.keys(categoryInfoLive)) delete categoryInfoLive[k];
     emitCategories();
     await supabase
       .from("categories")
       .upsert(SEED_CATEGORIES.map((name) => ({ name })), { onConflict: "name" });
   }, []);
 
-  return { categories: list, addCategory, renameCategory, deleteCategory, resetCategories };
+  return { categories: list, categoryInfo: info, addCategory, renameCategory, updateCategoryImage, deleteCategory, resetCategories };
 }
+
 
 // ---------- CART (unchanged behaviour) ----------
 const STORAGE_KEY = "maison-terra-cart";
