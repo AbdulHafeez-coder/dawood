@@ -66,7 +66,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
           </h1>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
             {isChunkError
-              ? "A newer version of Maison Terra is available. A quick refresh will load the latest files."
+              ? "A newer version of Dawood Mart is available. A quick refresh will load the latest files."
               : "We hit an unexpected snag while loading this page. Your cart and favourites are safely saved — nothing was lost."}
           </p>
 
@@ -128,9 +128,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Maison Terra — Considered home essentials for calm, clean spaces" },
-      { name: "description", content: "Maison Terra crafts plush towels, peel-and-stick wallpaper and plant-based cleaning cloths for well-kept, quiet homes." },
-      { property: "og:title", content: "Maison Terra — Considered home essentials" },
+      { title: "Dawood Mart — Considered home essentials for calm, clean spaces" },
+      { name: "description", content: "Dawood Mart crafts plush towels, peel-and-stick wallpaper and plant-based cleaning cloths for well-kept, quiet homes." },
+      { property: "og:title", content: "Dawood Mart — Considered home essentials" },
       { property: "og:description", content: "Plush towels, peel-and-stick wallpaper and plant-based cleaning made for calm, well-kept spaces." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

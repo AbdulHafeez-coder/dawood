@@ -17,7 +17,7 @@ function AdminShell({ children }: { children: React.ReactNode }) {
               <LayoutDashboard className="h-4 w-4" />
             </div>
             <span className="text-sm font-semibold tracking-tight" style={dmSans}>
-              Maison Terra · Admin
+              Dawood Mart · Admin
             </span>
           </div>
           <div className="hidden gap-2 sm:flex">

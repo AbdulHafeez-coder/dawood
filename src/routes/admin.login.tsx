@@ -16,8 +16,8 @@ export const Route = createFileRoute("/admin/login")({
   }),
   head: () => ({
     meta: [
-      { title: "Admin Login — Maison Terra" },
-      { name: "description", content: "Sign in to the Maison Terra admin dashboard." },
+      { title: "Admin Login — Dawood Mart" },
+      { name: "description", content: "Sign in to the Dawood Mart admin dashboard." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -90,7 +90,7 @@ function AdminLogin() {
               </div>
               <div>
                 <div className="text-[10px] uppercase tracking-[0.22em] text-black/45">
-                  Maison Terra
+                  Dawood Mart
                 </div>
                 <h1
                   className="text-black"

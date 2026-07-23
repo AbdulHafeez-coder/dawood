@@ -11,10 +11,10 @@ import { formatPKR } from "@/lib/format";
 export const Route = createFileRoute("/favorites")({
   head: () => ({
     meta: [
-      { title: "Your Favourites — Maison Terra" },
-      { name: "description", content: "The Maison Terra pieces you've saved for later." },
-      { property: "og:title", content: "Your Favourites — Maison Terra" },
-      { property: "og:description", content: "The Maison Terra pieces you've saved for later." },
+      { title: "Your Favourites — Dawood Mart" },
+      { name: "description", content: "The Dawood Mart pieces you've saved for later." },
+      { property: "og:title", content: "Your Favourites — Dawood Mart" },
+      { property: "og:description", content: "The Dawood Mart pieces you've saved for later." },
       { name: "twitter:card", content: "summary" },
     ],
   }),
@@ -42,7 +42,7 @@ function FavoritesPage() {
     <div className="flex min-h-screen flex-col bg-[#FEFDF9]" style={inter}>
       <nav className="sticky top-0 z-20 bg-[#FEFDF9]/90 backdrop-blur border-b border-black/5 flex items-center justify-between px-5 py-4 sm:px-8 lg:px-10">
         <Link to="/" className="type-wordmark text-black">
-          Maison Terra
+          Dawood Mart
         </Link>
         <button aria-label="Cart" onClick={() => setCartOpen(true)} className="relative text-black">
           <ShoppingBag size={22} strokeWidth={1.5} />

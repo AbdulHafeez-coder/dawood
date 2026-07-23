@@ -113,7 +113,7 @@ type CategoryImportPlan = {
 export const Route = createFileRoute("/admin/")({
   head: () => ({
     meta: [
-      { title: "Admin Dashboard — Maison Terra" },
+      { title: "Admin Dashboard — Dawood Mart" },
       { name: "description", content: "Manage products, categories and orders." },
       { name: "robots", content: "noindex" },
     ],
@@ -315,20 +315,20 @@ function AdminDashboard() {
       [esc(p.name), p.price.toFixed(2), esc(formatPKR(p.price)), "PKR", esc(p.category), esc(p.tag ?? "")].join(","),
     );
     const csv = [header.join(","), ...body].join("\n");
-    downloadCsv(`maison-terra-selected-${new Date().toISOString().slice(0, 10)}.csv`, csv);
+    downloadCsv(`dawood-mart-selected-${new Date().toISOString().slice(0, 10)}.csv`, csv);
     toast.success(`Exported ${rows.length} product${rows.length === 1 ? "" : "s"}`);
   }
 
 
   function handleExportProducts() {
     if (products.length === 0) return toast.error("No products to export");
-    downloadCsv(`maison-terra-products-${new Date().toISOString().slice(0, 10)}.csv`, productsToCsv(products));
+    downloadCsv(`dawood-mart-products-${new Date().toISOString().slice(0, 10)}.csv`, productsToCsv(products));
     toast.success("Products exported", { description: `${products.length} row${products.length === 1 ? "" : "s"}` });
   }
 
   function handleExportCategories() {
     if (categories.length === 0) return toast.error("No categories to export");
-    downloadCsv(`maison-terra-categories-${new Date().toISOString().slice(0, 10)}.csv`, categoriesToCsv(categories));
+    downloadCsv(`dawood-mart-categories-${new Date().toISOString().slice(0, 10)}.csv`, categoriesToCsv(categories));
     toast.success("Categories exported", { description: `${categories.length} row${categories.length === 1 ? "" : "s"}` });
   }
 
@@ -495,7 +495,7 @@ function AdminDashboard() {
             </Link>
             <div className="h-4 w-px bg-black/15" />
             <div className="min-w-0">
-              <div className="text-[10px] uppercase tracking-[0.22em] text-black/45">Maison Terra</div>
+              <div className="text-[10px] uppercase tracking-[0.22em] text-black/45">Dawood Mart</div>
               <h1 className="truncate" style={{ ...dmSans, fontWeight: 400, letterSpacing: "-0.02em", fontSize: 20 }}>
                 Admin dashboard
               </h1>
@@ -1538,7 +1538,7 @@ function ProductFormDialog({
             {mode === "create" ? "New product" : "Edit product"}
           </DialogTitle>
           <DialogDescription>
-            {mode === "create" ? "Add a new item to the Maison Terra catalogue." : `Editing “${product?.name}”.`}
+            {mode === "create" ? "Add a new item to the Dawood Mart catalogue." : `Editing “${product?.name}”.`}
           </DialogDescription>
         </DialogHeader>
 
@@ -2094,7 +2094,7 @@ function SettingsPanel() {
                 className="mt-input"
                 value={draft.brandName}
                 onChange={(e) => setDraft({ ...draft, brandName: e.target.value })}
-                placeholder="Maison Terra"
+                placeholder="Dawood Mart"
               />
             </Field>
             <Field label="Tagline">

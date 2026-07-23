@@ -18,8 +18,8 @@ export const Route = createFileRoute("/product/$id")({
   },
   head: ({ loaderData }) => {
     const p = loaderData?.product;
-    const title = p ? `${p.name} — Maison Terra` : "Product — Maison Terra";
-    const description = p?.tagline ?? "Considered home essentials from Maison Terra.";
+    const title = p ? `${p.name} — Dawood Mart` : "Product — Dawood Mart";
+    const description = p?.tagline ?? "Considered home essentials from Dawood Mart.";
     return {
       meta: [
         { title },
@@ -174,7 +174,7 @@ function ProductPage() {
       {/* NAV */}
       <nav className="sticky top-0 z-20 bg-[#FEFDF9]/90 backdrop-blur border-b border-black/5 flex items-center justify-between px-5 py-4 sm:px-8 lg:px-10">
         <Link to="/" className="type-wordmark text-black">
-          Maison Terra
+          Dawood Mart
         </Link>
         <div className="flex items-center gap-4">
           <Link to="/favorites" aria-label="Favourites" className="relative text-black">
