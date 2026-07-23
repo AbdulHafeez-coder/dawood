@@ -120,7 +120,7 @@ function AdminDashboard() {
   const navigate = useNavigate();
   const mounted = useMounted();
   const { isAuthed, ready, logout } = useAdminAuth();
-  const { orders } = useOrders();
+  const { orders, removeOrder } = useAllOrders();
   const { products, addProduct, updateProduct, deleteProduct, resetProducts } = useProducts();
   const { categories, addCategory, renameCategory, deleteCategory, resetCategories } = useCategories();
 
