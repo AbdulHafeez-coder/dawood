@@ -190,15 +190,20 @@
 .delay-1100 { animation-delay: 1.1s; }
 
 /* ============================================================
-   Interactive States: badges, buttons, selects, chips
-   Global polish — layers focus/active/disabled feedback on top
-   of existing color/border styles without overriding them.
+   Unified interactive states: buttons, links-as-buttons,
+   selects, summaries. One consistent hover / focus-visible /
+   active / disabled treatment across the entire app so custom
+   Tailwind classes don't drift apart per page.
    ============================================================ */
 
-/* Base transitions + accessible focus ring for all interactives */
+/* Base transitions for every interactive element (incl. anchor CTAs) */
 button,
 [role="button"],
 a[data-interactive],
+a.inline-flex,
+a.bg-black,
+a.bg-primary,
+a[class*="bg-[#25D366]"],
 select,
 summary {
   transition: background-color 180ms ease, color 180ms ease,
@@ -207,38 +212,69 @@ summary {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Accessible focus ring — same shape everywhere */
 button:focus-visible,
 [role="button"]:focus-visible,
+a:focus-visible,
 select:focus-visible,
-summary:focus-visible {
+summary:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
   outline: none;
   box-shadow:
     0 0 0 2px var(--color-background),
     0 0 0 4px color-mix(in oklab, var(--color-foreground) 55%, transparent);
+  border-radius: inherit;
 }
 
-/* Press feedback — respected across raw <button> and role=button */
+/* Press feedback */
 button:not(:disabled):active,
-[role="button"]:not([aria-disabled="true"]):active {
+[role="button"]:not([aria-disabled="true"]):active,
+a.inline-flex:active,
+a.bg-black:active,
+a[class*="bg-[#25D366]"]:active {
   transform: translateY(0.5px) scale(0.985);
 }
 
-/* Disabled treatment — universal */
+/* Universal disabled treatment — real, aria, and data-disabled */
 button:disabled,
 button[aria-disabled="true"],
+button[data-disabled="true"],
 [role="button"][aria-disabled="true"],
+[role="button"][data-disabled="true"],
+a[aria-disabled="true"],
 select:disabled {
-  opacity: 0.55;
+  opacity: 0.5;
   cursor: not-allowed;
-  filter: saturate(0.85);
+  filter: saturate(0.75);
+  pointer-events: none;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
-/* Subtle hover lift for solid dark CTAs (bg-black / bg-primary) */
+/* Hover lift for solid dark CTAs — button OR anchor */
 button.bg-black:not(:disabled):hover,
-a.bg-black:hover,
 button.bg-primary:not(:disabled):hover,
-a.bg-primary:hover {
+a.bg-black:not([aria-disabled="true"]):hover,
+a.bg-primary:not([aria-disabled="true"]):hover {
   box-shadow: 0 8px 22px -12px color-mix(in oklab, #000 55%, transparent);
+}
+
+/* WhatsApp green — unify color and hover across all instances */
+button[class*="bg-[#25D366]"]:not(:disabled):hover,
+a[class*="bg-[#25D366]"]:not([aria-disabled="true"]):hover {
+  filter: brightness(0.94);
+  box-shadow: 0 8px 22px -12px color-mix(in oklab, #25d366 65%, transparent);
+}
+
+/* Ensure every CTA meets a 40px tap-target minimum on mobile */
+@media (max-width: 640px) {
+  button.inline-flex,
+  a.inline-flex.bg-black,
+  a.inline-flex.bg-primary,
+  a.inline-flex[class*="bg-[#25D366]"] {
+    min-height: 40px;
+  }
 }
 
 /* Native <select> — remove OS chrome, add custom chevron & states */
