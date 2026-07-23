@@ -979,22 +979,40 @@ function AdminDashboard() {
                 <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {categories.map((c) => {
                     const count = products.filter((p) => p.category === c).length;
+                    const thumb = categoryInfo[c]?.imageUrl;
                     return (
                       <li
                         key={c}
-                        className="border border-black/10 rounded-xl p-4 flex items-start justify-between gap-3 hover:border-black/25 transition"
+                        className="border border-black/10 rounded-xl p-3 flex items-start gap-3 hover:border-black/25 transition"
                       >
-                        <div className="min-w-0">
+                        <div className="w-14 h-14 rounded-lg overflow-hidden bg-black/5 border border-black/5 shrink-0 grid place-items-center">
+                          {thumb ? (
+                            <img
+                              src={thumb}
+                              alt=""
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                (e.currentTarget as HTMLImageElement).style.display = "none";
+                              }}
+                            />
+                          ) : (
+                            <ImageIcon className="w-4 h-4 text-black/30" />
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1">
                           <div className="text-[10px] uppercase tracking-[0.22em] text-black/45">Category</div>
-                          <div className="mt-1 text-lg truncate" style={{ ...dmSans, fontWeight: 400, letterSpacing: "-0.02em" }}>
+                          <div className="mt-0.5 text-lg truncate" style={{ ...dmSans, fontWeight: 400, letterSpacing: "-0.02em" }}>
                             {c}
                           </div>
-                          <div className="mt-1 text-xs text-black/50">{count} product{count === 1 ? "" : "s"}</div>
+                          <div className="mt-0.5 text-xs text-black/50">
+                            {count} product{count === 1 ? "" : "s"}
+                            {!thumb && <span className="ml-1 text-amber-700">· no image</span>}
+                          </div>
                         </div>
                         <div className="flex items-center gap-1 shrink-0">
                           <button
                             onClick={() => setCategoryDialog({ mode: "edit", name: c })}
-                            aria-label={`Rename ${c}`}
+                            aria-label={`Edit ${c}`}
                             className="w-8 h-8 rounded-full grid place-items-center text-black/60 hover:text-black hover:bg-black/5 transition"
                           >
                             <Pencil className="w-3.5 h-3.5" />
@@ -1010,6 +1028,7 @@ function AdminDashboard() {
                       </li>
                     );
                   })}
+
                 </ul>
               )}
             </section>
