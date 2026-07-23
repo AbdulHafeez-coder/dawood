@@ -183,16 +183,31 @@ create table if not exists public.orders (
   primary_img text,
   primary_bg text,
   extra_count integer not null default 0,
+  status text not null default 'new' check (status in ('new','processing','completed','cancelled')),
   created_at timestamptz not null default now()
 );
 
+-- Backfill for existing installs (idempotent).
+alter table public.orders
+  add column if not exists status text not null default 'new';
+do $$ begin
+  if not exists (
+    select 1 from pg_constraint where conname = 'orders_status_check'
+  ) then
+    alter table public.orders
+      add constraint orders_status_check
+      check (status in ('new','processing','completed','cancelled'));
+  end if;
+end $$;
+
 create index if not exists orders_user_id_idx on public.orders(user_id);
 create index if not exists orders_created_at_idx on public.orders(created_at desc);
+create index if not exists orders_status_idx on public.orders(status);
 
 -- Anyone (anon or signed in) may create an order draft. When signed in the
 -- client stamps user_id = auth.uid() so RLS can scope reads to their own.
 grant insert on public.orders to anon, authenticated;
-grant select, delete on public.orders to authenticated;
+grant select, update, delete on public.orders to authenticated;
 grant all on public.orders to service_role;
 
 alter table public.orders enable row level security;
@@ -214,6 +229,14 @@ drop policy if exists "orders self delete" on public.orders;
 create policy "orders self delete" on public.orders
   for delete to authenticated
   using (user_id = auth.uid() or public.has_role(auth.uid(), 'admin'));
+
+-- Only admins may update orders (status changes).
+drop policy if exists "orders admin update" on public.orders;
+create policy "orders admin update" on public.orders
+  for update to authenticated
+  using (public.has_role(auth.uid(), 'admin'))
+  with check (public.has_role(auth.uid(), 'admin'));
+
 
 -- =============================================================
 -- 5. Storage bucket for product images (public read, admin write)
