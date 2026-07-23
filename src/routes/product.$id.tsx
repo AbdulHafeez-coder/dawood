@@ -239,14 +239,14 @@ function ProductPage() {
 
         {/* INFO */}
         <div>
-          <div className="text-xs uppercase tracking-widest text-black/50">{product.category}</div>
-          <h1 className="mt-2 text-black" style={{ ...dmSans, fontWeight: 400, letterSpacing: "-0.04em", fontSize: "clamp(32px, 5vw, 52px)", lineHeight: 1 }}>
+          <div className="type-eyebrow text-black/50">{product.category}</div>
+          <h1 className="type-h1 mt-3 text-black">
             {product.name}
           </h1>
           <p className="mt-3 text-black/70 max-w-md">{product.tagline}</p>
 
           <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
-            <div className="text-black whitespace-nowrap" style={{ ...dmSans, fontWeight: 500, fontSize: "clamp(24px, 3vw, 32px)" }}>{formatPKR(product.price)}</div>
+            <div className="type-price-lg text-black whitespace-nowrap">{formatPKR(product.price)}</div>
             <div className="flex items-center gap-1 text-black/60 text-sm whitespace-nowrap">
               <Star size={14} className="fill-black text-black" /> {product.rating} · 240 reviews
             </div>
