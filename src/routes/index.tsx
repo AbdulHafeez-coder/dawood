@@ -299,18 +299,19 @@ function Index() {
                 <span className={`${c.chipBg} ${c.chipText} self-start text-[10px] sm:text-xs tracking-[0.15em] px-3 py-1.5 rounded-md`} style={{ ...inter, fontWeight: 600 }}>
                   {c.label}
                 </span>
-                <div className="text-black" style={{ ...dmSans, fontWeight: 500, letterSpacing: "-0.03em", lineHeight: 1.05 }}>
-                  <span className="text-lg sm:text-xl md:text-2xl lg:text-[28px]">{c.off}</span>
+                <div className="text-black whitespace-nowrap" style={{ ...dmSans, fontWeight: 500, letterSpacing: "-0.03em", lineHeight: 1.1, fontSize: "clamp(16px, 2.2vw, 28px)" }}>
+                  {c.off}
                 </div>
               </div>
               <div className="absolute -right-6 -top-6 w-40 h-40 sm:w-48 sm:h-48 rounded-full bg-white/40 blur-2xl pointer-events-none" />
               <img
                 src={c.img}
-                alt={c.label}
+                alt=""
                 width={1024}
                 height={1024}
                 loading="lazy" decoding="async"
-                className="relative w-[92px] h-[92px] sm:w-[110px] sm:h-[110px] md:w-[130px] md:h-[130px] lg:w-[160px] lg:h-[160px] rounded-xl object-cover shrink-0"
+                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                className="relative w-[80px] h-[80px] sm:w-[110px] sm:h-[110px] md:w-[130px] md:h-[130px] lg:w-[160px] lg:h-[160px] rounded-xl object-cover shrink-0"
               />
             </div>
           ))}
