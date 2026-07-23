@@ -371,7 +371,7 @@ export function AdminSettingsSkeleton() {
 export function AdminDashboardSkeleton({
   tab = "overview",
 }: {
-  tab?: "overview" | "products" | "categories" | "orders" | "settings";
+  tab?: "overview" | "products" | "categories" | "promotions" | "orders" | "settings";
 }) {
   return (
     <div className="min-h-screen flex flex-col bg-[#FEFDF9] text-black">
@@ -381,6 +381,7 @@ export function AdminDashboardSkeleton({
           {tab === "overview" && <AdminOverviewSkeleton />}
           {tab === "products" && <AdminProductsSkeleton />}
           {tab === "categories" && <AdminCategoriesSkeleton />}
+          {tab === "promotions" && <AdminCategoriesSkeleton />}
           {tab === "orders" && <AdminProductsSkeleton />}
           {tab === "settings" && <AdminSettingsSkeleton />}
         </div>
