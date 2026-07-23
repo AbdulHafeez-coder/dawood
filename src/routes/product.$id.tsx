@@ -173,7 +173,7 @@ function ProductPage() {
     <div className="flex min-h-screen flex-col bg-[#FEFDF9]" style={inter}>
       {/* NAV */}
       <nav className="sticky top-0 z-20 bg-[#FEFDF9]/90 backdrop-blur border-b border-black/5 flex items-center justify-between px-5 py-4 sm:px-8 lg:px-10">
-        <Link to="/" className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 26, letterSpacing: "-0.05em" }}>
+        <Link to="/" className="type-wordmark text-black">
           Maison Terra
         </Link>
         <div className="flex items-center gap-4">
