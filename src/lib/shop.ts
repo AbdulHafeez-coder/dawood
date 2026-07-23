@@ -245,28 +245,49 @@ function productToRow(p: Product): ProductRow {
 export const products: Product[] = [...SEED_PRODUCTS];
 export const categoriesLive: string[] = [...SEED_CATEGORIES];
 
+// Per-category metadata (image, sort order). Keyed by category name.
+export type CategoryInfo = { name: string; imageUrl: string; sortOrder: number };
+export const categoryInfoLive: Record<string, CategoryInfo> = {};
+
 const productListeners = new Set<(p: Product[]) => void>();
 const categoryListeners = new Set<(c: string[]) => void>();
+const categoryInfoListeners = new Set<(m: Record<string, CategoryInfo>) => void>();
 
 function emitProducts() {
   for (const l of productListeners) l([...products]);
 }
 function emitCategories() {
   for (const l of categoryListeners) l([...categoriesLive]);
+  const snap = { ...categoryInfoLive };
+  for (const l of categoryInfoListeners) l(snap);
 }
+
 
 let hydratePromise: Promise<void> | null = null;
 
 
 async function hydrateFromSupabase() {
   const [{ data: catData, error: catErr }, { data: prodData, error: prodErr }] = await Promise.all([
-    supabase.from("categories").select("name").order("created_at", { ascending: true }),
+    supabase
+      .from("categories")
+      .select("name, image_url, sort_order")
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: true }),
     supabase.from("products").select("*").order("created_at", { ascending: false }),
   ]);
   if (catErr) console.error("[shop] categories load failed:", catErr.message);
   if (prodErr) console.error("[shop] products load failed:", prodErr.message);
 
-  categoriesLive.splice(0, categoriesLive.length, ...(catData ?? []).map((r) => r.name));
+  const rows = (catData ?? []) as { name: string; image_url: string | null; sort_order: number | null }[];
+  categoriesLive.splice(0, categoriesLive.length, ...rows.map((r) => r.name));
+  for (const k of Object.keys(categoryInfoLive)) delete categoryInfoLive[k];
+  rows.forEach((r, i) => {
+    categoryInfoLive[r.name] = {
+      name: r.name,
+      imageUrl: r.image_url ?? "",
+      sortOrder: r.sort_order ?? i,
+    };
+  });
   products.splice(
     0,
     products.length,
@@ -275,6 +296,7 @@ async function hydrateFromSupabase() {
   emitCategories();
   emitProducts();
 }
+
 
 
 function ensureStoreHydrated() {
@@ -388,31 +410,38 @@ export function useProducts() {
 export function useCategories() {
   ensureStoreHydrated();
   const [list, setList] = useState<string[]>([...categoriesLive]);
+  const [info, setInfo] = useState<Record<string, CategoryInfo>>({ ...categoryInfoLive });
 
   useEffect(() => {
     ensureStoreHydrated();
     setList([...categoriesLive]);
+    setInfo({ ...categoryInfoLive });
     const l = (c: string[]) => setList(c);
+    const il = (m: Record<string, CategoryInfo>) => setInfo(m);
     categoryListeners.add(l);
+    categoryInfoListeners.add(il);
     return () => {
       categoryListeners.delete(l);
+      categoryInfoListeners.delete(il);
     };
   }, []);
 
-  const addCategory = useCallback((name: string) => {
+  const addCategory = useCallback((name: string, imageUrl = "") => {
     const clean = name.trim();
     if (!clean) return false;
     if (categoriesLive.some((c) => c.toLowerCase() === clean.toLowerCase())) return false;
     categoriesLive.push(clean);
+    categoryInfoLive[clean] = { name: clean, imageUrl, sortOrder: categoriesLive.length };
     emitCategories();
     supabase
       .from("categories")
-      .insert({ name: clean })
+      .insert({ name: clean, image_url: imageUrl, sort_order: categoriesLive.length })
       .then(({ error }) => {
         if (error) {
           console.error("[shop] addCategory failed:", error.message);
           const idx = categoriesLive.indexOf(clean);
           if (idx >= 0) categoriesLive.splice(idx, 1);
+          delete categoryInfoLive[clean];
           emitCategories();
         }
       });
@@ -426,6 +455,11 @@ export function useCategories() {
     if (idx < 0) return false;
     if (categoriesLive.some((c, i) => i !== idx && c.toLowerCase() === clean.toLowerCase())) return false;
     categoriesLive[idx] = clean;
+    const prevInfo = categoryInfoLive[oldName];
+    if (prevInfo) {
+      categoryInfoLive[clean] = { ...prevInfo, name: clean };
+      delete categoryInfoLive[oldName];
+    }
     for (const p of products) if (p.category === oldName) p.category = clean;
     emitCategories();
     emitProducts();
@@ -440,11 +474,36 @@ export function useCategories() {
     return true;
   }, []);
 
+  const updateCategoryImage = useCallback((name: string, imageUrl: string) => {
+    const prev = categoryInfoLive[name];
+    if (!prev) {
+      // Row may exist without an info entry yet — create one.
+      categoryInfoLive[name] = { name, imageUrl, sortOrder: categoriesLive.indexOf(name) };
+    } else {
+      categoryInfoLive[name] = { ...prev, imageUrl };
+    }
+    emitCategories();
+    supabase
+      .from("categories")
+      .update({ image_url: imageUrl })
+      .eq("name", name)
+      .then(({ error }) => {
+        if (error) {
+          console.error("[shop] updateCategoryImage failed:", error.message);
+          if (prev) categoryInfoLive[name] = prev;
+          else delete categoryInfoLive[name];
+          emitCategories();
+        }
+      });
+    return true;
+  }, []);
+
   const deleteCategory = useCallback((name: string) => {
     const idx = categoriesLive.indexOf(name);
     if (idx < 0) return { ok: false as const, orphaned: 0 };
     const orphaned = products.filter((p) => p.category === name).length;
     categoriesLive.splice(idx, 1);
+    delete categoryInfoLive[name];
     for (let i = products.length - 1; i >= 0; i--) {
       if (products[i].category === name) products.splice(i, 1);
     }
@@ -463,14 +522,16 @@ export function useCategories() {
 
   const resetCategories = useCallback(async () => {
     categoriesLive.splice(0, categoriesLive.length, ...SEED_CATEGORIES);
+    for (const k of Object.keys(categoryInfoLive)) delete categoryInfoLive[k];
     emitCategories();
     await supabase
       .from("categories")
       .upsert(SEED_CATEGORIES.map((name) => ({ name })), { onConflict: "name" });
   }, []);
 
-  return { categories: list, addCategory, renameCategory, deleteCategory, resetCategories };
+  return { categories: list, categoryInfo: info, addCategory, renameCategory, updateCategoryImage, deleteCategory, resetCategories };
 }
+
 
 // ---------- CART (unchanged behaviour) ----------
 const STORAGE_KEY = "maison-terra-cart";

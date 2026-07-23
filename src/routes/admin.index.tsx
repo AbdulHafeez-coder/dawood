@@ -130,7 +130,7 @@ function AdminDashboard() {
   const { isAuthed, ready, logout } = useAdminAuth();
   const { orders, removeOrder, updateStatus, loading: ordersLoading, error: ordersError, refetch: refetchOrders } = useAllOrders();
   const { products, addProduct, updateProduct, deleteProduct, resetProducts } = useProducts();
-  const { categories, addCategory, renameCategory, deleteCategory, resetCategories } = useCategories();
+  const { categories, categoryInfo, addCategory, renameCategory, updateCategoryImage, deleteCategory, resetCategories } = useCategories();
 
   const [tab, setTab] = useState<TabId>(() => {
     if (typeof window === "undefined") return "overview";
@@ -979,22 +979,40 @@ function AdminDashboard() {
                 <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {categories.map((c) => {
                     const count = products.filter((p) => p.category === c).length;
+                    const thumb = categoryInfo[c]?.imageUrl;
                     return (
                       <li
                         key={c}
-                        className="border border-black/10 rounded-xl p-4 flex items-start justify-between gap-3 hover:border-black/25 transition"
+                        className="border border-black/10 rounded-xl p-3 flex items-start gap-3 hover:border-black/25 transition"
                       >
-                        <div className="min-w-0">
+                        <div className="w-14 h-14 rounded-lg overflow-hidden bg-black/5 border border-black/5 shrink-0 grid place-items-center">
+                          {thumb ? (
+                            <img
+                              src={thumb}
+                              alt=""
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                (e.currentTarget as HTMLImageElement).style.display = "none";
+                              }}
+                            />
+                          ) : (
+                            <ImageIcon className="w-4 h-4 text-black/30" />
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1">
                           <div className="text-[10px] uppercase tracking-[0.22em] text-black/45">Category</div>
-                          <div className="mt-1 text-lg truncate" style={{ ...dmSans, fontWeight: 400, letterSpacing: "-0.02em" }}>
+                          <div className="mt-0.5 text-lg truncate" style={{ ...dmSans, fontWeight: 400, letterSpacing: "-0.02em" }}>
                             {c}
                           </div>
-                          <div className="mt-1 text-xs text-black/50">{count} product{count === 1 ? "" : "s"}</div>
+                          <div className="mt-0.5 text-xs text-black/50">
+                            {count} product{count === 1 ? "" : "s"}
+                            {!thumb && <span className="ml-1 text-amber-700">· no image</span>}
+                          </div>
                         </div>
                         <div className="flex items-center gap-1 shrink-0">
                           <button
                             onClick={() => setCategoryDialog({ mode: "edit", name: c })}
-                            aria-label={`Rename ${c}`}
+                            aria-label={`Edit ${c}`}
                             className="w-8 h-8 rounded-full grid place-items-center text-black/60 hover:text-black hover:bg-black/5 transition"
                           >
                             <Pencil className="w-3.5 h-3.5" />
@@ -1010,6 +1028,7 @@ function AdminDashboard() {
                       </li>
                     );
                   })}
+
                 </ul>
               )}
             </section>
@@ -1060,10 +1079,11 @@ function AdminDashboard() {
         <CategoryFormDialog
           mode={categoryDialog.mode}
           name={categoryDialog.name}
+          initialImageUrl={categoryDialog.name ? categoryInfo[categoryDialog.name]?.imageUrl ?? "" : ""}
           existing={categories}
           onClose={() => setCategoryDialog(null)}
-          onCreate={(name) => {
-            if (addCategory(name)) {
+          onCreate={(name, imageUrl) => {
+            if (addCategory(name, imageUrl)) {
               toast.success("Category created", { description: name });
               setCategoryDialog(null);
             } else {
@@ -1073,13 +1093,18 @@ function AdminDashboard() {
           onSave={(oldName, newName) => {
             if (renameCategory(oldName, newName)) {
               toast.success("Category renamed", { description: `${oldName} → ${newName}` });
-              setCategoryDialog(null);
             } else {
               toast.error("Rename failed", { description: "Name is empty or duplicated." });
             }
           }}
+          onUpdateImage={(name, imageUrl) => {
+            updateCategoryImage(name, imageUrl);
+            toast.success(imageUrl ? "Category image updated" : "Category image removed", { description: name });
+            setCategoryDialog(null);
+          }}
         />
       )}
+
 
       {/* Delete product confirm */}
       <AlertDialog open={!!confirmProduct} onOpenChange={(o) => !o && setConfirmProduct(null)}>
@@ -1693,26 +1718,36 @@ function ProductFormDialog({
 function CategoryFormDialog({
   mode,
   name,
+  initialImageUrl,
   existing,
   onClose,
   onCreate,
   onSave,
+  onUpdateImage,
 }: {
   mode: "create" | "edit";
   name?: string;
+  initialImageUrl?: string;
   existing: string[];
   onClose: () => void;
-  onCreate: (name: string) => void;
+  onCreate: (name: string, imageUrl: string) => void;
   onSave: (oldName: string, newName: string) => void;
+  onUpdateImage: (name: string, imageUrl: string) => void;
 }) {
   const [value, setValue] = useState(name ?? "");
+  const [imageUrl, setImageUrl] = useState(initialImageUrl ?? "");
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
     const clean = value.trim();
     if (!clean) return toast.error("Name is required");
-    if (mode === "edit" && name) onSave(name, clean);
-    else onCreate(clean);
+    if (mode === "edit" && name) {
+      if (clean !== name) onSave(name, clean);
+      if ((imageUrl ?? "") !== (initialImageUrl ?? "")) onUpdateImage(clean, imageUrl);
+      if (clean === name && (imageUrl ?? "") === (initialImageUrl ?? "")) onClose();
+    } else {
+      onCreate(clean, imageUrl);
+    }
   }
 
   const isDup =
@@ -1726,18 +1761,18 @@ function CategoryFormDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle style={{ ...dmSans, fontWeight: 400, letterSpacing: "-0.02em" }}>
-            {mode === "create" ? "New category" : "Rename category"}
+            {mode === "create" ? "New category" : "Edit category"}
           </DialogTitle>
           <DialogDescription>
             {mode === "create"
-              ? "Group products under a new department name."
-              : `Rename the “${name}” category — products will follow.`}
+              ? "Group products under a new department name and add a hero image."
+              : `Update the “${name}” category name or hero image — products will follow.`}
           </DialogDescription>
         </DialogHeader>
         {!ready ? (
           <CategoryFormSkeleton mode={mode} />
         ) : (
-        <form onSubmit={submit} className="space-y-3" style={inter}>
+        <form onSubmit={submit} className="space-y-4" style={inter}>
           <Field label="Name">
             <input
               autoFocus
@@ -1748,6 +1783,12 @@ function CategoryFormDialog({
             />
             {isDup && <div className="mt-1 text-[11px] text-red-600">This name already exists.</div>}
           </Field>
+          <Field label="Hero image">
+            <ImageUploader value={imageUrl} onChange={setImageUrl} />
+            <div className="mt-1 text-[11px] text-black/50">
+              Shown on the “Shop by room” card. Falls back to a product image when empty.
+            </div>
+          </Field>
           <DialogFooter className="pt-2">
             <button type="button" onClick={onClose} className="px-4 py-2 rounded-full border border-black/15 text-[11px] uppercase tracking-[0.18em] hover:bg-black/5">
               Cancel
@@ -1757,7 +1798,7 @@ function CategoryFormDialog({
               disabled={isDup || !value.trim()}
               className="px-5 py-2 rounded-full bg-black text-white text-[11px] uppercase tracking-[0.18em] hover:bg-black/85 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
             >
-              {mode === "create" ? "Create" : "Rename"}
+              {mode === "create" ? "Create" : "Save"}
             </button>
           </DialogFooter>
         </form>
@@ -1766,6 +1807,7 @@ function CategoryFormDialog({
     </Dialog>
   );
 }
+
 
 /* ---------------------------------- FIELD ---------------------------------- */
 
