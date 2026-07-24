@@ -102,6 +102,8 @@ export async function uploadProductImageWithProgress(
 
   const { data } = supabase.storage.from(PRODUCT_IMAGES_BUCKET).getPublicUrl(signed.path);
   return data.publicUrl;
+}
+
 
 /**
  * Best-effort deletion of a previously uploaded product image by its public
