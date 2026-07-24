@@ -1,49 +1,77 @@
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
-import { UploadCloud, Image as ImageIcon, X, Loader2 } from "lucide-react";
+import { UploadCloud, Image as ImageIcon, X, Loader2, Crop as CropIcon } from "lucide-react";
+import Cropper, { type Area } from "react-easy-crop";
 import { uploadProductImage } from "@/lib/storage";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 const ACCEPTED = ["image/png", "image/jpeg", "image/jpg", "image/webp", "image/gif"];
-const MAX_BYTES = 3 * 1024 * 1024; // 3 MB source
-const MAX_DIM = 800; // resize longest side to this
+const MAX_BYTES = 3 * 1024 * 1024;
+const MAX_DIM = 800;
 const OUT_QUALITY = 0.85;
 
-async function resizeImage(file: File): Promise<File> {
-  // SVGs and gifs: skip resize (preserve animation / vector)
-  if (file.type === "image/gif" || file.type === "image/svg+xml") return file;
+type AspectKey = "1:1" | "4:3" | "16:9" | "free";
+const ASPECTS: { key: AspectKey; label: string; value: number | undefined }[] = [
+  { key: "1:1", label: "Square", value: 1 },
+  { key: "4:3", label: "4:3", value: 4 / 3 },
+  { key: "16:9", label: "16:9", value: 16 / 9 },
+  { key: "free", label: "Free", value: undefined },
+];
 
-  const dataUrl = await new Promise<string>((resolve, reject) => {
+function readAsDataURL(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
     const r = new FileReader();
     r.onload = () => resolve(r.result as string);
     r.onerror = () => reject(new Error("Could not read file"));
     r.readAsDataURL(file);
   });
-  const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+}
+
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
     const i = new Image();
     i.onload = () => resolve(i);
     i.onerror = () => reject(new Error("Could not decode image"));
-    i.src = dataUrl;
+    i.src = src;
   });
+}
 
-  const scale = Math.min(1, MAX_DIM / Math.max(img.width, img.height));
-  if (scale === 1 && file.size < 400 * 1024) return file; // already small enough
+async function cropAndResize(
+  src: string,
+  area: Area,
+  outType: "image/webp" | "image/png",
+): Promise<Blob> {
+  const img = await loadImage(src);
+  // Guard against fractional / out-of-bounds boxes from the cropper.
+  const sx = Math.max(0, Math.round(area.x));
+  const sy = Math.max(0, Math.round(area.y));
+  const sw = Math.max(1, Math.round(area.width));
+  const sh = Math.max(1, Math.round(area.height));
 
-  const w = Math.round(img.width * scale);
-  const h = Math.round(img.height * scale);
+  const scale = Math.min(1, MAX_DIM / Math.max(sw, sh));
+  const dw = Math.max(1, Math.round(sw * scale));
+  const dh = Math.max(1, Math.round(sh * scale));
+
   const canvas = document.createElement("canvas");
-  canvas.width = w;
-  canvas.height = h;
+  canvas.width = dw;
+  canvas.height = dh;
   const ctx = canvas.getContext("2d");
-  if (!ctx) return file;
-  ctx.drawImage(img, 0, 0, w, h);
+  if (!ctx) throw new Error("Canvas not available");
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, dw, dh);
 
-  const outType = file.type === "image/png" ? "image/png" : "image/webp";
   const blob = await new Promise<Blob | null>((resolve) =>
     canvas.toBlob(resolve, outType, OUT_QUALITY),
   );
-  if (!blob) return file;
-  const ext = outType === "image/png" ? "png" : "webp";
-  return new File([blob], file.name.replace(/\.[^.]+$/, "") + `.${ext}`, { type: outType });
+  if (!blob) throw new Error("Could not encode image");
+  return blob;
 }
 
 export function PromotionImageUploader({
@@ -55,10 +83,11 @@ export function PromotionImageUploader({
 }) {
   const [dragging, setDragging] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [localPreview, setLocalPreview] = useState<string>("");
+  const [cropSrc, setCropSrc] = useState<string>("");
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  async function handleFile(file: File | null | undefined) {
+  function pickFile(file: File | null | undefined) {
     if (!file) return;
     if (!ACCEPTED.includes(file.type)) {
       toast.error("Unsupported file", { description: "Use PNG, JPG, WEBP, or GIF." });
@@ -66,128 +95,292 @@ export function PromotionImageUploader({
     }
     if (file.size > MAX_BYTES) {
       toast.error("File too large", {
-        description: `Max ${(MAX_BYTES / 1024 / 1024).toFixed(0)} MB. Yours is ${(
-          file.size /
-          1024 /
-          1024
-        ).toFixed(2)} MB.`,
+        description: `Max ${(MAX_BYTES / 1024 / 1024).toFixed(0)} MB. Yours is ${(file.size / 1024 / 1024).toFixed(2)} MB.`,
       });
       return;
     }
+    // GIFs: skip crop (would lose animation), upload as-is
+    if (file.type === "image/gif") {
+      uploadRaw(file);
+      return;
+    }
+    readAsDataURL(file)
+      .then((url) => {
+        setPendingFile(file);
+        setCropSrc(url);
+      })
+      .catch(() => toast.error("Could not read file"));
+  }
+
+  async function uploadRaw(file: File) {
     setBusy(true);
-    // Show instant local preview
-    const preview = URL.createObjectURL(file);
-    setLocalPreview(preview);
     try {
-      const resized = await resizeImage(file);
-      const url = await uploadProductImage(resized);
+      const url = await uploadProductImage(file);
       onChange(url);
-      const saved = file.size - resized.size;
-      toast.success("Image uploaded", {
-        description:
-          saved > 1024
-            ? `Optimised — saved ${(saved / 1024).toFixed(0)} KB`
-            : file.name,
-      });
+      toast.success("Image uploaded", { description: file.name });
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Upload failed";
-      toast.error("Could not upload image", { description: msg });
+      toast.error("Could not upload image", {
+        description: err instanceof Error ? err.message : "Upload failed",
+      });
     } finally {
-      URL.revokeObjectURL(preview);
-      setLocalPreview("");
       setBusy(false);
     }
   }
 
-  const shown = localPreview || value;
+  async function handleCropConfirm(area: Area) {
+    if (!pendingFile || !cropSrc) return;
+    setBusy(true);
+    const outType: "image/webp" | "image/png" =
+      pendingFile.type === "image/png" ? "image/png" : "image/webp";
+    try {
+      const blob = await cropAndResize(cropSrc, area, outType);
+      const ext = outType === "image/png" ? "png" : "webp";
+      const cropped = new File(
+        [blob],
+        pendingFile.name.replace(/\.[^.]+$/, "") + `.${ext}`,
+        { type: outType },
+      );
+      const url = await uploadProductImage(cropped);
+      onChange(url);
+      const saved = pendingFile.size - cropped.size;
+      toast.success("Image uploaded", {
+        description:
+          saved > 1024
+            ? `Cropped and optimised — saved ${(saved / 1024).toFixed(0)} KB`
+            : "Cropped and optimised",
+      });
+      setCropSrc("");
+      setPendingFile(null);
+    } catch (err) {
+      toast.error("Could not process image", {
+        description: err instanceof Error ? err.message : "Upload failed",
+      });
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
-    <div className="flex flex-col sm:flex-row gap-3 items-stretch">
-      <div
-        onDragOver={(e) => {
-          e.preventDefault();
-          setDragging(true);
-        }}
-        onDragLeave={() => setDragging(false)}
-        onDrop={(e) => {
-          e.preventDefault();
-          setDragging(false);
-          handleFile(e.dataTransfer.files?.[0]);
-        }}
-        onClick={() => !busy && inputRef.current?.click()}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if ((e.key === "Enter" || e.key === " ") && !busy) {
+    <>
+      <div className="flex flex-col sm:flex-row gap-3 items-stretch">
+        <div
+          onDragOver={(e) => {
             e.preventDefault();
-            inputRef.current?.click();
-          }
-        }}
-        aria-busy={busy}
-        className={`flex-1 rounded-xl border-2 border-dashed transition grid place-items-center p-5 text-center ${
-          busy ? "cursor-wait opacity-70" : "cursor-pointer"
-        } ${
-          dragging
-            ? "border-black bg-black/[0.03]"
-            : "border-black/15 hover:border-black/40 hover:bg-black/[0.02]"
-        }`}
-      >
-        <div className="flex flex-col items-center gap-2 text-black/60">
-          {busy ? (
-            <Loader2 className="w-5 h-5 animate-spin" />
-          ) : (
-            <UploadCloud className="w-5 h-5" />
-          )}
-          <div className="text-sm">
-            <span className="font-medium text-black">
-              {busy ? "Uploading…" : "Drop an image"}
-            </span>{" "}
-            {!busy && "or click to browse"}
-          </div>
-          <div className="text-[11px] text-black/45">
-            PNG, JPG, WEBP, GIF · up to 3 MB · auto-resized to {MAX_DIM}px
-          </div>
-        </div>
-        <input
-          ref={inputRef}
-          type="file"
-          accept={ACCEPTED.join(",")}
-          className="hidden"
-          onChange={(e) => {
-            handleFile(e.target.files?.[0]);
-            e.target.value = "";
+            setDragging(true);
           }}
-        />
-      </div>
-      <div className="w-full sm:w-40 shrink-0">
-        <div className="flex items-center justify-between mb-1.5">
-          <span className="text-[10px] uppercase tracking-[0.18em] text-black/45">
-            Preview
-          </span>
-          {value && !busy && (
-            <button
-              type="button"
-              onClick={() => onChange("")}
-              className="text-[10px] uppercase tracking-[0.16em] text-black/45 hover:text-red-600 inline-flex items-center gap-1"
-              aria-label="Remove image"
-            >
-              <X className="w-3 h-3" /> Remove
-            </button>
-          )}
-        </div>
-        <div className="aspect-square rounded-xl overflow-hidden bg-black/5 border border-black/10 grid place-items-center relative">
-          {shown ? (
-            <img src={shown} alt="Preview" className="w-full h-full object-cover" />
-          ) : (
-            <ImageIcon className="w-6 h-6 text-black/25" />
-          )}
-          {busy && (
-            <div className="absolute inset-0 grid place-items-center bg-white/60 backdrop-blur-[1px]">
-              <Loader2 className="w-5 h-5 animate-spin text-black/70" />
+          onDragLeave={() => setDragging(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setDragging(false);
+            pickFile(e.dataTransfer.files?.[0]);
+          }}
+          onClick={() => !busy && inputRef.current?.click()}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if ((e.key === "Enter" || e.key === " ") && !busy) {
+              e.preventDefault();
+              inputRef.current?.click();
+            }
+          }}
+          aria-busy={busy}
+          className={`flex-1 rounded-xl border-2 border-dashed transition grid place-items-center p-5 text-center ${
+            busy ? "cursor-wait opacity-70" : "cursor-pointer"
+          } ${
+            dragging
+              ? "border-black bg-black/[0.03]"
+              : "border-black/15 hover:border-black/40 hover:bg-black/[0.02]"
+          }`}
+        >
+          <div className="flex flex-col items-center gap-2 text-black/60">
+            {busy ? <Loader2 className="w-5 h-5 animate-spin" /> : <UploadCloud className="w-5 h-5" />}
+            <div className="text-sm">
+              <span className="font-medium text-black">
+                {busy ? "Uploading…" : "Drop an image"}
+              </span>{" "}
+              {!busy && "or click to browse"}
             </div>
-          )}
+            <div className="text-[11px] text-black/45">
+              PNG, JPG, WEBP, GIF · up to 3 MB · crop before saving
+            </div>
+          </div>
+          <input
+            ref={inputRef}
+            type="file"
+            accept={ACCEPTED.join(",")}
+            className="hidden"
+            onChange={(e) => {
+              pickFile(e.target.files?.[0]);
+              e.target.value = "";
+            }}
+          />
+        </div>
+        <div className="w-full sm:w-40 shrink-0">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-[10px] uppercase tracking-[0.18em] text-black/45">Preview</span>
+            {value && !busy && (
+              <button
+                type="button"
+                onClick={() => onChange("")}
+                className="text-[10px] uppercase tracking-[0.16em] text-black/45 hover:text-red-600 inline-flex items-center gap-1"
+                aria-label="Remove image"
+              >
+                <X className="w-3 h-3" /> Remove
+              </button>
+            )}
+          </div>
+          <div className="aspect-square rounded-xl overflow-hidden bg-black/5 border border-black/10 grid place-items-center relative">
+            {value ? (
+              <img src={value} alt="Preview" className="w-full h-full object-cover" />
+            ) : (
+              <ImageIcon className="w-6 h-6 text-black/25" />
+            )}
+            {busy && (
+              <div className="absolute inset-0 grid place-items-center bg-white/60 backdrop-blur-[1px]">
+                <Loader2 className="w-5 h-5 animate-spin text-black/70" />
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+
+      <CropDialog
+        src={cropSrc}
+        open={!!cropSrc}
+        busy={busy}
+        onCancel={() => {
+          if (busy) return;
+          setCropSrc("");
+          setPendingFile(null);
+        }}
+        onConfirm={handleCropConfirm}
+      />
+    </>
+  );
+}
+
+function CropDialog({
+  src,
+  open,
+  busy,
+  onCancel,
+  onConfirm,
+}: {
+  src: string;
+  open: boolean;
+  busy: boolean;
+  onCancel: () => void;
+  onConfirm: (area: Area) => void;
+}) {
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [aspectKey, setAspectKey] = useState<AspectKey>("1:1");
+  const [pixels, setPixels] = useState<Area | null>(null);
+
+  const onCropComplete = useCallback((_: Area, areaPixels: Area) => {
+    setPixels(areaPixels);
+  }, []);
+
+  const aspect = ASPECTS.find((a) => a.key === aspectKey)?.value;
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(o) => {
+        if (!o) onCancel();
+      }}
+    >
+      <DialogContent className="sm:max-w-xl">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <CropIcon className="w-4 h-4" /> Crop image
+          </DialogTitle>
+          <DialogDescription>
+            Adjust the framing and choose an aspect ratio so all promotion cards look consistent.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          <div className="flex flex-wrap gap-1.5">
+            {ASPECTS.map((a) => (
+              <button
+                key={a.key}
+                type="button"
+                onClick={() => {
+                  setAspectKey(a.key);
+                  // Reset framing when aspect switches
+                  setCrop({ x: 0, y: 0 });
+                  setZoom(1);
+                }}
+                className={`px-3 py-1.5 rounded-full text-[11px] uppercase tracking-[0.16em] border transition ${
+                  aspectKey === a.key
+                    ? "bg-black text-white border-black"
+                    : "border-black/15 text-black/70 hover:border-black/40"
+                }`}
+              >
+                {a.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="relative w-full h-[320px] bg-black/85 rounded-xl overflow-hidden">
+            {src && (
+              <Cropper
+                image={src}
+                crop={crop}
+                zoom={zoom}
+                aspect={aspect}
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={onCropComplete}
+                restrictPosition
+                showGrid
+              />
+            )}
+          </div>
+
+          <label className="flex items-center gap-3">
+            <span className="text-[10px] uppercase tracking-[0.18em] text-black/60 w-12">Zoom</span>
+            <input
+              type="range"
+              min={1}
+              max={4}
+              step={0.01}
+              value={zoom}
+              onChange={(e) => setZoom(Number(e.target.value))}
+              className="flex-1 accent-black"
+            />
+            <span className="text-[11px] tabular-nums text-black/60 w-10 text-right">
+              {zoom.toFixed(2)}×
+            </span>
+          </label>
+        </div>
+
+        <DialogFooter className="pt-2">
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={busy}
+            className="px-4 py-2 rounded-full border border-black/15 text-[11px] uppercase tracking-[0.18em] hover:bg-black/5 disabled:opacity-50"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            disabled={!pixels || busy}
+            onClick={() => pixels && onConfirm(pixels)}
+            className="px-5 py-2 rounded-full bg-black text-white text-[11px] uppercase tracking-[0.18em] hover:bg-black/85 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none inline-flex items-center gap-2"
+          >
+            {busy ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 animate-spin" /> Uploading…
+              </>
+            ) : (
+              "Apply & upload"
+            )}
+          </button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
