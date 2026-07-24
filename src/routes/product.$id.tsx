@@ -197,7 +197,7 @@ function ProductPage() {
       </nav>
 
       {/* BACK + BREADCRUMB */}
-      <div className="px-5 sm:px-8 lg:px-10 pt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
+      <div className="px-4 sm:px-6 md:px-8 lg:px-10 pt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
         <Link to="/" className="inline-flex items-center gap-2 text-sm text-black/70 hover:text-black">
           <ArrowLeft size={16} /> Back to shop
         </Link>
@@ -213,7 +213,7 @@ function ProductPage() {
 
 
       {/* PRODUCT */}
-      <section className="px-5 sm:px-8 lg:px-10 py-8 lg:py-12 grid md:grid-cols-2 gap-8 lg:gap-14">
+      <section className="px-4 sm:px-6 md:px-8 lg:px-10 py-6 sm:py-8 lg:py-12 grid md:grid-cols-2 gap-8 lg:gap-14">
         {/* GALLERY */}
         {!mounted ? (
           <ProductGallerySkeleton />
@@ -415,7 +415,7 @@ function ProductPage() {
 
       {/* RELATED */}
       {related.length > 0 && (
-        <section className="px-5 sm:px-8 lg:px-10 py-14 lg:py-20 border-t border-black/5">
+        <section className="px-4 sm:px-6 md:px-8 lg:px-10 py-10 sm:py-14 lg:py-20 border-t border-black/5">
           <div className="flex items-end justify-between mb-8">
             <h2 className="type-h2 text-black">
               More in {product.category}

@@ -53,7 +53,7 @@ function FavoritesPage() {
         </button>
       </nav>
 
-      <div className="px-5 sm:px-8 lg:px-10 pt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
+      <div className="px-4 sm:px-6 md:px-8 lg:px-10 pt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
         <Link to="/" className="inline-flex items-center gap-2 text-sm text-black/70 hover:text-black">
           <ArrowLeft size={16} /> Back to shop
         </Link>
@@ -65,7 +65,7 @@ function FavoritesPage() {
         </div>
       </div>
 
-      <section className="px-5 sm:px-8 lg:px-10 py-8 lg:py-12">
+      <section className="px-4 sm:px-6 md:px-8 lg:px-10 py-6 sm:py-8 lg:py-12">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8 lg:mb-10">
           <div>
             <h1 className="type-h1 text-black flex items-center gap-3">
