@@ -18,6 +18,10 @@ export const Route = createFileRoute("/admin/login")({
     meta: [
       { title: "Admin Login — Dawood Mart" },
       { name: "description", content: "Sign in to the Dawood Mart admin dashboard." },
+      { property: "og:title", content: "Admin Login — Dawood Mart" },
+      { property: "og:description", content: "Sign in to the Dawood Mart admin dashboard." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
     ],
   }),

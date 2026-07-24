@@ -36,6 +36,14 @@ import { formatPKR } from "@/lib/format";
 export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
+    meta: [
+      { title: "Dawood Mart — Home Essentials Store" },
+      { name: "description", content: "Shop Dawood Mart towels, wallpaper, cleaning cloths, sponges and practical home essentials in PKR." },
+      { property: "og:title", content: "Dawood Mart — Home Essentials Store" },
+      { property: "og:description", content: "Shop towels, wallpaper, cleaning cloths, sponges and practical home essentials from Dawood Mart." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
     links: [
       { rel: "preload", as: "image", href: heroBg, fetchPriority: "high" },
     ],
