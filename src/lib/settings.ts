@@ -14,7 +14,7 @@ export type Settings = {
   socials: Record<SocialKey, string>;
 };
 
-const CACHE_KEY = "maison-terra-settings-v1";
+const CACHE_KEY = "dawood-mart-settings-v2";
 const SETTINGS_ID = "global";
 
 const DEFAULTS: Settings = {
