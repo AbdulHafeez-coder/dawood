@@ -284,6 +284,12 @@
     border-color: var(--color-border);
   }
 
+  html {
+    /* Reserve scrollbar space so opening a modal (which locks body scroll)
+       does not shift page content horizontally. */
+    scrollbar-gutter: stable;
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
@@ -293,6 +299,12 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+  }
+
+  /* When Radix locks scroll it sets data-scroll-locked on <html>.
+     Prevent any residual layout shift and keep fixed elements pinned. */
+  html[data-scroll-locked] body {
+    margin-right: 0 !important;
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
