@@ -132,16 +132,20 @@ async function pushOrderToSupabase(entry: SavedOrder) {
       status: entry.status ?? "new",
     };
 
-    await supabase.from("orders").insert(row);
-  } catch {
+    const { error } = await supabase.from("orders").insert(row);
+    if (error) console.error("[orders] save failed:", error.message);
+  } catch (error) {
+    console.error("[orders] save failed:", error);
     // best effort — local cache remains source of truth for the shopper.
   }
 }
 
 async function deleteOrderInSupabase(id: string) {
   try {
-    await supabase.from("orders").delete().eq("id", id);
-  } catch {
+    const { error } = await supabase.from("orders").delete().eq("id", id);
+    if (error) console.error("[orders] delete failed:", error.message);
+  } catch (error) {
+    console.error("[orders] delete failed:", error);
     // ignore — RLS may deny for anon; local cache already updated.
   }
 }

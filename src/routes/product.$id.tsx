@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, ShoppingBag, Star, Plus, Minus, Check, Truck, ShieldCheck, Leaf, Heart, MessageCircle } from "lucide-react";
 import { buildWhatsappProductOrder } from "@/lib/whatsapp";
 import { saveOrder } from "@/lib/orders";
-import { getProduct, getVariants, useProducts, useCart, useFavourites, type Product } from "@/lib/shop";
+import { getProductAsync, getVariants, useProducts, useCart, useFavourites, type Product } from "@/lib/shop";
 import { LazyCartDrawer as CartDrawer } from "@/components/LazyCartDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
 import { AddToCartSkeleton, ProductGallerySkeleton, VariantOptionsSkeleton, useMounted } from "@/components/skeletons";
@@ -11,8 +11,8 @@ import { toast } from "sonner";
 import { formatPKR } from "@/lib/format";
 
 export const Route = createFileRoute("/product/$id")({
-  loader: ({ params }) => {
-    const product = getProduct(params.id);
+  loader: async ({ params }) => {
+    const product = await getProductAsync(params.id);
     if (!product) throw notFound();
     return { product };
   },
@@ -130,16 +130,15 @@ function ProductPage() {
     }
   }, [size, color, variantStorageKey]);
 
-  const canAdd = size !== null && color !== null;
-
   const selectedSize = variants.sizes.find((s) => s.id === size) ?? null;
   const selectedColor = variants.colors.find((c) => c.id === color) ?? null;
+  const canAdd = selectedSize !== null && selectedColor !== null;
 
   const variantProduct: Product = canAdd
     ? {
         ...product,
         id: `${product.id}::${size}::${color}`,
-        name: `${product.name} — ${selectedSize!.label} / ${selectedColor!.label}`,
+        name: `${product.name} — ${selectedSize.label} / ${selectedColor.label}`,
       }
     : product;
 
@@ -147,20 +146,20 @@ function ProductPage() {
   const related = liveProducts.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4);
 
   const handleAdd = () => {
-    if (!canAdd) {
-      const missing = !size && !color ? "a size and colour" : !size ? "a size" : "a colour";
+    if (!selectedSize || !selectedColor) {
+      const missing = !selectedSize && !selectedColor ? "a size and colour" : !selectedSize ? "a size" : "a colour";
       toast.error(`Please select ${missing} first`);
       return;
     }
     addToCart(variantProduct, qty, {
       baseId: product.id,
       baseName: product.name,
-      variantSize: selectedSize!.id,
-      variantColor: selectedColor!.id,
-      variantSizeLabel: selectedSize!.label,
-      variantSizeNote: selectedSize!.note,
-      variantColorLabel: selectedColor!.label,
-      variantColorSwatch: selectedColor!.swatch,
+      variantSize: selectedSize.id,
+      variantColor: selectedColor.id,
+      variantSizeLabel: selectedSize.label,
+      variantSizeNote: selectedSize.note,
+      variantColorLabel: selectedColor.label,
+      variantColorSwatch: selectedColor.swatch,
     });
     toast.success(`${variantProduct.name} added to cart`, {
       description: `Qty ${qty} · ${formatPKR(product.price * qty)}`,

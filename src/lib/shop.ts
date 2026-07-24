@@ -306,6 +306,7 @@ function emitPromotions() {
 
 
 let hydratePromise: Promise<void> | null = null;
+let storeHydrated = false;
 
 
 async function hydrateFromSupabase() {
@@ -349,23 +350,35 @@ async function hydrateFromSupabase() {
     promotionsLive.length,
     ...((promoData ?? []) as PromotionRow[]).map(rowToPromo),
   );
+  storeHydrated = true;
   emitCategories();
   emitProducts();
   emitPromotions();
+  refreshCartFromCatalog();
 }
 
 
 
 function ensureStoreHydrated() {
-  if (typeof window === "undefined") return;
-  if (hydratePromise) return;
+  if (storeHydrated || hydratePromise) return;
   hydratePromise = hydrateFromSupabase().catch((e) => {
     console.error("[shop] hydrate failed:", e);
   });
 }
 
+export async function ensureStoreHydratedAsync() {
+  if (storeHydrated) return;
+  ensureStoreHydrated();
+  if (hydratePromise) await hydratePromise;
+}
+
 export function getProduct(id: string): Product | undefined {
   ensureStoreHydrated();
+  return products.find((p) => p.id === id);
+}
+
+export async function getProductAsync(id: string): Promise<Product | undefined> {
+  await ensureStoreHydratedAsync();
   return products.find((p) => p.id === id);
 }
 
@@ -601,46 +614,59 @@ type PersistedRow = {
   baseId?: string;
   variantSize?: string;
   variantColor?: string;
+  snapshot?: Product;
 };
 
-function loadInitial(): CartItem[] {
+function parsePersistedCart(): PersistedRow[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw) as PersistedRow[];
-    return parsed
-      .map((row) => {
-        const baseId = row.baseId ?? row.id.split("::")[0];
-        const base = getProduct(baseId);
-        if (!base) return null;
-        if (row.variantSize && row.variantColor) {
-          const v = getVariants(base.category);
-          const s = v.sizes.find((x) => x.id === row.variantSize);
-          const c = v.colors.find((x) => x.id === row.variantColor);
-          if (s && c) {
-            return {
-              ...base,
-              id: row.id,
-              name: `${base.name} — ${s.label} / ${c.label}`,
-              qty: row.qty,
-              baseId: base.id,
-              baseName: base.name,
-              variantSize: s.id,
-              variantColor: c.id,
-              variantSizeLabel: s.label,
-              variantSizeNote: s.note,
-              variantColorLabel: c.label,
-              variantColorSwatch: c.swatch,
-            } satisfies CartItem;
-          }
-        }
-        return { ...base, qty: row.qty } satisfies CartItem;
-      })
-      .filter((x): x is CartItem => !!x);
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
     return [];
   }
+}
+
+function resolvePersistedCart(rows: PersistedRow[]): CartItem[] {
+  return rows
+    .map((row) => {
+      const baseId = row.baseId ?? row.id.split("::")[0];
+      const base = products.find((p) => p.id === baseId) ?? row.snapshot;
+      if (!base) return null;
+      const qty = Number.isFinite(row.qty) && row.qty > 0 ? Math.floor(row.qty) : 1;
+      if (row.variantSize && row.variantColor) {
+        const v = getVariants(base.category);
+        const s = v.sizes.find((x) => x.id === row.variantSize);
+        const c = v.colors.find((x) => x.id === row.variantColor);
+        if (s && c) {
+          return {
+            ...base,
+            id: row.id,
+            name: `${base.name} — ${s.label} / ${c.label}`,
+            qty,
+            baseId: base.id,
+            baseName: base.name,
+            variantSize: s.id,
+            variantColor: c.id,
+            variantSizeLabel: s.label,
+            variantSizeNote: s.note,
+            variantColorLabel: c.label,
+            variantColorSwatch: c.swatch,
+          } satisfies CartItem;
+        }
+      }
+      return { ...base, qty } satisfies CartItem;
+    })
+    .filter((x): x is CartItem => !!x);
+}
+
+function refreshCartFromCatalog() {
+  if (!cartHydrated || typeof window === "undefined") return;
+  const next = resolvePersistedCart(parsePersistedCart());
+  cartState = next;
+  for (const l of listeners) l(cartState);
 }
 
 let cartHydrated = false;
@@ -648,7 +674,7 @@ function ensureHydrated() {
   if (cartHydrated || typeof window === "undefined") return;
   cartHydrated = true;
   ensureStoreHydrated();
-  cartState = loadInitial();
+  cartState = resolvePersistedCart(parsePersistedCart());
 }
 
 function emit() {
@@ -656,12 +682,13 @@ function emit() {
     window.localStorage.setItem(
       STORAGE_KEY,
       JSON.stringify(
-        cartState.map(({ id, qty, baseId, variantSize, variantColor }) => ({
+        cartState.map(({ id, qty, baseId, variantSize, variantColor, baseName, variantSizeLabel, variantSizeNote, variantColorLabel, variantColorSwatch, ...snapshot }) => ({
           id,
           qty,
           baseId,
           variantSize,
           variantColor,
+          snapshot,
         })),
       ),
     );
@@ -775,7 +802,7 @@ if (typeof window !== "undefined") {
     if (!e.key) return;
     try {
       if (e.key === STORAGE_KEY) {
-        cartState = loadInitial();
+        cartState = resolvePersistedCart(parsePersistedCart());
         for (const l of listeners) l(cartState);
       } else if (e.key === FAV_KEY) {
         favState = e.newValue ? (JSON.parse(e.newValue) as string[]) : [];
@@ -802,13 +829,14 @@ export function usePromotions() {
     };
   }, []);
 
-  const addPromotion = useCallback((data: Omit<Promotion, "id">) => {
+  const addPromotion = useCallback(async (data: Omit<Promotion, "id">): Promise<{ ok: boolean; id?: string; error?: string }> => {
     const tmpId = `tmp-${Date.now().toString(36)}`;
     const optimistic: Promotion = { ...data, id: tmpId };
     promotionsLive.push(optimistic);
     promotionsLive.sort((a, b) => a.sortOrder - b.sortOrder);
     emitPromotions();
-    supabase
+    try {
+      const { data: row, error } = await supabase
       .from("promotions")
       .insert({
         label: data.label,
@@ -821,23 +849,34 @@ export function usePromotions() {
         is_active: data.isActive,
       })
       .select()
-      .single()
-      .then(({ data: row, error }) => {
-        const idx = promotionsLive.findIndex((p) => p.id === tmpId);
-        if (error || !row) {
-          console.error("[shop] addPromotion failed:", error?.message);
-          if (idx >= 0) promotionsLive.splice(idx, 1);
-        } else if (idx >= 0) {
-          promotionsLive[idx] = rowToPromo(row as PromotionRow);
-        }
+      .maybeSingle();
+      const idx = promotionsLive.findIndex((p) => p.id === tmpId);
+      if (error || !row) {
+        const message = error?.message ?? "The promotion was not returned after saving.";
+        console.error("[shop] addPromotion failed:", message);
+        if (idx >= 0) promotionsLive.splice(idx, 1);
         emitPromotions();
-      });
+        return { ok: false, error: message };
+      }
+      const saved = rowToPromo(row as PromotionRow);
+      if (idx >= 0) promotionsLive[idx] = saved;
+      promotionsLive.sort((a, b) => a.sortOrder - b.sortOrder);
+      emitPromotions();
+      return { ok: true, id: saved.id };
+    } catch (error) {
+      const idx = promotionsLive.findIndex((p) => p.id === tmpId);
+      if (idx >= 0) promotionsLive.splice(idx, 1);
+      emitPromotions();
+      const message = error instanceof Error ? error.message : "Failed to save promotion.";
+      console.error("[shop] addPromotion failed:", error);
+      return { ok: false, error: message };
+    }
   }, []);
 
   const updatePromotion = useCallback(
-    (id: string, patch: Partial<Omit<Promotion, "id">>) => {
+    async (id: string, patch: Partial<Omit<Promotion, "id">>): Promise<{ ok: boolean; error?: string }> => {
       const idx = promotionsLive.findIndex((p) => p.id === id);
-      if (idx < 0) return;
+      if (idx < 0) return { ok: false, error: "Promotion not found." };
       const prev = promotionsLive[idx];
       promotionsLive[idx] = { ...prev, ...patch };
       promotionsLive.sort((a, b) => a.sortOrder - b.sortOrder);
@@ -851,40 +890,58 @@ export function usePromotions() {
       if (patch.linkCategory !== undefined) dbPatch.link_category = patch.linkCategory || null;
       if (patch.sortOrder !== undefined) dbPatch.sort_order = patch.sortOrder;
       if (patch.isActive !== undefined) dbPatch.is_active = patch.isActive;
-      supabase
+      try {
+        const { error } = await supabase
         .from("promotions")
         .update(dbPatch)
-        .eq("id", id)
-        .then(({ error }) => {
-          if (error) {
-            console.error("[shop] updatePromotion failed:", error.message);
-            const i2 = promotionsLive.findIndex((p) => p.id === id);
-            if (i2 >= 0) promotionsLive[i2] = prev;
-            promotionsLive.sort((a, b) => a.sortOrder - b.sortOrder);
-            emitPromotions();
-          }
-        });
+        .eq("id", id);
+        if (error) {
+          console.error("[shop] updatePromotion failed:", error.message);
+          const i2 = promotionsLive.findIndex((p) => p.id === id);
+          if (i2 >= 0) promotionsLive[i2] = prev;
+          promotionsLive.sort((a, b) => a.sortOrder - b.sortOrder);
+          emitPromotions();
+          return { ok: false, error: error.message };
+        }
+        return { ok: true };
+      } catch (error) {
+        const i2 = promotionsLive.findIndex((p) => p.id === id);
+        if (i2 >= 0) promotionsLive[i2] = prev;
+        promotionsLive.sort((a, b) => a.sortOrder - b.sortOrder);
+        emitPromotions();
+        const message = error instanceof Error ? error.message : "Failed to update promotion.";
+        console.error("[shop] updatePromotion failed:", error);
+        return { ok: false, error: message };
+      }
     },
     [],
   );
 
-  const deletePromotion = useCallback((id: string) => {
+  const deletePromotion = useCallback(async (id: string): Promise<{ ok: boolean; error?: string }> => {
     const idx = promotionsLive.findIndex((p) => p.id === id);
-    if (idx < 0) return;
+    if (idx < 0) return { ok: false, error: "Promotion not found." };
     const removed = promotionsLive[idx];
     promotionsLive.splice(idx, 1);
     emitPromotions();
-    supabase
+    try {
+      const { error } = await supabase
       .from("promotions")
       .delete()
-      .eq("id", id)
-      .then(({ error }) => {
-        if (error) {
-          console.error("[shop] deletePromotion failed:", error.message);
-          promotionsLive.splice(idx, 0, removed);
-          emitPromotions();
-        }
-      });
+      .eq("id", id);
+      if (error) {
+        console.error("[shop] deletePromotion failed:", error.message);
+        promotionsLive.splice(idx, 0, removed);
+        emitPromotions();
+        return { ok: false, error: error.message };
+      }
+      return { ok: true };
+    } catch (error) {
+      promotionsLive.splice(idx, 0, removed);
+      emitPromotions();
+      const message = error instanceof Error ? error.message : "Failed to delete promotion.";
+      console.error("[shop] deletePromotion failed:", error);
+      return { ok: false, error: message };
+    }
   }, []);
 
   return { promotions: list, addPromotion, updatePromotion, deletePromotion };

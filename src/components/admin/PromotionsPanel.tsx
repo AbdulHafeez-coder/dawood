@@ -120,11 +120,15 @@ export function PromotionsPanel({ categories }: { categories: string[] }) {
                 </div>
                 <div className="flex items-center gap-1">
                   <button
-                    onClick={() => {
-                      updatePromotion(p.id, { isActive: !p.isActive });
-                      toast.success(p.isActive ? "Promotion hidden" : "Promotion shown", {
-                        description: `${p.label} — ${p.headline}`,
-                      });
+                    onClick={async () => {
+                      const result = await updatePromotion(p.id, { isActive: !p.isActive });
+                      if (result.ok) {
+                        toast.success(p.isActive ? "Promotion hidden" : "Promotion shown", {
+                          description: `${p.label} — ${p.headline}`,
+                        });
+                      } else {
+                        toast.error("Promotion update failed", { description: result.error });
+                      }
                     }}
                     aria-label={p.isActive ? "Hide" : "Show"}
                     className="w-8 h-8 rounded-full grid place-items-center text-black/60 hover:text-black hover:bg-black/5 transition"
@@ -159,15 +163,23 @@ export function PromotionsPanel({ categories }: { categories: string[] }) {
           categories={categories}
           nextSort={promotions.length ? Math.max(...promotions.map((p) => p.sortOrder)) + 1 : 1}
           onClose={() => setDialog(null)}
-          onCreate={(data) => {
-            addPromotion(data);
-            toast.success("Promotion created", { description: `${data.label} — ${data.headline}` });
-            setDialog(null);
+          onCreate={async (data) => {
+            const result = await addPromotion(data);
+            if (result.ok) {
+              toast.success("Promotion created", { description: `${data.label} — ${data.headline}` });
+              setDialog(null);
+            } else {
+              toast.error("Promotion was not saved", { description: result.error });
+            }
           }}
-          onSave={(id, patch) => {
-            updatePromotion(id, patch);
-            toast.success("Promotion updated");
-            setDialog(null);
+          onSave={async (id, patch) => {
+            const result = await updatePromotion(id, patch);
+            if (result.ok) {
+              toast.success("Promotion updated");
+              setDialog(null);
+            } else {
+              toast.error("Promotion was not saved", { description: result.error });
+            }
           }}
         />
       )}
@@ -185,10 +197,11 @@ export function PromotionsPanel({ categories }: { categories: string[] }) {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               className="bg-red-600 hover:bg-red-700 text-white focus-visible:ring-red-600"
-              onClick={() => {
+              onClick={async () => {
                 if (confirmDelete) {
-                  deletePromotion(confirmDelete.id);
-                  toast.success("Promotion deleted");
+                  const result = await deletePromotion(confirmDelete.id);
+                  if (result.ok) toast.success("Promotion deleted");
+                  else toast.error("Promotion delete failed", { description: result.error });
                 }
                 setConfirmDelete(null);
               }}
@@ -216,8 +229,8 @@ function PromotionFormDialog({
   categories: string[];
   nextSort: number;
   onClose: () => void;
-  onCreate: (data: Omit<Promotion, "id">) => void;
-  onSave: (id: string, patch: Partial<Omit<Promotion, "id">>) => void;
+  onCreate: (data: Omit<Promotion, "id">) => Promise<void>;
+  onSave: (id: string, patch: Partial<Omit<Promotion, "id">>) => Promise<void>;
 }) {
   const [label, setLabel] = useState(promo?.label ?? "");
   const [headline, setHeadline] = useState(promo?.headline ?? "");
@@ -227,9 +240,11 @@ function PromotionFormDialog({
   const [linkCategory, setLinkCategory] = useState(promo?.linkCategory ?? "");
   const [sortOrder, setSortOrder] = useState<number>(promo?.sortOrder ?? nextSort);
   const [isActive, setIsActive] = useState<boolean>(promo?.isActive ?? true);
+  const [saving, setSaving] = useState(false);
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (saving) return;
     const cleanLabel = label.trim();
     const cleanHead = headline.trim();
     if (!cleanLabel || !cleanHead) {
@@ -246,8 +261,13 @@ function PromotionFormDialog({
       sortOrder: Number.isFinite(sortOrder) ? sortOrder : 0,
       isActive,
     };
-    if (mode === "edit" && promo) onSave(promo.id, data);
-    else onCreate(data);
+    setSaving(true);
+    try {
+      if (mode === "edit" && promo) await onSave(promo.id, data);
+      else await onCreate(data);
+    } finally {
+      setSaving(false);
+    }
   }
 
   const inputCls =
@@ -426,10 +446,10 @@ function PromotionFormDialog({
             </button>
             <button
               type="submit"
-              disabled={!label.trim() || !headline.trim()}
+              disabled={saving || !label.trim() || !headline.trim()}
               className="px-5 py-2 rounded-full bg-black text-white text-[11px] uppercase tracking-[0.18em] hover:bg-black/85 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
             >
-              {mode === "create" ? "Create" : "Save"}
+              {saving ? "Saving..." : mode === "create" ? "Create" : "Save"}
             </button>
           </DialogFooter>
         </form>
