@@ -318,11 +318,31 @@ export function PromotionImageUploader({
               <ImageIcon className="w-6 h-6 text-black/25" />
             )}
             {busy && (
-              <div className="absolute inset-0 grid place-items-center bg-white/60 backdrop-blur-[1px]">
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-white/70 backdrop-blur-[1px]">
                 <Loader2 className="w-5 h-5 animate-spin text-black/70" />
+                <span className="text-[10px] tabular-nums text-black/70">
+                  {phase === "processing" ? "…" : `${progress}%`}
+                </span>
               </div>
             )}
           </div>
+        </div>
+      </div>
+
+      <CropDialog
+        src={cropSrc}
+        open={!!cropSrc}
+        busy={busy}
+        progress={progress}
+        phase={phase}
+        onCancelUpload={cancelUpload}
+        onCancel={() => {
+          if (busy) return;
+          setCropSrc("");
+          setPendingFile(null);
+        }}
+        onConfirm={handleCropConfirm}
+      />
         </div>
       </div>
 
