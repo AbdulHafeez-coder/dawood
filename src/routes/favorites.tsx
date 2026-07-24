@@ -21,7 +21,6 @@ export const Route = createFileRoute("/favorites")({
   component: FavoritesPage,
 });
 
-const dmSans = { fontFamily: "'DM Sans', sans-serif" };
 const inter = { fontFamily: "'Inter', sans-serif" };
 
 function FavoritesPage() {
