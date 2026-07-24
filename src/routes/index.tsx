@@ -229,18 +229,85 @@ function Index() {
           </div>
         </nav>
 
-        {menuOpen && (
-          <div className="fixed inset-0 z-30 bg-black/90 flex flex-col items-center justify-center gap-8 md:hidden">
-            <button className="absolute top-5 right-5 text-white" onClick={() => setMenuOpen(false)} aria-label="Close">
-              <X size={28} />
-            </button>
-            {navLinks.map((l) => (
-              <a key={l} href={`#${l.toLowerCase()}`} onClick={() => setMenuOpen(false)} className="text-white text-2xl" style={dmSans}>
-                {l}
-              </a>
-            ))}
-          </div>
-        )}
+        <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+          <SheetContent side="right" className="w-[86%] max-w-sm bg-stone-950 text-white border-l border-white/10 p-0 flex flex-col">
+            <SheetHeader className="px-6 pt-6 pb-4 border-b border-white/10 text-left">
+              <SheetTitle className="text-white type-wordmark flex items-center gap-2">
+                {settings.logoUrl ? <img src={settings.logoUrl} alt="" className="w-7 h-7 rounded-md object-cover bg-white/10" /> : null}
+                {settings.brandName}
+              </SheetTitle>
+              <SheetDescription className="text-white/60 text-xs" style={inter}>
+                Browse the shop
+              </SheetDescription>
+            </SheetHeader>
+
+            <div className="px-6 py-5 border-b border-white/10">
+              <label htmlFor="mobile-menu-search" className="sr-only">Search products</label>
+              <div className="flex items-center gap-2 bg-white/10 rounded-full px-4 py-2.5 focus-within:bg-white/15 transition-colors">
+                <Search size={16} className="text-white/70 shrink-0" />
+                <input
+                  id="mobile-menu-search"
+                  type="search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search products…"
+                  className="bg-transparent outline-none text-white placeholder:text-white/50 text-sm w-full"
+                  style={inter}
+                />
+                {query && (
+                  <button aria-label="Clear" onClick={() => setQuery("")} className="text-white/60 hover:text-white shrink-0">
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <nav className="flex-1 overflow-y-auto px-3 py-4" style={dmSans}>
+              <ul className="flex flex-col">
+                {navLinks.map((l, i) => (
+                  <li key={l} className="animate-fade-in" style={{ animationDelay: `${i * 60}ms`, animationFillMode: "both" }}>
+                    <a
+                      href={`#${l.toLowerCase()}`}
+                      onClick={() => {
+                        setMenuOpen(false);
+                        if (l.toLowerCase() === "shop") setTimeout(scrollToProducts, 250);
+                      }}
+                      className="flex items-center justify-between px-3 py-3.5 rounded-lg text-white/90 hover:text-white hover:bg-white/5 focus-visible:bg-white/10 focus-visible:outline-none transition-colors text-lg"
+                    >
+                      <span>{l}</span>
+                      <ArrowUpRight size={18} className="text-white/40" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-6 px-3">
+                <div className="text-[11px] uppercase tracking-[0.18em] text-white/40 mb-2" style={inter}>Quick links</div>
+                <div className="grid grid-cols-3 gap-2">
+                  <Link to="/favorites" onClick={() => setMenuOpen(false)} className="flex flex-col items-center gap-1.5 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
+                    <Heart size={18} />
+                    <span className="text-xs" style={inter}>Favourites {favCount > 0 && <span className="text-white/60">({favCount})</span>}</span>
+                  </Link>
+                  <Link to="/orders" onClick={() => setMenuOpen(false)} className="flex flex-col items-center gap-1.5 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
+                    <ScrollText size={18} />
+                    <span className="text-xs" style={inter}>Orders {orderCount > 0 && <span className="text-white/60">({orderCount})</span>}</span>
+                  </Link>
+                  <button
+                    onClick={() => { setMenuOpen(false); setCartOpen(true); }}
+                    className="flex flex-col items-center gap-1.5 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+                  >
+                    <ShoppingBag size={18} />
+                    <span className="text-xs" style={inter}>Cart {cartCount > 0 && <span className="text-white/60">({cartCount})</span>}</span>
+                  </button>
+                </div>
+              </div>
+            </nav>
+
+            <div className="px-6 py-4 border-t border-white/10 text-[11px] text-white/40" style={inter}>
+              © {new Date().getFullYear()} {settings.brandName}
+            </div>
+          </SheetContent>
+        </Sheet>
 
         <section className="relative z-10 flex flex-1 flex-col justify-center px-4 sm:px-6 md:px-8 lg:px-10 py-12 lg:py-20">
           <span className="inline-flex self-start items-center gap-2 rounded-full bg-white/15 backdrop-blur-sm px-4 py-1.5 text-white/90 text-xs sm:text-sm animate-fade-up delay-200" style={inter}>
