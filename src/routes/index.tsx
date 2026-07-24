@@ -81,7 +81,7 @@ function Index() {
   const { categories: liveCategories, categoryInfo } = useCategories();
   const { promotions } = usePromotions();
 
-  const handleFav = (p: Product) => {
+  const handleFav = useCallback((p: Product) => {
     const wasFav = isFav(p.id);
     toggleFav(p.id);
     if (wasFav) {
@@ -89,7 +89,7 @@ function Index() {
     } else {
       toast.success(`${p.name} added to favourites`, { description: p.category });
     }
-  };
+  }, [isFav, toggleFav]);
 
   const [activeCat, setActiveCat] = useState<Category | "All">("All");
   const { priceMin, priceMax } = useMemo(() => {
