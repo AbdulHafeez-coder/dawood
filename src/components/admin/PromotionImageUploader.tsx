@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
 import { UploadCloud, Image as ImageIcon, X, Loader2, Crop as CropIcon } from "lucide-react";
 import Cropper, { type Area } from "react-easy-crop";
-import { uploadProductImage } from "@/lib/storage";
+import { uploadProductImageWithProgress } from "@/lib/storage";
 import {
   Dialog,
   DialogContent,
@@ -83,9 +83,23 @@ export function PromotionImageUploader({
 }) {
   const [dragging, setDragging] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [phase, setPhase] = useState<"idle" | "processing" | "uploading" | "finalizing">("idle");
   const [cropSrc, setCropSrc] = useState<string>("");
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
+
+  function resetUploadState() {
+    setBusy(false);
+    setPhase("idle");
+    setProgress(0);
+    abortRef.current = null;
+  }
+
+  function cancelUpload() {
+    abortRef.current?.abort();
+  }
 
   function pickFile(file: File | null | undefined) {
     if (!file) return;
@@ -101,7 +115,7 @@ export function PromotionImageUploader({
     }
     // GIFs: skip crop (would lose animation), upload as-is
     if (file.type === "image/gif") {
-      uploadRaw(file);
+      uploadWithProgress(file, "Image uploaded");
       return;
     }
     readAsDataURL(file)
@@ -112,24 +126,62 @@ export function PromotionImageUploader({
       .catch(() => toast.error("Could not read file"));
   }
 
-  async function uploadRaw(file: File) {
+  async function uploadWithProgress(file: File, successTitle: string, successDescription?: string) {
+    const controller = new AbortController();
+    abortRef.current = controller;
     setBusy(true);
+    setProgress(0);
+    setPhase("uploading");
+    const toastId = toast.loading("Uploading image…", {
+      description: `${file.name} · 0%`,
+    });
     try {
-      const url = await uploadProductImage(file);
+      const url = await uploadProductImageWithProgress(
+        file,
+        (fraction) => {
+          const pct = Math.round(fraction * 100);
+          setProgress(pct);
+          toast.loading("Uploading image…", {
+            id: toastId,
+            description: `${file.name} · ${pct}%`,
+          });
+          if (fraction >= 1) setPhase("finalizing");
+        },
+        controller.signal,
+      );
       onChange(url);
-      toast.success("Image uploaded", { description: file.name });
-    } catch (err) {
-      toast.error("Could not upload image", {
-        description: err instanceof Error ? err.message : "Upload failed",
+      toast.success(successTitle, {
+        id: toastId,
+        description: successDescription ?? file.name,
       });
+      return true;
+    } catch (err) {
+      const aborted =
+        (err instanceof DOMException && err.name === "AbortError") ||
+        (err instanceof Error && /aborted|cancel/i.test(err.message));
+      if (aborted) {
+        toast.warning("Upload cancelled", { id: toastId, description: file.name });
+      } else {
+        toast.error("Could not upload image", {
+          id: toastId,
+          description: err instanceof Error ? err.message : "Upload failed. Check your connection and try again.",
+          action: {
+            label: "Retry",
+            onClick: () => void uploadWithProgress(file, successTitle, successDescription),
+          },
+        });
+      }
+      return false;
     } finally {
-      setBusy(false);
+      resetUploadState();
     }
   }
 
   async function handleCropConfirm(area: Area) {
     if (!pendingFile || !cropSrc) return;
     setBusy(true);
+    setPhase("processing");
+    setProgress(0);
     const outType: "image/webp" | "image/png" =
       pendingFile.type === "image/png" ? "image/png" : "image/webp";
     try {
@@ -140,23 +192,21 @@ export function PromotionImageUploader({
         pendingFile.name.replace(/\.[^.]+$/, "") + `.${ext}`,
         { type: outType },
       );
-      const url = await uploadProductImage(cropped);
-      onChange(url);
       const saved = pendingFile.size - cropped.size;
-      toast.success("Image uploaded", {
-        description:
-          saved > 1024
-            ? `Cropped and optimised — saved ${(saved / 1024).toFixed(0)} KB`
-            : "Cropped and optimised",
-      });
-      setCropSrc("");
-      setPendingFile(null);
+      const desc =
+        saved > 1024
+          ? `Cropped and optimised — saved ${(saved / 1024).toFixed(0)} KB`
+          : "Cropped and optimised";
+      const ok = await uploadWithProgress(cropped, "Image uploaded", desc);
+      if (ok) {
+        setCropSrc("");
+        setPendingFile(null);
+      }
     } catch (err) {
       toast.error("Could not process image", {
-        description: err instanceof Error ? err.message : "Upload failed",
+        description: err instanceof Error ? err.message : "Try a different image.",
       });
-    } finally {
-      setBusy(false);
+      resetUploadState();
     }
   }
 
@@ -192,17 +242,49 @@ export function PromotionImageUploader({
               : "border-black/15 hover:border-black/40 hover:bg-black/[0.02]"
           }`}
         >
-          <div className="flex flex-col items-center gap-2 text-black/60">
+          <div className="flex flex-col items-center gap-2 text-black/60 w-full">
             {busy ? <Loader2 className="w-5 h-5 animate-spin" /> : <UploadCloud className="w-5 h-5" />}
             <div className="text-sm">
               <span className="font-medium text-black">
-                {busy ? "Uploading…" : "Drop an image"}
+                {busy
+                  ? phase === "processing"
+                    ? "Processing…"
+                    : phase === "finalizing"
+                      ? "Finalizing…"
+                      : `Uploading… ${progress}%`
+                  : "Drop an image"}
               </span>{" "}
               {!busy && "or click to browse"}
             </div>
-            <div className="text-[11px] text-black/45">
-              PNG, JPG, WEBP, GIF · up to 3 MB · crop before saving
-            </div>
+            {busy ? (
+              <div className="w-full max-w-[220px] mt-1">
+                <div className="h-1.5 rounded-full bg-black/10 overflow-hidden">
+                  <div
+                    className="h-full bg-black transition-[width] duration-150"
+                    style={{
+                      width: phase === "processing" ? "100%" : `${progress}%`,
+                      opacity: phase === "processing" ? 0.35 : 1,
+                    }}
+                  />
+                </div>
+                {phase === "uploading" && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      cancelUpload();
+                    }}
+                    className="mt-2 text-[10px] uppercase tracking-[0.16em] text-black/55 hover:text-red-600"
+                  >
+                    Cancel upload
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="text-[11px] text-black/45">
+                PNG, JPG, WEBP, GIF · up to 3 MB · crop before saving
+              </div>
+            )}
           </div>
           <input
             ref={inputRef}
@@ -236,8 +318,11 @@ export function PromotionImageUploader({
               <ImageIcon className="w-6 h-6 text-black/25" />
             )}
             {busy && (
-              <div className="absolute inset-0 grid place-items-center bg-white/60 backdrop-blur-[1px]">
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-white/70 backdrop-blur-[1px]">
                 <Loader2 className="w-5 h-5 animate-spin text-black/70" />
+                <span className="text-[10px] tabular-nums text-black/70">
+                  {phase === "processing" ? "…" : `${progress}%`}
+                </span>
               </div>
             )}
           </div>
@@ -248,6 +333,9 @@ export function PromotionImageUploader({
         src={cropSrc}
         open={!!cropSrc}
         busy={busy}
+        progress={progress}
+        phase={phase}
+        onCancelUpload={cancelUpload}
         onCancel={() => {
           if (busy) return;
           setCropSrc("");
@@ -259,16 +347,23 @@ export function PromotionImageUploader({
   );
 }
 
+
 function CropDialog({
   src,
   open,
   busy,
+  progress,
+  phase,
+  onCancelUpload,
   onCancel,
   onConfirm,
 }: {
   src: string;
   open: boolean;
   busy: boolean;
+  progress: number;
+  phase: "idle" | "processing" | "uploading" | "finalizing";
+  onCancelUpload: () => void;
   onCancel: () => void;
   onConfirm: (area: Area) => void;
 }) {
@@ -356,28 +451,52 @@ function CropDialog({
           </label>
         </div>
 
-        <DialogFooter className="pt-2">
-          <button
-            type="button"
-            onClick={onCancel}
-            disabled={busy}
-            className="px-4 py-2 rounded-full border border-black/15 text-[11px] uppercase tracking-[0.18em] hover:bg-black/5 disabled:opacity-50"
-          >
-            Cancel
-          </button>
+        <DialogFooter className="pt-2 gap-2 sm:gap-2">
+          {busy && phase === "uploading" ? (
+            <button
+              type="button"
+              onClick={onCancelUpload}
+              className="px-4 py-2 rounded-full border border-black/15 text-[11px] uppercase tracking-[0.18em] hover:bg-black/5 text-black/70 hover:text-red-600"
+            >
+              Cancel upload
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={onCancel}
+              disabled={busy}
+              className="px-4 py-2 rounded-full border border-black/15 text-[11px] uppercase tracking-[0.18em] hover:bg-black/5 disabled:opacity-50"
+            >
+              Cancel
+            </button>
+          )}
           <button
             type="button"
             disabled={!pixels || busy}
             onClick={() => pixels && onConfirm(pixels)}
-            className="px-5 py-2 rounded-full bg-black text-white text-[11px] uppercase tracking-[0.18em] hover:bg-black/85 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none inline-flex items-center gap-2"
+            className="relative overflow-hidden px-5 py-2 rounded-full bg-black text-white text-[11px] uppercase tracking-[0.18em] hover:bg-black/85 active:scale-[0.98] disabled:opacity-70 disabled:pointer-events-none inline-flex items-center gap-2"
           >
-            {busy ? (
-              <>
-                <Loader2 className="w-3.5 h-3.5 animate-spin" /> Uploading…
-              </>
-            ) : (
-              "Apply & upload"
+            {busy && phase === "uploading" && (
+              <span
+                className="absolute inset-y-0 left-0 bg-white/15 transition-[width] duration-150"
+                style={{ width: `${progress}%` }}
+                aria-hidden
+              />
             )}
+            <span className="relative inline-flex items-center gap-2">
+              {busy ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  {phase === "processing"
+                    ? "Processing…"
+                    : phase === "finalizing"
+                      ? "Finalizing…"
+                      : `Uploading ${progress}%`}
+                </>
+              ) : (
+                "Apply & upload"
+              )}
+            </span>
           </button>
         </DialogFooter>
       </DialogContent>

@@ -45,6 +45,67 @@ export async function uploadProductImage(file: File): Promise<string> {
 }
 
 /**
+ * Upload with real progress via a signed upload URL + XHR.
+ * onProgress receives a 0..1 fraction while bytes are uploading.
+ */
+export async function uploadProductImageWithProgress(
+  file: File,
+  onProgress: (fraction: number) => void,
+  signal?: AbortSignal,
+): Promise<string> {
+  const ext = extFromType(file.type, (file.name.split(".").pop() || "jpg").toLowerCase());
+  const path = `${new Date().getFullYear()}/${randomId()}.${ext}`;
+
+  const { data: signed, error: signErr } = await supabase.storage
+    .from(PRODUCT_IMAGES_BUCKET)
+    .createSignedUploadUrl(path);
+  if (signErr || !signed) throw signErr ?? new Error("Could not create upload URL");
+
+  await new Promise<void>((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("PUT", signed.signedUrl, true);
+    if (file.type) xhr.setRequestHeader("Content-Type", file.type);
+    xhr.setRequestHeader("cache-control", "max-age=31536000");
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) onProgress(Math.min(1, e.loaded / e.total));
+    };
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        onProgress(1);
+        resolve();
+      } else {
+        let msg = `Upload failed (${xhr.status})`;
+        try {
+          const body = JSON.parse(xhr.responseText);
+          if (body?.message) msg = body.message;
+        } catch {
+          if (xhr.responseText) msg = xhr.responseText.slice(0, 200);
+        }
+        reject(new Error(msg));
+      }
+    };
+    xhr.onerror = () => reject(new Error("Network error during upload"));
+    xhr.ontimeout = () => reject(new Error("Upload timed out"));
+    if (signal) {
+      if (signal.aborted) {
+        xhr.abort();
+        reject(new DOMException("Upload cancelled", "AbortError"));
+        return;
+      }
+      signal.addEventListener("abort", () => {
+        xhr.abort();
+        reject(new DOMException("Upload cancelled", "AbortError"));
+      });
+    }
+    xhr.send(file);
+  });
+
+  const { data } = supabase.storage.from(PRODUCT_IMAGES_BUCKET).getPublicUrl(signed.path);
+  return data.publicUrl;
+}
+
+
+/**
  * Best-effort deletion of a previously uploaded product image by its public
  * URL. Silently no-ops for external / preset URLs.
  */
