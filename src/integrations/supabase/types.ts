@@ -142,6 +142,48 @@ export type Database = {
           },
         ]
       }
+      promotions: {
+        Row: {
+          bg_color: string
+          chip_style: string
+          created_at: string
+          headline: string
+          id: string
+          image_url: string | null
+          is_active: boolean
+          label: string
+          link_category: string | null
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          bg_color?: string
+          chip_style?: string
+          created_at?: string
+          headline: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          label: string
+          link_category?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          bg_color?: string
+          chip_style?: string
+          created_at?: string
+          headline?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          label?: string
+          link_category?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       settings: {
         Row: {
           address: string
