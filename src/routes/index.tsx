@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { ProductCard } from "@/components/ProductCard";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import {
   Search,
