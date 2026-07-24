@@ -342,11 +342,11 @@ export function PromotionImageUploader({
           setPendingFile(null);
         }}
         onConfirm={handleCropConfirm}
+      />
     </>
   );
 }
-  );
-}
+
 
 function CropDialog({
   src,
