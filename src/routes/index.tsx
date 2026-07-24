@@ -323,7 +323,7 @@ function Index() {
                   <span className={`${c.chipBg} ${c.chipText} self-start text-[10px] sm:text-xs tracking-[0.15em] px-3 py-1.5 rounded-md`} style={{ ...inter, fontWeight: 600 }}>
                     {c.label}
                   </span>
-                  <div className="text-black whitespace-nowrap" style={{ ...dmSans, fontWeight: 500, letterSpacing: "-0.03em", lineHeight: 1.1, fontSize: "clamp(16px, 2.2vw, 28px)" }}>
+                  <div className="text-black break-words" style={{ ...dmSans, fontWeight: 500, letterSpacing: "-0.03em", lineHeight: 1.15, fontSize: "clamp(15px, 2.2vw, 28px)" }}>
                     {c.off}
                   </div>
                 </div>
