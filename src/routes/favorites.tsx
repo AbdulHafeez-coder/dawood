@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
-import { ArrowLeft, Heart, ShoppingBag, Star, Plus, X } from "lucide-react";
-import { useProducts, useCart, useFavourites, getVariants, type Category, type Product } from "@/lib/shop";
+import { useCallback, useState } from "react";
+import { ArrowLeft, Heart, ShoppingBag } from "lucide-react";
+import { useProducts, useCart, useFavourites, type Product } from "@/lib/shop";
 import { LazyCartDrawer as CartDrawer } from "@/components/LazyCartDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
+import { ProductCard } from "@/components/ProductCard";
 import { ProductGridSkeleton, useMounted } from "@/components/skeletons";
 import { toast } from "sonner";
-import { formatPKR } from "@/lib/format";
 
 export const Route = createFileRoute("/favorites")({
   head: () => ({
