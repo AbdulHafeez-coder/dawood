@@ -6,6 +6,7 @@ import productSponge from "@/assets/product-sponge.jpg";
 import productBathset from "@/assets/product-bathset.jpg";
 import heroBg from "@/assets/hero-home.jpg";
 import { supabase } from "@/lib/supabase";
+import type { Database } from "@/integrations/supabase/types";
 
 // Category is a free-form string so admins can add/rename categories.
 export type Category = string;
@@ -192,20 +193,8 @@ export const PRODUCT_BG_CHOICES = [
 // Backed by Supabase (public.products, public.categories). Cart + favourites
 // stay in localStorage — they're per-visitor session data.
 
-type ProductRow = {
-  id: string;
-  name: string;
-  tag: string;
-  price: number | string;
-  rating: number | string;
-  img: string;
-  bg: string;
-  category: string;
-  tagline: string;
-  description: string;
-  details: string[] | null;
-  gallery: string[] | null;
-};
+type ProductRow = Database["public"]["Tables"]["products"]["Row"];
+type ProductInsert = Database["public"]["Tables"]["products"]["Insert"];
 
 function rowToProduct(r: ProductRow): Product {
   return {
@@ -224,7 +213,7 @@ function rowToProduct(r: ProductRow): Product {
   };
 }
 
-function productToRow(p: Product): ProductRow {
+function productToRow(p: Product): ProductInsert {
   return {
     id: p.id,
     name: p.name,
@@ -274,17 +263,9 @@ export type Promotion = {
   sortOrder: number;
   isActive: boolean;
 };
-type PromotionRow = {
-  id: string;
-  label: string;
-  headline: string;
-  image_url: string | null;
-  bg_color: string;
-  chip_style: string | null;
-  link_category: string | null;
-  sort_order: number | null;
-  is_active: boolean | null;
-};
+type PromotionRow = Database["public"]["Tables"]["promotions"]["Row"];
+type PromotionInsert = Database["public"]["Tables"]["promotions"]["Insert"];
+type PromotionUpdate = Database["public"]["Tables"]["promotions"]["Update"];
 function rowToPromo(r: PromotionRow): Promotion {
   return {
     id: r.id,
@@ -847,7 +828,7 @@ export function usePromotions() {
         link_category: data.linkCategory || null,
         sort_order: data.sortOrder,
         is_active: data.isActive,
-      })
+      } satisfies PromotionInsert)
       .select()
       .maybeSingle();
       const idx = promotionsLive.findIndex((p) => p.id === tmpId);
@@ -881,7 +862,7 @@ export function usePromotions() {
       promotionsLive[idx] = { ...prev, ...patch };
       promotionsLive.sort((a, b) => a.sortOrder - b.sortOrder);
       emitPromotions();
-      const dbPatch: Record<string, unknown> = {};
+      const dbPatch: PromotionUpdate = {};
       if (patch.label !== undefined) dbPatch.label = patch.label;
       if (patch.headline !== undefined) dbPatch.headline = patch.headline;
       if (patch.imageUrl !== undefined) dbPatch.image_url = patch.imageUrl || null;

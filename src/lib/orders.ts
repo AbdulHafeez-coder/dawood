@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import type { Database } from "@/integrations/supabase/types";
 
 export type OrderStatus = "new" | "processing" | "completed" | "cancelled";
 
@@ -92,6 +93,7 @@ type OrderRow = {
   status: OrderStatus | null;
   created_at: string;
 };
+type OrderInsert = Database["public"]["Tables"]["orders"]["Insert"];
 
 function rowToOrder(r: OrderRow): SavedOrder {
   return {
@@ -116,7 +118,7 @@ async function pushOrderToSupabase(entry: SavedOrder) {
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    const row: Omit<OrderRow, "created_at"> = {
+    const row: OrderInsert = {
       id: entry.id,
       user_id: user?.id ?? null,
       device_id: deviceId(),
