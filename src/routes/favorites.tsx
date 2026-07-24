@@ -33,10 +33,10 @@ function FavoritesPage() {
 
   const items = products.filter((p) => favs.includes(p.id));
 
-  const handleRemove = (p: Product) => {
+  const handleRemove = useCallback((p: Product) => {
     toggleFav(p.id);
     toast(`${p.name} removed from favourites`);
-  };
+  }, [toggleFav]);
 
   return (
     <div className="flex min-h-screen flex-col bg-[#FEFDF9]" style={inter}>
