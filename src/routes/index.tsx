@@ -37,7 +37,7 @@ export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     links: [
-      { rel: "preload", as: "image", href: heroBg, fetchpriority: "high" },
+      { rel: "preload", as: "image", href: heroBg, fetchPriority: "high" },
     ],
   }),
 });
