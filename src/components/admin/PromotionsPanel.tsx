@@ -20,6 +20,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { PromotionImageUploader } from "./PromotionImageUploader";
 
 const dmSans = { fontFamily: "'DM Sans', sans-serif" };
 const inter = { fontFamily: "'Inter', sans-serif" };
@@ -287,19 +288,15 @@ function PromotionFormDialog({
             </label>
           </div>
 
-          <label className="block">
-            <span className="text-[10px] uppercase tracking-[0.18em] text-black/60">Image URL (optional)</span>
-            <input
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              className={inputCls + " mt-1"}
-              placeholder="https://..."
-            />
-            <div className="mt-1 text-[11px] text-black/50">
-              Small product image shown on the right of the card. Paste an image URL, or upload one
-              in Products first and reuse its URL.
+          <div>
+            <span className="text-[10px] uppercase tracking-[0.18em] text-black/60">Image</span>
+            <div className="mt-1.5">
+              <PromotionImageUploader value={imageUrl} onChange={setImageUrl} />
             </div>
-          </label>
+            <div className="mt-1 text-[11px] text-black/50">
+              Small product image shown on the right of the card. Auto-resized and optimised on upload.
+            </div>
+          </div>
 
           <div>
             <span className="text-[10px] uppercase tracking-[0.18em] text-black/60">Background</span>
