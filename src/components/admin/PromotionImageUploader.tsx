@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
 import { UploadCloud, Image as ImageIcon, X, Loader2, Crop as CropIcon } from "lucide-react";
 import Cropper, { type Area } from "react-easy-crop";
-import { uploadProductImage } from "@/lib/storage";
+import { uploadProductImageWithProgress } from "@/lib/storage";
 import {
   Dialog,
   DialogContent,
