@@ -255,7 +255,7 @@ function PromotionFormDialog({
 
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] p-0 gap-0 flex flex-col">
+      <DialogContent className="sm:max-w-lg w-[calc(100vw-1rem)] sm:w-full max-h-[calc(100dvh-1rem)] sm:max-h-[min(90dvh,720px)] p-0 gap-0 flex flex-col">
         <DialogHeader className="px-5 sm:px-6 pt-5 sm:pt-6 pb-3 shrink-0 border-b border-black/5">
           <DialogTitle style={{ ...dmSans, fontWeight: 400, letterSpacing: "-0.02em" }}>
             {mode === "create" ? "New promotion" : "Edit promotion"}
