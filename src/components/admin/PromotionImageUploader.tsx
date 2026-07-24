@@ -342,22 +342,9 @@ export function PromotionImageUploader({
           setPendingFile(null);
         }}
         onConfirm={handleCropConfirm}
-      />
-        </div>
-      </div>
-
-      <CropDialog
-        src={cropSrc}
-        open={!!cropSrc}
-        busy={busy}
-        onCancel={() => {
-          if (busy) return;
-          setCropSrc("");
-          setPendingFile(null);
-        }}
-        onConfirm={handleCropConfirm}
-      />
     </>
+  );
+}
   );
 }
 
