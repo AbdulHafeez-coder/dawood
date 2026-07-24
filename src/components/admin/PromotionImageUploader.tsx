@@ -352,12 +352,18 @@ function CropDialog({
   src,
   open,
   busy,
+  progress,
+  phase,
+  onCancelUpload,
   onCancel,
   onConfirm,
 }: {
   src: string;
   open: boolean;
   busy: boolean;
+  progress: number;
+  phase: "idle" | "processing" | "uploading" | "finalizing";
+  onCancelUpload: () => void;
   onCancel: () => void;
   onConfirm: (area: Area) => void;
 }) {
