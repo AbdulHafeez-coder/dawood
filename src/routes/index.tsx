@@ -241,7 +241,7 @@ function Index() {
           </div>
         )}
 
-        <section className="relative z-10 flex flex-1 flex-col justify-center px-5 sm:px-8 lg:px-10 py-12 lg:py-20">
+        <section className="relative z-10 flex flex-1 flex-col justify-center px-4 sm:px-6 md:px-8 lg:px-10 py-12 lg:py-20">
           <span className="inline-flex self-start items-center gap-2 rounded-full bg-white/15 backdrop-blur-sm px-4 py-1.5 text-white/90 text-xs sm:text-sm animate-fade-up delay-200" style={inter}>
             <Sparkles size={14} /> New autumn collection · 2026
           </span>
@@ -347,7 +347,7 @@ function Index() {
       </div>
 
       {/* CATEGORIES SECTION */}
-      <section id="collections" className="bg-[#FEFDF9] px-5 sm:px-8 lg:px-10 py-16 lg:py-24">
+      <section id="collections" className="bg-[#FEFDF9] px-4 sm:px-6 md:px-8 lg:px-10 py-12 sm:py-16 lg:py-24">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10 lg:mb-14">
           <h2 className="type-h1 text-black">
             Shop by room
@@ -407,7 +407,7 @@ function Index() {
       </section>
 
       {/* PRODUCTS SECTION */}
-      <section id="shop" className="bg-[#ECEDEC] px-5 sm:px-8 lg:px-10 py-16 lg:py-24">
+      <section id="shop" className="bg-[#ECEDEC] px-4 sm:px-6 md:px-8 lg:px-10 py-12 sm:py-16 lg:py-24">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8 lg:mb-10">
           <h2 className="type-h1 text-black">
             The Home Edit
