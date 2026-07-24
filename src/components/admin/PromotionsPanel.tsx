@@ -255,8 +255,8 @@ function PromotionFormDialog({
 
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-lg max-h-[90vh] p-0 gap-0 flex flex-col">
+        <DialogHeader className="px-5 sm:px-6 pt-5 sm:pt-6 pb-3 shrink-0 border-b border-black/5">
           <DialogTitle style={{ ...dmSans, fontWeight: 400, letterSpacing: "-0.02em" }}>
             {mode === "create" ? "New promotion" : "Edit promotion"}
           </DialogTitle>
@@ -265,7 +265,7 @@ function PromotionFormDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={submit} className="space-y-4" style={inter}>
+        <form onSubmit={submit} className="space-y-4 overflow-y-auto px-5 sm:px-6 py-4 flex-1 min-h-0" style={inter}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <label className="block">
               <span className="text-[10px] uppercase tracking-[0.18em] text-black/60">Label / chip</span>
@@ -416,7 +416,7 @@ function PromotionFormDialog({
             </div>
           </div>
 
-          <DialogFooter className="pt-2">
+          <DialogFooter className="pt-2 sticky bottom-0 -mx-5 sm:-mx-6 px-5 sm:px-6 py-3 bg-white border-t border-black/5 mt-2">
             <button
               type="button"
               onClick={onClose}
