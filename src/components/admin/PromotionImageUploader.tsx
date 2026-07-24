@@ -83,9 +83,23 @@ export function PromotionImageUploader({
 }) {
   const [dragging, setDragging] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [phase, setPhase] = useState<"idle" | "processing" | "uploading" | "finalizing">("idle");
   const [cropSrc, setCropSrc] = useState<string>("");
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
+
+  function resetUploadState() {
+    setBusy(false);
+    setPhase("idle");
+    setProgress(0);
+    abortRef.current = null;
+  }
+
+  function cancelUpload() {
+    abortRef.current?.abort();
+  }
 
   function pickFile(file: File | null | undefined) {
     if (!file) return;
@@ -101,7 +115,7 @@ export function PromotionImageUploader({
     }
     // GIFs: skip crop (would lose animation), upload as-is
     if (file.type === "image/gif") {
-      uploadRaw(file);
+      uploadWithProgress(file, "Image uploaded");
       return;
     }
     readAsDataURL(file)
@@ -112,24 +126,62 @@ export function PromotionImageUploader({
       .catch(() => toast.error("Could not read file"));
   }
 
-  async function uploadRaw(file: File) {
+  async function uploadWithProgress(file: File, successTitle: string, successDescription?: string) {
+    const controller = new AbortController();
+    abortRef.current = controller;
     setBusy(true);
+    setProgress(0);
+    setPhase("uploading");
+    const toastId = toast.loading("Uploading image…", {
+      description: `${file.name} · 0%`,
+    });
     try {
-      const url = await uploadProductImage(file);
+      const url = await uploadProductImageWithProgress(
+        file,
+        (fraction) => {
+          const pct = Math.round(fraction * 100);
+          setProgress(pct);
+          toast.loading("Uploading image…", {
+            id: toastId,
+            description: `${file.name} · ${pct}%`,
+          });
+          if (fraction >= 1) setPhase("finalizing");
+        },
+        controller.signal,
+      );
       onChange(url);
-      toast.success("Image uploaded", { description: file.name });
-    } catch (err) {
-      toast.error("Could not upload image", {
-        description: err instanceof Error ? err.message : "Upload failed",
+      toast.success(successTitle, {
+        id: toastId,
+        description: successDescription ?? file.name,
       });
+      return true;
+    } catch (err) {
+      const aborted =
+        (err instanceof DOMException && err.name === "AbortError") ||
+        (err instanceof Error && /aborted|cancel/i.test(err.message));
+      if (aborted) {
+        toast.warning("Upload cancelled", { id: toastId, description: file.name });
+      } else {
+        toast.error("Could not upload image", {
+          id: toastId,
+          description: err instanceof Error ? err.message : "Upload failed. Check your connection and try again.",
+          action: {
+            label: "Retry",
+            onClick: () => void uploadWithProgress(file, successTitle, successDescription),
+          },
+        });
+      }
+      return false;
     } finally {
-      setBusy(false);
+      resetUploadState();
     }
   }
 
   async function handleCropConfirm(area: Area) {
     if (!pendingFile || !cropSrc) return;
     setBusy(true);
+    setPhase("processing");
+    setProgress(0);
     const outType: "image/webp" | "image/png" =
       pendingFile.type === "image/png" ? "image/png" : "image/webp";
     try {
@@ -140,23 +192,21 @@ export function PromotionImageUploader({
         pendingFile.name.replace(/\.[^.]+$/, "") + `.${ext}`,
         { type: outType },
       );
-      const url = await uploadProductImage(cropped);
-      onChange(url);
       const saved = pendingFile.size - cropped.size;
-      toast.success("Image uploaded", {
-        description:
-          saved > 1024
-            ? `Cropped and optimised — saved ${(saved / 1024).toFixed(0)} KB`
-            : "Cropped and optimised",
-      });
-      setCropSrc("");
-      setPendingFile(null);
+      const desc =
+        saved > 1024
+          ? `Cropped and optimised — saved ${(saved / 1024).toFixed(0)} KB`
+          : "Cropped and optimised";
+      const ok = await uploadWithProgress(cropped, "Image uploaded", desc);
+      if (ok) {
+        setCropSrc("");
+        setPendingFile(null);
+      }
     } catch (err) {
       toast.error("Could not process image", {
-        description: err instanceof Error ? err.message : "Upload failed",
+        description: err instanceof Error ? err.message : "Try a different image.",
       });
-    } finally {
-      setBusy(false);
+      resetUploadState();
     }
   }
 
