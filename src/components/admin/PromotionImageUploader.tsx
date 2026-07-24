@@ -451,28 +451,52 @@ function CropDialog({
           </label>
         </div>
 
-        <DialogFooter className="pt-2">
-          <button
-            type="button"
-            onClick={onCancel}
-            disabled={busy}
-            className="px-4 py-2 rounded-full border border-black/15 text-[11px] uppercase tracking-[0.18em] hover:bg-black/5 disabled:opacity-50"
-          >
-            Cancel
-          </button>
+        <DialogFooter className="pt-2 gap-2 sm:gap-2">
+          {busy && phase === "uploading" ? (
+            <button
+              type="button"
+              onClick={onCancelUpload}
+              className="px-4 py-2 rounded-full border border-black/15 text-[11px] uppercase tracking-[0.18em] hover:bg-black/5 text-black/70 hover:text-red-600"
+            >
+              Cancel upload
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={onCancel}
+              disabled={busy}
+              className="px-4 py-2 rounded-full border border-black/15 text-[11px] uppercase tracking-[0.18em] hover:bg-black/5 disabled:opacity-50"
+            >
+              Cancel
+            </button>
+          )}
           <button
             type="button"
             disabled={!pixels || busy}
             onClick={() => pixels && onConfirm(pixels)}
-            className="px-5 py-2 rounded-full bg-black text-white text-[11px] uppercase tracking-[0.18em] hover:bg-black/85 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none inline-flex items-center gap-2"
+            className="relative overflow-hidden px-5 py-2 rounded-full bg-black text-white text-[11px] uppercase tracking-[0.18em] hover:bg-black/85 active:scale-[0.98] disabled:opacity-70 disabled:pointer-events-none inline-flex items-center gap-2"
           >
-            {busy ? (
-              <>
-                <Loader2 className="w-3.5 h-3.5 animate-spin" /> Uploading…
-              </>
-            ) : (
-              "Apply & upload"
+            {busy && phase === "uploading" && (
+              <span
+                className="absolute inset-y-0 left-0 bg-white/15 transition-[width] duration-150"
+                style={{ width: `${progress}%` }}
+                aria-hidden
+              />
             )}
+            <span className="relative inline-flex items-center gap-2">
+              {busy ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  {phase === "processing"
+                    ? "Processing…"
+                    : phase === "finalizing"
+                      ? "Finalizing…"
+                      : `Uploading ${progress}%`}
+                </>
+              ) : (
+                "Apply & upload"
+              )}
+            </span>
           </button>
         </DialogFooter>
       </DialogContent>
