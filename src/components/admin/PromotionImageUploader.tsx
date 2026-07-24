@@ -242,17 +242,49 @@ export function PromotionImageUploader({
               : "border-black/15 hover:border-black/40 hover:bg-black/[0.02]"
           }`}
         >
-          <div className="flex flex-col items-center gap-2 text-black/60">
+          <div className="flex flex-col items-center gap-2 text-black/60 w-full">
             {busy ? <Loader2 className="w-5 h-5 animate-spin" /> : <UploadCloud className="w-5 h-5" />}
             <div className="text-sm">
               <span className="font-medium text-black">
-                {busy ? "Uploading…" : "Drop an image"}
+                {busy
+                  ? phase === "processing"
+                    ? "Processing…"
+                    : phase === "finalizing"
+                      ? "Finalizing…"
+                      : `Uploading… ${progress}%`
+                  : "Drop an image"}
               </span>{" "}
               {!busy && "or click to browse"}
             </div>
-            <div className="text-[11px] text-black/45">
-              PNG, JPG, WEBP, GIF · up to 3 MB · crop before saving
-            </div>
+            {busy ? (
+              <div className="w-full max-w-[220px] mt-1">
+                <div className="h-1.5 rounded-full bg-black/10 overflow-hidden">
+                  <div
+                    className="h-full bg-black transition-[width] duration-150"
+                    style={{
+                      width: phase === "processing" ? "100%" : `${progress}%`,
+                      opacity: phase === "processing" ? 0.35 : 1,
+                    }}
+                  />
+                </div>
+                {phase === "uploading" && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      cancelUpload();
+                    }}
+                    className="mt-2 text-[10px] uppercase tracking-[0.16em] text-black/55 hover:text-red-600"
+                  >
+                    Cancel upload
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="text-[11px] text-black/45">
+                PNG, JPG, WEBP, GIF · up to 3 MB · crop before saving
+              </div>
+            )}
           </div>
           <input
             ref={inputRef}
