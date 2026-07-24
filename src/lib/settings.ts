@@ -171,10 +171,11 @@ export async function saveSettingsAsync(
     socials: { ...current.socials, ...(patch.socials ?? {}) },
   };
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("settings")
-    .update(toRow(next))
-    .eq("id", SETTINGS_ID);
+    .upsert(toRow(next), { onConflict: "id" })
+    .select("brand_name, tagline, logo_url, whatsapp_number, contact_email, contact_phone, address, socials")
+    .maybeSingle();
 
   if (error) {
     // Common causes: not signed in, or signed in without the admin role → RLS blocks the write.
@@ -184,7 +185,7 @@ export async function saveSettingsAsync(
     throw new Error(msg);
   }
 
-  current = next;
+  current = data ? fromRow(data as SettingsRow) : next;
   persistCache();
   emit();
   return current;

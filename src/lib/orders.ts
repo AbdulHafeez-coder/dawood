@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import type { Database } from "@/integrations/supabase/types";
 
 export type OrderStatus = "new" | "processing" | "completed" | "cancelled";
 
@@ -92,6 +93,7 @@ type OrderRow = {
   status: OrderStatus | null;
   created_at: string;
 };
+type OrderInsert = Database["public"]["Tables"]["orders"]["Insert"];
 
 function rowToOrder(r: OrderRow): SavedOrder {
   return {
@@ -116,7 +118,7 @@ async function pushOrderToSupabase(entry: SavedOrder) {
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    const row: Omit<OrderRow, "created_at"> = {
+    const row: OrderInsert = {
       id: entry.id,
       user_id: user?.id ?? null,
       device_id: deviceId(),
@@ -132,16 +134,20 @@ async function pushOrderToSupabase(entry: SavedOrder) {
       status: entry.status ?? "new",
     };
 
-    await supabase.from("orders").insert(row);
-  } catch {
+    const { error } = await supabase.from("orders").insert(row);
+    if (error) console.error("[orders] save failed:", error.message);
+  } catch (error) {
+    console.error("[orders] save failed:", error);
     // best effort — local cache remains source of truth for the shopper.
   }
 }
 
 async function deleteOrderInSupabase(id: string) {
   try {
-    await supabase.from("orders").delete().eq("id", id);
-  } catch {
+    const { error } = await supabase.from("orders").delete().eq("id", id);
+    if (error) console.error("[orders] delete failed:", error.message);
+  } catch (error) {
+    console.error("[orders] delete failed:", error);
     // ignore — RLS may deny for anon; local cache already updated.
   }
 }

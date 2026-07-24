@@ -15,6 +15,7 @@ export const Route = createFileRoute("/favorites")({
       { name: "description", content: "The Dawood Mart pieces you've saved for later." },
       { property: "og:title", content: "Your Favourites — Dawood Mart" },
       { property: "og:description", content: "The Dawood Mart pieces you've saved for later." },
+      { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
   }),

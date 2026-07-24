@@ -115,6 +115,10 @@ export const Route = createFileRoute("/admin/")({
     meta: [
       { title: "Admin Dashboard — Dawood Mart" },
       { name: "description", content: "Manage products, categories and orders." },
+      { property: "og:title", content: "Admin Dashboard — Dawood Mart" },
+      { property: "og:description", content: "Manage products, categories and orders." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
     ],
   }),

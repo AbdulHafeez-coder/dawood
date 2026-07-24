@@ -16,6 +16,7 @@ export const Route = createFileRoute("/orders")({
       { name: "description", content: "Review your WhatsApp order drafts and resend them in one click." },
       { property: "og:title", content: "Your Orders — Dawood Mart" },
       { property: "og:description", content: "Review your WhatsApp order drafts and resend them in one click." },
+      { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
   }),

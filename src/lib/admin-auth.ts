@@ -21,7 +21,10 @@ async function checkIsAdmin(userId: string): Promise<boolean> {
     .eq("user_id", userId)
     .eq("role", "admin")
     .maybeSingle();
-  if (error) return false;
+  if (error) {
+    console.error("[admin-auth] role check failed:", error.message);
+    return false;
+  }
   return !!data;
 }
 
