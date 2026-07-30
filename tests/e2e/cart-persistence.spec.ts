@@ -8,9 +8,16 @@ test("cart contents survive a page refresh", async ({ page }) => {
   await expect(page).toHaveURL(/\/product\//);
   const productUrl = page.url();
 
-  await page.locator('button[aria-pressed]').first().click();
-  await page.locator('button[aria-label][aria-pressed]').first().click();
-  await page.getByRole("button", { name: /add to cart/i }).click();
+  // Wait for hydration before picking variants (skeletons render first).
+  const sizeChip = page.locator("button[aria-pressed]").first();
+  await expect(sizeChip).toBeVisible();
+  await sizeChip.click();
+  await page.locator("button[aria-label][aria-pressed]").first().click();
+
+  const addButton = page.getByRole("button", { name: /add to cart/i });
+  await expect(addButton).toBeEnabled();
+  await addButton.click();
+
 
   // Cart badge reflects the added line immediately.
   const cartButton = page.getByRole("button", { name: "Cart" });
