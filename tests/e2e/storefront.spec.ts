@@ -10,7 +10,7 @@ test.describe("storefront", () => {
 
     await page.goto("/");
     await expect(page).toHaveTitle(/Dawood Mart/i);
-    await expect(page.getByRole("button", { name: "Cart" }).first()).toBeVisible();
+    await expect(page.locator("button[aria-label=\"Cart\"]").first().first()).toBeVisible();
     await waitForCatalog(page);
 
     expect(errors.filter((e) => !/favicon|third-party/i.test(e))).toEqual([]);

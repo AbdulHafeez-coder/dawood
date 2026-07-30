@@ -20,7 +20,7 @@ test("cart contents survive a page refresh", async ({ page }) => {
 
 
   // Cart badge reflects the added line immediately.
-  const cartButton = page.getByRole("button", { name: "Cart" });
+  const cartButton = page.locator("button[aria-label=\"Cart\"]").first();
   await expect(cartButton).toContainText(/[1-9]/);
 
   await page.reload();

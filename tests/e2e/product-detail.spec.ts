@@ -22,5 +22,5 @@ test("product detail page shows gallery, variants and add to cart", async ({ pag
   await expect(enabled).toBeEnabled();
   await enabled.click();
 
-  await expect(page.getByRole("button", { name: "Cart" })).toBeVisible();
+  await expect(page.locator("button[aria-label=\"Cart\"]").first()).toBeVisible();
 });
