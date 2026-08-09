@@ -113,7 +113,9 @@ async function hydrateFromSupabase() {
   hydrated = true;
   const { data, error } = await supabase
     .from("settings")
-    .select("brand_name, tagline, logo_url, whatsapp_number, contact_email, contact_phone, address, socials")
+    .select(
+      "brand_name, tagline, logo_url, whatsapp_number, contact_email, contact_phone, address, socials",
+    )
     .eq("id", SETTINGS_ID)
     .maybeSingle();
   if (error || !data) return;
@@ -133,7 +135,9 @@ export function getSettings(): Settings {
 // Optimistic local update. Does NOT write to the database — pair with
 // saveSettingsAsync for persistence and roll back with another updateSettings()
 // on failure.
-export function updateSettings(patch: Partial<Settings> & { socials?: Partial<Settings["socials"]> }) {
+export function updateSettings(
+  patch: Partial<Settings> & { socials?: Partial<Settings["socials"]> },
+) {
   current = {
     ...current,
     ...patch,
@@ -174,7 +178,9 @@ export async function saveSettingsAsync(
   const { data, error } = await supabase
     .from("settings")
     .upsert(toRow(next), { onConflict: "id" })
-    .select("brand_name, tagline, logo_url, whatsapp_number, contact_email, contact_phone, address, socials")
+    .select(
+      "brand_name, tagline, logo_url, whatsapp_number, contact_email, contact_phone, address, socials",
+    )
     .maybeSingle();
 
   if (error) {

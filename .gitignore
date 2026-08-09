@@ -7,13 +7,27 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# Dependencies
+node_modules/
+
+# Production build
+dist/
+dist-ssr/
+build/
+
+# Temporary / Cache
 .output
 .vinxi
-.tanstack/**
+.tanstack/
 .nitro
+.eslintcache
+
+# Env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 *.local
 
 # Wrangler / Cloudflare
@@ -31,5 +45,13 @@ dist-ssr
 *.sln
 *.sw?
 
+# Testing
 test-results/
 playwright-report/
+blob-report/
+playwright/.cache/
+coverage/
+
+# Vite
+vite.config.ts.timestamp-*
+vite.config.js.timestamp-*

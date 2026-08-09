@@ -21,7 +21,6 @@ export type SavedOrder = {
   status?: OrderStatus;
 };
 
-
 const STORAGE_KEY = "maison-terra-orders";
 const DEVICE_KEY = "maison-terra-device-id";
 const MAX_ORDERS = 30;
@@ -111,7 +110,6 @@ function rowToOrder(r: OrderRow): SavedOrder {
     status: (r.status ?? "new") as OrderStatus,
   };
 }
-
 
 async function pushOrderToSupabase(entry: SavedOrder) {
   try {
@@ -231,13 +229,9 @@ export function useAllOrders() {
     void refetch();
     const channel = supabase
       .channel("orders-admin")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "orders" },
-        () => {
-          void refetch();
-        },
-      )
+      .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, () => {
+        void refetch();
+      })
       .subscribe();
     return () => {
       void supabase.removeChannel(channel);
@@ -253,7 +247,10 @@ export function useAllOrders() {
     }
   };
 
-  const updateStatus = async (id: string, status: OrderStatus): Promise<{ ok: boolean; error?: string }> => {
+  const updateStatus = async (
+    id: string,
+    status: OrderStatus,
+  ): Promise<{ ok: boolean; error?: string }> => {
     const prev = orders;
     setOrders((cur) => cur.map((o) => (o.id === id ? { ...o, status } : o)));
     const { error } = await supabase.from("orders").update({ status }).eq("id", id);
@@ -265,9 +262,16 @@ export function useAllOrders() {
     return { ok: true };
   };
 
-  return { orders, loading, error, refetch, removeOrder: remove, updateStatus, orderCount: orders.length };
+  return {
+    orders,
+    loading,
+    error,
+    refetch,
+    removeOrder: remove,
+    updateStatus,
+    orderCount: orders.length,
+  };
 }
-
 
 if (typeof window !== "undefined") {
   window.addEventListener("storage", (e) => {

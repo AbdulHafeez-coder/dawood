@@ -20,7 +20,7 @@ export default defineConfig({
   webServer: process.env.E2E_NO_SERVER
     ? undefined
     : {
-        command: "bun run dev",
+        command: "pnpm run dev",
         url: baseURL,
         reuseExistingServer: true,
         timeout: 120_000,

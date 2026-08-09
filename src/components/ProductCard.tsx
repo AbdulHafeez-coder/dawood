@@ -3,6 +3,9 @@ import { Link } from "@tanstack/react-router";
 import { Heart, Plus, Star, X } from "lucide-react";
 import { getVariants, type Category, type Product } from "@/lib/shop";
 import { formatPKR } from "@/lib/format";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+
+import { SafeImage } from "@/components/ui/SafeImage";
 
 type Props = {
   product: Product;
@@ -31,7 +34,7 @@ function ProductCardImpl({ product: p, isFavourite, onToggleFav, favAction = "he
         <span className="absolute bottom-4 left-4 z-10 bg-white/85 text-black text-[11px] px-2 py-1 rounded-full">
           {p.category}
         </span>
-        <img
+        <SafeImage
           src={p.img}
           alt={p.name}
           width={1024}
@@ -59,7 +62,7 @@ function ProductCardImpl({ product: p, isFavourite, onToggleFav, favAction = "he
           <Heart size={16} className={isFavourite ? "fill-black text-black" : "text-black/60"} />
         )}
       </button>
-      <div className="p-4 sm:p-5 flex flex-col gap-2.5 flex-1">
+      <div className="p-3 sm:p-4 flex flex-col gap-2 flex-1">
         <div className="min-w-0">
           <Link
             to="/product/$id"
@@ -76,40 +79,57 @@ function ProductCardImpl({ product: p, isFavourite, onToggleFav, favAction = "he
 
         <div className="type-price text-black">{formatPKR(p.price)}</div>
 
-        <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1.5 min-h-[20px]" aria-label="Available colours">
+        <div
+          className="flex flex-wrap items-center gap-x-1.5 gap-y-1.5 min-h-[20px]"
+          aria-label="Available colours"
+        >
           {colors.map((c) => {
             const isGradient = c.swatch.startsWith("linear-gradient");
             return (
-              <span
-                key={c.id}
-                title={c.label}
-                className="h-4 w-4 sm:h-[18px] sm:w-[18px] rounded-full border border-black/15 ring-1 ring-white shrink-0"
-                style={isGradient ? { backgroundImage: c.swatch } : { backgroundColor: c.swatch }}
-              />
+              <Tooltip key={c.id}>
+                <TooltipTrigger asChild>
+                  <span
+                    className="h-4 w-4 sm:h-[18px] sm:w-[18px] rounded-full border border-black/15 ring-1 ring-white shrink-0"
+                    style={isGradient ? { backgroundImage: c.swatch } : { backgroundColor: c.swatch }}
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{c.label}</p>
+                </TooltipContent>
+              </Tooltip>
             );
           })}
           {extraColors > 0 && (
-            <span className="text-[11px] leading-none text-black/50 ml-0.5 shrink-0">+{extraColors}</span>
+            <span className="text-[11px] leading-none text-black/50 ml-0.5 shrink-0">
+              +{extraColors}
+            </span>
           )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1.5 min-h-[22px]" aria-label="Available sizes">
+        <div
+          className="flex flex-wrap items-center gap-x-1.5 gap-y-1.5 min-h-[22px]"
+          aria-label="Available sizes"
+        >
           {sizes.map((s) => (
-            <span
-              key={s.id}
-              title={s.note ?? s.label}
-              className="text-[10px] uppercase tracking-wider text-black/70 border border-black/15 rounded-full px-1.5 py-0.5 leading-none shrink-0 max-w-full truncate"
-            >
-              {s.label.length > 6 ? s.label.slice(0, 4) : s.label}
-            </span>
+            <Tooltip key={s.id}>
+              <TooltipTrigger asChild>
+                <span
+                  className="text-[10px] uppercase tracking-wider text-black/70 border border-black/15 rounded-full px-1.5 py-0.5 leading-none shrink-0 max-w-full truncate"
+                >
+                  {s.label.length > 6 ? s.label.slice(0, 4) : s.label}
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{s.note ?? s.label}</p>
+              </TooltipContent>
+            </Tooltip>
           ))}
         </div>
 
         <Link
           to="/product/$id"
           params={{ id: p.id }}
-          className="mt-auto inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-11 text-sm hover:bg-black/85 transition-colors"
-          style={{ fontWeight: 500 }}
+          className="mt-auto inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-9 text-xs font-medium hover:bg-black/85 transition-colors"
         >
           {favAction === "remove" ? (
             <>

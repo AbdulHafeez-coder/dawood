@@ -1,193 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
-import productTowel from "@/assets/product-towel.jpg";
-import productWallpaper from "@/assets/product-wallpaper.jpg";
-import productCloth from "@/assets/product-cloth.jpg";
-import productSponge from "@/assets/product-sponge.jpg";
-import productBathset from "@/assets/product-bathset.jpg";
-import heroBg from "@/assets/hero-home.jpg";
+import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import type { Database } from "@/integrations/supabase/types";
+import type { Product, Category, CartItem } from "./types";
+import { SEED_CATEGORIES, getVariants } from "./constants";
+export * from "./types";
+export * from "./constants";
 
-// Category is a free-form string so admins can add/rename categories.
-export type Category = string;
-
-export const SEED_CATEGORIES: readonly string[] = [];
-
-
-// Kept for backwards-compat imports in existing components; treat as seed.
-export const CATEGORY_LIST = SEED_CATEGORIES;
-
-export type Product = {
-  id: string;
-  name: string;
-  tag: string;
-  price: number;
-  rating: number;
-  img: string;
-  bg: string;
-  category: Category;
-  tagline: string;
-  description: string;
-  details: string[];
-  gallery: string[];
-};
-
-export type CartItem = Product & {
-  qty: number;
-  baseId?: string;
-  baseName?: string;
-  variantSize?: string;
-  variantColor?: string;
-  variantSizeLabel?: string;
-  variantSizeNote?: string;
-  variantColorLabel?: string;
-  variantColorSwatch?: string;
-};
-
-export type VariantOptions = {
-  sizes: { id: string; label: string; note?: string }[];
-  colors: { id: string; label: string; swatch: string }[];
-};
-
-const DEFAULT_VARIANTS: VariantOptions = {
-  sizes: [
-    { id: "s", label: "Small" },
-    { id: "m", label: "Medium" },
-    { id: "l", label: "Large" },
-  ],
-  colors: [
-    { id: "natural", label: "Natural", swatch: "#D9C6AA" },
-    { id: "sage", label: "Sage", swatch: "#A9B79A" },
-    { id: "ink", label: "Ink", swatch: "#2A2E33" },
-  ],
-};
-
-const VARIANTS_BY_CATEGORY: Record<string, VariantOptions> = {
-  Towels: {
-    sizes: [
-      { id: "hand", label: "Hand", note: "50 × 90 cm" },
-      { id: "bath", label: "Bath", note: "70 × 140 cm" },
-      { id: "sheet", label: "Bath Sheet", note: "90 × 170 cm" },
-    ],
-    colors: [
-      { id: "sand", label: "Sand", swatch: "#D9C6AA" },
-      { id: "clay", label: "Clay", swatch: "#B57B5A" },
-      { id: "sage", label: "Sage", swatch: "#A9B79A" },
-      { id: "ivory", label: "Ivory", swatch: "#F2ECDE" },
-    ],
-  },
-  Wallpaper: {
-    sizes: [
-      { id: "single", label: "Single Roll", note: "0.9 × 2.4 m" },
-      { id: "double", label: "Double Roll", note: "1.8 × 2.4 m" },
-      { id: "wall", label: "Wall Pack", note: "3 rolls" },
-    ],
-    colors: [
-      { id: "oat", label: "Oat", swatch: "#E8DBC2" },
-      { id: "moss", label: "Moss", swatch: "#7A8567" },
-      { id: "ink", label: "Ink", swatch: "#2A2E33" },
-    ],
-  },
-  Cloths: {
-    sizes: [
-      { id: "pack3", label: "Pack of 3" },
-      { id: "pack5", label: "Pack of 5" },
-      { id: "pack10", label: "Pack of 10" },
-    ],
-    colors: [
-      { id: "mixed", label: "Mixed", swatch: "linear-gradient(135deg,#D9C6AA,#A9B79A,#B57B5A)" },
-      { id: "neutral", label: "Neutral", swatch: "#E8DBC2" },
-      { id: "grey", label: "Slate", swatch: "#8A8F94" },
-    ],
-  },
-  Sponges: {
-    sizes: [
-      { id: "pack2", label: "Pack of 2" },
-      { id: "pack4", label: "Pack of 4" },
-      { id: "pack8", label: "Pack of 8" },
-    ],
-    colors: [
-      { id: "natural", label: "Natural", swatch: "#D9C6AA" },
-      { id: "kitchen", label: "Kitchen", swatch: "#A9B79A" },
-      { id: "bath", label: "Bath", swatch: "#B7C7D6" },
-    ],
-  },
-  Candles: {
-    sizes: [
-      { id: "votive", label: "Votive", note: "80 g · ~15 hr" },
-      { id: "classic", label: "Classic", note: "220 g · ~45 hr" },
-      { id: "grand", label: "Grand", note: "480 g · ~90 hr" },
-    ],
-    colors: [
-      { id: "fig", label: "Fig & Cedar", swatch: "#6B4A2B" },
-      { id: "linen", label: "Linen Blossom", swatch: "#E8DBC2" },
-      { id: "smoke", label: "Smoke & Amber", swatch: "#4A4038" },
-    ],
-  },
-  Linens: {
-    sizes: [
-      { id: "throw", label: "Throw", note: "130 × 170 cm" },
-      { id: "queen", label: "Queen", note: "220 × 240 cm" },
-      { id: "king", label: "King", note: "260 × 260 cm" },
-    ],
-    colors: [
-      { id: "ivory", label: "Ivory", swatch: "#F2ECDE" },
-      { id: "oat", label: "Oat", swatch: "#E8DBC2" },
-      { id: "stone", label: "Stone", swatch: "#B8B0A4" },
-      { id: "ink", label: "Ink", swatch: "#2A2E33" },
-    ],
-  },
-  Bath: {
-    sizes: [
-      { id: "trial", label: "Trial", note: "100 ml" },
-      { id: "full", label: "Full", note: "300 ml" },
-      { id: "duo", label: "Duo", note: "2 × 300 ml" },
-    ],
-    colors: [
-      { id: "eucalyptus", label: "Eucalyptus", swatch: "#A9B79A" },
-      { id: "rose", label: "Rose Clay", swatch: "#D4A79A" },
-      { id: "cedar", label: "Cedar", swatch: "#7A5A3D" },
-    ],
-  },
-};
-
-export function getVariants(category: Category): VariantOptions {
-  return VARIANTS_BY_CATEGORY[category] ?? DEFAULT_VARIANTS;
-}
-
-// ---------- SHIPPING (single source of truth, in PKR) ----------
-export const FREE_SHIPPING_THRESHOLD = 5000;
-export const SHIPPING_FEE = 500;
-export function computeShipping(subtotal: number): number {
-  if (subtotal <= 0) return 0;
-  return subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
-}
-
-
-// ---------- SEED PRODUCTS ----------
-// Store starts empty — real products are added through the admin dashboard.
 const SEED_PRODUCTS: Product[] = [];
-
-
-export const PRODUCT_IMAGE_CHOICES = [
-  { id: "towel", label: "Towel", url: productTowel },
-  { id: "wallpaper", label: "Wallpaper", url: productWallpaper },
-  { id: "cloth", label: "Cloth", url: productCloth },
-  { id: "sponge", label: "Sponge", url: productSponge },
-  { id: "bathset", label: "Bath set", url: productBathset },
-  { id: "hero", label: "Hero", url: heroBg },
-];
-
-export const PRODUCT_BG_CHOICES = [
-  "bg-[#F3ECE3]",
-  "bg-[#F5EFE4]",
-  "bg-[#EFEBE3]",
-  "bg-[#EDE7DB]",
-  "bg-[#EAEEE6]",
-  "bg-[#E8EFEA]",
-  "bg-[#F5EEDF]",
-  "bg-[#F3E9D8]",
-];
 
 // ---------- LIVE STORE (products + categories) ----------
 // Backed by Supabase (public.products, public.categories). Cart + favourites
@@ -285,10 +105,8 @@ function emitPromotions() {
   for (const l of promotionListeners) l([...promotionsLive]);
 }
 
-
 let hydratePromise: Promise<void> | null = null;
 let storeHydrated = false;
-
 
 async function hydrateFromSupabase() {
   const [
@@ -302,16 +120,17 @@ async function hydrateFromSupabase() {
       .order("sort_order", { ascending: true })
       .order("created_at", { ascending: true }),
     supabase.from("products").select("*").order("created_at", { ascending: false }),
-    supabase
-      .from("promotions")
-      .select("*")
-      .order("sort_order", { ascending: true }),
+    supabase.from("promotions").select("*").order("sort_order", { ascending: true }),
   ]);
   if (catErr) console.error("[shop] categories load failed:", catErr.message);
   if (prodErr) console.error("[shop] products load failed:", prodErr.message);
   if (promoErr) console.error("[shop] promotions load failed:", promoErr.message);
 
-  const rows = (catData ?? []) as { name: string; image_url: string | null; sort_order: number | null }[];
+  const rows = (catData ?? []) as {
+    name: string;
+    image_url: string | null;
+    sort_order: number | null;
+  }[];
   categoriesLive.splice(0, categoriesLive.length, ...rows.map((r) => r.name));
   for (const k of Object.keys(categoryInfoLive)) delete categoryInfoLive[k];
   rows.forEach((r, i) => {
@@ -321,11 +140,7 @@ async function hydrateFromSupabase() {
       sortOrder: r.sort_order ?? i,
     };
   });
-  products.splice(
-    0,
-    products.length,
-    ...((prodData ?? []) as ProductRow[]).map(rowToProduct),
-  );
+  products.splice(0, products.length, ...((prodData ?? []) as ProductRow[]).map(rowToProduct));
   promotionsLive.splice(
     0,
     promotionsLive.length,
@@ -337,8 +152,6 @@ async function hydrateFromSupabase() {
   emitPromotions();
   refreshCartFromCatalog();
 }
-
-
 
 function ensureStoreHydrated() {
   if (storeHydrated || hydratePromise) return;
@@ -504,7 +317,8 @@ export function useCategories() {
     if (!clean) return false;
     const idx = categoriesLive.indexOf(oldName);
     if (idx < 0) return false;
-    if (categoriesLive.some((c, i) => i !== idx && c.toLowerCase() === clean.toLowerCase())) return false;
+    if (categoriesLive.some((c, i) => i !== idx && c.toLowerCase() === clean.toLowerCase()))
+      return false;
     categoriesLive[idx] = clean;
     const prevInfo = categoryInfoLive[oldName];
     if (prevInfo) {
@@ -575,14 +389,22 @@ export function useCategories() {
     categoriesLive.splice(0, categoriesLive.length, ...SEED_CATEGORIES);
     for (const k of Object.keys(categoryInfoLive)) delete categoryInfoLive[k];
     emitCategories();
-    await supabase
-      .from("categories")
-      .upsert(SEED_CATEGORIES.map((name) => ({ name })), { onConflict: "name" });
+    await supabase.from("categories").upsert(
+      SEED_CATEGORIES.map((name) => ({ name })),
+      { onConflict: "name" },
+    );
   }, []);
 
-  return { categories: list, categoryInfo: info, addCategory, renameCategory, updateCategoryImage, deleteCategory, resetCategories };
+  return {
+    categories: list,
+    categoryInfo: info,
+    addCategory,
+    renameCategory,
+    updateCategoryImage,
+    deleteCategory,
+    resetCategories,
+  };
 }
-
 
 // ---------- CART (unchanged behaviour) ----------
 const STORAGE_KEY = "maison-terra-cart";
@@ -663,14 +485,28 @@ function emit() {
     window.localStorage.setItem(
       STORAGE_KEY,
       JSON.stringify(
-        cartState.map(({ id, qty, baseId, variantSize, variantColor, baseName, variantSizeLabel, variantSizeNote, variantColorLabel, variantColorSwatch, ...snapshot }) => ({
-          id,
-          qty,
-          baseId,
-          variantSize,
-          variantColor,
-          snapshot,
-        })),
+        cartState.map(
+          ({
+            id,
+            qty,
+            baseId,
+            variantSize,
+            variantColor,
+            baseName,
+            variantSizeLabel,
+            variantSizeNote,
+            variantColorLabel,
+            variantColorSwatch,
+            ...snapshot
+          }) => ({
+            id,
+            qty,
+            baseId,
+            variantSize,
+            variantColor,
+            snapshot,
+          }),
+        ),
       ),
     );
   }
@@ -767,9 +603,16 @@ export function useFavourites() {
     };
   }, []);
 
-  const toggleFav = useCallback((id: string) => {
-    favState = favState.includes(id) ? favState.filter((x) => x !== id) : [...favState, id];
+  const toggleFav = useCallback((product: Product) => {
+    const id = product.id;
+    const isNowFav = !favState.includes(id);
+    favState = isNowFav ? [...favState, id] : favState.filter((x) => x !== id);
     emitFavs();
+    if (isNowFav) {
+      toast.success(`${product.name} added to favourites`, { description: product.category });
+    } else {
+      toast(`${product.name} removed from favourites`);
+    }
   }, []);
 
   const isFav = useCallback((id: string) => favs.includes(id), [favs]);
@@ -795,7 +638,6 @@ if (typeof window !== "undefined") {
   });
 }
 
-
 // ---------- PROMOTIONS HOOK ----------
 export function usePromotions() {
   ensureStoreHydrated();
@@ -810,52 +652,58 @@ export function usePromotions() {
     };
   }, []);
 
-  const addPromotion = useCallback(async (data: Omit<Promotion, "id">): Promise<{ ok: boolean; id?: string; error?: string }> => {
-    const tmpId = `tmp-${Date.now().toString(36)}`;
-    const optimistic: Promotion = { ...data, id: tmpId };
-    promotionsLive.push(optimistic);
-    promotionsLive.sort((a, b) => a.sortOrder - b.sortOrder);
-    emitPromotions();
-    try {
-      const { data: row, error } = await supabase
-      .from("promotions")
-      .insert({
-        label: data.label,
-        headline: data.headline,
-        image_url: data.imageUrl || null,
-        bg_color: data.bgColor,
-        chip_style: data.chipStyle,
-        link_category: data.linkCategory || null,
-        sort_order: data.sortOrder,
-        is_active: data.isActive,
-      } satisfies PromotionInsert)
-      .select()
-      .maybeSingle();
-      const idx = promotionsLive.findIndex((p) => p.id === tmpId);
-      if (error || !row) {
-        const message = error?.message ?? "The promotion was not returned after saving.";
-        console.error("[shop] addPromotion failed:", message);
-        if (idx >= 0) promotionsLive.splice(idx, 1);
-        emitPromotions();
-        return { ok: false, error: message };
-      }
-      const saved = rowToPromo(row as PromotionRow);
-      if (idx >= 0) promotionsLive[idx] = saved;
+  const addPromotion = useCallback(
+    async (data: Omit<Promotion, "id">): Promise<{ ok: boolean; id?: string; error?: string }> => {
+      const tmpId = `tmp-${Date.now().toString(36)}`;
+      const optimistic: Promotion = { ...data, id: tmpId };
+      promotionsLive.push(optimistic);
       promotionsLive.sort((a, b) => a.sortOrder - b.sortOrder);
       emitPromotions();
-      return { ok: true, id: saved.id };
-    } catch (error) {
-      const idx = promotionsLive.findIndex((p) => p.id === tmpId);
-      if (idx >= 0) promotionsLive.splice(idx, 1);
-      emitPromotions();
-      const message = error instanceof Error ? error.message : "Failed to save promotion.";
-      console.error("[shop] addPromotion failed:", error);
-      return { ok: false, error: message };
-    }
-  }, []);
+      try {
+        const { data: row, error } = await supabase
+          .from("promotions")
+          .insert({
+            label: data.label,
+            headline: data.headline,
+            image_url: data.imageUrl || null,
+            bg_color: data.bgColor,
+            chip_style: data.chipStyle,
+            link_category: data.linkCategory || null,
+            sort_order: data.sortOrder,
+            is_active: data.isActive,
+          } satisfies PromotionInsert)
+          .select()
+          .maybeSingle();
+        const idx = promotionsLive.findIndex((p) => p.id === tmpId);
+        if (error || !row) {
+          const message = error?.message ?? "The promotion was not returned after saving.";
+          console.error("[shop] addPromotion failed:", message);
+          if (idx >= 0) promotionsLive.splice(idx, 1);
+          emitPromotions();
+          return { ok: false, error: message };
+        }
+        const saved = rowToPromo(row as PromotionRow);
+        if (idx >= 0) promotionsLive[idx] = saved;
+        promotionsLive.sort((a, b) => a.sortOrder - b.sortOrder);
+        emitPromotions();
+        return { ok: true, id: saved.id };
+      } catch (error) {
+        const idx = promotionsLive.findIndex((p) => p.id === tmpId);
+        if (idx >= 0) promotionsLive.splice(idx, 1);
+        emitPromotions();
+        const message = error instanceof Error ? error.message : "Failed to save promotion.";
+        console.error("[shop] addPromotion failed:", error);
+        return { ok: false, error: message };
+      }
+    },
+    [],
+  );
 
   const updatePromotion = useCallback(
-    async (id: string, patch: Partial<Omit<Promotion, "id">>): Promise<{ ok: boolean; error?: string }> => {
+    async (
+      id: string,
+      patch: Partial<Omit<Promotion, "id">>,
+    ): Promise<{ ok: boolean; error?: string }> => {
       const idx = promotionsLive.findIndex((p) => p.id === id);
       if (idx < 0) return { ok: false, error: "Promotion not found." };
       const prev = promotionsLive[idx];
@@ -872,10 +720,7 @@ export function usePromotions() {
       if (patch.sortOrder !== undefined) dbPatch.sort_order = patch.sortOrder;
       if (patch.isActive !== undefined) dbPatch.is_active = patch.isActive;
       try {
-        const { error } = await supabase
-        .from("promotions")
-        .update(dbPatch)
-        .eq("id", id);
+        const { error } = await supabase.from("promotions").update(dbPatch).eq("id", id);
         if (error) {
           console.error("[shop] updatePromotion failed:", error.message);
           const i2 = promotionsLive.findIndex((p) => p.id === id);
@@ -898,32 +743,32 @@ export function usePromotions() {
     [],
   );
 
-  const deletePromotion = useCallback(async (id: string): Promise<{ ok: boolean; error?: string }> => {
-    const idx = promotionsLive.findIndex((p) => p.id === id);
-    if (idx < 0) return { ok: false, error: "Promotion not found." };
-    const removed = promotionsLive[idx];
-    promotionsLive.splice(idx, 1);
-    emitPromotions();
-    try {
-      const { error } = await supabase
-      .from("promotions")
-      .delete()
-      .eq("id", id);
-      if (error) {
-        console.error("[shop] deletePromotion failed:", error.message);
+  const deletePromotion = useCallback(
+    async (id: string): Promise<{ ok: boolean; error?: string }> => {
+      const idx = promotionsLive.findIndex((p) => p.id === id);
+      if (idx < 0) return { ok: false, error: "Promotion not found." };
+      const removed = promotionsLive[idx];
+      promotionsLive.splice(idx, 1);
+      emitPromotions();
+      try {
+        const { error } = await supabase.from("promotions").delete().eq("id", id);
+        if (error) {
+          console.error("[shop] deletePromotion failed:", error.message);
+          promotionsLive.splice(idx, 0, removed);
+          emitPromotions();
+          return { ok: false, error: error.message };
+        }
+        return { ok: true };
+      } catch (error) {
         promotionsLive.splice(idx, 0, removed);
         emitPromotions();
-        return { ok: false, error: error.message };
+        const message = error instanceof Error ? error.message : "Failed to delete promotion.";
+        console.error("[shop] deletePromotion failed:", error);
+        return { ok: false, error: message };
       }
-      return { ok: true };
-    } catch (error) {
-      promotionsLive.splice(idx, 0, removed);
-      emitPromotions();
-      const message = error instanceof Error ? error.message : "Failed to delete promotion.";
-      console.error("[shop] deletePromotion failed:", error);
-      return { ok: false, error: message };
-    }
-  }, []);
+    },
+    [],
+  );
 
   return { promotions: list, addPromotion, updatePromotion, deletePromotion };
 }

@@ -164,7 +164,10 @@ export function PromotionImageUploader({
       } else {
         toast.error("Could not upload image", {
           id: toastId,
-          description: err instanceof Error ? err.message : "Upload failed. Check your connection and try again.",
+          description:
+            err instanceof Error
+              ? err.message
+              : "Upload failed. Check your connection and try again.",
           action: {
             label: "Retry",
             onClick: () => void uploadWithProgress(file, successTitle, successDescription),
@@ -187,11 +190,9 @@ export function PromotionImageUploader({
     try {
       const blob = await cropAndResize(cropSrc, area, outType);
       const ext = outType === "image/png" ? "png" : "webp";
-      const cropped = new File(
-        [blob],
-        pendingFile.name.replace(/\.[^.]+$/, "") + `.${ext}`,
-        { type: outType },
-      );
+      const cropped = new File([blob], pendingFile.name.replace(/\.[^.]+$/, "") + `.${ext}`, {
+        type: outType,
+      });
       const saved = pendingFile.size - cropped.size;
       const desc =
         saved > 1024
@@ -243,7 +244,11 @@ export function PromotionImageUploader({
           }`}
         >
           <div className="flex flex-col items-center gap-2 text-black/60 w-full">
-            {busy ? <Loader2 className="w-5 h-5 animate-spin" /> : <UploadCloud className="w-5 h-5" />}
+            {busy ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <UploadCloud className="w-5 h-5" />
+            )}
             <div className="text-sm">
               <span className="font-medium text-black">
                 {busy
@@ -346,7 +351,6 @@ export function PromotionImageUploader({
     </>
   );
 }
-
 
 function CropDialog({
   src,

@@ -40,8 +40,14 @@ import {
   type Product,
 } from "@/lib/shop";
 import { useAllOrders, ORDER_STATUSES, type OrderStatus, type SavedOrder } from "@/lib/orders";
-import { useSettings, updateSettings, resetSettings, saveSettingsAsync, type SocialKey } from "@/lib/settings";
-import { formatPkPhone, normalizePkDigits, isValidPkPhone, PK_PHONE_PLACEHOLDER } from "@/lib/pk-phone";
+import { useSettings, type SettingsSection } from "@/lib/settings";
+import { SafeImage } from "@/components/ui/SafeImage";
+import {
+  formatPkPhone,
+  normalizePkDigits,
+  isValidPkPhone,
+  PK_PHONE_PLACEHOLDER,
+} from "@/lib/pk-phone";
 import { formatPKR } from "@/lib/format";
 import {
   productsToCsv,
@@ -58,7 +64,6 @@ import {
   useMounted,
 } from "@/components/skeletons";
 import { AdminError, AdminNotFound } from "@/components/AdminFallback";
-
 
 import {
   Dialog,
@@ -132,25 +137,46 @@ function AdminDashboard() {
   const navigate = useNavigate();
   const mounted = useMounted();
   const { isAuthed, ready, logout } = useAdminAuth();
-  const { orders, removeOrder, updateStatus, loading: ordersLoading, error: ordersError, refetch: refetchOrders } = useAllOrders();
+  const {
+    orders,
+    removeOrder,
+    updateStatus,
+    loading: ordersLoading,
+    error: ordersError,
+    refetch: refetchOrders,
+  } = useAllOrders();
   const { products, addProduct, updateProduct, deleteProduct, resetProducts } = useProducts();
-  const { categories, categoryInfo, addCategory, renameCategory, updateCategoryImage, deleteCategory, resetCategories } = useCategories();
+  const {
+    categories,
+    categoryInfo,
+    addCategory,
+    renameCategory,
+    updateCategoryImage,
+    deleteCategory,
+    resetCategories,
+  } = useCategories();
 
   const [tab, setTab] = useState<TabId>(() => {
     if (typeof window === "undefined") return "overview";
     const saved = window.localStorage.getItem("mt_admin_tab") as TabId | null;
-    return saved && ["overview", "products", "categories", "promotions", "orders", "settings"].includes(saved)
+    return saved &&
+      ["overview", "products", "categories", "promotions", "orders", "settings"].includes(saved)
       ? saved
       : "overview";
-
   });
   useEffect(() => {
     if (typeof window !== "undefined") {
       window.localStorage.setItem("mt_admin_tab", tab);
     }
   }, [tab]);
-  const [productDialog, setProductDialog] = useState<{ mode: "create" | "edit"; product?: Product } | null>(null);
-  const [categoryDialog, setCategoryDialog] = useState<{ mode: "create" | "edit"; name?: string } | null>(null);
+  const [productDialog, setProductDialog] = useState<{
+    mode: "create" | "edit";
+    product?: Product;
+  } | null>(null);
+  const [categoryDialog, setCategoryDialog] = useState<{
+    mode: "create" | "edit";
+    name?: string;
+  } | null>(null);
   const [confirmProduct, setConfirmProduct] = useState<Product | null>(null);
   const [confirmCategory, setConfirmCategory] = useState<string | null>(null);
   const [confirmResetProducts, setConfirmResetProducts] = useState(false);
@@ -197,7 +223,6 @@ function AdminDashboard() {
       return true;
     });
   }, [products, debouncedPQuery, pCategory, pMinPrice, pMaxPrice, pMinRating, pMaxRating]);
-
 
   const pTotalPages = Math.max(1, Math.ceil(filteredProducts.length / pPageSize));
   const pCurrentPage = Math.min(pPage, pTotalPages);
@@ -316,24 +341,40 @@ function AdminDashboard() {
     };
     const header = ["name", "price_pkr", "price_formatted", "currency", "category", "tags"];
     const body = rows.map((p) =>
-      [esc(p.name), p.price.toFixed(2), esc(formatPKR(p.price)), "PKR", esc(p.category), esc(p.tag ?? "")].join(","),
+      [
+        esc(p.name),
+        p.price.toFixed(2),
+        esc(formatPKR(p.price)),
+        "PKR",
+        esc(p.category),
+        esc(p.tag ?? ""),
+      ].join(","),
     );
     const csv = [header.join(","), ...body].join("\n");
     downloadCsv(`dawood-mart-selected-${new Date().toISOString().slice(0, 10)}.csv`, csv);
     toast.success(`Exported ${rows.length} product${rows.length === 1 ? "" : "s"}`);
   }
 
-
   function handleExportProducts() {
     if (products.length === 0) return toast.error("No products to export");
-    downloadCsv(`dawood-mart-products-${new Date().toISOString().slice(0, 10)}.csv`, productsToCsv(products));
-    toast.success("Products exported", { description: `${products.length} row${products.length === 1 ? "" : "s"}` });
+    downloadCsv(
+      `dawood-mart-products-${new Date().toISOString().slice(0, 10)}.csv`,
+      productsToCsv(products),
+    );
+    toast.success("Products exported", {
+      description: `${products.length} row${products.length === 1 ? "" : "s"}`,
+    });
   }
 
   function handleExportCategories() {
     if (categories.length === 0) return toast.error("No categories to export");
-    downloadCsv(`dawood-mart-categories-${new Date().toISOString().slice(0, 10)}.csv`, categoriesToCsv(categories));
-    toast.success("Categories exported", { description: `${categories.length} row${categories.length === 1 ? "" : "s"}` });
+    downloadCsv(
+      `dawood-mart-categories-${new Date().toISOString().slice(0, 10)}.csv`,
+      categoriesToCsv(categories),
+    );
+    toast.success("Categories exported", {
+      description: `${categories.length} row${categories.length === 1 ? "" : "s"}`,
+    });
   }
 
   async function handleImportProducts(file: File) {
@@ -390,7 +431,9 @@ function AdminDashboard() {
         newCategories: Array.from(newCats),
       });
     } catch (err) {
-      toast.error("Import failed", { description: err instanceof Error ? err.message : "Could not read file" });
+      toast.error("Import failed", {
+        description: err instanceof Error ? err.message : "Could not read file",
+      });
     }
   }
 
@@ -405,11 +448,15 @@ function AdminDashboard() {
       }
     }
     for (const item of plan.update) updateProduct(item.id!, item.payload);
-    for (const item of plan.create) addProduct(item.id ? { id: item.id, ...item.payload } : item.payload);
+    for (const item of plan.create)
+      addProduct(item.id ? { id: item.id, ...item.payload } : item.payload);
     toast.success("Products imported", {
       description: `${plan.create.length} created · ${plan.update.length} updated${plan.skip.length ? ` · ${plan.skip.length} skipped` : ""}`,
     });
-    if (plan.skip.length) console.warn("CSV import issues:\n" + plan.skip.map((s) => `Row ${s.row}: ${s.error}`).join("\n"));
+    if (plan.skip.length)
+      console.warn(
+        "CSV import issues:\n" + plan.skip.map((s) => `Row ${s.row}: ${s.error}`).join("\n"),
+      );
     setProductImportPlan(null);
   }
 
@@ -432,7 +479,9 @@ function AdminDashboard() {
       }
       setCategoryImportPlan({ fileName: file.name, create, skip });
     } catch (err) {
-      toast.error("Import failed", { description: err instanceof Error ? err.message : "Could not read file" });
+      toast.error("Import failed", {
+        description: err instanceof Error ? err.message : "Could not read file",
+      });
     }
   }
 
@@ -493,14 +542,22 @@ function AdminDashboard() {
       <header className="border-b border-black/10 bg-[#FEFDF9]/95 backdrop-blur sticky top-0 z-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-            <Link to="/" className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] text-black/55 hover:text-black transition-colors">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] text-black/55 hover:text-black transition-colors"
+            >
               <ArrowLeft className="w-3.5 h-3.5" />
               Shop
             </Link>
             <div className="h-4 w-px bg-black/15" />
             <div className="min-w-0">
-              <div className="text-[10px] uppercase tracking-[0.22em] text-black/45">Dawood Mart</div>
-              <h1 className="truncate" style={{ ...dmSans, fontWeight: 400, letterSpacing: "-0.02em", fontSize: 20 }}>
+              <div className="text-[10px] uppercase tracking-[0.22em] text-black/45">
+                Dawood Mart
+              </div>
+              <h1
+                className="truncate"
+                style={{ ...dmSans, fontWeight: 400, letterSpacing: "-0.02em", fontSize: 20 }}
+              >
                 Admin dashboard
               </h1>
             </div>
@@ -518,26 +575,48 @@ function AdminDashboard() {
         {/* Tabs */}
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
           <nav className="flex gap-1 -mb-px overflow-x-auto">
-            <TabButton active={tab === "overview"} onClick={() => setTab("overview")} icon={<LayoutDashboard className="w-3.5 h-3.5" />}>
+            <TabButton
+              active={tab === "overview"}
+              onClick={() => setTab("overview")}
+              icon={<LayoutDashboard className="w-3.5 h-3.5" />}
+            >
               Overview
             </TabButton>
-            <TabButton active={tab === "products"} onClick={() => setTab("products")} icon={<Package className="w-3.5 h-3.5" />}>
+            <TabButton
+              active={tab === "products"}
+              onClick={() => setTab("products")}
+              icon={<Package className="w-3.5 h-3.5" />}
+            >
               Products <span className="ml-1 text-black/40">{products.length}</span>
             </TabButton>
-            <TabButton active={tab === "categories"} onClick={() => setTab("categories")} icon={<Tag className="w-3.5 h-3.5" />}>
+            <TabButton
+              active={tab === "categories"}
+              onClick={() => setTab("categories")}
+              icon={<Tag className="w-3.5 h-3.5" />}
+            >
               Categories <span className="ml-1 text-black/40">{categories.length}</span>
             </TabButton>
-            <TabButton active={tab === "promotions"} onClick={() => setTab("promotions")} icon={<Megaphone className="w-3.5 h-3.5" />}>
+            <TabButton
+              active={tab === "promotions"}
+              onClick={() => setTab("promotions")}
+              icon={<Megaphone className="w-3.5 h-3.5" />}
+            >
               Promotions
             </TabButton>
-            <TabButton active={tab === "orders"} onClick={() => setTab("orders")} icon={<ScrollText className="w-3.5 h-3.5" />}>
+            <TabButton
+              active={tab === "orders"}
+              onClick={() => setTab("orders")}
+              icon={<ScrollText className="w-3.5 h-3.5" />}
+            >
               Orders <span className="ml-1 text-black/40">{orders.length}</span>
             </TabButton>
-            <TabButton active={tab === "settings"} onClick={() => setTab("settings")} icon={<SettingsIcon className="w-3.5 h-3.5" />}>
+            <TabButton
+              active={tab === "settings"}
+              onClick={() => setTab("settings")}
+              icon={<SettingsIcon className="w-3.5 h-3.5" />}
+            >
               Settings
             </TabButton>
-
-
           </nav>
         </div>
       </header>
@@ -547,19 +626,47 @@ function AdminDashboard() {
           {tab === "overview" && (
             <>
               <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                <KpiCard icon={<Package className="w-4 h-4" />} label="Products" value={products.length.toString()} hint={`${categories.length} categories`} />
-                <KpiCard icon={<Tag className="w-4 h-4" />} label="Categories" value={categories.length.toString()} hint="Active collections" accent="#FEF3C7" />
-                <KpiCard icon={<ScrollText className="w-4 h-4" />} label="Orders" value={orders.length.toString()} hint="WhatsApp drafts" accent="#ECEDEC" />
-                <KpiCard icon={<Wallet className="w-4 h-4" />} label="Revenue" value={formatPKR(revenue)} hint="From saved orders" accent="#EAEEE6" />
+                <KpiCard
+                  icon={<Package className="w-4 h-4" />}
+                  label="Products"
+                  value={products.length.toString()}
+                  hint={`${categories.length} categories`}
+                />
+                <KpiCard
+                  icon={<Tag className="w-4 h-4" />}
+                  label="Categories"
+                  value={categories.length.toString()}
+                  hint="Active collections"
+                  accent="#FEF3C7"
+                />
+                <KpiCard
+                  icon={<ScrollText className="w-4 h-4" />}
+                  label="Orders"
+                  value={orders.length.toString()}
+                  hint="WhatsApp drafts"
+                  accent="#ECEDEC"
+                />
+                <KpiCard
+                  icon={<Wallet className="w-4 h-4" />}
+                  label="Revenue"
+                  value={formatPKR(revenue)}
+                  hint="From saved orders"
+                  accent="#EAEEE6"
+                />
               </section>
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
                 <section className="lg:col-span-1 bg-white border border-black/10 rounded-2xl p-5 sm:p-6">
                   <SectionTitle icon={<TrendingUp className="w-3.5 h-3.5" />} label="By category" />
                   <ul className="mt-4 space-y-3">
-                    {byCategory.length === 0 && <li className="text-sm text-black/40">No categories yet.</li>}
+                    {byCategory.length === 0 && (
+                      <li className="text-sm text-black/40">No categories yet.</li>
+                    )}
                     {byCategory.map((c) => {
-                      const pct = Math.min(100, Math.round((c.count / Math.max(1, products.length)) * 100));
+                      const pct = Math.min(
+                        100,
+                        Math.round((c.count / Math.max(1, products.length)) * 100),
+                      );
                       return (
                         <li key={c.name}>
                           <div className="flex items-center justify-between text-sm">
@@ -567,7 +674,10 @@ function AdminDashboard() {
                             <span className="text-black/50 text-xs">{c.count}</span>
                           </div>
                           <div className="mt-1.5 h-1.5 w-full bg-black/5 rounded-full overflow-hidden">
-                            <div className="h-full bg-black rounded-full transition-all" style={{ width: `${pct}%` }} />
+                            <div
+                              className="h-full bg-black rounded-full transition-all"
+                              style={{ width: `${pct}%` }}
+                            />
                           </div>
                         </li>
                       );
@@ -577,8 +687,14 @@ function AdminDashboard() {
 
                 <section className="lg:col-span-2 bg-white border border-black/10 rounded-2xl p-5 sm:p-6">
                   <div className="flex items-center justify-between gap-3">
-                    <SectionTitle icon={<ScrollText className="w-3.5 h-3.5" />} label="Recent orders" />
-                    <Link to="/orders" className="text-[10px] uppercase tracking-[0.18em] text-black/55 hover:text-black underline underline-offset-4">
+                    <SectionTitle
+                      icon={<ScrollText className="w-3.5 h-3.5" />}
+                      label="Recent orders"
+                    />
+                    <Link
+                      to="/orders"
+                      className="text-[10px] uppercase tracking-[0.18em] text-black/55 hover:text-black underline underline-offset-4"
+                    >
                       View all
                     </Link>
                   </div>
@@ -590,18 +706,34 @@ function AdminDashboard() {
                     <ul className="mt-4 divide-y divide-black/5">
                       {orders.slice(0, 6).map((o) => (
                         <li key={o.id} className="py-3 flex items-center gap-3 sm:gap-4">
-                          <div className={`w-10 h-10 rounded-lg overflow-hidden shrink-0 ${o.primaryBg ?? "bg-black/5"} grid place-items-center`}>
-                            {o.primaryImg ? <img src={o.primaryImg} alt="" className="w-full h-full object-cover" /> : <ShoppingBag className="w-4 h-4 text-black/40" />}
+                          <div
+                            className={`w-10 h-10 rounded-lg overflow-hidden shrink-0 ${o.primaryBg ?? "bg-black/5"} grid place-items-center`}
+                          >
+                            {o.primaryImg ? (
+                              <SafeImage
+                                src={o.primaryImg}
+                                alt=""
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <ShoppingBag className="w-4 h-4 text-black/40" />
+                            )}
                           </div>
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2 text-sm">
                               <span className="truncate">{o.primaryName}</span>
-                              {o.extraCount ? <span className="text-[10px] uppercase tracking-[0.15em] text-black/45">+{o.extraCount}</span> : null}
+                              {o.extraCount ? (
+                                <span className="text-[10px] uppercase tracking-[0.15em] text-black/45">
+                                  +{o.extraCount}
+                                </span>
+                              ) : null}
                             </div>
                             <div className="text-[11px] text-black/50 flex items-center gap-2">
                               <span>{new Date(o.createdAt).toLocaleString()}</span>
                               <span>·</span>
-                              <span>{o.itemCount} item{o.itemCount === 1 ? "" : "s"}</span>
+                              <span>
+                                {o.itemCount} item{o.itemCount === 1 ? "" : "s"}
+                              </span>
                             </div>
                           </div>
                           <div className="text-sm tabular-nums shrink-0">{formatPKR(o.total)}</div>
@@ -627,7 +759,10 @@ function AdminDashboard() {
           {tab === "products" && (
             <section className="bg-white border border-black/10 rounded-2xl p-5 sm:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                <SectionTitle icon={<Package className="w-3.5 h-3.5" />} label={`Products (${filteredProducts.length}${filteredProducts.length !== products.length ? ` of ${products.length}` : ""})`} />
+                <SectionTitle
+                  icon={<Package className="w-3.5 h-3.5" />}
+                  label={`Products (${filteredProducts.length}${filteredProducts.length !== products.length ? ` of ${products.length}` : ""})`}
+                />
                 <div className="flex flex-wrap items-center gap-2">
                   <input
                     ref={productImportRef}
@@ -668,7 +803,11 @@ function AdminDashboard() {
               </div>
 
               {products.length === 0 ? (
-                <EmptyState label="No products yet" cta="Create your first product" onCta={() => setProductDialog({ mode: "create" })} />
+                <EmptyState
+                  label="No products yet"
+                  cta="Create your first product"
+                  onCta={() => setProductDialog({ mode: "create" })}
+                />
               ) : (
                 <>
                   <div className="mb-4 space-y-3">
@@ -698,7 +837,9 @@ function AdminDashboard() {
                       >
                         <option value="all">All categories</option>
                         {categories.map((c) => (
-                          <option key={c} value={c}>{c}</option>
+                          <option key={c} value={c}>
+                            {c}
+                          </option>
                         ))}
                       </select>
                       <button
@@ -719,26 +860,72 @@ function AdminDashboard() {
                     {pShowFilters && (
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-3 rounded-xl bg-black/[0.03] border border-black/5">
                         <label className="block">
-                          <span className="block text-[10px] uppercase tracking-[0.18em] text-black/50 mb-1">Min price (PKR)</span>
+                          <span className="block text-[10px] uppercase tracking-[0.18em] text-black/50 mb-1">
+                            Min price (PKR)
+                          </span>
                           <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[11px] font-semibold tracking-wide text-black/55 pointer-events-none">PKR</span>
-                            <input type="number" min="0" step="0.01" value={pMinPrice} onChange={(e) => setPMinPrice(e.target.value)} placeholder="0" className="w-full pl-12 pr-3 py-1.5 text-sm rounded-lg border border-black/15 focus:border-black focus:outline-none bg-white tabular-nums" />
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[11px] font-semibold tracking-wide text-black/55 pointer-events-none">
+                              PKR
+                            </span>
+                            <input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={pMinPrice}
+                              onChange={(e) => setPMinPrice(e.target.value)}
+                              placeholder="0"
+                              className="w-full pl-12 pr-3 py-1.5 text-sm rounded-lg border border-black/15 focus:border-black focus:outline-none bg-white tabular-nums"
+                            />
                           </div>
                         </label>
                         <label className="block">
-                          <span className="block text-[10px] uppercase tracking-[0.18em] text-black/50 mb-1">Max price (PKR)</span>
+                          <span className="block text-[10px] uppercase tracking-[0.18em] text-black/50 mb-1">
+                            Max price (PKR)
+                          </span>
                           <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[11px] font-semibold tracking-wide text-black/55 pointer-events-none">PKR</span>
-                            <input type="number" min="0" step="0.01" value={pMaxPrice} onChange={(e) => setPMaxPrice(e.target.value)} placeholder="Any" className="w-full pl-12 pr-3 py-1.5 text-sm rounded-lg border border-black/15 focus:border-black focus:outline-none bg-white tabular-nums" />
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[11px] font-semibold tracking-wide text-black/55 pointer-events-none">
+                              PKR
+                            </span>
+                            <input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={pMaxPrice}
+                              onChange={(e) => setPMaxPrice(e.target.value)}
+                              placeholder="Any"
+                              className="w-full pl-12 pr-3 py-1.5 text-sm rounded-lg border border-black/15 focus:border-black focus:outline-none bg-white tabular-nums"
+                            />
                           </div>
                         </label>
                         <label className="block">
-                          <span className="block text-[10px] uppercase tracking-[0.18em] text-black/50 mb-1">Min rating</span>
-                          <input type="number" min="0" max="5" step="0.1" value={pMinRating} onChange={(e) => setPMinRating(e.target.value)} placeholder="0.0" className="w-full px-3 py-1.5 text-sm rounded-lg border border-black/15 focus:border-black focus:outline-none bg-white" />
+                          <span className="block text-[10px] uppercase tracking-[0.18em] text-black/50 mb-1">
+                            Min rating
+                          </span>
+                          <input
+                            type="number"
+                            min="0"
+                            max="5"
+                            step="0.1"
+                            value={pMinRating}
+                            onChange={(e) => setPMinRating(e.target.value)}
+                            placeholder="0.0"
+                            className="w-full px-3 py-1.5 text-sm rounded-lg border border-black/15 focus:border-black focus:outline-none bg-white"
+                          />
                         </label>
                         <label className="block">
-                          <span className="block text-[10px] uppercase tracking-[0.18em] text-black/50 mb-1">Max rating</span>
-                          <input type="number" min="0" max="5" step="0.1" value={pMaxRating} onChange={(e) => setPMaxRating(e.target.value)} placeholder="5.0" className="w-full px-3 py-1.5 text-sm rounded-lg border border-black/15 focus:border-black focus:outline-none bg-white" />
+                          <span className="block text-[10px] uppercase tracking-[0.18em] text-black/50 mb-1">
+                            Max rating
+                          </span>
+                          <input
+                            type="number"
+                            min="0"
+                            max="5"
+                            step="0.1"
+                            value={pMaxRating}
+                            onChange={(e) => setPMaxRating(e.target.value)}
+                            placeholder="5.0"
+                            className="w-full px-3 py-1.5 text-sm rounded-lg border border-black/15 focus:border-black focus:outline-none bg-white"
+                          />
                         </label>
                       </div>
                     )}
@@ -747,7 +934,10 @@ function AdminDashboard() {
                   {filteredProducts.length === 0 ? (
                     <div className="py-12 text-center">
                       <div className="text-sm text-black/60">No products match your filters.</div>
-                      <button onClick={clearProductFilters} className="mt-3 inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em]">
+                      <button
+                        onClick={clearProductFilters}
+                        className="mt-3 inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em]"
+                      >
                         Clear filters
                       </button>
                     </div>
@@ -766,7 +956,9 @@ function AdminDashboard() {
                             >
                               <option value="">Move to category…</option>
                               {categories.map((c) => (
-                                <option key={c} value={c}>{c}</option>
+                                <option key={c} value={c}>
+                                  {c}
+                                </option>
                               ))}
                             </select>
                             <button
@@ -838,61 +1030,79 @@ function AdminDashboard() {
                             {pagedProducts.map((p) => {
                               const checked = selectedIds.has(p.id);
                               return (
-                              <tr key={p.id} className={`hover:bg-black/[0.02] ${checked ? "bg-black/[0.03]" : ""}`}>
-                                <td className="py-3 pr-3">
-                                  <input
-                                    type="checkbox"
-                                    checked={checked}
-                                    onChange={() => toggleSelect(p.id)}
-                                    aria-label={`Select ${p.name}`}
-                                    className="w-4 h-4 accent-black cursor-pointer"
-                                  />
-                                </td>
-                                <td className="py-3 pr-3">
-                                  <div className="flex items-center gap-3 min-w-0">
-                                    <div className={`w-10 h-10 rounded-lg ${p.bg} grid place-items-center overflow-hidden shrink-0`}>
-                                      <img src={p.img} alt="" className="w-full h-full object-cover" />
+                                <tr
+                                  key={p.id}
+                                  className={`hover:bg-black/[0.02] ${checked ? "bg-black/[0.03]" : ""}`}
+                                >
+                                  <td className="py-3 pr-3">
+                                    <input
+                                      type="checkbox"
+                                      checked={checked}
+                                      onChange={() => toggleSelect(p.id)}
+                                      aria-label={`Select ${p.name}`}
+                                      className="w-4 h-4 accent-black cursor-pointer"
+                                    />
+                                  </td>
+                                  <td className="py-3 pr-3">
+                                    <div className="flex items-center gap-3 min-w-0">
+                                      <div
+                                        className={`w-10 h-10 rounded-lg ${p.bg} grid place-items-center overflow-hidden shrink-0`}
+                                      >
+                                        <SafeImage
+                                          src={p.img}
+                                          alt=""
+                                          className="w-full h-full object-cover"
+                                        />
+                                      </div>
+                                      <div className="min-w-0">
+                                        <div className="truncate">{p.name}</div>
+                                        <div className="text-[11px] text-black/50 truncate">
+                                          {p.tagline}
+                                        </div>
+                                      </div>
                                     </div>
-                                    <div className="min-w-0">
-                                      <div className="truncate">{p.name}</div>
-                                      <div className="text-[11px] text-black/50 truncate">{p.tagline}</div>
+                                  </td>
+                                  <td className="py-3 pr-3 text-black/70">{p.category}</td>
+                                  <td className="py-3 pr-3 text-black/70">{p.tag}</td>
+                                  <td className="py-3 pr-3 text-black/70 tabular-nums">
+                                    {p.rating.toFixed(1)}
+                                  </td>
+                                  <td className="py-3 pr-3 text-right tabular-nums">
+                                    {formatPKR(p.price)}
+                                  </td>
+                                  <td className="py-3 pl-3">
+                                    <div className="flex items-center justify-end gap-1">
+                                      <button
+                                        onClick={() =>
+                                          setProductDialog({ mode: "edit", product: p })
+                                        }
+                                        className="w-8 h-8 rounded-full grid place-items-center text-black/60 hover:text-black hover:bg-black/5 transition"
+                                        aria-label={`Edit ${p.name}`}
+                                      >
+                                        <Pencil className="w-3.5 h-3.5" />
+                                      </button>
+                                      <button
+                                        onClick={() => setConfirmProduct(p)}
+                                        className="w-8 h-8 rounded-full grid place-items-center text-black/60 hover:text-white hover:bg-black transition"
+                                        aria-label={`Delete ${p.name}`}
+                                      >
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                      </button>
                                     </div>
-                                  </div>
-                                </td>
-                                <td className="py-3 pr-3 text-black/70">{p.category}</td>
-                                <td className="py-3 pr-3 text-black/70">{p.tag}</td>
-                                <td className="py-3 pr-3 text-black/70 tabular-nums">{p.rating.toFixed(1)}</td>
-                                <td className="py-3 pr-3 text-right tabular-nums">{formatPKR(p.price)}</td>
-                                <td className="py-3 pl-3">
-                                  <div className="flex items-center justify-end gap-1">
-                                    <button
-                                      onClick={() => setProductDialog({ mode: "edit", product: p })}
-                                      className="w-8 h-8 rounded-full grid place-items-center text-black/60 hover:text-black hover:bg-black/5 transition"
-                                      aria-label={`Edit ${p.name}`}
-                                    >
-                                      <Pencil className="w-3.5 h-3.5" />
-                                    </button>
-                                    <button
-                                      onClick={() => setConfirmProduct(p)}
-                                      className="w-8 h-8 rounded-full grid place-items-center text-black/60 hover:text-white hover:bg-black transition"
-                                      aria-label={`Delete ${p.name}`}
-                                    >
-                                      <Trash2 className="w-3.5 h-3.5" />
-                                    </button>
-                                  </div>
-                                </td>
-                              </tr>
+                                  </td>
+                                </tr>
                               );
                             })}
                           </tbody>
                         </table>
                       </div>
 
-
                       <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-[11px] text-black/60">
                         <div className="flex items-center gap-2">
                           <span>
-                            Showing {(pCurrentPage - 1) * pPageSize + 1}–{Math.min(pCurrentPage * pPageSize, filteredProducts.length)} of {filteredProducts.length}
+                            Showing {(pCurrentPage - 1) * pPageSize + 1}–
+                            {Math.min(pCurrentPage * pPageSize, filteredProducts.length)} of{" "}
+                            {filteredProducts.length}
                           </span>
                           <span className="text-black/30">·</span>
                           <label className="inline-flex items-center gap-1.5">
@@ -903,7 +1113,9 @@ function AdminDashboard() {
                               className="px-2 py-1 rounded-md border border-black/15 focus:border-black focus:outline-none bg-white"
                             >
                               {[5, 10, 25, 50, 100].map((n) => (
-                                <option key={n} value={n}>{n}</option>
+                                <option key={n} value={n}>
+                                  {n}
+                                </option>
                               ))}
                             </select>
                           </label>
@@ -940,7 +1152,10 @@ function AdminDashboard() {
           {tab === "categories" && (
             <section className="bg-white border border-black/10 rounded-2xl p-5 sm:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                <SectionTitle icon={<Tag className="w-3.5 h-3.5" />} label={`Categories (${categories.length})`} />
+                <SectionTitle
+                  icon={<Tag className="w-3.5 h-3.5" />}
+                  label={`Categories (${categories.length})`}
+                />
                 <div className="flex flex-wrap items-center gap-2">
                   <input
                     ref={categoryImportRef}
@@ -981,7 +1196,11 @@ function AdminDashboard() {
               </div>
 
               {categories.length === 0 ? (
-                <EmptyState label="No categories yet" cta="Create your first category" onCta={() => setCategoryDialog({ mode: "create" })} />
+                <EmptyState
+                  label="No categories yet"
+                  cta="Create your first category"
+                  onCta={() => setCategoryDialog({ mode: "create" })}
+                />
               ) : (
                 <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {categories.map((c) => {
@@ -994,21 +1213,23 @@ function AdminDashboard() {
                       >
                         <div className="w-14 h-14 rounded-lg overflow-hidden bg-black/5 border border-black/5 shrink-0 grid place-items-center">
                           {thumb ? (
-                            <img
+                            <SafeImage
                               src={thumb}
                               alt=""
                               className="w-full h-full object-cover"
-                              onError={(e) => {
-                                (e.currentTarget as HTMLImageElement).style.display = "none";
-                              }}
                             />
                           ) : (
                             <ImageIcon className="w-4 h-4 text-black/30" />
                           )}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <div className="text-[10px] uppercase tracking-[0.22em] text-black/45">Category</div>
-                          <div className="mt-0.5 text-lg truncate" style={{ ...dmSans, fontWeight: 400, letterSpacing: "-0.02em" }}>
+                          <div className="text-[10px] uppercase tracking-[0.22em] text-black/45">
+                            Category
+                          </div>
+                          <div
+                            className="mt-0.5 text-lg truncate"
+                            style={{ ...dmSans, fontWeight: 400, letterSpacing: "-0.02em" }}
+                          >
                             {c}
                           </div>
                           <div className="mt-0.5 text-xs text-black/50">
@@ -1035,7 +1256,6 @@ function AdminDashboard() {
                       </li>
                     );
                   })}
-
                 </ul>
               )}
             </section>
@@ -1055,12 +1275,8 @@ function AdminDashboard() {
           {tab === "promotions" && <PromotionsPanel categories={categories} />}
 
           {tab === "settings" && <SettingsPanel />}
-
-
         </div>
       </main>
-
-
 
       {/* Product dialog */}
       {productDialog && (
@@ -1088,7 +1304,9 @@ function AdminDashboard() {
         <CategoryFormDialog
           mode={categoryDialog.mode}
           name={categoryDialog.name}
-          initialImageUrl={categoryDialog.name ? categoryInfo[categoryDialog.name]?.imageUrl ?? "" : ""}
+          initialImageUrl={
+            categoryDialog.name ? (categoryInfo[categoryDialog.name]?.imageUrl ?? "") : ""
+          }
           existing={categories}
           onClose={() => setCategoryDialog(null)}
           onCreate={(name, imageUrl) => {
@@ -1108,12 +1326,13 @@ function AdminDashboard() {
           }}
           onUpdateImage={(name, imageUrl) => {
             updateCategoryImage(name, imageUrl);
-            toast.success(imageUrl ? "Category image updated" : "Category image removed", { description: name });
+            toast.success(imageUrl ? "Category image updated" : "Category image removed", {
+              description: name,
+            });
             setCategoryDialog(null);
           }}
         />
       )}
-
 
       {/* Delete product confirm */}
       <AlertDialog open={!!confirmProduct} onOpenChange={(o) => !o && setConfirmProduct(null)}>
@@ -1126,8 +1345,10 @@ function AdminDashboard() {
           </AlertDialogHeader>
           {confirmProduct && (
             <div className="flex items-center gap-3 p-3 rounded-lg border border-black/10 bg-black/[0.02]">
-              <div className={`w-10 h-10 rounded-lg ${confirmProduct.bg} grid place-items-center overflow-hidden shrink-0`}>
-                <img src={confirmProduct.img} alt="" className="w-full h-full object-cover" />
+              <div
+                className={`w-10 h-10 rounded-lg ${confirmProduct.bg} grid place-items-center overflow-hidden shrink-0`}
+              >
+                <SafeImage src={confirmProduct.img} alt="" className="w-full h-full object-cover" />
               </div>
               <div className="min-w-0 text-sm">
                 <div className="truncate font-medium">{confirmProduct.name}</div>
@@ -1183,9 +1404,12 @@ function AdminDashboard() {
       <AlertDialog open={confirmBulkDelete} onOpenChange={(o) => !o && setConfirmBulkDelete(false)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete {selectedCount} product{selectedCount === 1 ? "" : "s"}?</AlertDialogTitle>
+            <AlertDialogTitle>
+              Delete {selectedCount} product{selectedCount === 1 ? "" : "s"}?
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              These products will be permanently removed from the shop. This action cannot be undone.
+              These products will be permanently removed from the shop. This action cannot be
+              undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -1209,43 +1433,46 @@ function AdminDashboard() {
               This category will be permanently removed. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          {confirmCategory && (() => {
-            const affected = products.filter((p) => p.category === confirmCategory);
-            if (affected.length === 0) {
+          {confirmCategory &&
+            (() => {
+              const affected = products.filter((p) => p.category === confirmCategory);
+              if (affected.length === 0) {
+                return (
+                  <div className="p-3 rounded-lg border border-black/10 bg-black/[0.02] text-[12px] text-black/60">
+                    No products are assigned to this category.
+                  </div>
+                );
+              }
               return (
-                <div className="p-3 rounded-lg border border-black/10 bg-black/[0.02] text-[12px] text-black/60">
-                  No products are assigned to this category.
-                </div>
-              );
-            }
-            return (
-              <div className="p-3 rounded-lg border border-red-200 bg-red-50 space-y-2">
-                <div className="flex items-start gap-2 text-[12px] text-red-800">
-                  <Trash2 className="w-3.5 h-3.5 mt-0.5 shrink-0" />
-                  <div>
-                    <div className="font-medium uppercase tracking-[0.12em] text-[10px] mb-1">
-                      Cascade warning
-                    </div>
+                <div className="p-3 rounded-lg border border-red-200 bg-red-50 space-y-2">
+                  <div className="flex items-start gap-2 text-[12px] text-red-800">
+                    <Trash2 className="w-3.5 h-3.5 mt-0.5 shrink-0" />
                     <div>
-                      Deleting this category will also permanently remove{" "}
-                      <span className="font-semibold">
-                        {affected.length} product{affected.length === 1 ? "" : "s"}
-                      </span>{" "}
-                      assigned to it.
+                      <div className="font-medium uppercase tracking-[0.12em] text-[10px] mb-1">
+                        Cascade warning
+                      </div>
+                      <div>
+                        Deleting this category will also permanently remove{" "}
+                        <span className="font-semibold">
+                          {affected.length} product{affected.length === 1 ? "" : "s"}
+                        </span>{" "}
+                        assigned to it.
+                      </div>
                     </div>
                   </div>
+                  <ul className="max-h-32 overflow-y-auto text-[12px] text-red-900/80 space-y-0.5 pl-5 list-disc">
+                    {affected.slice(0, 6).map((p) => (
+                      <li key={p.id} className="truncate">
+                        {p.name}
+                      </li>
+                    ))}
+                    {affected.length > 6 && (
+                      <li className="list-none text-red-800/70">+{affected.length - 6} more…</li>
+                    )}
+                  </ul>
                 </div>
-                <ul className="max-h-32 overflow-y-auto text-[12px] text-red-900/80 space-y-0.5 pl-5 list-disc">
-                  {affected.slice(0, 6).map((p) => (
-                    <li key={p.id} className="truncate">{p.name}</li>
-                  ))}
-                  {affected.length > 6 && (
-                    <li className="list-none text-red-800/70">+{affected.length - 6} more…</li>
-                  )}
-                </ul>
-              </div>
-            );
-          })()}
+              );
+            })()}
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
@@ -1277,7 +1504,9 @@ function AdminDashboard() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Reset products to seed?</AlertDialogTitle>
-            <AlertDialogDescription>All local changes to products will be replaced with the original catalogue.</AlertDialogDescription>
+            <AlertDialogDescription>
+              All local changes to products will be replaced with the original catalogue.
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
@@ -1297,7 +1526,9 @@ function AdminDashboard() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Reset categories to seed?</AlertDialogTitle>
-            <AlertDialogDescription>The original four categories will be restored.</AlertDialogDescription>
+            <AlertDialogDescription>
+              The original four categories will be restored.
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
@@ -1315,7 +1546,10 @@ function AdminDashboard() {
       </AlertDialog>
 
       {/* Product import preview */}
-      <AlertDialog open={!!productImportPlan} onOpenChange={(o) => !o && setProductImportPlan(null)}>
+      <AlertDialog
+        open={!!productImportPlan}
+        onOpenChange={(o) => !o && setProductImportPlan(null)}
+      >
         <AlertDialogContent className="max-w-lg">
           <AlertDialogHeader>
             <AlertDialogTitle>Review product import</AlertDialogTitle>
@@ -1333,8 +1567,13 @@ function AdminDashboard() {
               </div>
               {productImportPlan.newCategories.length > 0 && (
                 <div className="text-[11px] text-black/70 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-                  <span className="font-medium">{productImportPlan.newCategories.length}</span> new categor{productImportPlan.newCategories.length === 1 ? "y" : "ies"} will be auto-created:{" "}
-                  <span className="text-black/60">{productImportPlan.newCategories.slice(0, 6).join(", ")}{productImportPlan.newCategories.length > 6 ? "…" : ""}</span>
+                  <span className="font-medium">{productImportPlan.newCategories.length}</span> new
+                  categor{productImportPlan.newCategories.length === 1 ? "y" : "ies"} will be
+                  auto-created:{" "}
+                  <span className="text-black/60">
+                    {productImportPlan.newCategories.slice(0, 6).join(", ")}
+                    {productImportPlan.newCategories.length > 6 ? "…" : ""}
+                  </span>
                 </div>
               )}
               <ImportRowList
@@ -1357,7 +1596,10 @@ function AdminDashboard() {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              disabled={!productImportPlan || (productImportPlan.create.length + productImportPlan.update.length === 0)}
+              disabled={
+                !productImportPlan ||
+                productImportPlan.create.length + productImportPlan.update.length === 0
+              }
               onClick={() => productImportPlan && applyProductImport(productImportPlan)}
             >
               Apply import
@@ -1367,7 +1609,10 @@ function AdminDashboard() {
       </AlertDialog>
 
       {/* Category import preview */}
-      <AlertDialog open={!!categoryImportPlan} onOpenChange={(o) => !o && setCategoryImportPlan(null)}>
+      <AlertDialog
+        open={!!categoryImportPlan}
+        onOpenChange={(o) => !o && setCategoryImportPlan(null)}
+      >
         <AlertDialogContent className="max-w-lg">
           <AlertDialogHeader>
             <AlertDialogTitle>Review category import</AlertDialogTitle>
@@ -1384,7 +1629,11 @@ function AdminDashboard() {
               </div>
               <ImportRowList title="Will be created" items={categoryImportPlan.create} />
               {categoryImportPlan.skip.length > 0 && (
-                <ImportRowList title="Skipped (duplicates)" tone="amber" items={categoryImportPlan.skip} />
+                <ImportRowList
+                  title="Skipped (duplicates)"
+                  tone="amber"
+                  items={categoryImportPlan.skip}
+                />
               )}
             </div>
           )}
@@ -1443,12 +1692,20 @@ function KpiCard({
   accent?: string;
 }) {
   return (
-    <div className="rounded-2xl border border-black/10 p-4 sm:p-5 transition hover:shadow-sm" style={{ background: accent }}>
+    <div
+      className="rounded-2xl border border-black/10 p-4 sm:p-5 transition hover:shadow-sm"
+      style={{ background: accent }}
+    >
       <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-black/55">
-        <span className="w-6 h-6 rounded-full bg-black text-white grid place-items-center">{icon}</span>
+        <span className="w-6 h-6 rounded-full bg-black text-white grid place-items-center">
+          {icon}
+        </span>
         {label}
       </div>
-      <div className="mt-3 text-black tabular-nums" style={{ ...dmSans, fontWeight: 400, letterSpacing: "-0.02em", fontSize: 34 }}>
+      <div
+        className="mt-3 text-black tabular-nums"
+        style={{ ...dmSans, fontWeight: 400, letterSpacing: "-0.02em", fontSize: 34 }}
+      >
         {value}
       </div>
       <div className="mt-1 text-[11px] text-black/50">{hint}</div>
@@ -1459,7 +1716,9 @@ function KpiCard({
 function SectionTitle({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
     <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] text-black/55">
-      <span className="w-5 h-5 rounded-full bg-black/5 grid place-items-center text-black/70">{icon}</span>
+      <span className="w-5 h-5 rounded-full bg-black/5 grid place-items-center text-black/70">
+        {icon}
+      </span>
       {label}
     </div>
   );
@@ -1547,175 +1806,206 @@ function ProductFormDialog({
             {mode === "create" ? "New product" : "Edit product"}
           </DialogTitle>
           <DialogDescription>
-            {mode === "create" ? "Add a new item to the Dawood Mart catalogue." : `Editing “${product?.name}”.`}
+            {mode === "create"
+              ? "Add a new item to the Dawood Mart catalogue."
+              : `Editing “${product?.name}”.`}
           </DialogDescription>
         </DialogHeader>
 
         {!ready ? (
           <ProductFormSkeleton mode={mode} />
         ) : (
-        <form onSubmit={submit} className="space-y-4" style={inter}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <Field label="Name">
-              <input
-                required
-                value={form.name}
-                onChange={(e) => set("name", e.target.value)}
-                className="mt-input"
-                placeholder="Aegean Bath Towel"
-              />
-            </Field>
-            <Field label="Tag">
-              <input value={form.tag} onChange={(e) => set("tag", e.target.value)} className="mt-input" placeholder="Bestseller" />
-            </Field>
-          </div>
+          <form onSubmit={submit} className="space-y-4" style={inter}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Field label="Name">
+                <input
+                  required
+                  value={form.name}
+                  onChange={(e) => set("name", e.target.value)}
+                  className="mt-input"
+                  placeholder="Aegean Bath Towel"
+                />
+              </Field>
+              <Field label="Tag">
+                <input
+                  value={form.tag}
+                  onChange={(e) => set("tag", e.target.value)}
+                  className="mt-input"
+                  placeholder="Bestseller"
+                />
+              </Field>
+            </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <Field label="Category">
-              <select
-                value={form.category}
-                onChange={(e) => set("category", e.target.value)}
-                className="mt-input mt-select"
-              >
-                {categories.length === 0 && <option value="">— none —</option>}
-                {categories.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </Field>
-            <Field label="Price (PKR)">
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold tracking-wide text-black/55 pointer-events-none">PKR</span>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <Field label="Category">
+                <select
+                  value={form.category}
+                  onChange={(e) => set("category", e.target.value)}
+                  className="mt-input mt-select"
+                >
+                  {categories.length === 0 && <option value="">— none —</option>}
+                  {categories.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label="Price (PKR)">
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold tracking-wide text-black/55 pointer-events-none">
+                    PKR
+                  </span>
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    min={0}
+                    step="0.01"
+                    value={form.price === 0 ? "" : form.price}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      set("price", v === "" ? 0 : Number(v));
+                    }}
+                    placeholder="0.00"
+                    className="mt-input pl-14 tabular-nums"
+                  />
+                </div>
+                <div className="mt-1 text-[11px] text-black/55 tabular-nums">
+                  Displays as{" "}
+                  <span className="text-black font-medium">
+                    {formatPKR(Number(form.price) || 0)}
+                  </span>
+                </div>
+              </Field>
+              <Field label="Rating">
                 <input
                   type="number"
-                  inputMode="decimal"
                   min={0}
-                  step="0.01"
-                  value={form.price === 0 ? "" : form.price}
-                  onChange={(e) => {
-                    const v = e.target.value;
-                    set("price", v === "" ? 0 : Number(v));
-                  }}
-                  placeholder="0.00"
-                  className="mt-input pl-14 tabular-nums"
+                  max={5}
+                  step="0.1"
+                  value={form.rating}
+                  onChange={(e) => set("rating", Number(e.target.value))}
+                  className="mt-input"
                 />
-              </div>
-              <div className="mt-1 text-[11px] text-black/55 tabular-nums">
-                Displays as <span className="text-black font-medium">{formatPKR(Number(form.price) || 0)}</span>
-              </div>
-            </Field>
-            <Field label="Rating">
+              </Field>
+            </div>
+
+            <Field label="Tagline">
               <input
-                type="number"
-                min={0}
-                max={5}
-                step="0.1"
-                value={form.rating}
-                onChange={(e) => set("rating", Number(e.target.value))}
+                value={form.tagline}
+                onChange={(e) => set("tagline", e.target.value)}
                 className="mt-input"
+                placeholder="Short elevator pitch"
               />
             </Field>
-          </div>
 
-          <Field label="Tagline">
-            <input value={form.tagline} onChange={(e) => set("tagline", e.target.value)} className="mt-input" placeholder="Short elevator pitch" />
-          </Field>
+            <Field label="Description">
+              <textarea
+                value={form.description}
+                onChange={(e) => set("description", e.target.value)}
+                className="mt-input min-h-[96px] resize-y"
+                placeholder="Full description shown on the product page."
+              />
+            </Field>
 
-          <Field label="Description">
-            <textarea
-              value={form.description}
-              onChange={(e) => set("description", e.target.value)}
-              className="mt-input min-h-[96px] resize-y"
-              placeholder="Full description shown on the product page."
-            />
-          </Field>
+            <Field label="Details (one per line)">
+              <textarea
+                value={detailsText}
+                onChange={(e) => setDetailsText(e.target.value)}
+                className="mt-input min-h-[96px] resize-y font-mono text-[13px]"
+                placeholder={"600 GSM combed cotton\nOEKO-TEX certified"}
+              />
+            </Field>
 
-          <Field label="Details (one per line)">
-            <textarea
-              value={detailsText}
-              onChange={(e) => setDetailsText(e.target.value)}
-              className="mt-input min-h-[96px] resize-y font-mono text-[13px]"
-              placeholder={"600 GSM combed cotton\nOEKO-TEX certified"}
-            />
-          </Field>
+            <Field label="Image">
+              <ImageUploader
+                value={form.img}
+                onChange={(url) =>
+                  setForm((f) => ({
+                    ...f,
+                    img: url,
+                    gallery:
+                      f.gallery && f.gallery.length
+                        ? [url, ...f.gallery.filter((x) => x !== url)].slice(0, 4)
+                        : [url],
+                  }))
+                }
+              />
+              <div className="mt-3">
+                <div className="text-[10px] uppercase tracking-[0.18em] text-black/45 mb-2">
+                  Or pick a preset
+                </div>
+                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                  {PRODUCT_IMAGE_CHOICES.map((choice) => {
+                    const active = form.img === choice.url;
+                    return (
+                      <button
+                        type="button"
+                        key={choice.id}
+                        onClick={() =>
+                          setForm((f) => ({
+                            ...f,
+                            img: choice.url,
+                            gallery:
+                              f.gallery && f.gallery.length
+                                ? [choice.url, ...f.gallery.filter((x) => x !== choice.url)].slice(
+                                    0,
+                                    4,
+                                  )
+                                : [choice.url],
+                          }))
+                        }
+                        className={`relative aspect-square rounded-lg overflow-hidden border-2 transition ${
+                          active ? "border-black" : "border-transparent hover:border-black/30"
+                        }`}
+                        aria-label={choice.label}
+                      >
+                        <img src={choice.url} alt="" className="w-full h-full object-cover" />
+                        {active && (
+                          <div className="absolute inset-0 ring-2 ring-black rounded-lg" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </Field>
 
-          <Field label="Image">
-            <ImageUploader
-              value={form.img}
-              onChange={(url) =>
-                setForm((f) => ({
-                  ...f,
-                  img: url,
-                  gallery:
-                    f.gallery && f.gallery.length
-                      ? [url, ...f.gallery.filter((x) => x !== url)].slice(0, 4)
-                      : [url],
-                }))
-              }
-            />
-            <div className="mt-3">
-              <div className="text-[10px] uppercase tracking-[0.18em] text-black/45 mb-2">Or pick a preset</div>
-              <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                {PRODUCT_IMAGE_CHOICES.map((choice) => {
-                  const active = form.img === choice.url;
+            <Field label="Card background">
+              <div className="flex flex-wrap gap-2">
+                {PRODUCT_BG_CHOICES.map((bg) => {
+                  const active = form.bg === bg;
                   return (
                     <button
                       type="button"
-                      key={choice.id}
-                      onClick={() =>
-                        setForm((f) => ({
-                          ...f,
-                          img: choice.url,
-                          gallery:
-                            f.gallery && f.gallery.length
-                              ? [choice.url, ...f.gallery.filter((x) => x !== choice.url)].slice(0, 4)
-                              : [choice.url],
-                        }))
-                      }
-                      className={`relative aspect-square rounded-lg overflow-hidden border-2 transition ${
-                        active ? "border-black" : "border-transparent hover:border-black/30"
+                      key={bg}
+                      onClick={() => set("bg", bg)}
+                      className={`${bg} w-8 h-8 rounded-full border-2 transition ${
+                        active ? "border-black" : "border-black/10 hover:border-black/40"
                       }`}
-                      aria-label={choice.label}
-                    >
-                      <img src={choice.url} alt="" className="w-full h-full object-cover" />
-                      {active && <div className="absolute inset-0 ring-2 ring-black rounded-lg" />}
-                    </button>
+                      aria-label={bg}
+                    />
                   );
                 })}
               </div>
-            </div>
-          </Field>
+            </Field>
 
-          <Field label="Card background">
-            <div className="flex flex-wrap gap-2">
-              {PRODUCT_BG_CHOICES.map((bg) => {
-                const active = form.bg === bg;
-                return (
-                  <button
-                    type="button"
-                    key={bg}
-                    onClick={() => set("bg", bg)}
-                    className={`${bg} w-8 h-8 rounded-full border-2 transition ${
-                      active ? "border-black" : "border-black/10 hover:border-black/40"
-                    }`}
-                    aria-label={bg}
-                  />
-                );
-              })}
-            </div>
-          </Field>
-
-          <DialogFooter className="pt-2">
-            <button type="button" onClick={onClose} className="px-4 py-2 rounded-full border border-black/15 text-[11px] uppercase tracking-[0.18em] hover:bg-black/5">
-              Cancel
-            </button>
-            <button type="submit" className="px-5 py-2 rounded-full bg-black text-white text-[11px] uppercase tracking-[0.18em] hover:bg-black/85 active:scale-[0.98]">
-              {mode === "create" ? "Create product" : "Save changes"}
-            </button>
-          </DialogFooter>
-        </form>
+            <DialogFooter className="pt-2">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 rounded-full border border-black/15 text-[11px] uppercase tracking-[0.18em] hover:bg-black/5"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-5 py-2 rounded-full bg-black text-white text-[11px] uppercase tracking-[0.18em] hover:bg-black/85 active:scale-[0.98]"
+              >
+                {mode === "create" ? "Create product" : "Save changes"}
+              </button>
+            </DialogFooter>
+          </form>
         )}
       </DialogContent>
     </Dialog>
@@ -1781,42 +2071,47 @@ function CategoryFormDialog({
         {!ready ? (
           <CategoryFormSkeleton mode={mode} />
         ) : (
-        <form onSubmit={submit} className="space-y-4" style={inter}>
-          <Field label="Name">
-            <input
-              autoFocus
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              className="mt-input"
-              placeholder="e.g. Bath, Kitchen, Bedroom"
-            />
-            {isDup && <div className="mt-1 text-[11px] text-red-600">This name already exists.</div>}
-          </Field>
-          <Field label="Hero image">
-            <ImageUploader value={imageUrl} onChange={setImageUrl} />
-            <div className="mt-1 text-[11px] text-black/50">
-              Shown on the “Shop by room” card. Falls back to a product image when empty.
-            </div>
-          </Field>
-          <DialogFooter className="pt-2">
-            <button type="button" onClick={onClose} className="px-4 py-2 rounded-full border border-black/15 text-[11px] uppercase tracking-[0.18em] hover:bg-black/5">
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isDup || !value.trim()}
-              className="px-5 py-2 rounded-full bg-black text-white text-[11px] uppercase tracking-[0.18em] hover:bg-black/85 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
-            >
-              {mode === "create" ? "Create" : "Save"}
-            </button>
-          </DialogFooter>
-        </form>
+          <form onSubmit={submit} className="space-y-4" style={inter}>
+            <Field label="Name">
+              <input
+                autoFocus
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                className="mt-input"
+                placeholder="e.g. Bath, Kitchen, Bedroom"
+              />
+              {isDup && (
+                <div className="mt-1 text-[11px] text-red-600">This name already exists.</div>
+              )}
+            </Field>
+            <Field label="Hero image">
+              <ImageUploader value={imageUrl} onChange={setImageUrl} />
+              <div className="mt-1 text-[11px] text-black/50">
+                Shown on the “Shop by room” card. Falls back to a product image when empty.
+              </div>
+            </Field>
+            <DialogFooter className="pt-2">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 rounded-full border border-black/15 text-[11px] uppercase tracking-[0.18em] hover:bg-black/5"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isDup || !value.trim()}
+                className="px-5 py-2 rounded-full bg-black text-white text-[11px] uppercase tracking-[0.18em] hover:bg-black/85 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
+              >
+                {mode === "create" ? "Create" : "Save"}
+              </button>
+            </DialogFooter>
+          </form>
         )}
       </DialogContent>
     </Dialog>
   );
 }
-
 
 /* ---------------------------------- FIELD ---------------------------------- */
 
@@ -1928,9 +2223,7 @@ function EmptySectionPrompt({
   );
 }
 
-
 type SettingsSection = "brand" | "contact" | "socials";
-
 
 function SettingsPanel() {
   const ready = useMounted();
@@ -2008,9 +2301,12 @@ function SettingsPanel() {
     }
   };
 
-  const brandBusy = savingSection === "brand" || savingSection === "all" || refreshingSection === "brand";
-  const contactBusy = savingSection === "contact" || savingSection === "all" || refreshingSection === "contact";
-  const socialsBusy = savingSection === "socials" || savingSection === "all" || refreshingSection === "socials";
+  const brandBusy =
+    savingSection === "brand" || savingSection === "all" || refreshingSection === "brand";
+  const contactBusy =
+    savingSection === "contact" || savingSection === "all" || refreshingSection === "contact";
+  const socialsBusy =
+    savingSection === "socials" || savingSection === "all" || refreshingSection === "socials";
   const showBrand = !ready || brandBusy;
   const showContact = !ready || contactBusy;
   const showSocials = !ready || socialsBusy;
@@ -2033,7 +2329,6 @@ function SettingsPanel() {
   const contactEmpty =
     !saved.contactEmail.trim() && !saved.contactPhone.trim() && !saved.address.trim();
   const socialsEmpty = SOCIAL_FIELDS.every((f) => !saved.socials[f.key]?.trim());
-
 
   return (
     <>
@@ -2058,7 +2353,10 @@ function SettingsPanel() {
                 disabled={refreshingSection !== null || savingSection !== null}
                 className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em] disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                <RefreshCw className={`w-3 h-3 ${brandBusy && refreshingSection ? "animate-spin" : ""}`} /> Refresh
+                <RefreshCw
+                  className={`w-3 h-3 ${brandBusy && refreshingSection ? "animate-spin" : ""}`}
+                />{" "}
+                Refresh
               </button>
               <button
                 onClick={() => setConfirmReset(true)}
@@ -2123,7 +2421,11 @@ function SettingsPanel() {
                   placeholder="https://…/logo.png"
                 />
                 {draft.logoUrl && (
-                  <img src={draft.logoUrl} alt="logo preview" className="w-10 h-10 rounded-lg object-cover bg-black/5 border border-black/10" />
+                  <img
+                    src={draft.logoUrl}
+                    alt="logo preview"
+                    className="w-10 h-10 rounded-lg object-cover bg-black/5 border border-black/10"
+                  />
                 )}
               </div>
             </Field>
@@ -2131,12 +2433,16 @@ function SettingsPanel() {
               <input
                 className="mt-input"
                 value={formatPkPhone(draft.whatsappNumber)}
-                onChange={(e) => setDraft({ ...draft, whatsappNumber: normalizePkDigits(e.target.value) })}
+                onChange={(e) =>
+                  setDraft({ ...draft, whatsappNumber: normalizePkDigits(e.target.value) })
+                }
                 inputMode="numeric"
                 autoComplete="tel"
                 maxLength={12}
                 placeholder={PK_PHONE_PLACEHOLDER}
-                aria-invalid={draft.whatsappNumber.length > 0 && !isValidPkPhone(draft.whatsappNumber)}
+                aria-invalid={
+                  draft.whatsappNumber.length > 0 && !isValidPkPhone(draft.whatsappNumber)
+                }
               />
               {draft.whatsappNumber.length > 0 && !isValidPkPhone(draft.whatsappNumber) && (
                 <p className="mt-1 text-[11px] text-red-600">
@@ -2147,7 +2453,6 @@ function SettingsPanel() {
           </div>
         </section>
       )}
-
 
       {/* Contact */}
       {showContact ? (
@@ -2162,7 +2467,10 @@ function SettingsPanel() {
                 disabled={refreshingSection !== null || savingSection !== null}
                 className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em] disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                <RefreshCw className={`w-3 h-3 ${contactBusy && refreshingSection ? "animate-spin" : ""}`} /> Refresh
+                <RefreshCw
+                  className={`w-3 h-3 ${contactBusy && refreshingSection ? "animate-spin" : ""}`}
+                />{" "}
+                Refresh
               </button>
               <button
                 onClick={() => void save("contact")}
@@ -2209,7 +2517,9 @@ function SettingsPanel() {
                 autoComplete="tel"
                 maxLength={12}
                 value={formatPkPhone(draft.contactPhone)}
-                onChange={(e) => setDraft({ ...draft, contactPhone: normalizePkDigits(e.target.value) })}
+                onChange={(e) =>
+                  setDraft({ ...draft, contactPhone: normalizePkDigits(e.target.value) })
+                }
                 placeholder={PK_PHONE_PLACEHOLDER}
                 aria-invalid={draft.contactPhone.length > 0 && !isValidPkPhone(draft.contactPhone)}
               />
@@ -2243,10 +2553,15 @@ function SettingsPanel() {
               disabled={refreshingSection !== null || savingSection !== null}
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em] disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              <RefreshCw className={`w-3 h-3 ${socialsBusy && refreshingSection ? "animate-spin" : ""}`} /> Refresh
+              <RefreshCw
+                className={`w-3 h-3 ${socialsBusy && refreshingSection ? "animate-spin" : ""}`}
+              />{" "}
+              Refresh
             </button>
           </div>
-          <p className="text-xs text-black/50 -mt-1">Leave blank to hide the icon from the footer.</p>
+          <p className="text-xs text-black/50 -mt-1">
+            Leave blank to hide the icon from the footer.
+          </p>
           {sectionErrors.socials && (
             <SectionErrorBanner
               message={sectionErrors.socials}
@@ -2271,13 +2586,14 @@ function SettingsPanel() {
                   ref={i === 0 ? socialsFirstRef : undefined}
                   className="mt-input"
                   value={draft.socials[f.key]}
-                  onChange={(e) => setDraft({ ...draft, socials: { ...draft.socials, [f.key]: e.target.value } })}
+                  onChange={(e) =>
+                    setDraft({ ...draft, socials: { ...draft.socials, [f.key]: e.target.value } })
+                  }
                   placeholder={f.placeholder}
                 />
               </Field>
             ))}
           </div>
-
 
           <div className="pt-2 flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2">
             <button
@@ -2291,12 +2607,13 @@ function SettingsPanel() {
         </section>
       )}
 
-
       <AlertDialog open={confirmReset} onOpenChange={setConfirmReset}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Reset settings to defaults?</AlertDialogTitle>
-            <AlertDialogDescription>Brand, contact, WhatsApp number and social links will be restored to defaults.</AlertDialogDescription>
+            <AlertDialogDescription>
+              Brand, contact, WhatsApp number and social links will be restored to defaults.
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
@@ -2316,8 +2633,13 @@ function SettingsPanel() {
   );
 }
 
-
-const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif", "image/svg+xml"];
+const ACCEPTED_IMAGE_TYPES = [
+  "image/png",
+  "image/jpeg",
+  "image/webp",
+  "image/gif",
+  "image/svg+xml",
+];
 const MAX_IMAGE_BYTES = 3 * 1024 * 1024; // 3 MB
 
 function ImageUploader({ value, onChange }: { value: string; onChange: (url: string) => void }) {
@@ -2332,7 +2654,9 @@ function ImageUploader({ value, onChange }: { value: string; onChange: (url: str
       return;
     }
     if (file.size > MAX_IMAGE_BYTES) {
-      toast.error("File too large", { description: `Max ${(MAX_IMAGE_BYTES / 1024 / 1024).toFixed(0)} MB. Yours is ${(file.size / 1024 / 1024).toFixed(2)} MB.` });
+      toast.error("File too large", {
+        description: `Max ${(MAX_IMAGE_BYTES / 1024 / 1024).toFixed(0)} MB. Yours is ${(file.size / 1024 / 1024).toFixed(2)} MB.`,
+      });
       return;
     }
     setLoading(true);
@@ -2372,7 +2696,9 @@ function ImageUploader({ value, onChange }: { value: string; onChange: (url: str
           }
         }}
         className={`flex-1 rounded-xl border-2 border-dashed transition cursor-pointer grid place-items-center p-5 text-center ${
-          dragging ? "border-black bg-black/[0.03]" : "border-black/15 hover:border-black/40 hover:bg-black/[0.02]"
+          dragging
+            ? "border-black bg-black/[0.03]"
+            : "border-black/15 hover:border-black/40 hover:bg-black/[0.02]"
         }`}
       >
         <div className="flex flex-col items-center gap-2 text-black/60">
@@ -2409,17 +2735,27 @@ function ImageUploader({ value, onChange }: { value: string; onChange: (url: str
   );
 }
 
-function ImportStat({ label, value, tone }: { label: string; value: number; tone: "green" | "blue" | "amber" }) {
+function ImportStat({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: number;
+  tone: "green" | "blue" | "amber";
+}) {
   const toneClass =
     tone === "green"
       ? "bg-emerald-50 border-emerald-200 text-emerald-700"
       : tone === "blue"
-      ? "bg-sky-50 border-sky-200 text-sky-700"
-      : "bg-amber-50 border-amber-200 text-amber-700";
+        ? "bg-sky-50 border-sky-200 text-sky-700"
+        : "bg-amber-50 border-amber-200 text-amber-700";
   return (
     <div className={`rounded-xl border px-3 py-2.5 ${toneClass}`}>
       <div className="text-[10px] uppercase tracking-[0.18em] opacity-80">{label}</div>
-      <div className="text-xl tabular-nums" style={{ fontWeight: 500 }}>{value}</div>
+      <div className="text-xl tabular-nums" style={{ fontWeight: 500 }}>
+        {value}
+      </div>
     </div>
   );
 }
@@ -2434,13 +2770,15 @@ function ImportRowList({ title, items, tone }: { title: string; items: string[];
       <div className="text-[10px] uppercase tracking-[0.18em] text-black/50 mb-1">
         {title} ({items.length})
       </div>
-      <ul className={`text-[12px] rounded-lg border ${tone === "amber" ? "border-amber-200 bg-amber-50/50" : "border-black/10 bg-black/[0.02]"} divide-y divide-black/5 max-h-40 overflow-auto`}>
+      <ul
+        className={`text-[12px] rounded-lg border ${tone === "amber" ? "border-amber-200 bg-amber-50/50" : "border-black/10 bg-black/[0.02]"} divide-y divide-black/5 max-h-40 overflow-auto`}
+      >
         {shown.map((s, i) => (
-          <li key={i} className="px-3 py-1.5 truncate">{s}</li>
+          <li key={i} className="px-3 py-1.5 truncate">
+            {s}
+          </li>
         ))}
-        {rest > 0 && (
-          <li className="px-3 py-1.5 text-black/50 italic">+{rest} more…</li>
-        )}
+        {rest > 0 && <li className="px-3 py-1.5 text-black/50 italic">+{rest} more…</li>}
       </ul>
     </div>
   );
@@ -2525,7 +2863,10 @@ function OrdersPanel({
   return (
     <section className="bg-white border border-black/10 rounded-2xl p-5 sm:p-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-        <SectionTitle icon={<ScrollText className="w-3.5 h-3.5" />} label={`Orders (${filtered.length}${filtered.length !== orders.length ? ` of ${orders.length}` : ""})`} />
+        <SectionTitle
+          icon={<ScrollText className="w-3.5 h-3.5" />}
+          label={`Orders (${filtered.length}${filtered.length !== orders.length ? ` of ${orders.length}` : ""})`}
+        />
         <button
           onClick={() => void onRefetch()}
           className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em] self-start sm:self-auto"
@@ -2538,7 +2879,12 @@ function OrdersPanel({
         <div className="mb-4 flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
           <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
           <div className="flex-1">{error}</div>
-          <button onClick={() => void onRefetch()} className="text-[10px] uppercase tracking-[0.18em] underline underline-offset-4">Retry</button>
+          <button
+            onClick={() => void onRefetch()}
+            className="text-[10px] uppercase tracking-[0.18em] underline underline-offset-4"
+          >
+            Retry
+          </button>
         </div>
       )}
 
@@ -2552,7 +2898,10 @@ function OrdersPanel({
             className="w-full pl-9 pr-8 py-2 text-sm rounded-full border border-black/15 focus:border-black focus:outline-none transition"
           />
           {search && (
-            <button onClick={() => setSearch("")} className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-black/40 hover:text-black">
+            <button
+              onClick={() => setSearch("")}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-black/40 hover:text-black"
+            >
               <XIcon className="w-3.5 h-3.5" />
             </button>
           )}
@@ -2564,17 +2913,22 @@ function OrdersPanel({
               onClick={() => setStatusFilter(s)}
               className={`px-3 py-1.5 rounded-full border text-[10px] uppercase tracking-[0.18em] transition ${statusFilter === s ? "border-black bg-black text-white" : "border-black/15 hover:border-black"}`}
             >
-              {s === "all" ? "All" : STATUS_STYLES[s].label} <span className="opacity-60 ml-1">{counts[s]}</span>
+              {s === "all" ? "All" : STATUS_STYLES[s].label}{" "}
+              <span className="opacity-60 ml-1">{counts[s]}</span>
             </button>
           ))}
         </div>
       </div>
 
       {loading && orders.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-black/15 p-8 text-center text-sm text-black/50">Loading orders…</div>
+        <div className="rounded-xl border border-dashed border-black/15 p-8 text-center text-sm text-black/50">
+          Loading orders…
+        </div>
       ) : filtered.length === 0 ? (
         <div className="rounded-xl border border-dashed border-black/15 p-8 text-center text-sm text-black/50">
-          {orders.length === 0 ? "No orders yet. WhatsApp drafts will appear here." : "No orders match your filters."}
+          {orders.length === 0
+            ? "No orders yet. WhatsApp drafts will appear here."
+            : "No orders match your filters."}
         </div>
       ) : (
         <div className="overflow-x-auto">
@@ -2601,15 +2955,27 @@ function OrdersPanel({
                   >
                     <td className="py-3 pr-3">
                       <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-lg overflow-hidden shrink-0 ${o.primaryBg ?? "bg-black/5"} grid place-items-center`}>
-                          {o.primaryImg ? <img src={o.primaryImg} alt="" className="w-full h-full object-cover" /> : <ShoppingBag className="w-4 h-4 text-black/40" />}
+                        <div
+                          className={`w-10 h-10 rounded-lg overflow-hidden shrink-0 ${o.primaryBg ?? "bg-black/5"} grid place-items-center`}
+                        >
+                          {o.primaryImg ? (
+                            <SafeImage src={o.primaryImg} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            <ShoppingBag className="w-4 h-4 text-black/40" />
+                          )}
                         </div>
                         <div className="min-w-0">
                           <div className="flex items-center gap-2 text-sm">
                             <span className="truncate max-w-[220px]">{o.primaryName}</span>
-                            {o.extraCount ? <span className="text-[10px] uppercase tracking-[0.15em] text-black/45">+{o.extraCount}</span> : null}
+                            {o.extraCount ? (
+                              <span className="text-[10px] uppercase tracking-[0.15em] text-black/45">
+                                +{o.extraCount}
+                              </span>
+                            ) : null}
                           </div>
-                          <div className="text-[10px] text-black/40 tabular-nums">#{o.id.slice(0, 8)}</div>
+                          <div className="text-[10px] text-black/40 tabular-nums">
+                            #{o.id.slice(0, 8)}
+                          </div>
                         </div>
                       </div>
                     </td>
@@ -2620,22 +2986,31 @@ function OrdersPanel({
                     <td className="py-3 pr-3 text-right tabular-nums">{formatPKR(o.total)}</td>
                     <td className="py-3 pr-3" onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center gap-2">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full border text-[10px] uppercase tracking-[0.15em] ${badge.className}`}>
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded-full border text-[10px] uppercase tracking-[0.15em] ${badge.className}`}
+                        >
                           {badge.label}
                         </span>
                         <select
                           value={status}
-                          onChange={(e) => void handleStatusChange(o, e.target.value as OrderStatus)}
+                          onChange={(e) =>
+                            void handleStatusChange(o, e.target.value as OrderStatus)
+                          }
                           className="px-2 py-1 text-xs rounded-md border border-black/15 focus:border-black focus:outline-none bg-white"
                           aria-label="Update status"
                         >
                           {ORDER_STATUSES.map((s) => (
-                            <option key={s} value={s}>{STATUS_STYLES[s].label}</option>
+                            <option key={s} value={s}>
+                              {STATUS_STYLES[s].label}
+                            </option>
                           ))}
                         </select>
                       </div>
                     </td>
-                    <td className="py-3 pr-3 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                    <td
+                      className="py-3 pr-3 text-right whitespace-nowrap"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <a
                         href={o.url}
                         target="_blank"
@@ -2660,12 +3035,18 @@ function OrdersPanel({
         </div>
       )}
 
-      <AlertDialog open={!!confirmDelete} onOpenChange={(open) => { if (!open) setConfirmDelete(null); }}>
+      <AlertDialog
+        open={!!confirmDelete}
+        onOpenChange={(open) => {
+          if (!open) setConfirmDelete(null);
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete this order?</AlertDialogTitle>
             <AlertDialogDescription>
-              This removes the order draft for {confirmDelete?.primaryName ?? "this order"}. This action cannot be undone.
+              This removes the order draft for {confirmDelete?.primaryName ?? "this order"}. This
+              action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -2685,119 +3066,166 @@ function OrdersPanel({
         </AlertDialogContent>
       </AlertDialog>
 
-      <Sheet open={!!selected} onOpenChange={(open) => { if (!open) setSelected(null); }}>
+      <Sheet
+        open={!!selected}
+        onOpenChange={(open) => {
+          if (!open) setSelected(null);
+        }}
+      >
         <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto p-0">
-          {selected && (() => {
-            const s = (selected.status ?? "new") as OrderStatus;
-            const b = STATUS_STYLES[s];
-            // Reverse-derive subtotal & shipping from the saved total.
-            // total = subtotal + shipping, where shipping = computeShipping(subtotal).
-            let subtotal = selected.total;
-            let shipping = 0;
-            if (selected.kind === "cart" && selected.total > 0) {
-              const guess = selected.total - 500; // SHIPPING_FEE
-              if (guess > 0 && computeShipping(guess) === 500) {
-                subtotal = guess;
-                shipping = 500;
+          {selected &&
+            (() => {
+              const s = (selected.status ?? "new") as OrderStatus;
+              const b = STATUS_STYLES[s];
+              // Reverse-derive subtotal & shipping from the saved total.
+              // total = subtotal + shipping, where shipping = computeShipping(subtotal).
+              let subtotal = selected.total;
+              let shipping = 0;
+              if (selected.kind === "cart" && selected.total > 0) {
+                const guess = selected.total - 500; // SHIPPING_FEE
+                if (guess > 0 && computeShipping(guess) === 500) {
+                  subtotal = guess;
+                  shipping = 500;
+                }
               }
-            }
-            return (
-              <div className="flex flex-col h-full">
-                <SheetHeader className="px-6 pt-6 pb-4 border-b border-black/10 text-left">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full border text-[10px] uppercase tracking-[0.15em] ${b.className}`}>{b.label}</span>
-                    <span className="text-[10px] uppercase tracking-[0.18em] text-black/45">{selected.kind === "cart" ? "Cart order" : "Quick order"}</span>
-                  </div>
-                  <SheetTitle className="text-lg" style={dmSans}>Order #{selected.id.slice(0, 8)}</SheetTitle>
-                  <SheetDescription className="text-xs text-black/55">
-                    Placed {new Date(selected.createdAt).toLocaleString()}
-                  </SheetDescription>
-                </SheetHeader>
-
-                <div className="flex-1 px-6 py-5 space-y-5">
-                  {/* Primary line item */}
-                  <div className="flex items-center gap-3 rounded-xl border border-black/10 p-3">
-                    <div className={`w-14 h-14 rounded-lg overflow-hidden shrink-0 ${selected.primaryBg ?? "bg-black/5"} grid place-items-center`}>
-                      {selected.primaryImg ? <img src={selected.primaryImg} alt="" className="w-full h-full object-cover" /> : <ShoppingBag className="w-5 h-5 text-black/40" />}
+              return (
+                <div className="flex flex-col h-full">
+                  <SheetHeader className="px-6 pt-6 pb-4 border-b border-black/10 text-left">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span
+                        className={`inline-flex items-center px-2 py-0.5 rounded-full border text-[10px] uppercase tracking-[0.15em] ${b.className}`}
+                      >
+                        {b.label}
+                      </span>
+                      <span className="text-[10px] uppercase tracking-[0.18em] text-black/45">
+                        {selected.kind === "cart" ? "Cart order" : "Quick order"}
+                      </span>
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="text-sm truncate">{selected.primaryName}</div>
-                      <div className="text-[11px] text-black/55">
-                        {selected.itemCount} item{selected.itemCount === 1 ? "" : "s"}
-                        {selected.extraCount ? ` · +${selected.extraCount} more product${selected.extraCount === 1 ? "" : "s"}` : ""}
+                    <SheetTitle className="text-lg" style={dmSans}>
+                      Order #{selected.id.slice(0, 8)}
+                    </SheetTitle>
+                    <SheetDescription className="text-xs text-black/55">
+                      Placed {new Date(selected.createdAt).toLocaleString()}
+                    </SheetDescription>
+                  </SheetHeader>
+
+                  <div className="flex-1 px-6 py-5 space-y-5">
+                    {/* Primary line item */}
+                    <div className="flex items-center gap-3 rounded-xl border border-black/10 p-3">
+                      <div
+                        className={`w-14 h-14 rounded-lg overflow-hidden shrink-0 ${selected.primaryBg ?? "bg-black/5"} grid place-items-center`}
+                      >
+                        {selected.primaryImg ? (
+                          <img
+                            src={selected.primaryImg}
+                            alt=""
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <ShoppingBag className="w-5 h-5 text-black/40" />
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-sm truncate">{selected.primaryName}</div>
+                        <div className="text-[11px] text-black/55">
+                          {selected.itemCount} item{selected.itemCount === 1 ? "" : "s"}
+                          {selected.extraCount
+                            ? ` · +${selected.extraCount} more product${selected.extraCount === 1 ? "" : "s"}`
+                            : ""}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Totals */}
+                    <div className="rounded-xl border border-black/10 p-4 text-sm">
+                      <div className="text-[10px] uppercase tracking-[0.18em] text-black/45 mb-2">
+                        Totals
+                      </div>
+                      <div className="flex justify-between py-1">
+                        <span className="text-black/60">Subtotal</span>
+                        <span className="tabular-nums">{formatPKR(subtotal)}</span>
+                      </div>
+                      {selected.kind === "cart" && (
+                        <div className="flex justify-between py-1">
+                          <span className="text-black/60">Shipping</span>
+                          <span className="tabular-nums">
+                            {shipping === 0 ? "Free" : formatPKR(shipping)}
+                          </span>
+                        </div>
+                      )}
+                      <div className="flex justify-between pt-2 mt-2 border-t border-black/10 font-medium">
+                        <span>Total</span>
+                        <span className="tabular-nums">{formatPKR(selected.total)}</span>
+                      </div>
+                    </div>
+
+                    {/* Status control */}
+                    <div className="rounded-xl border border-black/10 p-4">
+                      <div className="text-[10px] uppercase tracking-[0.18em] text-black/45 mb-2">
+                        Status
+                      </div>
+                      <select
+                        value={s}
+                        onChange={(e) =>
+                          void handleStatusChange(selected, e.target.value as OrderStatus)
+                        }
+                        className="w-full px-3 py-2 text-sm rounded-md border border-black/15 focus:border-black focus:outline-none bg-white"
+                      >
+                        {ORDER_STATUSES.map((st) => (
+                          <option key={st} value={st}>
+                            {STATUS_STYLES[st].label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Full message with line items + shipping/payment notes */}
+                    <div className="rounded-xl border border-black/10 p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="text-[10px] uppercase tracking-[0.18em] text-black/45">
+                          Order message
+                        </div>
+                        <button
+                          onClick={() => {
+                            void navigator.clipboard?.writeText(selected.message);
+                            toast.success("Message copied");
+                          }}
+                          className="text-[10px] uppercase tracking-[0.18em] underline underline-offset-4 text-black/60 hover:text-black"
+                        >
+                          Copy
+                        </button>
+                      </div>
+                      <pre className="whitespace-pre-wrap break-words text-xs text-black/75 font-mono leading-relaxed max-h-72 overflow-y-auto">
+                        {selected.message}
+                      </pre>
+                      <div className="mt-3 text-[11px] text-black/50">
+                        Customer sends payment &amp; shipping details in the WhatsApp thread after
+                        opening the order.
                       </div>
                     </div>
                   </div>
 
-                  {/* Totals */}
-                  <div className="rounded-xl border border-black/10 p-4 text-sm">
-                    <div className="text-[10px] uppercase tracking-[0.18em] text-black/45 mb-2">Totals</div>
-                    <div className="flex justify-between py-1"><span className="text-black/60">Subtotal</span><span className="tabular-nums">{formatPKR(subtotal)}</span></div>
-                    {selected.kind === "cart" && (
-                      <div className="flex justify-between py-1"><span className="text-black/60">Shipping</span><span className="tabular-nums">{shipping === 0 ? "Free" : formatPKR(shipping)}</span></div>
-                    )}
-                    <div className="flex justify-between pt-2 mt-2 border-t border-black/10 font-medium"><span>Total</span><span className="tabular-nums">{formatPKR(selected.total)}</span></div>
-                  </div>
-
-                  {/* Status control */}
-                  <div className="rounded-xl border border-black/10 p-4">
-                    <div className="text-[10px] uppercase tracking-[0.18em] text-black/45 mb-2">Status</div>
-                    <select
-                      value={s}
-                      onChange={(e) => void handleStatusChange(selected, e.target.value as OrderStatus)}
-                      className="w-full px-3 py-2 text-sm rounded-md border border-black/15 focus:border-black focus:outline-none bg-white"
+                  <div className="border-t border-black/10 px-6 py-4 flex items-center gap-2">
+                    <a
+                      href={selected.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full bg-black text-white hover:bg-black/85 transition text-[11px] uppercase tracking-[0.18em]"
                     >
-                      {ORDER_STATUSES.map((st) => (
-                        <option key={st} value={st}>{STATUS_STYLES[st].label}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Full message with line items + shipping/payment notes */}
-                  <div className="rounded-xl border border-black/10 p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="text-[10px] uppercase tracking-[0.18em] text-black/45">Order message</div>
-                      <button
-                        onClick={() => {
-                          void navigator.clipboard?.writeText(selected.message);
-                          toast.success("Message copied");
-                        }}
-                        className="text-[10px] uppercase tracking-[0.18em] underline underline-offset-4 text-black/60 hover:text-black"
-                      >
-                        Copy
-                      </button>
-                    </div>
-                    <pre className="whitespace-pre-wrap break-words text-xs text-black/75 font-mono leading-relaxed max-h-72 overflow-y-auto">
-{selected.message}
-                    </pre>
-                    <div className="mt-3 text-[11px] text-black/50">
-                      Customer sends payment &amp; shipping details in the WhatsApp thread after opening the order.
-                    </div>
+                      Open in WhatsApp
+                    </a>
+                    <button
+                      onClick={() => setConfirmDelete(selected)}
+                      className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full border border-black/15 hover:border-black transition text-[11px] uppercase tracking-[0.18em]"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" /> Delete
+                    </button>
                   </div>
                 </div>
-
-                <div className="border-t border-black/10 px-6 py-4 flex items-center gap-2">
-                  <a
-                    href={selected.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full bg-black text-white hover:bg-black/85 transition text-[11px] uppercase tracking-[0.18em]"
-                  >
-                    Open in WhatsApp
-                  </a>
-                  <button
-                    onClick={() => setConfirmDelete(selected)}
-                    className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full border border-black/15 hover:border-black transition text-[11px] uppercase tracking-[0.18em]"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" /> Delete
-                  </button>
-                </div>
-              </div>
-            );
-          })()}
+              );
+            })()}
         </SheetContent>
       </Sheet>
     </section>
   );
 }
-

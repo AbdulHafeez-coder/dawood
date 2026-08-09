@@ -15,9 +15,7 @@ export function useMounted(): boolean {
 
 function Shimmer({ className = "" }: { className?: string }) {
   return (
-    <div
-      className={`relative overflow-hidden bg-black/[0.06] ${className}`}
-    >
+    <div className={`relative overflow-hidden bg-black/[0.06] ${className}`}>
       <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.4s_infinite] bg-gradient-to-r from-transparent via-white/60 to-transparent" />
     </div>
   );
@@ -27,15 +25,15 @@ export function ProductCardSkeleton() {
   return (
     <div className="bg-white rounded-2xl overflow-hidden flex flex-col h-full">
       <Shimmer className="aspect-square w-full" />
-      <div className="p-5 flex flex-col gap-3 flex-1">
+      <div className="p-3 sm:p-4 flex flex-col gap-2 flex-1">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1 space-y-2">
-            <Shimmer className="h-5 w-3/4 rounded" />
+            <Shimmer className="h-4 w-3/4 rounded" />
             <Shimmer className="h-3 w-1/4 rounded" />
           </div>
-          <Shimmer className="h-5 w-16 rounded" />
+          <Shimmer className="h-4 w-14 rounded" />
         </div>
-        <Shimmer className="mt-auto h-11 w-full rounded-md" />
+        <Shimmer className="mt-auto h-9 w-full rounded-md" />
       </div>
     </div>
   );
@@ -44,7 +42,7 @@ export function ProductCardSkeleton() {
 export function ProductGridSkeleton({ count = 8 }: { count?: number }) {
   return (
     <div
-      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6"
+      className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 lg:gap-4"
       aria-busy="true"
       aria-live="polite"
     >
@@ -57,19 +55,17 @@ export function ProductGridSkeleton({ count = 8 }: { count?: number }) {
 
 export function FiltersSkeleton() {
   return (
-    <div aria-busy="true" className="space-y-4 mb-8 lg:mb-10">
-      <div className="bg-white rounded-2xl p-4 lg:p-5 flex items-center gap-3">
-        <Shimmer className="h-5 w-5 rounded-full" />
-        <Shimmer className="h-5 flex-1 rounded" />
-      </div>
-      <div className="bg-white rounded-2xl p-4 lg:p-5 flex flex-col md:flex-row md:items-center md:flex-wrap gap-4 md:gap-5 lg:gap-8">
-        <div className="flex flex-wrap items-center gap-2">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Shimmer key={i} className="h-9 w-20 rounded-full" />
+    <div aria-busy="true" className="mb-6 lg:mb-8">
+      <div className="bg-white rounded-2xl p-3.5 lg:p-4 border border-black/5 shadow-xs flex flex-col gap-4">
+        <div className="flex items-center gap-2 overflow-hidden py-0.5">
+          {Array.from({ length: 7 }).map((_, i) => (
+            <Shimmer key={i} className="h-7 w-24 rounded-full shrink-0" />
           ))}
         </div>
-        <Shimmer className="h-9 flex-1 min-w-[160px] max-w-xs rounded-full" />
-        <Shimmer className="h-9 w-40 rounded-full" />
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-black/5">
+          <Shimmer className="h-9 w-full max-w-md rounded-xl" />
+          <Shimmer className="h-9 w-32 rounded-xl shrink-0" />
+        </div>
       </div>
     </div>
   );
@@ -184,11 +180,11 @@ export function AddToCartSkeleton() {
   return (
     <div className="space-y-3 max-w-md" aria-busy="true">
       <div className="flex items-center gap-3">
-        <Shimmer className="h-12 w-28 rounded-full" />
-        <Shimmer className="h-12 flex-1 rounded-md" />
-        <Shimmer className="h-12 w-12 rounded-full shrink-0" />
+        <Shimmer className="h-10 w-28 rounded-full" />
+        <Shimmer className="h-10 flex-1 rounded-md" />
+        <Shimmer className="h-10 w-10 rounded-full shrink-0" />
       </div>
-      <Shimmer className="h-12 w-full rounded-md" />
+      <Shimmer className="h-10 w-full rounded-md" />
       <Shimmer className="h-3 w-2/3 rounded" />
     </div>
   );
@@ -345,7 +341,10 @@ export function AdminSettingsSkeleton() {
   return (
     <div className="space-y-4 sm:space-y-6" aria-busy="true" aria-live="polite">
       {Array.from({ length: 3 }).map((_, s) => (
-        <section key={s} className="bg-white border border-black/10 rounded-2xl p-5 sm:p-6 space-y-4">
+        <section
+          key={s}
+          className="bg-white border border-black/10 rounded-2xl p-5 sm:p-6 space-y-4"
+        >
           <div className="flex items-center gap-2">
             <Shimmer className="h-4 w-4 rounded-full" />
             <Shimmer className="h-4 w-32 rounded" />
@@ -389,7 +388,6 @@ export function AdminDashboardSkeleton({
     </div>
   );
 }
-
 
 export function AdminLoginSkeleton() {
   return (

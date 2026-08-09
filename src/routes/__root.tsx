@@ -11,117 +11,11 @@ import { useEffect, type ReactNode } from "react";
 import { Toaster } from "sonner";
 
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
-import { SiteFooter } from "@/components/SiteFooter";
+import { ErrorView } from "@/components/ui/ErrorView";
+import { NotFoundView } from "@/components/ui/NotFoundView";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
-function NotFoundComponent() {
-  return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <div className="flex flex-1 items-center justify-center px-4 py-20">
-        <div className="max-w-md text-center">
-          <h1 className="text-7xl font-bold text-foreground">404</h1>
-          <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            The page you're looking for doesn't exist or has been moved.
-          </p>
-          <div className="mt-6 flex flex-wrap justify-center gap-2">
-            <Link
-              to="/"
-              className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-            >
-              Back to home
-            </Link>
-            <a
-              href="/#shop"
-              className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-            >
-              Browse products
-            </a>
-          </div>
-        </div>
-      </div>
-      <SiteFooter />
-    </div>
-  );
-}
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
-  console.error(error);
-  const router = useRouter();
-  useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
-
-  const isChunkError = /chunk|Loading chunk|dynamically imported module/i.test(error?.message ?? "");
-
-  return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <div className="flex flex-1 items-center justify-center px-4 py-20">
-        <div className="w-full max-w-lg text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-black/10 bg-white text-2xl">
-            ⚠️
-          </div>
-          <h1 className="mt-6 text-2xl font-semibold tracking-tight text-foreground">
-            Something interrupted your shop
-          </h1>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            {isChunkError
-              ? "A newer version of Dawood Mart is available. A quick refresh will load the latest files."
-              : "We hit an unexpected snag while loading this page. Your cart and favourites are safely saved — nothing was lost."}
-          </p>
-
-          <div className="mt-6 flex flex-wrap justify-center gap-2">
-            <button
-              onClick={() => {
-                router.invalidate();
-                reset();
-              }}
-              className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-            >
-              Try again
-            </button>
-            <button
-              onClick={() => {
-                if (typeof window !== "undefined") window.location.reload();
-              }}
-              className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-            >
-              Refresh page
-            </button>
-            <a
-              href="/"
-              className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-            >
-              Back to home
-            </a>
-            <a
-              href="/#shop"
-              className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-            >
-              Browse products
-            </a>
-          </div>
-
-          {error?.message ? (
-            <details className="mx-auto mt-8 max-w-md text-left">
-              <summary className="cursor-pointer text-xs text-muted-foreground hover:text-foreground">
-                Technical details
-              </summary>
-              <pre className="mt-2 max-h-40 overflow-auto rounded-md border border-black/10 bg-black/5 p-3 text-[11px] leading-relaxed text-foreground/80">
-                {error.message}
-              </pre>
-            </details>
-          ) : null}
-
-          <p className="mt-6 text-xs text-muted-foreground">
-            Still stuck? Message us on WhatsApp and we'll help you place your order.
-          </p>
-        </div>
-      </div>
-      <SiteFooter />
-    </div>
-  );
-}
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
@@ -129,9 +23,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Dawood Mart — Considered home essentials for calm, clean spaces" },
-      { name: "description", content: "Dawood Mart crafts plush towels, peel-and-stick wallpaper and plant-based cleaning cloths for well-kept, quiet homes." },
+      {
+        name: "description",
+        content:
+          "Dawood Mart crafts plush towels, peel-and-stick wallpaper and plant-based cleaning cloths for well-kept, quiet homes.",
+      },
       { property: "og:title", content: "Dawood Mart — Considered home essentials" },
-      { property: "og:description", content: "Plush towels, peel-and-stick wallpaper and plant-based cleaning made for calm, well-kept spaces." },
+      {
+        property: "og:description",
+        content:
+          "Plush towels, peel-and-stick wallpaper and plant-based cleaning made for calm, well-kept spaces.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -140,13 +42,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Inter:wght@400;500;600&display=swap" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Inter:wght@400;500;600&display=swap",
+      },
     ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
-  notFoundComponent: NotFoundComponent,
-  errorComponent: ErrorComponent,
+  notFoundComponent: NotFoundView,
+  errorComponent: ErrorView,
 });
 
 function RootShell({ children }: { children: ReactNode }) {
@@ -168,9 +73,11 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
-      <Toaster position="bottom-right" richColors closeButton />
+      <TooltipProvider>
+        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+        <Outlet />
+        <Toaster position="bottom-right" richColors closeButton />
+      </TooltipProvider>
     </QueryClientProvider>
   );
 }

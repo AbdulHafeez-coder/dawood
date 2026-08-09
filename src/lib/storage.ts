@@ -31,13 +31,11 @@ export async function uploadProductImage(file: File): Promise<string> {
   const ext = extFromType(file.type, (file.name.split(".").pop() || "jpg").toLowerCase());
   const path = `${new Date().getFullYear()}/${randomId()}.${ext}`;
 
-  const { error } = await supabase.storage
-    .from(PRODUCT_IMAGES_BUCKET)
-    .upload(path, file, {
-      cacheControl: "31536000",
-      upsert: false,
-      contentType: file.type || undefined,
-    });
+  const { error } = await supabase.storage.from(PRODUCT_IMAGES_BUCKET).upload(path, file, {
+    cacheControl: "31536000",
+    upsert: false,
+    contentType: file.type || undefined,
+  });
   if (error) throw error;
 
   const { data } = supabase.storage.from(PRODUCT_IMAGES_BUCKET).getPublicUrl(path);
@@ -103,7 +101,6 @@ export async function uploadProductImageWithProgress(
   const { data } = supabase.storage.from(PRODUCT_IMAGES_BUCKET).getPublicUrl(signed.path);
   return data.publicUrl;
 }
-
 
 /**
  * Best-effort deletion of a previously uploaded product image by its public

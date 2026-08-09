@@ -72,7 +72,10 @@ export function useAdminAuth() {
       const isAdmin = await checkIsAdmin(data.user.id);
       if (!isAdmin) {
         await supabase.auth.signOut();
-        return { ok: false, error: "This account is not an admin. Grant it the 'admin' role in user_roles." };
+        return {
+          ok: false,
+          error: "This account is not an admin. Grant it the 'admin' role in user_roles.",
+        };
       }
       authed = true;
       emit();

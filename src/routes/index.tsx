@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ProductCard } from "@/components/ProductCard";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import {
@@ -17,36 +17,75 @@ import {
   ShieldCheck,
   Heart,
   ScrollText,
+  ChevronLeft,
+  ChevronRight,
+  RotateCcw,
 } from "lucide-react";
+import SlickSlider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
+const Slider: typeof SlickSlider =
+  typeof SlickSlider === "function"
+    ? SlickSlider
+    : (SlickSlider as any)?.default || SlickSlider;
 import { useOrders } from "@/lib/orders";
 import heroBg from "@/assets/hero-home.jpg";
 import productTowel from "@/assets/product-towel.jpg";
 import productWallpaper from "@/assets/product-wallpaper.jpg";
 import productSponge from "@/assets/product-sponge.jpg";
-import { useProducts, useCategories, useCart, useFavourites, usePromotions, type Category, type Product } from "@/lib/shop";
+import {
+  useProducts,
+  useCategories,
+  useCart,
+  useFavourites,
+  usePromotions,
+  type Category,
+  type Product,
+} from "@/lib/shop";
 import { useSettings } from "@/lib/settings";
+import { SafeImage } from "@/components/ui/SafeImage";
 import { LazyCartDrawer as CartDrawer } from "@/components/LazyCartDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
 import { FiltersSkeleton, ProductGridSkeleton, useMounted } from "@/components/skeletons";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 import { toast } from "sonner";
 import { formatPKR } from "@/lib/format";
-
+import Autoplay from "embla-carousel-autoplay";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     meta: [
       { title: "Dawood Mart — Home Essentials Store" },
-      { name: "description", content: "Shop Dawood Mart towels, wallpaper, cleaning cloths, sponges and practical home essentials in PKR." },
+      {
+        name: "description",
+        content:
+          "Shop Dawood Mart towels, wallpaper, cleaning cloths, sponges and practical home essentials in PKR.",
+      },
       { property: "og:title", content: "Dawood Mart — Home Essentials Store" },
-      { property: "og:description", content: "Shop towels, wallpaper, cleaning cloths, sponges and practical home essentials from Dawood Mart." },
+      {
+        property: "og:description",
+        content:
+          "Shop towels, wallpaper, cleaning cloths, sponges and practical home essentials from Dawood Mart.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [
-      { rel: "preload", as: "image", href: heroBg, fetchPriority: "high" },
-    ],
+    links: [{ rel: "preload", as: "image", href: heroBg, fetchPriority: "high" }],
   }),
 });
 
@@ -55,21 +94,38 @@ const inter = { fontFamily: "'Inter', sans-serif" };
 
 const cards = [
   { Icon: Leaf, bg: "bg-emerald-800", text: "OEKO-TEX certified fabrics, kind to skin and planet" },
-  { Icon: Truck, bg: "bg-stone-800", text: "Free carbon-neutral delivery on orders over PKR 5,000" },
-  { Icon: ShieldCheck, bg: "bg-amber-800", text: "60-day home trial — return anything, no questions" },
+  {
+    Icon: Truck,
+    bg: "bg-stone-800",
+    text: "Free carbon-neutral delivery on orders over PKR 5,000",
+  },
+  {
+    Icon: ShieldCheck,
+    bg: "bg-amber-800",
+    text: "60-day home trial — return anything, no questions",
+  },
   { Icon: Sparkles, bg: "bg-rose-800", text: "Small-batch made in family-run European mills" },
 ];
 
 const navLinks = ["Shop", "Collections"];
 
-
 type SortKey = "featured" | "price-asc" | "price-desc" | "rating";
 
-
-function Word({ children, delay, className = "" }: { children: React.ReactNode; delay: string; className?: string }) {
+function Word({
+  children,
+  delay,
+  className = "",
+}: {
+  children: React.ReactNode;
+  delay: string;
+  className?: string;
+}) {
   return (
     <span className="inline-block overflow-hidden align-bottom">
-      <span className={`inline-block animate-word-reveal ${className}`} style={{ animationDelay: delay, animationFillMode: "both" }}>
+      <span
+        className={`inline-block animate-word-reveal ${className}`}
+        style={{ animationDelay: delay, animationFillMode: "both" }}
+      >
         {children}
       </span>
     </span>
@@ -90,15 +146,59 @@ function Index() {
   const { categories: liveCategories, categoryInfo } = useCategories();
   const { promotions } = usePromotions();
 
-  const handleFav = useCallback((p: Product) => {
-    const wasFav = isFav(p.id);
-    toggleFav(p.id);
-    if (wasFav) {
-      toast(`${p.name} removed from favourites`);
-    } else {
-      toast.success(`${p.name} added to favourites`, { description: p.category });
-    }
-  }, [isFav, toggleFav]);
+  const categorySliderRef = useRef<Slider | null>(null);
+
+  const categorySliderSettings = useMemo(
+    () => ({
+      dots: true,
+      infinite: liveCategories.length > 4,
+      speed: 500,
+      slidesToShow: 4,
+      slidesToScroll: 1,
+      autoplay: true,
+      autoplaySpeed: 3500,
+      pauseOnHover: true,
+      arrows: false,
+      responsive: [
+        {
+          breakpoint: 1280,
+          settings: {
+            slidesToShow: 4,
+            slidesToScroll: 1,
+          },
+        },
+        {
+          breakpoint: 1024,
+          settings: {
+            slidesToShow: 3,
+            slidesToScroll: 1,
+          },
+        },
+        {
+          breakpoint: 768,
+          settings: {
+            slidesToShow: 2,
+            slidesToScroll: 1,
+          },
+        },
+        {
+          breakpoint: 480,
+          settings: {
+            slidesToShow: 1,
+            slidesToScroll: 1,
+          },
+        },
+      ],
+    }),
+    [liveCategories.length],
+  );
+
+  const handleFav = useCallback(
+    (p: Product) => {
+      toggleFav(p);
+    },
+    [toggleFav],
+  );
 
   const [activeCat, setActiveCat] = useState<Category | "All">("All");
   const { priceMin, priceMax } = useMemo(() => {
@@ -112,15 +212,14 @@ function Index() {
     return { priceMin: lo, priceMax: hi };
   }, [products]);
   const [maxPrice, setMaxPrice] = useState(priceMax);
-  useEffect(() => { setMaxPrice(priceMax); }, [priceMax]);
+  useEffect(() => {
+    setMaxPrice(priceMax);
+  }, [priceMax]);
   const [sort, setSort] = useState<SortKey>("featured");
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebouncedValue(query, 250);
 
-
-  const [searchOpen, setSearchOpen] = useState(false);
   const focusSearch = () => {
-    setSearchOpen(true);
     setTimeout(() => document.getElementById("header-search")?.focus(), 50);
   };
   const scrollToProducts = () => {
@@ -134,9 +233,7 @@ function Index() {
 
   const addToCart = (p: Product) => {
     addToCartShared(p, 1);
-    
   };
-
 
   const visibleProducts = useMemo(() => {
     const q = debouncedQuery.trim().toLowerCase();
@@ -146,68 +243,225 @@ function Index() {
       list = list.filter((p) =>
         [p.name, p.category, p.tag, p.tagline]
           .filter(Boolean)
-          .some((s) => String(s).toLowerCase().includes(q))
+          .some((s) => String(s).toLowerCase().includes(q)),
       );
     }
     switch (sort) {
-      case "price-asc": list = [...list].sort((a, b) => a.price - b.price); break;
-      case "price-desc": list = [...list].sort((a, b) => b.price - a.price); break;
-      case "rating": list = [...list].sort((a, b) => b.rating - a.rating); break;
+      case "price-asc":
+        list = [...list].sort((a, b) => a.price - b.price);
+        break;
+      case "price-desc":
+        list = [...list].sort((a, b) => b.price - a.price);
+        break;
+      case "rating":
+        list = [...list].sort((a, b) => b.rating - a.rating);
+        break;
     }
     return list;
   }, [products, activeCat, maxPrice, sort, debouncedQuery]);
 
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = { All: products.length };
+    for (const p of products) {
+      if (p.category) {
+        counts[p.category] = (counts[p.category] || 0) + 1;
+      }
+    }
+    return counts;
+  }, [products]);
+
+const heroSlides = [
+  {
+    id: 1,
+    bg: heroBg,
+    tag: "New autumn collection · 2026",
+    title: (
+      <>
+        <div><Word delay="0.3s">Soft</Word> <Word delay="0.4s">homes,</Word> </div>
+        <div><Word delay="0.5s" className="text-white/55">clean</Word> <Word delay="0.6s" className="text-white/55">habits,</Word></div>
+        <div><Word delay="0.7s">thoughtful</Word> <Word delay="0.8s">walls.</Word></div>
+      </>
+    ),
+    subtitle: "Everyday textiles, peel-and-stick wallpaper and plant-based cleaning made for calm, well-kept spaces.",
+    link: "#shop",
+    cta: "Shop the edit",
+  },
+  {
+    id: 2,
+    bg: productTowel,
+    tag: "100% Organic Cotton",
+    title: "Plush towels for your daily reset.",
+    subtitle: "Experience spa-like luxury every day with our ultra-absorbent, quick-drying towel collections.",
+    link: "#collections",
+    category: "Towels",
+    cta: "Shop Towels",
+  },
+  {
+    id: 3,
+    bg: productWallpaper,
+    tag: "Peel & Stick",
+    title: "Transform your space in minutes.",
+    subtitle: "Mess-free, renter-friendly wallpaper in exclusive patterns designed to elevate any room.",
+    link: "#collections",
+    category: "Wallpaper",
+    cta: "Shop Wallpaper",
+  }
+];
 
   return (
     <div className="flex min-h-screen flex-col" style={inter}>
       {/* HERO SECTION */}
-      <div
-        className="relative flex flex-col overflow-hidden"
-        style={{
-          backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.35), rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.55)), url(${heroBg})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
-      >
+      <div className="relative flex flex-col overflow-hidden min-h-[500px] sm:min-h-[600px] lg:min-h-[700px] bg-stone-900">
+        
+        {/* Slider Backgrounds & Content */}
+        <div className="absolute inset-0 z-0 [&_.slick-slider]:h-full [&_.slick-list]:h-full [&_.slick-track]:h-full [&_.slick-slide>div]:h-full">
+          <Slider
+            dots={true}
+            infinite={true}
+            speed={800}
+            slidesToShow={1}
+            slidesToScroll={1}
+            autoplay={true}
+            autoplaySpeed={5000}
+            fade={true}
+            arrows={false}
+            pauseOnHover={false}
+            customPaging={() => (
+              <div className="w-2 h-2 rounded-full bg-white/40 mt-4 transition-all duration-300" />
+            )}
+            appendDots={dots => (
+              <div style={{ position: "absolute", bottom: "30px", width: "100%", display: "flex", justifyContent: "center" }}>
+                <ul className="m-0 p-0 flex gap-2 [&_.slick-active_div]:bg-white [&_.slick-active_div]:w-6 [&_li]:w-auto [&_li]:h-auto">{dots}</ul>
+              </div>
+            )}
+          >
+            {heroSlides.map((slide) => (
+              <div key={slide.id} className="relative w-full h-full outline-none">
+                <div
+                  className="absolute inset-0 transition-transform duration-[10000ms] ease-out hover:scale-105"
+                  style={{
+                    backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.6)), url(${slide.bg})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                  }}
+                />
+                <div className="relative z-10 h-[500px] sm:h-[600px] lg:h-[700px] flex flex-col justify-center px-4 sm:px-6 md:px-8 lg:px-10 pt-[80px]">
+                  <span
+                    className="inline-flex self-start items-center gap-2 rounded-full bg-white/15 backdrop-blur-sm px-4 py-1.5 text-white/90 text-xs sm:text-sm animate-fade-up delay-200"
+                    style={inter}
+                  >
+                    <Sparkles size={14} /> {slide.tag}
+                  </span>
+                  <h1
+                    className="text-white mt-6 max-w-4xl"
+                    style={{ ...dmSans, fontWeight: 300, letterSpacing: "-0.04em" }}
+                  >
+                    <style>{`
+                      .hero-h1 { font-size: 32px; line-height: 1.1; }
+                      @media (min-width: 640px) { .hero-h1 { font-size: 48px; } }
+                      @media (min-width: 768px) { .hero-h1 { font-size: 60px; } }
+                      @media (min-width: 1024px) { .hero-h1 { font-size: 72px; } }
+                    `}</style>
+                    <span className="hero-h1 block">{slide.title}</span>
+                  </h1>
+
+                  <div className="mt-8 sm:mt-12 lg:mt-14 flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-8 lg:gap-[50px] animate-fade-up delay-600">
+                    <button
+                      onClick={() => {
+                        if (slide.category) {
+                           setActiveCat(slide.category as Category);
+                           document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" });
+                        } else {
+                           document.getElementById(slide.link.replace("#", ""))?.scrollIntoView({ behavior: "smooth" });
+                        }
+                      }}
+                      className="inline-flex items-center justify-center gap-2 bg-white text-black rounded-md w-full sm:w-[160px] md:w-[175px] lg:w-[185px] h-9 sm:h-10 lg:h-11 text-sm hover:bg-white/90 transition-colors cursor-pointer"
+                      style={{ ...inter, fontWeight: 500, letterSpacing: "-0.02em" }}
+                    >
+                      {slide.cta}
+                      <ArrowUpRight size={18} strokeWidth={1.75} />
+                    </button>
+                    <p
+                      className="text-white max-w-[340px]"
+                      style={{ ...inter, fontWeight: 400, letterSpacing: "-0.03em", lineHeight: 1.45 }}
+                    >
+                      <span className="text-sm sm:text-sm lg:text-base">{slide.subtitle}</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </Slider>
+        </div>
+
+        {/* Navbar Layer */}
+        <div className="absolute top-0 left-0 right-0 z-20">
         <nav className="relative z-20 flex items-center justify-between px-5 py-4 sm:px-8 lg:px-10 lg:py-5 animate-fade-in">
-          <div className="type-wordmark animate-slide-left delay-200 text-white flex items-center gap-2">
-            {settings.logoUrl ? <img src={settings.logoUrl} alt="" className="w-8 h-8 rounded-md object-cover bg-white/20" /> : null}
-            {settings.brandName}
+          <div className="flex-1 flex items-center justify-start">
+            <div className="type-wordmark animate-slide-left delay-200 text-white flex items-center gap-2">
+              {settings.logoUrl ? (
+                <img
+                  src={settings.logoUrl}
+                  alt=""
+                  className="w-8 h-8 rounded-md object-cover bg-white/20"
+                />
+              ) : null}
+              {settings.brandName}
+            </div>
           </div>
 
-          <div className="hidden md:flex items-center gap-6 lg:gap-10 animate-fade-in delay-400" style={dmSans}>
+          <div
+            className="flex-1 hidden md:flex items-center justify-center gap-6 lg:gap-10 animate-fade-in delay-400"
+            style={dmSans}
+          >
             {navLinks.map((l) => (
-              <a key={l} href={`#${l.toLowerCase()}`} className="text-white/90 hover:text-white transition-colors" style={{ fontWeight: 500, fontSize: 18 }}>
+              <a
+                key={l}
+                href={`#${l.toLowerCase()}`}
+                className="text-white/90 hover:text-white transition-colors"
+                style={{ fontWeight: 500, fontSize: 14 }}
+              >
                 {l}
               </a>
             ))}
           </div>
-          <div className="flex items-center gap-3 sm:gap-4 animate-slide-right delay-300">
-            <div className={`hidden sm:flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-full transition-all duration-300 overflow-hidden ${searchOpen ? "w-56 px-3 py-1.5" : "w-9 h-9 justify-center"}`}>
-              <button aria-label="Search" onClick={() => (searchOpen ? scrollToProducts() : focusSearch())} className="text-white/90 hover:text-white shrink-0">
-                <Search size={18} strokeWidth={1.75} />
-              </button>
-              {searchOpen && (
-                <>
-                  <input
-                    id="header-search"
-                    type="search"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    onFocus={scrollToProducts}
-                    placeholder="Search products…"
-                    className="bg-transparent outline-none text-white placeholder:text-white/60 text-sm w-full"
-                    style={inter}
-                  />
-                  <button aria-label="Close search" onClick={() => { setSearchOpen(false); setQuery(""); }} className="text-white/70 hover:text-white shrink-0">
-                    <X size={16} />
-                  </button>
-                </>
+          <div className="flex-1 flex items-center justify-end gap-3 sm:gap-4 animate-slide-right delay-300">
+            <div
+              className="hidden sm:flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-full px-3 py-1.5 w-56 transition-all duration-300 focus-within:bg-white/25 focus-within:ring-1 focus-within:ring-white/30"
+            >
+              <Search size={16} strokeWidth={1.75} className="text-white/80 shrink-0" />
+              <input
+                id="header-search"
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search products…"
+                className="bg-transparent outline-none text-white placeholder:text-white/60 text-sm w-full"
+                style={inter}
+              />
+              {query && (
+                <button
+                  aria-label="Clear search"
+                  onClick={() => setQuery("")}
+                  className="text-white/70 hover:text-white shrink-0"
+                >
+                  <X size={14} />
+                </button>
               )}
             </div>
-            <button aria-label="Search" onClick={focusSearch} className="sm:hidden text-white/90 hover:text-white"><Search size={20} strokeWidth={1.5} /></button>
-            <Link to="/favorites" aria-label="Favourites" className="relative text-white/90 hover:text-white">
+            <button
+              aria-label="Search"
+              onClick={focusSearch}
+              className="sm:hidden text-white/90 hover:text-white"
+            >
+              <Search size={20} strokeWidth={1.5} />
+            </button>
+            <Link
+              to="/favorites"
+              aria-label="Favourites"
+              className="relative text-white/90 hover:text-white"
+            >
               <Heart size={20} strokeWidth={1.5} />
               {favCount > 0 && (
                 <span className="absolute -top-1.5 -right-1.5 bg-white text-black text-[10px] font-medium min-w-4 h-4 px-1 rounded-full flex items-center justify-center">
@@ -215,7 +469,11 @@ function Index() {
                 </span>
               )}
             </Link>
-            <Link to="/orders" aria-label="Orders" className="relative text-white/90 hover:text-white">
+            <Link
+              to="/orders"
+              aria-label="Orders"
+              className="relative text-white/90 hover:text-white"
+            >
               <ScrollText size={20} strokeWidth={1.5} />
               {orderCount > 0 && (
                 <span className="absolute -top-1.5 -right-1.5 bg-white text-black text-[10px] font-medium min-w-4 h-4 px-1 rounded-full flex items-center justify-center">
@@ -223,7 +481,11 @@ function Index() {
                 </span>
               )}
             </Link>
-            <button aria-label="Cart" onClick={() => setCartOpen(true)} className="relative text-white/90 hover:text-white">
+            <button
+              aria-label="Cart"
+              onClick={() => setCartOpen(true)}
+              className="relative text-white/90 hover:text-white"
+            >
               <ShoppingBag size={20} strokeWidth={1.5} />
               {cartCount > 0 && (
                 <span className="absolute -top-1.5 -right-1.5 bg-white text-black text-[10px] font-medium min-w-4 h-4 px-1 rounded-full flex items-center justify-center">
@@ -231,17 +493,30 @@ function Index() {
                 </span>
               )}
             </button>
-            <button aria-label="Menu" className="md:hidden text-white" onClick={() => setMenuOpen((v) => !v)}>
+            <button
+              aria-label="Menu"
+              className="md:hidden text-white"
+              onClick={() => setMenuOpen((v) => !v)}
+            >
               {menuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
         </nav>
 
         <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-          <SheetContent side="right" className="w-[86%] max-w-sm bg-stone-950 text-white border-l border-white/10 p-0 flex flex-col">
+          <SheetContent
+            side="right"
+            className="w-[86%] max-w-sm bg-stone-950 text-white border-l border-white/10 p-0 flex flex-col"
+          >
             <SheetHeader className="px-6 pt-6 pb-4 border-b border-white/10 text-left">
               <SheetTitle className="text-white type-wordmark flex items-center gap-2">
-                {settings.logoUrl ? <img src={settings.logoUrl} alt="" className="w-7 h-7 rounded-md object-cover bg-white/10" /> : null}
+                {settings.logoUrl ? (
+                  <img
+                    src={settings.logoUrl}
+                    alt=""
+                    className="w-7 h-7 rounded-md object-cover bg-white/10"
+                  />
+                ) : null}
                 {settings.brandName}
               </SheetTitle>
               <SheetDescription className="text-white/60 text-xs" style={inter}>
@@ -250,7 +525,9 @@ function Index() {
             </SheetHeader>
 
             <div className="px-6 py-5 border-b border-white/10">
-              <label htmlFor="mobile-menu-search" className="sr-only">Search products</label>
+              <label htmlFor="mobile-menu-search" className="sr-only">
+                Search products
+              </label>
               <div className="flex items-center gap-2 bg-white/10 rounded-full px-4 py-2.5 focus-within:bg-white/15 transition-colors">
                 <Search size={16} className="text-white/70 shrink-0" />
                 <input
@@ -263,7 +540,11 @@ function Index() {
                   style={inter}
                 />
                 {query && (
-                  <button aria-label="Clear" onClick={() => setQuery("")} className="text-white/60 hover:text-white shrink-0">
+                  <button
+                    aria-label="Clear"
+                    onClick={() => setQuery("")}
+                    className="text-white/60 hover:text-white shrink-0"
+                  >
                     <X size={14} />
                   </button>
                 )}
@@ -273,7 +554,11 @@ function Index() {
             <nav className="flex-1 overflow-y-auto px-3 py-4" style={dmSans}>
               <ul className="flex flex-col">
                 {navLinks.map((l, i) => (
-                  <li key={l} className="animate-fade-in" style={{ animationDelay: `${i * 60}ms`, animationFillMode: "both" }}>
+                  <li
+                    key={l}
+                    className="animate-fade-in"
+                    style={{ animationDelay: `${i * 60}ms`, animationFillMode: "both" }}
+                  >
                     <a
                       href={`#${l.toLowerCase()}`}
                       onClick={() => {
@@ -290,97 +575,111 @@ function Index() {
               </ul>
 
               <div className="mt-6 px-3">
-                <div className="text-[11px] uppercase tracking-[0.18em] text-white/40 mb-2" style={inter}>Quick links</div>
+                <div
+                  className="text-[11px] uppercase tracking-[0.18em] text-white/40 mb-2"
+                  style={inter}
+                >
+                  Quick links
+                </div>
                 <div className="grid grid-cols-3 gap-2">
-                  <Link to="/favorites" onClick={() => setMenuOpen(false)} className="flex flex-col items-center gap-1.5 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
+                  <Link
+                    to="/favorites"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex flex-col items-center gap-1.5 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+                  >
                     <Heart size={18} />
-                    <span className="text-xs" style={inter}>Favourites {favCount > 0 && <span className="text-white/60">({favCount})</span>}</span>
+                    <span className="text-xs" style={inter}>
+                      Favourites{" "}
+                      {favCount > 0 && <span className="text-white/60">({favCount})</span>}
+                    </span>
                   </Link>
-                  <Link to="/orders" onClick={() => setMenuOpen(false)} className="flex flex-col items-center gap-1.5 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
+                  <Link
+                    to="/orders"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex flex-col items-center gap-1.5 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+                  >
                     <ScrollText size={18} />
-                    <span className="text-xs" style={inter}>Orders {orderCount > 0 && <span className="text-white/60">({orderCount})</span>}</span>
+                    <span className="text-xs" style={inter}>
+                      Orders{" "}
+                      {orderCount > 0 && <span className="text-white/60">({orderCount})</span>}
+                    </span>
                   </Link>
                   <button
-                    onClick={() => { setMenuOpen(false); setCartOpen(true); }}
+                    onClick={() => {
+                      setMenuOpen(false);
+                      setCartOpen(true);
+                    }}
                     className="flex flex-col items-center gap-1.5 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
                   >
                     <ShoppingBag size={18} />
-                    <span className="text-xs" style={inter}>Cart {cartCount > 0 && <span className="text-white/60">({cartCount})</span>}</span>
+                    <span className="text-xs" style={inter}>
+                      Cart {cartCount > 0 && <span className="text-white/60">({cartCount})</span>}
+                    </span>
                   </button>
                 </div>
               </div>
             </nav>
 
-            <div className="px-6 py-4 border-t border-white/10 text-[11px] text-white/40" style={inter}>
+            <div
+              className="px-6 py-4 border-t border-white/10 text-[11px] text-white/40"
+              style={inter}
+            >
               © {new Date().getFullYear()} {settings.brandName}
             </div>
           </SheetContent>
         </Sheet>
 
-        <section className="relative z-10 flex flex-1 flex-col justify-center px-4 sm:px-6 md:px-8 lg:px-10 py-12 lg:py-20">
-          <span className="inline-flex self-start items-center gap-2 rounded-full bg-white/15 backdrop-blur-sm px-4 py-1.5 text-white/90 text-xs sm:text-sm animate-fade-up delay-200" style={inter}>
-            <Sparkles size={14} /> New autumn collection · 2026
-          </span>
-          <h1 className="text-white mt-6" style={{ ...dmSans, fontWeight: 300, letterSpacing: "-0.04em" }}>
-            <style>{`
-              .hero-h1 { font-size: 32px; line-height: 36px; }
-              @media (min-width: 640px) { .hero-h1 { font-size: 48px; line-height: 50px; } }
-              @media (min-width: 768px) { .hero-h1 { font-size: 64px; line-height: 64px; } }
-              @media (min-width: 1024px) { .hero-h1 { font-size: 80px; line-height: 78px; } }
-              @media (min-width: 1280px) { .hero-h1 { font-size: 96px; line-height: 92px; } }
-            `}</style>
-            <span className="hero-h1 block">
-              <div>
-                <Word delay="0.3s">Soft</Word>{" "}
-                <Word delay="0.4s">homes,</Word>{" "}
-              </div>
-              <div>
-                <Word delay="0.5s" className="text-white/55">clean</Word>{" "}
-                <Word delay="0.6s" className="text-white/55">habits,</Word>
-              </div>
-              <div>
-                <Word delay="0.7s">thoughtful</Word>{" "}
-                <Word delay="0.8s">walls.</Word>
-              </div>
-            </span>
-          </h1>
+        </div>
+      </div>
 
-          <div className="mt-8 sm:mt-12 lg:mt-14 flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-8 lg:gap-[50px] animate-fade-up delay-600">
-            <a
-              href="#shop"
-              className="inline-flex items-center justify-center gap-2 bg-white text-black rounded-md w-full sm:w-[190px] md:w-[200px] lg:w-[210px] h-11 sm:h-12 lg:h-[52px] text-sm sm:text-[15px] lg:text-base hover:bg-white/90 transition-colors"
-              style={{ ...inter, fontWeight: 500, letterSpacing: "-0.02em" }}
-            >
-              Shop the edit
-              <ArrowUpRight size={18} strokeWidth={1.75} />
-            </a>
-            <p className="text-white max-w-[340px]" style={{ ...inter, fontWeight: 400, letterSpacing: "-0.03em", lineHeight: 1.45 }}>
-              <span className="text-sm sm:text-base lg:text-lg">
-                Everyday textiles, peel-and-stick wallpaper and plant-based cleaning made for calm, well-kept spaces.
-              </span>
-            </p>
-          </div>
-        </section>
-
-        <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3">
+        {/* Promotion Cards anchored below hero */}
+        <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 mt-auto">
           {(() => {
             const active = promotions.filter((p) => p.isActive);
-            const cards = active.length > 0
-              ? active.map((p) => ({
-                  key: p.id,
-                  label: p.label,
-                  bg: p.bgColor,
-                  chipBg: p.chipStyle === "dark" ? "bg-black" : "bg-white",
-                  chipText: p.chipStyle === "dark" ? "text-white" : "text-black",
-                  off: p.headline,
-                  img: p.imageUrl || null,
-                  linkCategory: p.linkCategory,
-                }))
-              : [
-                  { key: "TOWELS", label: "TOWELS", bg: "#ECEDEC", chipBg: "bg-white", chipText: "text-black", off: "UP to 40% OFF", img: productTowel, linkCategory: "Towels" },
-                  { key: "WALLPAPER", label: "WALLPAPER", bg: "#FEF3C7", chipBg: "bg-black", chipText: "text-white", off: "UP to 60% OFF", img: productWallpaper, linkCategory: "Wallpaper" },
-                  { key: "CLEANING", label: "CLEANING", bg: "#FCE7D8", chipBg: "bg-white", chipText: "text-black", off: "UP to 35% OFF", img: productSponge, linkCategory: "Cloths" },
-                ];
+            const cards =
+              active.length > 0
+                ? active.map((p) => ({
+                    key: p.id,
+                    label: p.label,
+                    bg: p.bgColor,
+                    chipBg: p.chipStyle === "dark" ? "bg-black" : "bg-white",
+                    chipText: p.chipStyle === "dark" ? "text-white" : "text-black",
+                    off: p.headline,
+                    img: p.imageUrl || null,
+                    linkCategory: p.linkCategory,
+                  }))
+                : [
+                    {
+                      key: "TOWELS",
+                      label: "TOWELS",
+                      bg: "#ECEDEC",
+                      chipBg: "bg-white",
+                      chipText: "text-black",
+                      off: "UP to 40% OFF",
+                      img: productTowel,
+                      linkCategory: "Towels",
+                    },
+                    {
+                      key: "WALLPAPER",
+                      label: "WALLPAPER",
+                      bg: "#FEF3C7",
+                      chipBg: "bg-black",
+                      chipText: "text-white",
+                      off: "UP to 60% OFF",
+                      img: productWallpaper,
+                      linkCategory: "Wallpaper",
+                    },
+                    {
+                      key: "CLEANING",
+                      label: "CLEANING",
+                      bg: "#FCE7D8",
+                      chipBg: "bg-white",
+                      chipText: "text-black",
+                      off: "UP to 35% OFF",
+                      img: productSponge,
+                      linkCategory: "Cloths",
+                    },
+                  ];
             return cards.map((c, i) => (
               <a
                 key={c.key}
@@ -392,27 +691,43 @@ function Index() {
                     document.getElementById("collections")?.scrollIntoView({ behavior: "smooth" });
                   }
                 }}
-                className="relative overflow-hidden p-5 sm:p-6 md:p-7 lg:p-10 min-h-[180px] sm:min-h-[200px] md:min-h-[220px] lg:min-h-[240px] flex items-center gap-3 sm:gap-4 md:gap-6 animate-fade-up cursor-pointer group"
-                style={{ backgroundColor: c.bg, animationDelay: `${900 + i * 100}ms`, animationFillMode: "both" }}
+                className="relative overflow-hidden p-4 sm:p-5 md:p-6 lg:p-7 min-h-[140px] sm:h-[160px] md:min-h-[175px] lg:min-h-[190px] flex items-center gap-3 sm:gap-4 animate-fade-up cursor-pointer group"
+                style={{
+                  backgroundColor: c.bg,
+                  animationDelay: `${900 + i * 100}ms`,
+                  animationFillMode: "both",
+                }}
               >
                 <div className="flex-1 min-w-0 flex flex-col gap-2 sm:gap-3">
-                  <span className={`${c.chipBg} ${c.chipText} self-start text-[10px] sm:text-xs tracking-[0.15em] px-3 py-1.5 rounded-md`} style={{ ...inter, fontWeight: 600 }}>
+                  <span
+                    className={`${c.chipBg} ${c.chipText} self-start text-[10px] sm:text-xs tracking-[0.15em] px-3 py-1.5 rounded-md`}
+                    style={{ ...inter, fontWeight: 600 }}
+                  >
                     {c.label}
                   </span>
-                  <div className="text-black break-words" style={{ ...dmSans, fontWeight: 500, letterSpacing: "-0.03em", lineHeight: 1.15, fontSize: "clamp(15px, 2.2vw, 28px)" }}>
+                  <div
+                    className="text-black break-words"
+                    style={{
+                      ...dmSans,
+                      fontWeight: 500,
+                      letterSpacing: "-0.03em",
+                      lineHeight: 1.15,
+                      fontSize: "clamp(15px, 2.2vw, 28px)",
+                    }}
+                  >
                     {c.off}
                   </div>
                 </div>
                 <div className="absolute -right-6 -top-6 w-40 h-40 sm:w-48 sm:h-48 rounded-full bg-white/40 blur-2xl pointer-events-none" />
                 {c.img && (
-                  <img
+                  <SafeImage
                     src={c.img}
                     alt=""
                     width={1024}
                     height={1024}
-                    loading="lazy" decoding="async"
-                    onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
-                    className="relative w-[80px] h-[80px] sm:w-[110px] sm:h-[110px] md:w-[130px] md:h-[130px] lg:w-[160px] lg:h-[160px] rounded-xl object-cover shrink-0 transition-transform group-hover:scale-105"
+                    loading="lazy"
+                    decoding="async"
+                    className="relative w-[64px] h-[64px] sm:w-[88px] sm:h-[88px] md:w-[108px] md:h-[108px] lg:w-[130px] lg:h-[130px] rounded-xl object-cover shrink-0 transition-transform group-hover:scale-105"
                   />
                 )}
               </a>
@@ -420,76 +735,102 @@ function Index() {
           })()}
         </div>
 
-      </div>
-
       {/* CATEGORIES SECTION */}
-      <section id="collections" className="bg-[#FEFDF9] px-4 sm:px-6 md:px-8 lg:px-10 py-12 sm:py-16 lg:py-24">
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10 lg:mb-14">
-          <h2 className="type-h1 text-black">
-            Shop by room
-          </h2>
-          <p className="text-black/60 max-w-md text-sm sm:text-base lg:text-lg">
-            Four small edits with big impact — bath, walls, kitchen, and the daily reset.
-          </p>
+      <section
+        id="collections"
+        className="bg-[#FEFDF9] px-4 sm:px-6 md:px-8 lg:px-10 py-8 sm:py-12 lg:py-16"
+      >
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6 lg:mb-8">
+          <div>
+            <h2 className="type-h1 text-black">Shop by room</h2>
+            <p className="text-black/60 max-w-md text-sm sm:text-base mt-2">
+              Four small edits with big impact — bath, walls, kitchen, and the daily reset.
+            </p>
+          </div>
+          {liveCategories.length > 0 && (
+            <div className="flex items-center gap-2 self-start sm:self-auto">
+              <button
+                type="button"
+                onClick={() => categorySliderRef.current?.slickPrev()}
+                className="w-9 h-9 rounded-full border border-black/15 bg-white text-black hover:bg-black hover:text-white transition-all duration-200 flex items-center justify-center shadow-xs active:scale-95 cursor-pointer"
+                aria-label="Previous categories"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <button
+                type="button"
+                onClick={() => categorySliderRef.current?.slickNext()}
+                className="w-9 h-9 rounded-full border border-black/15 bg-white text-black hover:bg-black hover:text-white transition-all duration-200 flex items-center justify-center shadow-xs active:scale-95 cursor-pointer"
+                aria-label="Next categories"
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
+          )}
         </div>
         {liveCategories.length === 0 ? (
           <div className="rounded-2xl bg-white/60 border border-black/5 p-10 text-center text-black/60">
             No categories yet. Add some from the admin dashboard.
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
-            {liveCategories.map((name) => {
-              const catProducts = products.filter((p) => p.category === name);
-              const customImg = categoryInfo[name]?.imageUrl;
-              const img = customImg || catProducts.find((p) => p.img)?.img;
-              const bg = catProducts.find((p) => p.bg)?.bg || "bg-stone-200";
+          <div className="category-slick-slider -mx-2">
+            <Slider ref={categorySliderRef} {...categorySliderSettings}>
+              {liveCategories.map((name) => {
+                const catProducts = products.filter((p) => p.category === name);
+                const customImg = categoryInfo[name]?.imageUrl;
+                const img = customImg || catProducts.find((p) => p.img)?.img;
+                const bg = catProducts.find((p) => p.bg)?.bg || "bg-stone-200";
 
-              return (
-                <button
-                  key={name}
-                  onClick={() => {
-                    setActiveCat(name);
-                    document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" });
-                  }}
-                  className={`${bg} group relative text-left rounded-2xl overflow-hidden flex flex-col justify-between min-h-[240px] lg:min-h-[300px] hover:-translate-y-1 transition-transform`}
-                >
-                  {img && (
-                    <img
-                      src={img}
-                      alt=""
-                      loading="lazy"
-                      decoding="async"
-                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
-                      className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-80 group-hover:scale-105 transition-all duration-500"
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
-                  <div className="relative p-6 lg:p-8 flex flex-col justify-between h-full min-h-[240px] lg:min-h-[300px]">
-                    <div className="w-12 h-12 rounded-full bg-white/85 backdrop-blur-sm flex items-center justify-center text-black">
-                      <Sparkles size={22} strokeWidth={1.5} />
-                    </div>
-                    <div>
-                      <div className="type-h3 text-white drop-shadow-sm">
-                        {name}
+                return (
+                  <div key={name} className="h-full py-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActiveCat(name);
+                        document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" });
+                      }}
+                      className={`${bg} group relative text-left rounded-xl overflow-hidden flex flex-col justify-between h-[180px] sm:h-[220px] lg:h-[260px] w-full hover:-translate-y-1 transition-all duration-300 shadow-xs hover:shadow-md cursor-pointer`}
+                    >
+                      {img && (
+                        <SafeImage
+                          src={img}
+                          alt={name}
+                          loading="lazy"
+                          decoding="async"
+                          className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-80 group-hover:scale-105 transition-all duration-500"
+                        />
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/15 to-transparent" />
+                      <div className="relative p-4 lg:p-5 flex flex-col justify-between h-full w-full">
+                        <div className="w-9 h-9 rounded-full bg-white/85 backdrop-blur-sm flex items-center justify-center text-black shadow-xs">
+                          <Sparkles size={16} strokeWidth={1.5} />
+                        </div>
+                        <div>
+                          <div className="type-h3 text-white drop-shadow-sm">{name}</div>
+                          <div className="text-white/80 text-xs sm:text-sm mt-2 font-medium">
+                            {catProducts.length} product{catProducts.length === 1 ? "" : "s"}
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-white/70 text-xs mt-2">{catProducts.length} product{catProducts.length === 1 ? "" : "s"}</div>
-                    </div>
+                    </button>
                   </div>
-                </button>
-              );
-            })}
+                );
+              })}
+            </Slider>
           </div>
         )}
       </section>
 
       {/* PRODUCTS SECTION */}
-      <section id="shop" className="bg-[#ECEDEC] px-4 sm:px-6 md:px-8 lg:px-10 py-12 sm:py-16 lg:py-24">
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8 lg:mb-10">
-          <h2 className="type-h1 text-black">
-            The Home Edit
-          </h2>
+      <section
+        id="shop"
+        className="bg-[#ECEDEC] px-4 sm:px-6 md:px-8 lg:px-10 py-8 sm:py-12 lg:py-16"
+      >
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6 lg:mb-8">
+          <h2 className="type-h1 text-black">The Home Edit</h2>
           <div className="flex items-center gap-2 text-black/60 text-sm">
-            <SlidersHorizontal size={16} /> {mounted ? `${visibleProducts.length} of ${products.length}` : "Loading…"}
+            <SlidersHorizontal size={16} />{" "}
+            {mounted ? `${visibleProducts.length} of ${products.length}` : "Loading…"}
           </div>
         </div>
 
@@ -499,118 +840,138 @@ function Index() {
             <ProductGridSkeleton count={8} />
           </>
         ) : (
-        <>
+          <>
+            <div className="sticky top-0 z-30 bg-[#ECEDEC]/90 backdrop-blur-md py-4 -mx-4 px-4 sm:-mx-6 sm:px-6 md:-mx-8 md:px-8 lg:-mx-10 lg:px-10 mb-4 lg:mb-8 transition-all">
+              <div className="bg-white rounded-2xl p-2 lg:p-2.5 border border-black/5 shadow-sm flex flex-col xl:flex-row xl:items-center gap-3 xl:gap-4 justify-between">
+                
+                {/* Category Filter Chips Row */}
+                <div className="relative flex items-center flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar px-1 py-0.5 w-full scroll-smooth mask-edges">
+                    {(["All", ...liveCategories] as const).map((c) => {
+                      const active = activeCat === c;
+                      const count = categoryCounts[c];
+                      return (
+                        <button
+                          key={c}
+                          onClick={() => setActiveCat(c)}
+                          aria-pressed={active}
+                          className={`px-4 py-2 rounded-xl text-[13px] font-medium whitespace-nowrap shrink-0 transition-all flex items-center gap-2 cursor-pointer ${
+                            active
+                              ? "bg-black text-white shadow-md"
+                              : "bg-transparent text-black/70 hover:bg-black/5 hover:text-black"
+                          }`}
+                        >
+                          <span>{c}</span>
+                          {count !== undefined && (
+                            <span
+                              className={`text-[10px] px-1.5 py-0.5 rounded-md font-medium ${
+                                active ? "bg-white/20 text-white" : "bg-black/5 text-black/50"
+                              }`}
+                            >
+                              {count}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
 
+                {/* Controls Row: Price range, Active filter count, Sort dropdown */}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 shrink-0 px-1 xl:px-0">
+                  
+                  {/* Price slider */}
+                  <div className="flex items-center gap-3 bg-black/[0.02] hover:bg-black/[0.04] transition-colors px-3 py-1.5 rounded-xl border border-black/5 flex-1 xl:flex-none xl:w-[220px]">
+                    <div className="flex flex-col min-w-[75px]">
+                      <span className="text-[9px] uppercase tracking-wider text-black/40 font-bold">
+                        Max Price
+                      </span>
+                      <span className="text-xs font-semibold text-black">
+                        {formatPKR(maxPrice)}
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min={priceMin}
+                      max={priceMax}
+                      value={maxPrice}
+                      onChange={(e) => setMaxPrice(Number(e.target.value))}
+                      className="w-full accent-black h-1 bg-black/10 rounded-lg cursor-pointer"
+                      aria-label="Max price filter"
+                    />
+                  </div>
 
-        <div className="bg-white rounded-2xl p-4 lg:p-5 mb-4 flex items-center gap-3">
-          <Search size={18} strokeWidth={1.75} className="text-black/50 shrink-0" />
-          <input
-            id="product-search"
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search towels, wallpaper, cloths, sponges…"
-            className="flex-1 bg-transparent outline-none text-black placeholder:text-black/40 text-sm sm:text-base"
-            style={{ fontWeight: 400 }}
-          />
-          {query && (
-            <button
-              onClick={() => setQuery("")}
-              className="text-black/50 hover:text-black shrink-0"
-              aria-label="Clear search"
-            >
-              <X size={16} />
-            </button>
-          )}
-        </div>
+                  {/* Sort Select */}
+                  <div className="flex items-center gap-2 bg-black/[0.02] hover:bg-black/[0.04] transition-colors px-3 py-1.5 rounded-xl border border-black/5">
+                    <SlidersHorizontal size={14} className="text-black/50 shrink-0" />
+                    <select
+                      value={sort}
+                      onChange={(e) => setSort(e.target.value as SortKey)}
+                      className="bg-transparent text-xs text-black font-semibold outline-none cursor-pointer pr-1 w-full sm:w-auto"
+                      aria-label="Sort products"
+                    >
+                      <option value="featured">Featured</option>
+                      <option value="price-asc">Price: low to high</option>
+                      <option value="price-desc">Price: high to low</option>
+                      <option value="rating">Top rated</option>
+                    </select>
+                  </div>
 
-        <div className="bg-white rounded-2xl p-4 lg:p-5 mb-8 lg:mb-10 flex flex-col md:flex-row md:items-center md:flex-wrap gap-4 md:gap-5 lg:gap-8">
-          <div className="flex flex-wrap items-center gap-2">
-            {(["All", ...liveCategories] as const).map((c) => {
-              const active = activeCat === c;
-              return (
+                  {/* Reset button if filters active */}
+                  {(activeCat !== "All" || maxPrice < priceMax || debouncedQuery) && (
+                    <button
+                      onClick={() => {
+                        setActiveCat("All");
+                        setMaxPrice(priceMax);
+                        setSort("featured");
+                        setQuery("");
+                      }}
+                      className="text-xs text-black/60 hover:text-black flex items-center justify-center gap-1 bg-black/5 hover:bg-black/10 px-3 py-2 rounded-xl transition-colors font-medium h-[38px] xl:w-auto w-full sm:w-auto cursor-pointer"
+                      title="Reset filters"
+                    >
+                      <RotateCcw size={13} /> <span className="sm:hidden xl:inline">Reset</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {visibleProducts.length === 0 ? (
+              <div className="bg-white rounded-2xl p-10 text-center text-black/60">
+                No products match your filters.{" "}
                 <button
-                  key={c}
-                  onClick={() => setActiveCat(c)}
-                  aria-pressed={active}
-                  className={`mt-chip px-4 h-9 rounded-full text-sm ${
-                    active
-                      ? "bg-black text-white hover:bg-black/90"
-                      : "bg-black/5 text-black hover:bg-black/10 hover:text-black"
-                  }`}
-                  style={{ fontWeight: 500 }}
+                  onClick={() => {
+                    setActiveCat("All");
+                    setMaxPrice(priceMax);
+                    setSort("featured");
+                    setQuery("");
+                  }}
+                  className="underline text-black"
                 >
-                  {c}
+                  Reset
                 </button>
-              );
-            })}
-          </div>
-
-          <div className="flex items-center gap-3 flex-1 min-w-0 md:min-w-[200px] md:max-w-xs">
-            <span className="text-sm text-black/60 whitespace-nowrap">Max PKR {maxPrice}</span>
-            <input
-              type="range"
-              min={priceMin}
-              max={priceMax}
-              value={maxPrice}
-              onChange={(e) => setMaxPrice(Number(e.target.value))}
-              className="w-full accent-black"
-              aria-label="Max price"
-            />
-          </div>
-
-          <div className="flex items-center gap-2">
-            <label className="text-sm text-black/60">Sort</label>
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value as SortKey)}
-              className="mt-select h-9 rounded-full bg-black/5 text-sm px-3 text-black cursor-pointer"
-              style={{ fontWeight: 500 }}
-              aria-label="Sort products"
-            >
-              <option value="featured">Featured</option>
-              <option value="price-asc">Price: low to high</option>
-              <option value="price-desc">Price: high to low</option>
-              <option value="rating">Top rated</option>
-            </select>
-          </div>
-        </div>
-
-        {visibleProducts.length === 0 ? (
-          <div className="bg-white rounded-2xl p-10 text-center text-black/60">
-            No products match your filters.{" "}
-            <button
-              onClick={() => { setActiveCat("All"); setMaxPrice(priceMax); setSort("featured"); setQuery(""); }}
-              className="underline text-black"
-            >
-              Reset
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
-            {visibleProducts.map((p) => (
-              <ProductCard
-                key={p.id}
-                product={p}
-                isFavourite={isFav(p.id)}
-                onToggleFav={handleFav}
-              />
-            ))}
-          </div>
-
-        )}
-        </>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 lg:gap-4">
+                {visibleProducts.map((p) => (
+                  <ProductCard
+                    key={p.id}
+                    product={p}
+                    isFavourite={isFav(p.id)}
+                    onToggleFav={handleFav}
+                  />
+                ))}
+              </div>
+            )}
+          </>
         )}
       </section>
 
       {/* FOOTER */}
       <SiteFooter />
 
-
-
       {/* CART DRAWER */}
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
-
     </div>
   );
 }

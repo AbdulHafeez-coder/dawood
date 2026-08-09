@@ -28,18 +28,23 @@ Built on TanStack Start · React 19 · Tailwind CSS v4 · Supabase
 ## 📸 Screenshots
 
 ### Storefront
+
 ![Home page](docs/screenshots/home.png)
 
 ### Favorites
+
 ![Favorites](docs/screenshots/favorites.png)
 
 ### Saved Orders
+
 ![Orders](docs/screenshots/orders.png)
 
 ### Admin login
+
 ![Admin login](docs/screenshots/admin-login.png)
 
 ### Mobile
+
 <img src="docs/screenshots/home-mobile.png" alt="Mobile home" width="360" />
 
 ---
@@ -77,16 +82,16 @@ Built on TanStack Start · React 19 · Tailwind CSS v4 · Supabase
 
 ## 🧱 Tech Stack
 
-| Layer      | Choice |
-|------------|--------|
-| Framework  | [TanStack Start](https://tanstack.com/start) v1 (SSR + server functions) |
-| UI         | React 19, Tailwind CSS v4, shadcn/ui, Radix Primitives |
-| Data       | Supabase (Postgres + Auth + Storage) with RLS |
-| State      | TanStack Query, local hooks + `localStorage` mirror |
-| Forms      | React Hook Form + Zod |
-| Media      | `react-easy-crop` for promo/product image cropping |
-| Toasts     | `sonner` |
-| Build      | Vite 7, TypeScript strict |
+| Layer     | Choice                                                                   |
+| --------- | ------------------------------------------------------------------------ |
+| Framework | [TanStack Start](https://tanstack.com/start) v1 (SSR + server functions) |
+| UI        | React 19, Tailwind CSS v4, shadcn/ui, Radix Primitives                   |
+| Data      | Supabase (Postgres + Auth + Storage) with RLS                            |
+| State     | TanStack Query, local hooks + `localStorage` mirror                      |
+| Forms     | React Hook Form + Zod                                                    |
+| Media     | `react-easy-crop` for promo/product image cropping                       |
+| Toasts    | `sonner`                                                                 |
+| Build     | Vite 7, TypeScript strict                                                |
 
 ---
 
@@ -123,11 +128,11 @@ src/
 ## 🚀 Getting Started
 
 ```bash
-bun install     # or npm install
-bun run dev     # http://localhost:8080
+pnpm install
+pnpm run dev     # http://localhost:8080
 ```
 
-The project is pre-wired to Lovable Cloud (Supabase). Env vars live in `.env`.
+The project is configured to use Supabase. Env vars live in `.env`.
 
 ### Database
 
@@ -174,18 +179,18 @@ The message is regenerated at click time so totals always match the cart, and ev
 
 ## 🧪 Scripts
 
-| Command | What it does |
-|---------|--------------|
-| `bun run dev` | Start Vite dev server |
-| `bun run build` | Production build |
-| `bun run build:dev` | Dev-mode build (SSR prerender check) |
-| `bun run lint` | ESLint |
-| `bun run format` | Prettier |
+| Command              | What it does                         |
+| -------------------- | ------------------------------------ |
+| `pnpm run dev`       | Start Vite dev server                |
+| `pnpm run build`     | Production build                     |
+| `pnpm run build:dev` | Dev-mode build (SSR prerender check) |
+| `pnpm run lint`      | ESLint                               |
+| `pnpm run format`    | Prettier                             |
 
 ---
 
 <div align="center">
 
-Made with ☕ in Pakistan · Built on [Lovable](https://lovable.dev)
+Made with ☕ in Pakistan
 
 </div>

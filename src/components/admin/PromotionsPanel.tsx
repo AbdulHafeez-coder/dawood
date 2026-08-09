@@ -2,6 +2,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Megaphone, ImageIcon, EyeOff, Eye } from "lucide-react";
 import { usePromotions, type Promotion } from "@/lib/shop";
+import { SafeImage } from "@/components/ui/SafeImage";
 import {
   Dialog,
   DialogContent,
@@ -95,13 +96,10 @@ export function PromotionsPanel({ categories }: { categories: string[] }) {
                 </div>
                 <div className="w-16 h-16 rounded-lg overflow-hidden bg-white/60 grid place-items-center shrink-0">
                   {p.imageUrl ? (
-                    <img
+                    <SafeImage
                       src={p.imageUrl}
                       alt=""
                       className="w-full h-full object-cover"
-                      onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).style.display = "none";
-                      }}
                     />
                   ) : (
                     <ImageIcon className="w-4 h-4 text-black/40" />
@@ -133,7 +131,11 @@ export function PromotionsPanel({ categories }: { categories: string[] }) {
                     aria-label={p.isActive ? "Hide" : "Show"}
                     className="w-8 h-8 rounded-full grid place-items-center text-black/60 hover:text-black hover:bg-black/5 transition"
                   >
-                    {p.isActive ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                    {p.isActive ? (
+                      <Eye className="w-3.5 h-3.5" />
+                    ) : (
+                      <EyeOff className="w-3.5 h-3.5" />
+                    )}
                   </button>
                   <button
                     onClick={() => setDialog({ mode: "edit", promo: p })}
@@ -166,7 +168,9 @@ export function PromotionsPanel({ categories }: { categories: string[] }) {
           onCreate={async (data) => {
             const result = await addPromotion(data);
             if (result.ok) {
-              toast.success("Promotion created", { description: `${data.label} — ${data.headline}` });
+              toast.success("Promotion created", {
+                description: `${data.label} — ${data.headline}`,
+              });
               setDialog(null);
             } else {
               toast.error("Promotion was not saved", { description: result.error });
@@ -285,10 +289,16 @@ function PromotionFormDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={submit} className="space-y-4 overflow-y-auto px-5 sm:px-6 py-4 flex-1 min-h-0" style={inter}>
+        <form
+          onSubmit={submit}
+          className="space-y-4 overflow-y-auto px-5 sm:px-6 py-4 flex-1 min-h-0"
+          style={inter}
+        >
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <label className="block">
-              <span className="text-[10px] uppercase tracking-[0.18em] text-black/60">Label / chip</span>
+              <span className="text-[10px] uppercase tracking-[0.18em] text-black/60">
+                Label / chip
+              </span>
               <input
                 autoFocus
                 value={label}
@@ -298,7 +308,9 @@ function PromotionFormDialog({
               />
             </label>
             <label className="block">
-              <span className="text-[10px] uppercase tracking-[0.18em] text-black/60">Headline</span>
+              <span className="text-[10px] uppercase tracking-[0.18em] text-black/60">
+                Headline
+              </span>
               <input
                 value={headline}
                 onChange={(e) => setHeadline(e.target.value)}
@@ -314,12 +326,15 @@ function PromotionFormDialog({
               <PromotionImageUploader value={imageUrl} onChange={setImageUrl} />
             </div>
             <div className="mt-1 text-[11px] text-black/50">
-              Small product image shown on the right of the card. Auto-resized and optimised on upload.
+              Small product image shown on the right of the card. Auto-resized and optimised on
+              upload.
             </div>
           </div>
 
           <div>
-            <span className="text-[10px] uppercase tracking-[0.18em] text-black/60">Background</span>
+            <span className="text-[10px] uppercase tracking-[0.18em] text-black/60">
+              Background
+            </span>
             <div className="mt-1.5 flex flex-wrap gap-2">
               {PALETTE.map((c) => (
                 <button
@@ -348,7 +363,9 @@ function PromotionFormDialog({
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <label className="block">
-              <span className="text-[10px] uppercase tracking-[0.18em] text-black/60">Chip style</span>
+              <span className="text-[10px] uppercase tracking-[0.18em] text-black/60">
+                Chip style
+              </span>
               <select
                 value={chipStyle}
                 onChange={(e) => setChipStyle(e.target.value as "light" | "dark")}
@@ -359,7 +376,9 @@ function PromotionFormDialog({
               </select>
             </label>
             <label className="block">
-              <span className="text-[10px] uppercase tracking-[0.18em] text-black/60">Links to</span>
+              <span className="text-[10px] uppercase tracking-[0.18em] text-black/60">
+                Links to
+              </span>
               <select
                 value={linkCategory}
                 onChange={(e) => setLinkCategory(e.target.value)}
@@ -374,13 +393,13 @@ function PromotionFormDialog({
               </select>
             </label>
             <label className="block">
-              <span className="text-[10px] uppercase tracking-[0.18em] text-black/60">Sort order</span>
+              <span className="text-[10px] uppercase tracking-[0.18em] text-black/60">
+                Sort order
+              </span>
               <input
                 type="number"
                 value={Number.isFinite(sortOrder) ? sortOrder : ""}
-                onChange={(e) =>
-                  setSortOrder(e.target.value === "" ? 0 : Number(e.target.value))
-                }
+                onChange={(e) => setSortOrder(e.target.value === "" ? 0 : Number(e.target.value))}
                 className={inputCls + " mt-1"}
               />
             </label>
@@ -398,7 +417,9 @@ function PromotionFormDialog({
 
           {/* Preview */}
           <div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-black/60 mb-1.5">Preview</div>
+            <div className="text-[10px] uppercase tracking-[0.18em] text-black/60 mb-1.5">
+              Preview
+            </div>
             <div
               className="rounded-xl p-5 flex items-center gap-4 min-h-[130px]"
               style={{ backgroundColor: bgColor }}
@@ -420,13 +441,10 @@ function PromotionFormDialog({
                 </div>
               </div>
               {imageUrl ? (
-                <img
+                <SafeImage
                   src={imageUrl}
                   alt=""
                   className="w-20 h-20 rounded-lg object-cover shrink-0"
-                  onError={(e) => {
-                    (e.currentTarget as HTMLImageElement).style.display = "none";
-                  }}
                 />
               ) : (
                 <div className="w-20 h-20 rounded-lg bg-white/60 grid place-items-center shrink-0">

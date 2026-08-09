@@ -1,7 +1,6 @@
 import { Link, useRouter } from "@tanstack/react-router";
 import { AlertTriangle, RefreshCw, Home, LayoutDashboard, LogIn } from "lucide-react";
 import { useEffect } from "react";
-import { reportLovableError } from "@/lib/lovable-error-reporting";
 
 const dmSans = { fontFamily: "'DM Sans', sans-serif" };
 const inter = { fontFamily: "'Inter', sans-serif" };
@@ -57,6 +56,7 @@ export function AdminNotFound() {
           </Link>
           <Link
             to="/admin/login"
+            search={{ redirect: "/" }}
             className="inline-flex items-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
             <LogIn className="h-4 w-4" /> Sign in
@@ -77,10 +77,11 @@ export function AdminError({ error, reset }: { error: Error; reset: () => void }
   const router = useRouter();
   useEffect(() => {
     console.error(error);
-    reportLovableError(error, { boundary: "admin_route_error_component" });
   }, [error]);
 
-  const isChunkError = /chunk|Loading chunk|dynamically imported module/i.test(error?.message ?? "");
+  const isChunkError = /chunk|Loading chunk|dynamically imported module/i.test(
+    error?.message ?? "",
+  );
 
   return (
     <AdminShell>

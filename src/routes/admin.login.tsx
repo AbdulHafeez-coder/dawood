@@ -9,7 +9,6 @@ import { AdminError, AdminNotFound } from "@/components/AdminFallback";
 const dmSans = { fontFamily: "'DM Sans', sans-serif" };
 const inter = { fontFamily: "'Inter', sans-serif" };
 
-
 export const Route = createFileRoute("/admin/login")({
   validateSearch: (search: Record<string, unknown>) => ({
     redirect: typeof search.redirect === "string" ? search.redirect : undefined,
@@ -39,12 +38,9 @@ function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  
 
   const safeRedirect =
-    redirect && redirect.startsWith("/admin") && redirect !== "/admin/login"
-      ? redirect
-      : "/admin";
+    redirect && redirect.startsWith("/admin") && redirect !== "/admin/login" ? redirect : "/admin";
 
   useEffect(() => {
     if (ready && isAuthed) {
@@ -70,7 +66,6 @@ function AdminLogin() {
       setSubmitting(false);
     }
   }
-
 
   if (!mounted || !ready || isAuthed) {
     return <AdminLoginSkeleton />;
@@ -119,7 +114,9 @@ function AdminLogin() {
                 />
               </label>
               <label className="block">
-                <span className="text-[10px] uppercase tracking-[0.2em] text-black/50">Password</span>
+                <span className="text-[10px] uppercase tracking-[0.2em] text-black/50">
+                  Password
+                </span>
                 <input
                   type="password"
                   value={password}
@@ -142,7 +139,6 @@ function AdminLogin() {
               </button>
             </form>
           </div>
-
         </div>
       </main>
     </div>

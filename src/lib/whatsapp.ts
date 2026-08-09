@@ -3,16 +3,13 @@ import { computeShipping } from "@/lib/shop";
 import { getSettings } from "@/lib/settings";
 import { formatPKR } from "@/lib/format";
 
-
 function buildUrl(text: string) {
   const raw = (getSettings().whatsappNumber || "").replace(/\D/g, "");
   // Pakistani local (11 digits, starts with 03) → 92XXXXXXXXXX
-  const number = raw.length === 11 && raw.startsWith("03")
-    ? `92${raw.slice(1)}`
-    : raw || "923011234567";
+  const number =
+    raw.length === 11 && raw.startsWith("03") ? `92${raw.slice(1)}` : raw || "923011234567";
   return `https://wa.me/${number}?text=${encodeURIComponent(text)}`;
 }
-
 
 const money = (n: number) => formatPKR(n);
 const DIVIDER = "━━━━━━━━━━━━━━";

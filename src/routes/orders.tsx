@@ -1,6 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, ShoppingBag, MessageCircle, Trash2, ClipboardCopy, ScrollText, Check } from "lucide-react";
+import {
+  ArrowLeft,
+  ShoppingBag,
+  MessageCircle,
+  Trash2,
+  ClipboardCopy,
+  ScrollText,
+  Check,
+} from "lucide-react";
 import { useCart } from "@/lib/shop";
 import { useOrders, type SavedOrder } from "@/lib/orders";
 import { LazyCartDrawer as CartDrawer } from "@/components/LazyCartDrawer";
@@ -8,14 +16,21 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { OrdersListSkeleton, useMounted } from "@/components/skeletons";
 import { toast } from "sonner";
 import { formatPKR } from "@/lib/format";
+import { SafeImage } from "@/components/ui/SafeImage";
 
 export const Route = createFileRoute("/orders")({
   head: () => ({
     meta: [
       { title: "Your Orders — Dawood Mart" },
-      { name: "description", content: "Review your WhatsApp order drafts and resend them in one click." },
+      {
+        name: "description",
+        content: "Review your WhatsApp order drafts and resend them in one click.",
+      },
       { property: "og:title", content: "Your Orders — Dawood Mart" },
-      { property: "og:description", content: "Review your WhatsApp order drafts and resend them in one click." },
+      {
+        property: "og:description",
+        content: "Review your WhatsApp order drafts and resend them in one click.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -65,11 +80,11 @@ function OrdersPage() {
   return (
     <div className="flex min-h-screen flex-col bg-[#FEFDF9]" style={inter}>
       <nav className="sticky top-0 z-20 bg-[#FEFDF9]/90 backdrop-blur border-b border-black/5 flex items-center justify-between px-5 py-4 sm:px-8 lg:px-10">
-        <Link to="/" className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 26, letterSpacing: "-0.05em" }}>
+        <Link to="/" className="type-wordmark text-black">
           Dawood Mart
         </Link>
         <button aria-label="Cart" onClick={() => setCartOpen(true)} className="relative text-black">
-          <ShoppingBag size={22} strokeWidth={1.5} />
+          <ShoppingBag size={20} strokeWidth={1.5} />
           {cartCount > 0 && (
             <span className="absolute -top-1.5 -right-1.5 bg-black text-white text-[10px] font-medium min-w-4 h-4 px-1 rounded-full flex items-center justify-center">
               {cartCount}
@@ -79,22 +94,27 @@ function OrdersPage() {
       </nav>
 
       <div className="px-4 sm:px-6 md:px-8 lg:px-10 pt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
-        <Link to="/" className="inline-flex items-center gap-2 text-sm text-black/70 hover:text-black">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-sm text-black/70 hover:text-black"
+        >
           <ArrowLeft size={16} /> Back to shop
         </Link>
         <span className="text-black/20">|</span>
         <div className="text-xs text-black/50 flex items-center gap-2">
-          <Link to="/" className="hover:text-black">Shop</Link>
+          <Link to="/" className="hover:text-black">
+            Shop
+          </Link>
           <span>/</span>
           <span className="text-black/80">Orders</span>
         </div>
       </div>
 
       <section className="px-4 sm:px-6 md:px-8 lg:px-10 py-6 sm:py-8 lg:py-12 flex-1">
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8 lg:mb-10">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6 lg:mb-8">
           <div>
-            <h1 className="text-black flex items-center gap-3" style={{ ...dmSans, fontWeight: 500, fontSize: 42, letterSpacing: "-0.03em", lineHeight: 1 }}>
-              <ScrollText size={30} strokeWidth={1.5} /> Orders
+            <h1 className="type-h1 text-black flex items-center gap-2">
+              <ScrollText size={22} strokeWidth={1.5} /> Orders
             </h1>
             <p className="text-black/60 mt-2 text-sm">
               {orderCount === 0
@@ -119,8 +139,13 @@ function OrdersPage() {
           <OrdersListSkeleton count={3} />
         ) : orderCount === 0 ? (
           <div className="border border-dashed border-black/15 rounded-2xl p-10 text-center text-black/60">
-            <p className="mb-4">Your WhatsApp order drafts will appear here after your first order.</p>
-            <Link to="/" className="inline-flex items-center gap-2 bg-black text-white rounded-full px-5 py-2.5 text-sm hover:bg-black/85">
+            <p className="mb-4">
+              Your WhatsApp order drafts will appear here after your first order.
+            </p>
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 bg-black text-white rounded-full px-5 py-2.5 text-sm hover:bg-black/85"
+            >
               Browse the shop
             </Link>
           </div>
@@ -129,11 +154,24 @@ function OrdersPage() {
             {orders.map((o) => {
               const isOpen = expanded === o.id;
               return (
-                <li key={o.id} className="border border-black/10 rounded-2xl bg-white overflow-hidden">
-                  <div className="flex flex-col sm:flex-row gap-4 p-4 sm:p-5">
-                    <div className={`${o.primaryBg ?? "bg-black/[0.04]"} w-full sm:w-24 h-24 rounded-xl shrink-0 overflow-hidden`}>
+                <li
+                  key={o.id}
+                  className="border border-black/10 rounded-2xl bg-white overflow-hidden"
+                >
+                  <div className="flex flex-col sm:flex-row gap-3 p-3 sm:p-4">
+                    <div
+                      className={`${o.primaryBg ?? "bg-black/[0.04]"} w-full sm:w-24 h-24 rounded-xl shrink-0 overflow-hidden`}
+                    >
                       {o.primaryImg && (
-                        <img src={o.primaryImg} alt={o.primaryName} width={512} height={512} loading="lazy" decoding="async" className="w-full h-full object-cover" />
+                        <SafeImage
+                          src={o.primaryImg}
+                          alt={o.primaryName}
+                          width={512}
+                          height={512}
+                          loading="lazy"
+                          decoding="async"
+                          className="w-full h-full object-cover"
+                        />
                       )}
                     </div>
                     <div className="flex-1 min-w-0 flex flex-col gap-2">
@@ -143,14 +181,15 @@ function OrdersPage() {
                         </span>
                         <span className="text-black/50">{formatDate(o.createdAt)}</span>
                       </div>
-                      <div className="text-black truncate" style={{ ...dmSans, fontWeight: 500, fontSize: 18, letterSpacing: "-0.02em" }}>
+                      <div className="type-title text-black truncate">
                         {o.primaryName}
                         {o.extraCount && o.extraCount > 0 ? (
                           <span className="text-black/50 text-sm"> · +{o.extraCount} more</span>
                         ) : null}
                       </div>
                       <div className="text-sm text-black/60">
-                        {o.itemCount} item{o.itemCount === 1 ? "" : "s"} · <span className="text-black">{formatPKR(o.total)}</span>
+                        {o.itemCount} item{o.itemCount === 1 ? "" : "s"} ·{" "}
+                        <span className="text-black">{formatPKR(o.total)}</span>
                       </div>
                       <div className="mt-auto flex flex-wrap gap-2 pt-2">
                         <button
@@ -164,7 +203,15 @@ function OrdersPage() {
                           onClick={() => copy(o)}
                           className="inline-flex items-center gap-2 border border-black/15 rounded-full px-4 h-9 text-sm text-black/80 hover:text-black hover:border-black transition-colors"
                         >
-                          {copiedId === o.id ? <><Check size={14} /> Copied</> : <><ClipboardCopy size={14} /> Copy message</>}
+                          {copiedId === o.id ? (
+                            <>
+                              <Check size={14} /> Copied
+                            </>
+                          ) : (
+                            <>
+                              <ClipboardCopy size={14} /> Copy message
+                            </>
+                          )}
                         </button>
                         <button
                           onClick={() => setExpanded(isOpen ? null : o.id)}

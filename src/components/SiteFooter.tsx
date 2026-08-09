@@ -1,4 +1,14 @@
-import { Instagram, Facebook, Twitter, Youtube, Music2, Bookmark, Mail, Phone, MapPin } from "lucide-react";
+import {
+  Instagram,
+  Facebook,
+  Twitter,
+  Youtube,
+  Music2,
+  Bookmark,
+  Mail,
+  Phone,
+  MapPin,
+} from "lucide-react";
 import { useSettings, type SocialKey } from "@/lib/settings";
 
 const dmSans = { fontFamily: "'DM Sans', sans-serif" };
@@ -15,60 +25,38 @@ const SOCIAL_META: Record<SocialKey, { label: string; Icon: typeof Instagram }> 
 
 export function SiteFooter() {
   const s = useSettings();
-  const activeSocials = (Object.keys(SOCIAL_META) as SocialKey[]).filter((k) => s.socials[k]?.trim());
+  const activeSocials = (Object.keys(SOCIAL_META) as SocialKey[]).filter((k) =>
+    s.socials[k]?.trim(),
+  );
 
   return (
-    <footer className="bg-[#FEFDF9] px-3 sm:px-6 md:px-8 lg:px-12 py-4 sm:py-6 lg:py-8" style={inter}>
-      <div className="mx-auto max-w-7xl bg-[#ECEDEC] rounded-2xl lg:rounded-[2rem] overflow-hidden text-black shadow-sm">
-        {/* Newsletter row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 border-b border-black/10">
-          <div className="p-4 sm:p-8 md:p-10 border-b md:border-b-0 md:border-r border-black/10">
-            <h2
-              className="text-black"
-              style={{
-                ...dmSans,
-                fontWeight: 300,
-                letterSpacing: "-0.03em",
-                fontSize: "clamp(18px, 2.4vw, 32px)",
-                lineHeight: 1.15,
-              }}
-            >
-              Invite nature into your inbox.
-            </h2>
-            <p className="mt-2 sm:mt-3 text-black/55 max-w-sm text-xs sm:text-sm leading-relaxed">
-              Seasonal rituals and early access to limited runs.
-            </p>
-          </div>
-          <div className="p-4 sm:p-8 md:p-10 flex flex-col justify-center bg-[#FEF3C7]">
-            <form onSubmit={(e) => e.preventDefault()} className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-              <input
-                type="email"
-                placeholder="Email address"
-                aria-label="Email address"
-                className="flex-1 min-w-0 bg-transparent border-b border-black/20 pb-2 focus:outline-none focus:border-black placeholder:text-black/40 text-sm sm:text-base transition-colors"
-              />
-              <button
-                type="submit"
-                className="shrink-0 px-4 sm:px-5 py-2 sm:py-2.5 bg-black text-white rounded-full hover:bg-black/85 transition-colors uppercase tracking-[0.18em] text-[10px]"
-                style={{ ...inter, fontWeight: 500 }}
-              >
-                Join
-              </button>
-            </form>
-          </div>
-        </div>
+    <footer
+      className="bg-[#FEFDF9] px-3 sm:px-6 md:px-8 lg:px-12 py-4 sm:py-6 lg:py-8"
+      style={inter}
+    >
+      <div className="mx-auto max-w-7xl bg-[#ECEDEC] rounded-xl lg:rounded-2xl overflow-hidden text-black shadow-sm">
+
 
         {/* Brand + contact + socials */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 p-4 sm:p-8 md:p-10 border-b border-black/10">
           <div className="min-w-0 flex items-center gap-3">
             {s.logoUrl ? (
-              <img src={s.logoUrl} alt={s.brandName} className="w-10 h-10 rounded-lg object-cover bg-white" />
+              <img
+                src={s.logoUrl}
+                alt={s.brandName}
+                className="w-10 h-10 rounded-lg object-cover bg-white"
+              />
             ) : null}
             <div className="min-w-0">
-              <div className="text-lg truncate" style={{ ...dmSans, fontWeight: 500, letterSpacing: "-0.03em" }}>
+              <div
+                className="text-base truncate"
+                style={{ ...dmSans, fontWeight: 500, letterSpacing: "-0.03em" }}
+              >
                 {s.brandName}
               </div>
-              <div className="text-[11px] uppercase tracking-[0.2em] text-black/45 truncate">{s.tagline}</div>
+              <div className="text-[11px] uppercase tracking-[0.2em] text-black/45 truncate">
+                {s.tagline}
+              </div>
             </div>
           </div>
 
@@ -76,13 +64,23 @@ export function SiteFooter() {
             {s.contactEmail && (
               <li className="flex items-center gap-2 min-w-0">
                 <Mail className="w-3.5 h-3.5 shrink-0 text-black/50" />
-                <a href={`mailto:${s.contactEmail}`} className="truncate hover:text-black transition-colors">{s.contactEmail}</a>
+                <a
+                  href={`mailto:${s.contactEmail}`}
+                  className="truncate hover:text-black transition-colors"
+                >
+                  {s.contactEmail}
+                </a>
               </li>
             )}
             {s.contactPhone && (
               <li className="flex items-center gap-2 min-w-0">
                 <Phone className="w-3.5 h-3.5 shrink-0 text-black/50" />
-                <a href={`tel:${s.contactPhone.replace(/\s/g, "")}`} className="truncate hover:text-black transition-colors">{s.contactPhone}</a>
+                <a
+                  href={`tel:${s.contactPhone.replace(/\s/g, "")}`}
+                  className="truncate hover:text-black transition-colors"
+                >
+                  {s.contactPhone}
+                </a>
               </li>
             )}
             {s.address && (
@@ -95,7 +93,9 @@ export function SiteFooter() {
 
           <div className="flex flex-wrap items-center gap-2 md:justify-end">
             {activeSocials.length === 0 ? (
-              <span className="text-[10px] uppercase tracking-[0.18em] text-black/35">No social links yet</span>
+              <span className="text-[10px] uppercase tracking-[0.18em] text-black/35">
+                No social links yet
+              </span>
             ) : (
               activeSocials.map((k) => {
                 const { label, Icon } = SOCIAL_META[k];
@@ -121,12 +121,22 @@ export function SiteFooter() {
           <div className="w-full pt-4 sm:pt-5 flex flex-col md:flex-row justify-between items-center gap-2 md:gap-6 text-[9px] sm:text-[10px] uppercase tracking-[0.15em] sm:tracking-[0.18em] text-black/50 text-center md:text-left">
             <div className="hidden sm:block">{s.tagline}</div>
             <div className="flex gap-4 sm:gap-6">
-              <a href="#" className="hover:text-black transition-colors">Privacy</a>
-              <a href="#" className="hover:text-black transition-colors">Terms</a>
-              <a href="#" className="hover:text-black transition-colors">Cookies</a>
-              <a href="/admin" className="hover:text-black transition-colors">Admin</a>
+              <a href="#" className="hover:text-black transition-colors">
+                Privacy
+              </a>
+              <a href="#" className="hover:text-black transition-colors">
+                Terms
+              </a>
+              <a href="#" className="hover:text-black transition-colors">
+                Cookies
+              </a>
+              <a href="/admin" className="hover:text-black transition-colors">
+                Admin
+              </a>
             </div>
-            <div>© {new Date().getFullYear()} {s.brandName}</div>
+            <div>
+              © {new Date().getFullYear()} {s.brandName}
+            </div>
           </div>
         </div>
       </div>

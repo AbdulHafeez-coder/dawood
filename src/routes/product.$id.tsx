@@ -1,14 +1,39 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, ShoppingBag, Star, Plus, Minus, Check, Truck, ShieldCheck, Leaf, Heart, MessageCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  ShoppingBag,
+  Star,
+  Plus,
+  Minus,
+  Check,
+  Truck,
+  ShieldCheck,
+  Leaf,
+  Heart,
+  MessageCircle,
+} from "lucide-react";
 import { buildWhatsappProductOrder } from "@/lib/whatsapp";
 import { saveOrder } from "@/lib/orders";
-import { getProductAsync, getVariants, useProducts, useCart, useFavourites, type Product } from "@/lib/shop";
+import {
+  getProductAsync,
+  getVariants,
+  useProducts,
+  useCart,
+  useFavourites,
+  type Product,
+} from "@/lib/shop";
 import { LazyCartDrawer as CartDrawer } from "@/components/LazyCartDrawer";
 import { SiteFooter } from "@/components/SiteFooter";
-import { AddToCartSkeleton, ProductGallerySkeleton, VariantOptionsSkeleton, useMounted } from "@/components/skeletons";
+import {
+  AddToCartSkeleton,
+  ProductGallerySkeleton,
+  VariantOptionsSkeleton,
+  useMounted,
+} from "@/components/skeletons";
 import { toast } from "sonner";
 import { formatPKR } from "@/lib/format";
+import { SafeImage } from "@/components/ui/SafeImage";
 
 export const Route = createFileRoute("/product/$id")({
   loader: async ({ params }) => {
@@ -43,13 +68,21 @@ function NotFoundProduct() {
   return (
     <div className="min-h-screen flex flex-col bg-[#FEFDF9]" style={inter}>
       <div className="flex-1 flex flex-col items-center justify-center gap-4 px-4 py-20 text-center">
-        <div style={{ ...dmSans, fontWeight: 500, fontSize: 42, letterSpacing: "-0.04em" }}>Not in the catalogue</div>
+        <div style={{ ...dmSans, fontWeight: 500, fontSize: 28, letterSpacing: "-0.04em" }}>
+          Not in the catalogue
+        </div>
         <p className="text-black/60">We couldn't find that piece.</p>
         <div className="flex flex-wrap justify-center gap-2 mt-2">
-          <Link to="/" className="inline-flex items-center gap-2 bg-black text-white rounded-md h-11 px-5 text-sm">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 bg-black text-white rounded-md h-9 px-4 text-sm"
+          >
             <ArrowLeft size={16} /> Back to home
           </Link>
-          <a href="/#shop" className="inline-flex items-center gap-2 border border-black/15 rounded-md h-11 px-5 text-sm hover:bg-black/[0.03]">
+          <a
+            href="/#shop"
+            className="inline-flex items-center gap-2 border border-black/15 rounded-md h-9 px-4 text-sm hover:bg-black/[0.03]"
+          >
             <ShoppingBag size={16} /> Browse products
           </a>
         </div>
@@ -63,13 +96,21 @@ function ProductError() {
   return (
     <div className="min-h-screen flex flex-col bg-[#FEFDF9]" style={inter}>
       <div className="flex-1 flex flex-col items-center justify-center gap-4 px-4 py-20 text-center">
-        <div style={{ ...dmSans, fontWeight: 500, fontSize: 32, letterSpacing: "-0.04em" }}>Something went wrong</div>
+        <div style={{ ...dmSans, fontWeight: 500, fontSize: 24, letterSpacing: "-0.04em" }}>
+          Something went wrong
+        </div>
         <p className="text-black/60">We couldn't load this product. Please try again.</p>
         <div className="flex flex-wrap justify-center gap-2 mt-2">
-          <Link to="/" className="inline-flex items-center gap-2 bg-black text-white rounded-md h-11 px-5 text-sm">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 bg-black text-white rounded-md h-9 px-4 text-sm"
+          >
             <ArrowLeft size={16} /> Back to home
           </Link>
-          <a href="/#shop" className="inline-flex items-center gap-2 border border-black/15 rounded-md h-11 px-5 text-sm hover:bg-black/[0.03]">
+          <a
+            href="/#shop"
+            className="inline-flex items-center gap-2 border border-black/15 rounded-md h-9 px-4 text-sm hover:bg-black/[0.03]"
+          >
             <ShoppingBag size={16} /> Browse products
           </a>
         </div>
@@ -86,13 +127,7 @@ function ProductPage() {
   const { toggleFav, isFav, favCount } = useFavourites();
 
   const handleFav = () => {
-    const wasFav = isFav(product.id);
-    toggleFav(product.id);
-    if (wasFav) {
-      toast(`${product.name} removed from favourites`);
-    } else {
-      toast.success(`${product.name} added to favourites`, { description: product.category });
-    }
+    toggleFav(product);
   };
   const [cartOpen, setCartOpen] = useState(false);
   const [qty, setQty] = useState(1);
@@ -143,11 +178,18 @@ function ProductPage() {
     : product;
 
   const { products: liveProducts } = useProducts();
-  const related = liveProducts.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4);
+  const related = liveProducts
+    .filter((p) => p.category === product.category && p.id !== product.id)
+    .slice(0, 4);
 
   const handleAdd = () => {
     if (!selectedSize || !selectedColor) {
-      const missing = !selectedSize && !selectedColor ? "a size and colour" : !selectedSize ? "a size" : "a colour";
+      const missing =
+        !selectedSize && !selectedColor
+          ? "a size and colour"
+          : !selectedSize
+            ? "a size"
+            : "a colour";
       toast.error(`Please select ${missing} first`);
       return;
     }
@@ -177,15 +219,19 @@ function ProductPage() {
         </Link>
         <div className="flex items-center gap-4">
           <Link to="/favorites" aria-label="Favourites" className="relative text-black">
-            <Heart size={22} strokeWidth={1.5} />
+            <Heart size={20} strokeWidth={1.5} />
             {favCount > 0 && (
               <span className="absolute -top-1.5 -right-1.5 bg-black text-white text-[10px] font-medium min-w-4 h-4 px-1 rounded-full flex items-center justify-center">
                 {favCount}
               </span>
             )}
           </Link>
-          <button aria-label="Cart" onClick={() => setCartOpen(true)} className="relative text-black">
-            <ShoppingBag size={22} strokeWidth={1.5} />
+          <button
+            aria-label="Cart"
+            onClick={() => setCartOpen(true)}
+            className="relative text-black"
+          >
+            <ShoppingBag size={20} strokeWidth={1.5} />
             {cartCount > 0 && (
               <span className="absolute -top-1.5 -right-1.5 bg-black text-white text-[10px] font-medium min-w-4 h-4 px-1 rounded-full flex items-center justify-center">
                 {cartCount}
@@ -197,19 +243,23 @@ function ProductPage() {
 
       {/* BACK + BREADCRUMB */}
       <div className="px-4 sm:px-6 md:px-8 lg:px-10 pt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
-        <Link to="/" className="inline-flex items-center gap-2 text-sm text-black/70 hover:text-black">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-sm text-black/70 hover:text-black"
+        >
           <ArrowLeft size={16} /> Back to shop
         </Link>
         <span className="text-black/20">|</span>
         <div className="text-xs text-black/50 flex items-center gap-2 min-w-0">
-          <Link to="/" className="hover:text-black">Shop</Link>
+          <Link to="/" className="hover:text-black">
+            Shop
+          </Link>
           <span>/</span>
           <span>{product.category}</span>
           <span>/</span>
           <span className="text-black/80 truncate">{product.name}</span>
         </div>
       </div>
-
 
       {/* PRODUCT */}
       <section className="px-4 sm:px-6 md:px-8 lg:px-10 py-6 sm:py-8 lg:py-12 grid md:grid-cols-2 gap-8 lg:gap-14">
@@ -219,7 +269,13 @@ function ProductPage() {
         ) : (
           <div className="flex flex-col gap-3">
             <div className={`${product.bg} rounded-2xl aspect-square overflow-hidden`}>
-              <img src={product.gallery[activeImg] ?? product.img} alt={product.name} width={1600} height={1600} className="w-full h-full object-cover" />
+              <SafeImage
+                src={product.gallery[activeImg] ?? product.img}
+                alt={product.name}
+                width={1600}
+                height={1600}
+                className="w-full h-full object-cover"
+              />
             </div>
             <div className="grid grid-cols-4 gap-3">
               {product.gallery.map((g: string, i: number) => (
@@ -229,7 +285,13 @@ function ProductPage() {
                   aria-label={`Show image ${i + 1}`}
                   className={`aspect-square rounded-xl overflow-hidden border-2 transition-colors ${activeImg === i ? "border-black" : "border-transparent hover:border-black/20"} ${product.bg}`}
                 >
-                  <img src={g} alt="" className="w-full h-full object-cover" loading="lazy" decoding="async" />
+                  <SafeImage
+                    src={g}
+                    alt=""
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                    decoding="async"
+                  />
                 </button>
               ))}
             </div>
@@ -239,13 +301,13 @@ function ProductPage() {
         {/* INFO */}
         <div>
           <div className="type-eyebrow text-black/50">{product.category}</div>
-          <h1 className="type-h1 mt-3 text-black">
-            {product.name}
-          </h1>
+          <h1 className="type-h1 mt-3 text-black">{product.name}</h1>
           <p className="mt-3 text-black/70 max-w-md">{product.tagline}</p>
 
           <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
-            <div className="type-price-lg text-black whitespace-nowrap">{formatPKR(product.price)}</div>
+            <div className="type-price-lg text-black whitespace-nowrap">
+              {formatPKR(product.price)}
+            </div>
             <div className="flex items-center gap-1 text-black/60 text-sm whitespace-nowrap">
               <Star size={14} className="fill-black text-black" /> {product.rating} · 240 reviews
             </div>
@@ -270,8 +332,12 @@ function ProductPage() {
               {/* SIZE */}
               <div className="mt-8 max-w-md">
                 <div className="flex items-baseline justify-between mb-2">
-                  <div className="text-sm text-black" style={{ fontWeight: 500 }}>Size</div>
-                  <div className="text-xs text-black/50">{selectedSize ? selectedSize.note ?? selectedSize.label : "Select a size"}</div>
+                  <div className="text-sm text-black" style={{ fontWeight: 500 }}>
+                    Size
+                  </div>
+                  <div className="text-xs text-black/50">
+                    {selectedSize ? (selectedSize.note ?? selectedSize.label) : "Select a size"}
+                  </div>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {variants.sizes.map((s) => {
@@ -281,7 +347,7 @@ function ProductPage() {
                         key={s.id}
                         onClick={() => setSize(s.id)}
                         aria-pressed={active}
-                        className={`px-4 h-10 rounded-full border text-sm transition-colors ${active ? "border-black bg-black text-white" : "border-black/15 text-black hover:border-black"}`}
+                        className={`px-4 h-9 rounded-full border text-sm transition-colors ${active ? "border-black bg-black text-white" : "border-black/15 text-black hover:border-black"}`}
                       >
                         {s.label}
                       </button>
@@ -293,8 +359,12 @@ function ProductPage() {
               {/* COLOR */}
               <div className="mt-6 max-w-md">
                 <div className="flex items-baseline justify-between mb-2">
-                  <div className="text-sm text-black" style={{ fontWeight: 500 }}>Colour</div>
-                  <div className="text-xs text-black/50">{selectedColor ? selectedColor.label : "Select a colour"}</div>
+                  <div className="text-sm text-black" style={{ fontWeight: 500 }}>
+                    Colour
+                  </div>
+                  <div className="text-xs text-black/50">
+                    {selectedColor ? selectedColor.label : "Select a colour"}
+                  </div>
                 </div>
                 <div className="flex flex-wrap gap-3">
                   {variants.colors.map((c) => {
@@ -308,7 +378,9 @@ function ProductPage() {
                         aria-pressed={active}
                         title={c.label}
                         className={`h-9 w-9 rounded-full border-2 transition-colors ${active ? "border-black" : "border-black/15 hover:border-black/40"}`}
-                        style={isGradient ? { backgroundImage: c.swatch } : { backgroundColor: c.swatch }}
+                        style={
+                          isGradient ? { backgroundImage: c.swatch } : { backgroundColor: c.swatch }
+                        }
                       />
                     );
                   })}
@@ -325,12 +397,20 @@ function ProductPage() {
             <>
               {/* QUANTITY + ADD */}
               <div className="mt-8 flex items-center gap-3">
-                <div className="inline-flex items-center border border-black/15 rounded-full h-12">
-                  <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="w-10 h-12 flex items-center justify-center text-black/70 hover:text-black" aria-label="Decrease">
+                <div className="inline-flex items-center border border-black/15 rounded-full h-10">
+                  <button
+                    onClick={() => setQty((q) => Math.max(1, q - 1))}
+                    className="w-9 h-10 flex items-center justify-center text-black/70 hover:text-black"
+                    aria-label="Decrease"
+                  >
                     <Minus size={16} />
                   </button>
                   <span className="w-8 text-center text-sm text-black">{qty}</span>
-                  <button onClick={() => setQty((q) => q + 1)} className="w-10 h-12 flex items-center justify-center text-black/70 hover:text-black" aria-label="Increase">
+                  <button
+                    onClick={() => setQty((q) => q + 1)}
+                    className="w-9 h-10 flex items-center justify-center text-black/70 hover:text-black"
+                    aria-label="Increase"
+                  >
                     <Plus size={16} />
                   </button>
                 </div>
@@ -343,19 +423,30 @@ function ProductPage() {
                   <button
                     onClick={handleAdd}
                     disabled={!canAdd}
-                    className="w-full inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-12 text-base hover:bg-black/85"
+                    className="w-full inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-10 text-sm hover:bg-black/85"
                     style={{ fontWeight: 500 }}
                   >
-                    {!canAdd ? "Select size & colour" : added ? (<><Check size={18} /> Added</>) : (<>Add to cart · {formatPKR(product.price * qty)}</>)}
+                    {!canAdd ? (
+                      "Select size & colour"
+                    ) : added ? (
+                      <>
+                        <Check size={18} /> Added
+                      </>
+                    ) : (
+                      <>Add to cart · {formatPKR(product.price * qty)}</>
+                    )}
                   </button>
                 </div>
                 <button
                   onClick={handleFav}
                   aria-label={isFav(product.id) ? "Remove from favourites" : "Add to favourites"}
                   aria-pressed={isFav(product.id)}
-                  className="h-12 w-12 shrink-0 inline-flex items-center justify-center rounded-full border border-black/15 hover:border-black transition-colors"
+                  className="h-10 w-10 shrink-0 inline-flex items-center justify-center rounded-full border border-black/15 hover:border-black transition-colors"
                 >
-                  <Heart size={18} className={isFav(product.id) ? "fill-black text-black" : "text-black"} />
+                  <Heart
+                    size={18}
+                    className={isFav(product.id) ? "fill-black text-black" : "text-black"}
+                  />
                 </button>
               </div>
 
@@ -374,10 +465,12 @@ function ProductPage() {
                       primaryImg: product.img,
                       primaryBg: product.bg,
                     });
-                    toast.success("Order draft saved", { description: "You can resend it any time from Orders." });
+                    toast.success("Order draft saved", {
+                      description: "You can resend it any time from Orders.",
+                    });
                     window.open(url, "_blank", "noopener,noreferrer");
                   }}
-                  className="mt-3 inline-flex items-center justify-center gap-2 bg-[#25D366] text-white rounded-md h-12 text-base w-full hover:bg-[#1ebe57] transition-colors"
+                  className="mt-3 inline-flex items-center justify-center gap-2 bg-[#25D366] text-white rounded-md h-10 text-sm w-full hover:bg-[#1ebe57] transition-colors"
                   style={{ fontWeight: 500 }}
                 >
                   <MessageCircle size={18} /> Order on WhatsApp
@@ -385,14 +478,16 @@ function ProductPage() {
               ) : (
                 <button
                   disabled
-                  className="mt-3 inline-flex items-center justify-center gap-2 bg-black/10 text-black/40 rounded-md h-12 text-base w-full cursor-not-allowed border border-black/10"
+                  className="mt-3 inline-flex items-center justify-center gap-2 bg-black/10 text-black/40 rounded-md h-10 text-sm w-full cursor-not-allowed border border-black/10"
                   style={{ fontWeight: 500 }}
                 >
                   <MessageCircle size={18} /> Order on WhatsApp
                 </button>
               )}
               <p className="mt-2 text-[11px] text-black/50">
-                {canAdd ? "Chat with us on WhatsApp — product details pre-filled." : "Pick a size and colour to continue."}
+                {canAdd
+                  ? "Chat with us on WhatsApp — product details pre-filled."
+                  : "Pick a size and colour to continue."}
               </p>
             </>
           )}
@@ -403,7 +498,10 @@ function ProductPage() {
               { Icon: ShieldCheck, label: "60-day returns" },
               { Icon: Leaf, label: "OEKO-TEX" },
             ].map(({ Icon, label }) => (
-              <div key={label} className="flex flex-col items-center text-center gap-1 rounded-xl bg-black/[0.04] p-3">
+              <div
+                key={label}
+                className="flex flex-col items-center text-center gap-1 rounded-xl bg-black/[0.04] p-3"
+              >
                 <Icon size={18} className="text-black" strokeWidth={1.5} />
                 <span className="text-[11px] text-black/70">{label}</span>
               </div>
@@ -414,14 +512,14 @@ function ProductPage() {
 
       {/* RELATED */}
       {related.length > 0 && (
-        <section className="px-4 sm:px-6 md:px-8 lg:px-10 py-10 sm:py-14 lg:py-20 border-t border-black/5">
-          <div className="flex items-end justify-between mb-8">
-            <h2 className="type-h2 text-black">
-              More in {product.category}
-            </h2>
-            <Link to="/" className="text-sm text-black/60 hover:text-black">View all</Link>
+        <section className="px-4 sm:px-6 md:px-8 lg:px-10 py-8 sm:py-12 lg:py-16 border-t border-black/5">
+          <div className="flex items-end justify-between mb-6">
+            <h2 className="type-h2 text-black">More in {product.category}</h2>
+            <Link to="/" className="text-sm text-black/60 hover:text-black">
+              View all
+            </Link>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-4">
             {related.map((p) => (
               <RelatedCard key={p.id} product={p} />
             ))}
@@ -443,14 +541,29 @@ function RelatedCard({ product: p }: { product: Product }) {
     <Link
       to="/product/$id"
       params={{ id: p.id }}
-      className="bg-white rounded-2xl overflow-hidden flex flex-col group border border-black/5 hover:border-black/20 transition-colors"
+      className="bg-white rounded-xl overflow-hidden flex flex-col group border border-black/5 hover:border-black/20 transition-colors"
     >
       <div className={`${p.bg} relative aspect-square overflow-hidden`}>
-        <img src={p.img} alt={p.name} width={800} height={800} loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        <SafeImage
+          src={p.img}
+          alt={p.name}
+          width={800}
+          height={800}
+          loading="lazy"
+          decoding="async"
+          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        />
       </div>
-      <div className="p-4 flex items-start justify-between gap-2">
-        <div className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 16, letterSpacing: "-0.02em" }}>{p.name}</div>
-        <div className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 16 }}>{formatPKR(p.price)}</div>
+      <div className="p-3 flex items-start justify-between gap-2">
+        <div
+          className="text-black"
+          style={{ ...dmSans, fontWeight: 500, fontSize: 14, letterSpacing: "-0.02em" }}
+        >
+          {p.name}
+        </div>
+        <div className="text-black" style={{ ...dmSans, fontWeight: 500, fontSize: 14 }}>
+          {formatPKR(p.price)}
+        </div>
       </div>
     </Link>
   );
