@@ -7,7 +7,36 @@ import { SEED_CATEGORIES, getVariants } from "./constants";
 export * from "./types";
 export * from "./constants";
 
-const SEED_PRODUCTS: Product[] = [];
+const SEED_PRODUCTS: Product[] = [
+  {
+    id: "p-dining-sheet-6s",
+    name: "Dining Table Sheet 6 Seater (Marble Design)",
+    tag: "NEW",
+    price: 1499,
+    rating: 4.8,
+    img: "/images/products/dining-table-sheet.jpg",
+    bg: "bg-gray-100",
+    category: "Table Covers",
+    tagline: "Elegant marble design waterproof table sheet",
+    description: "Premium quality 6-seater dining table sheet with a beautiful white marble and gold vein design. Waterproof, easy to clean, and protects your table from scratches and spills.",
+    details: ["Size: 6 Seater", "Material: PVC/Waterproof", "Design: Marble Gold"],
+    gallery: ["/images/products/dining-table-sheet.jpg"],
+  },
+  {
+    id: "p-premium-table-sheet",
+    name: "Premium Table Sheet",
+    tag: "PREMIUM",
+    price: 1999,
+    rating: 4.9,
+    img: "/images/products/premium-table-sheet.jpg",
+    bg: "bg-gray-100",
+    category: "Table Covers",
+    tagline: "Style • Elegance • Durability",
+    description: "Upgrade your dining experience with this Premium Table Sheet. Made with high-quality vinyl and polyester backing for long-lasting durability. It is water resistant, easy to clean, and features a non-slip backing.",
+    details: ["Size: 3 x 5 feet (36x60 inches)", "Front: Premium Vinyl", "Back: Polyester Backing", "Water Resistant & Easy to Clean"],
+    gallery: ["/images/products/premium-table-sheet.jpg"],
+  }
+];
 
 // ---------- LIVE STORE (products + categories) ----------
 // Backed by Supabase (public.products, public.categories). Cart + favourites
@@ -140,7 +169,7 @@ async function hydrateFromSupabase() {
       sortOrder: r.sort_order ?? i,
     };
   });
-  products.splice(0, products.length, ...((prodData ?? []) as ProductRow[]).map(rowToProduct));
+  products.splice(0, products.length, ...((prodData ?? []) as ProductRow[]).map(rowToProduct), ...SEED_PRODUCTS);
   promotionsLive.splice(
     0,
     promotionsLive.length,

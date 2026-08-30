@@ -1852,10 +1852,6 @@ function ProductFormDialog({
                 </select>
               </Field>
               <Field label="Price (PKR)">
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold tracking-wide text-black/55 pointer-events-none">
-                    PKR
-                  </span>
                   <input
                     type="number"
                     inputMode="decimal"
@@ -1867,9 +1863,8 @@ function ProductFormDialog({
                       set("price", v === "" ? 0 : Number(v));
                     }}
                     placeholder="0.00"
-                    className="mt-input pl-14 tabular-nums"
+                    className="mt-input tabular-nums"
                   />
-                </div>
                 <div className="mt-1 text-[11px] text-black/55 tabular-nums">
                   Displays as{" "}
                   <span className="text-black font-medium">

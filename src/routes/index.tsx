@@ -20,6 +20,7 @@ import {
   ChevronLeft,
   ChevronRight,
   RotateCcw,
+  Camera,
 } from "lucide-react";
 import SlickSlider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -428,27 +429,41 @@ const heroSlides = [
           </div>
           <div className="flex-1 flex items-center justify-end gap-3 sm:gap-4 animate-slide-right delay-300">
             <div
-              className="hidden sm:flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-full px-3 py-1.5 w-56 transition-all duration-300 focus-within:bg-white/25 focus-within:ring-1 focus-within:ring-white/30"
+              className="hidden lg:flex items-stretch bg-white border-[1.5px] border-[#ff0055] rounded-md overflow-hidden transition-all duration-300 focus-within:ring-4 focus-within:ring-[#ff0055]/10 w-[320px] xl:w-[480px]"
             >
-              <Search size={16} strokeWidth={1.75} className="text-white/80 shrink-0" />
+              <div className="pl-3 pr-2 flex items-center justify-center bg-white">
+                <Camera size={18} strokeWidth={2} className="text-[#ff0055]" />
+              </div>
               <input
                 id="header-search"
                 type="search"
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search products…"
-                className="bg-transparent outline-none text-white placeholder:text-white/60 text-sm w-full"
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  if (e.target.value) setActiveCat("All");
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") scrollToProducts();
+                }}
+                placeholder="Enter keyword/product link, snap/upload picture"
+                className="bg-transparent outline-none text-black placeholder:text-black/30 text-[13px] w-full py-2.5 px-1"
                 style={inter}
               />
               {query && (
                 <button
                   aria-label="Clear search"
                   onClick={() => setQuery("")}
-                  className="text-white/70 hover:text-white shrink-0"
+                  className="text-gray-400 hover:text-gray-600 shrink-0 px-2 flex items-center bg-white"
                 >
-                  <X size={14} />
+                  <X size={16} />
                 </button>
               )}
+              <button 
+                onClick={() => { if(query) scrollToProducts(); }}
+                className="bg-[#ff0055] hover:bg-[#e6004c] text-white px-6 xl:px-8 flex items-center justify-center transition-colors shrink-0"
+              >
+                <Search size={20} strokeWidth={2.5} />
+              </button>
             </div>
             <button
               aria-label="Search"
@@ -534,7 +549,16 @@ const heroSlides = [
                   id="mobile-menu-search"
                   type="search"
                   value={query}
-                  onChange={(e) => setQuery(e.target.value)}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    if (e.target.value) setActiveCat("All");
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      setMenuOpen(false);
+                      setTimeout(scrollToProducts, 100);
+                    }
+                  }}
                   placeholder="Search products…"
                   className="bg-transparent outline-none text-white placeholder:text-white/50 text-sm w-full"
                   style={inter}
