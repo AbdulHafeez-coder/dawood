@@ -95,6 +95,9 @@ export type Database = {
           rating: number;
           tag: string;
           tagline: string;
+          slug: string | null;
+          seo_title: string | null;
+          seo_description: string | null;
         };
         Insert: {
           bg?: string;
@@ -110,6 +113,9 @@ export type Database = {
           rating?: number;
           tag?: string;
           tagline?: string;
+          slug?: string | null;
+          seo_title?: string | null;
+          seo_description?: string | null;
         };
         Update: {
           bg?: string;
@@ -125,6 +131,9 @@ export type Database = {
           rating?: number;
           tag?: string;
           tagline?: string;
+          slug?: string | null;
+          seo_title?: string | null;
+          seo_description?: string | null;
         };
         Relationships: [
           {

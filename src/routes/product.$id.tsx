@@ -540,7 +540,7 @@ function RelatedCard({ product: p }: { product: Product }) {
   return (
     <Link
       to="/product/$id"
-      params={{ id: p.id }}
+      params={{ id: p.slug || p.id }}
       className="bg-white rounded-xl overflow-hidden flex flex-col group border border-black/5 hover:border-black/20 transition-colors"
     >
       <div className={`${p.bg} relative aspect-square overflow-hidden`}>

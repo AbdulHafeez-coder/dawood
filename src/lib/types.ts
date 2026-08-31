@@ -14,6 +14,9 @@ export type Product = {
   description: string;
   details: string[];
   gallery: string[];
+  slug?: string | null;
+  seo_title?: string | null;
+  seo_description?: string | null;
 };
 
 export type CartItem = Product & {

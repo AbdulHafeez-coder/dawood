@@ -216,7 +216,7 @@ export function getProduct(id: string): Product | undefined {
 
 export async function getProductAsync(id: string): Promise<Product | undefined> {
   await ensureStoreHydratedAsync();
-  return products.find((p) => p.id === id);
+  return products.find((p) => p.id === id || p.slug === id);
 }
 
 // ---------- REACTIVE HOOKS ----------

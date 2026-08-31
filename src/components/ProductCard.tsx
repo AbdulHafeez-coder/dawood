@@ -25,7 +25,7 @@ function ProductCardImpl({ product: p, isFavourite, onToggleFav, favAction = "he
     <div className="bg-white rounded-2xl overflow-hidden flex flex-col h-full group relative">
       <Link
         to="/product/$id"
-        params={{ id: p.id }}
+        params={{ id: p.slug || p.id }}
         className={`${p.bg} relative aspect-square overflow-hidden block`}
       >
         <span className="absolute top-4 left-4 z-10 bg-black text-white text-xs px-3 py-1 rounded-full">
@@ -66,7 +66,7 @@ function ProductCardImpl({ product: p, isFavourite, onToggleFav, favAction = "he
         <div className="min-w-0">
           <Link
             to="/product/$id"
-            params={{ id: p.id }}
+            params={{ id: p.slug || p.id }}
             className="type-title text-black hover:underline block truncate"
             title={p.name}
           >
@@ -128,7 +128,7 @@ function ProductCardImpl({ product: p, isFavourite, onToggleFav, favAction = "he
 
         <Link
           to="/product/$id"
-          params={{ id: p.id }}
+          params={{ id: p.slug || p.id }}
           className="mt-auto inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-9 text-xs font-medium hover:bg-black/85 transition-colors"
         >
           {favAction === "remove" ? (
