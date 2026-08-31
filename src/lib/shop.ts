@@ -35,6 +35,20 @@ const SEED_PRODUCTS: Product[] = [
     description: "Upgrade your dining experience with this Premium Table Sheet. Made with high-quality vinyl and polyester backing for long-lasting durability. It is water resistant, easy to clean, and features a non-slip backing.",
     details: ["Size: 3 x 5 feet (36x60 inches)", "Front: Premium Vinyl", "Back: Polyester Backing", "Water Resistant & Easy to Clean"],
     gallery: ["/images/products/premium-table-sheet.jpg"],
+  },
+  {
+    id: "p-7-pcs-bowl-set-gd1914",
+    name: "7 Pcs Bowl Set |GD1914/L7HA",
+    tag: "PREMIUM",
+    price: 3250,
+    rating: 4.9,
+    img: "/images/products/7-pcs-bowl-set.jpg",
+    bg: "bg-[#f5e6d3]",
+    category: "Serving & Dining",
+    tagline: "A premium 7-piece bowl set crafted for modern kitchens",
+    description: "A premium 7-piece bowl set crafted for modern kitchens — crystal-clear, durable, and perfect for serving, mixing, storing, or daily meals. High-quality heat-resistant glass, Dishwasher & Microwave safe. Food-grade material with a modern aesthetic design.",
+    details: ["1 × Large Glass Bowl", "6 × Matching Small Glass Bowls", "High-quality heat-resistant glass", "Dishwasher safe", "Microwave safe"],
+    gallery: ["/images/products/7-pcs-bowl-set.jpg"],
   }
 ];
 
