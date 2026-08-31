@@ -25,7 +25,7 @@ export function buildWhatsappProductOrder(product: Product, qty: number = 1) {
     "Hi! I'd like to order the following item:",
     "",
     DIVIDER,
-    `*${product.name}*`,
+    `*${product.display_name || product.name}*`,
     `Category:  ${product.category}`,
     `Quantity:  ${qty}`,
     `Price:     ${money(product.price)} each`,

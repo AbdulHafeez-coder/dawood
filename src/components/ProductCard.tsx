@@ -89,9 +89,9 @@ function ProductCardImpl({ product: p, isFavourite, onToggleFav, favAction = "he
             to="/product/$id"
             params={{ id: p.slug || p.id }}
             className="type-title text-black hover:underline block truncate"
-            title={p.name}
+            title={p.display_name || p.name}
           >
-            {p.name}
+            {p.display_name || p.name}
           </Link>
           <div className="flex items-center gap-1 mt-1 text-black/60 text-xs">
             <Star size={12} className="fill-black text-black" /> {p.rating}

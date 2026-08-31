@@ -73,6 +73,22 @@ const SEED_PRODUCTS: Product[] = [
 type ProductRow = Database["public"]["Tables"]["products"]["Row"];
 type ProductInsert = Database["public"]["Tables"]["products"]["Insert"];
 
+function getDisplayName(name: string): string {
+  // If there is a pipe, take the first part
+  if (name.includes(" | ")) {
+    return name.split(" | ")[0].trim();
+  }
+  // Otherwise, check if the last word looks like a supplier code (has letters and numbers/symbols)
+  const parts = name.trim().split(" ");
+  if (parts.length > 1) {
+    const lastWord = parts[parts.length - 1];
+    if (/[a-zA-Z]/.test(lastWord) && /[0-9]/.test(lastWord)) {
+      return parts.slice(0, -1).join(" ");
+    }
+  }
+  return name.trim();
+}
+
 function rowToProduct(r: ProductRow): Product {
   const originalPrice = typeof r.price === "string" ? Number(r.price) : r.price;
   const discountRate = 0.2; // 20% discount
@@ -81,6 +97,7 @@ function rowToProduct(r: ProductRow): Product {
   return {
     id: r.id,
     name: r.name,
+    display_name: getDisplayName(r.name),
     tag: r.tag ?? "",
     price: discountedPrice,
     original_price: originalPrice,

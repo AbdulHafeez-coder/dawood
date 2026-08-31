@@ -173,7 +173,7 @@ function ProductPage() {
     ? {
         ...product,
         id: `${product.id}::${size}::${color}`,
-        name: `${product.name} — ${selectedSize.label} / ${selectedColor.label}`,
+        name: `${product.display_name || product.name} — ${selectedSize.label} / ${selectedColor.label}`,
       }
     : product;
 
@@ -195,7 +195,7 @@ function ProductPage() {
     }
     addToCart(variantProduct, qty, {
       baseId: product.id,
-      baseName: product.name,
+      baseName: product.display_name || product.name,
       variantSize: selectedSize.id,
       variantColor: selectedColor.id,
       variantSizeLabel: selectedSize.label,
@@ -257,7 +257,7 @@ function ProductPage() {
           <span>/</span>
           <span>{product.category}</span>
           <span>/</span>
-          <span className="text-black/80 truncate">{product.name}</span>
+          <span className="text-black/80 truncate">{product.display_name || product.name}</span>
         </div>
       </div>
 
@@ -277,7 +277,7 @@ function ProductPage() {
                 >
                   <SafeImage
                     src={g}
-                    alt={`${product.name} ${i + 1}`}
+                    alt={`${product.display_name || product.name} ${i + 1}`}
                     width={800}
                     height={800}
                     className="w-full h-full object-cover"
@@ -293,7 +293,7 @@ function ProductPage() {
             >
               <SafeImage
                 src={product.gallery[activeImg] ?? product.img}
-                alt={product.name}
+                alt={product.display_name || product.name}
                 width={1600}
                 height={1600}
                 className="w-full h-full object-cover"
@@ -327,7 +327,7 @@ function ProductPage() {
         {/* INFO */}
         <div>
           <div className="type-eyebrow text-black/50">{product.category}</div>
-          <h1 className="type-h1 mt-3 text-black">{product.name}</h1>
+          <h1 className="type-h1 mt-3 text-black">{product.display_name || product.name}</h1>
           <p className="mt-3 text-black/70 max-w-md">{product.tagline}</p>
 
           <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
