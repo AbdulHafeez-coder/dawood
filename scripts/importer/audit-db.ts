@@ -15,11 +15,11 @@ if (!supabaseUrl || !supabaseKey) {
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function runAudit() {
-  const { data: allProducts, error } = await supabase.from('products').select('*');
+  const { data: allProducts, error } = await supabase.from("products").select("*");
   if (error) throw error;
 
-  const imported = allProducts.filter(p => p.id.startsWith('p-'));
-  const original = allProducts.filter(p => !p.id.startsWith('p-'));
+  const imported = allProducts.filter((p) => p.id.startsWith("p-"));
+  const original = allProducts.filter((p) => !p.id.startsWith("p-"));
 
   const report = {
     totalImported: imported.length,
@@ -32,18 +32,18 @@ async function runAudit() {
     missingSEO: 0,
     duplicateSlugs: 0,
     categoryIssues: 0,
-    issues: [] as string[]
+    issues: [] as string[],
   };
 
   const slugs = new Set<string>();
-  
+
   for (const p of imported) {
     // Check SEO
     if (!p.slug || !p.seo_title || !p.seo_description) {
       report.missingSEO++;
       report.issues.push(`Missing SEO: ${p.name}`);
     }
-    
+
     // Check Duplicate slugs
     if (p.slug) {
       if (slugs.has(p.slug)) {
@@ -61,7 +61,7 @@ async function runAudit() {
     }
 
     // Empty descriptions
-    if (!p.description || p.description.trim() === '') {
+    if (!p.description || p.description.trim() === "") {
       report.emptyDescriptions++;
       report.issues.push(`Empty description: ${p.name}`);
     }
@@ -71,14 +71,19 @@ async function runAudit() {
       report.missingImages++;
       report.issues.push(`Missing images: ${p.name}`);
     } else {
-      if (!p.img.startsWith('http')) {
-         report.brokenImages++;
-         report.issues.push(`Broken image URL: ${p.name}`);
+      if (!p.img.startsWith("http")) {
+        report.brokenImages++;
+        report.issues.push(`Broken image URL: ${p.name}`);
       }
     }
-    
+
     // Categories
-    const validCategories = ["Serving & Dining", "Decoration & Gift Items", "Cups & Drinkware", "Kitchen Items"];
+    const validCategories = [
+      "Serving & Dining",
+      "Decoration & Gift Items",
+      "Cups & Drinkware",
+      "Kitchen Items",
+    ];
     if (!validCategories.includes(p.category)) {
       report.categoryIssues++;
       report.issues.push(`Unknown category: ${p.category} on ${p.name}`);

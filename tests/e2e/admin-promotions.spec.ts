@@ -9,10 +9,16 @@ const UPDATED_HEADLINE = `${HEADLINE} updated`;
 test("admin can create, update and delete a promotion", async ({ page }) => {
   await adminSignIn(page);
 
-  await page.getByRole("button", { name: /promotions/i }).first().click();
+  await page
+    .getByRole("button", { name: /promotions/i })
+    .first()
+    .click();
 
   // --- CREATE ---
-  await page.getByRole("button", { name: /new promotion|create your first promotion/i }).first().click();
+  await page
+    .getByRole("button", { name: /new promotion|create your first promotion/i })
+    .first()
+    .click();
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByText("New promotion")).toBeVisible();
   await dialog.getByPlaceholder("e.g. TOWELS").fill(LABEL);
@@ -25,7 +31,10 @@ test("admin can create, update and delete a promotion", async ({ page }) => {
 
   // Persists across a reload (i.e. it really hit the database).
   await page.reload();
-  await page.getByRole("button", { name: /promotions/i }).first().click();
+  await page
+    .getByRole("button", { name: /promotions/i })
+    .first()
+    .click();
   const reloaded = page.locator("li", { hasText: LABEL }).first();
   await expect(reloaded).toBeVisible({ timeout: 20_000 });
 
@@ -48,6 +57,9 @@ test("admin can create, update and delete a promotion", async ({ page }) => {
   await expect(page.locator("li", { hasText: LABEL })).toHaveCount(0, { timeout: 20_000 });
 
   await page.reload();
-  await page.getByRole("button", { name: /promotions/i }).first().click();
+  await page
+    .getByRole("button", { name: /promotions/i })
+    .first()
+    .click();
   await expect(page.locator("li", { hasText: LABEL })).toHaveCount(0, { timeout: 20_000 });
 });

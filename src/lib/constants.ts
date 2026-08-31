@@ -6,7 +6,8 @@ import productBathset from "@/assets/product-bathset.jpg";
 import heroBg from "@/assets/hero-home.jpg";
 import type { Category, VariantOptions } from "./types";
 
-export const PLACEHOLDER_IMAGE = "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='800' viewBox='0 0 800 800'%3E%3Cdefs%3E%3ClinearGradient id='a' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23F9F8F6'/%3E%3Cstop offset='100%25' stop-color='%23EBE9E4'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='800' height='800' fill='url(%23a)'/%3E%3Cpath d='M384 384h32v32h-32z' fill='%23D4D1CB'/%3E%3C/svg%3E";
+export const PLACEHOLDER_IMAGE =
+  "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='800' viewBox='0 0 800 800'%3E%3Cdefs%3E%3ClinearGradient id='a' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23F9F8F6'/%3E%3Cstop offset='100%25' stop-color='%23EBE9E4'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='800' height='800' fill='url(%23a)'/%3E%3Cpath d='M384 384h32v32h-32z' fill='%23D4D1CB'/%3E%3C/svg%3E";
 
 export const SEED_CATEGORIES: readonly string[] = [
   "Cups & Drinkware",
@@ -18,7 +19,7 @@ export const SEED_CATEGORIES: readonly string[] = [
   "Cleaning Items",
   "Home Sheets & Covers",
   "Decoration & Gift Items",
-  "Electronics & Gadgets"
+  "Electronics & Gadgets",
 ];
 
 // Kept for backwards-compat imports in existing components; treat as seed.

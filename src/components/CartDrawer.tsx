@@ -114,7 +114,10 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
             <div className="h-full flex flex-col items-center justify-center text-center text-black/50 gap-3">
               <ShoppingBag size={36} strokeWidth={1.25} />
               <p>Your basket is empty.</p>
-              <button onClick={onClose} className="text-black underline text-sm hover:text-black/80 transition-colors">
+              <button
+                onClick={onClose}
+                className="text-black underline text-sm hover:text-black/80 transition-colors"
+              >
                 Keep shopping
               </button>
             </div>
@@ -161,8 +164,17 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                           </div>
                         )}
                       </div>
-                      <div className="text-black text-sm whitespace-nowrap font-medium">
-                        {formatPKR(i.price * i.qty)}
+                      <div className="flex flex-col items-end text-black text-sm whitespace-nowrap font-medium gap-0.5">
+                        {i.original_price && i.original_price > i.price ? (
+                          <>
+                            <span className="text-black/50 line-through text-xs font-normal">
+                              {formatPKR(i.original_price * i.qty)}
+                            </span>
+                            <span>{formatPKR(i.price * i.qty)}</span>
+                          </>
+                        ) : (
+                          <span>{formatPKR(i.price * i.qty)}</span>
+                        )}
                       </div>
                     </div>
                     <div className="mt-auto pt-2 flex items-center justify-between">

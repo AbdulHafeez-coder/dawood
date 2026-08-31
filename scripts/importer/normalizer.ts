@@ -16,7 +16,10 @@ export function normalizeTitle(rawTitle: string): string {
 }
 
 export function generateSlug(title: string): string {
-  return title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 export function generateSEOTitle(normalizedTitle: string): string {
@@ -32,8 +35,17 @@ export function mapCategory(sourceCategory: string, title: string): string {
     return CATEGORY_MAP[sourceCategory];
   }
   const t = title.toLowerCase();
-  if (t.includes("bowl") || t.includes("plate") || t.includes("dish") || t.includes("serving")) return "Serving & Dining";
-  if (t.includes("cup") || t.includes("glass") || t.includes("mug") || t.includes("jug") || t.includes("water set") || t.includes("tea set")) return "Cups & Drinkware";
+  if (t.includes("bowl") || t.includes("plate") || t.includes("dish") || t.includes("serving"))
+    return "Serving & Dining";
+  if (
+    t.includes("cup") ||
+    t.includes("glass") ||
+    t.includes("mug") ||
+    t.includes("jug") ||
+    t.includes("water set") ||
+    t.includes("tea set")
+  )
+    return "Cups & Drinkware";
   if (t.includes("jar") || t.includes("candy")) return "Decoration & Gift Items";
   return DEFAULT_CATEGORY;
 }

@@ -1213,11 +1213,7 @@ function AdminDashboard() {
                       >
                         <div className="w-14 h-14 rounded-lg overflow-hidden bg-black/5 border border-black/5 shrink-0 grid place-items-center">
                           {thumb ? (
-                            <SafeImage
-                              src={thumb}
-                              alt=""
-                              className="w-full h-full object-cover"
-                            />
+                            <SafeImage src={thumb} alt="" className="w-full h-full object-cover" />
                           ) : (
                             <ImageIcon className="w-4 h-4 text-black/30" />
                           )}
@@ -1852,19 +1848,19 @@ function ProductFormDialog({
                 </select>
               </Field>
               <Field label="Price (PKR)">
-                  <input
-                    type="number"
-                    inputMode="decimal"
-                    min={0}
-                    step="0.01"
-                    value={form.price === 0 ? "" : form.price}
-                    onChange={(e) => {
-                      const v = e.target.value;
-                      set("price", v === "" ? 0 : Number(v));
-                    }}
-                    placeholder="0.00"
-                    className="mt-input tabular-nums"
-                  />
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  min={0}
+                  step="0.01"
+                  value={form.price === 0 ? "" : form.price}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    set("price", v === "" ? 0 : Number(v));
+                  }}
+                  placeholder="0.00"
+                  className="mt-input tabular-nums"
+                />
                 <div className="mt-1 text-[11px] text-black/55 tabular-nums">
                   Displays as{" "}
                   <span className="text-black font-medium">
@@ -2954,7 +2950,11 @@ function OrdersPanel({
                           className={`w-10 h-10 rounded-lg overflow-hidden shrink-0 ${o.primaryBg ?? "bg-black/5"} grid place-items-center`}
                         >
                           {o.primaryImg ? (
-                            <SafeImage src={o.primaryImg} alt="" className="w-full h-full object-cover" />
+                            <SafeImage
+                              src={o.primaryImg}
+                              alt=""
+                              className="w-full h-full object-cover"
+                            />
                           ) : (
                             <ShoppingBag className="w-4 h-4 text-black/40" />
                           )}

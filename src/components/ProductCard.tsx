@@ -41,7 +41,7 @@ function ProductCardImpl({ product: p, isFavourite, onToggleFav, favAction = "he
           height={1024}
           loading="lazy"
           decoding="async"
-          className={`absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-all duration-500 ${p.gallery && p.gallery.length > 1 ? 'group-hover:opacity-0 hidden sm:block' : ''}`}
+          className={`absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-all duration-500 ${p.gallery && p.gallery.length > 1 ? "group-hover:opacity-0 hidden sm:block" : ""}`}
         />
         {/* Mobile image (never fades on hover) */}
         <SafeImage
@@ -98,53 +98,22 @@ function ProductCardImpl({ product: p, isFavourite, onToggleFav, favAction = "he
           </div>
         </div>
 
-        <div className="type-price text-black">{formatPKR(p.price)}</div>
-
-        <div
-          className="flex flex-wrap items-center gap-x-1.5 gap-y-1.5 min-h-[20px]"
-          aria-label="Available colours"
-        >
-          {colors.map((c) => {
-            const isGradient = c.swatch.startsWith("linear-gradient");
-            return (
-              <Tooltip key={c.id}>
-                <TooltipTrigger asChild>
-                  <span
-                    className="h-4 w-4 sm:h-[18px] sm:w-[18px] rounded-full border border-black/15 ring-1 ring-white shrink-0"
-                    style={isGradient ? { backgroundImage: c.swatch } : { backgroundColor: c.swatch }}
-                  />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{c.label}</p>
-                </TooltipContent>
-              </Tooltip>
-            );
-          })}
-          {extraColors > 0 && (
-            <span className="text-[11px] leading-none text-black/50 ml-0.5 shrink-0">
-              +{extraColors}
-            </span>
-          )}
-        </div>
-
-        <div
-          className="flex flex-wrap items-center gap-x-1.5 gap-y-1.5 min-h-[22px]"
-          aria-label="Available sizes"
-        >
-          {sizes.map((s) => (
-            <Tooltip key={s.id}>
-              <TooltipTrigger asChild>
-                <span
-                  className="text-[10px] uppercase tracking-wider text-black/70 border border-black/15 rounded-full px-1.5 py-0.5 leading-none shrink-0 max-w-full truncate"
-                >
-                  {s.label.length > 6 ? s.label.slice(0, 4) : s.label}
+        <div className="flex flex-col gap-0.5">
+          {p.original_price && p.original_price > p.price ? (
+            <>
+              <div className="flex items-center gap-2">
+                <span className="text-black/50 line-through text-xs">
+                  {formatPKR(p.original_price)}
                 </span>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{s.note ?? s.label}</p>
-              </TooltipContent>
-            </Tooltip>
-          ))}
+                <span className="text-red-600 text-xs font-bold bg-red-50 px-1.5 py-0.5 rounded">
+                  20% OFF
+                </span>
+              </div>
+              <div className="type-price text-black">{formatPKR(p.price)}</div>
+            </>
+          ) : (
+            <div className="type-price text-black">{formatPKR(p.price)}</div>
+          )}
         </div>
 
         <Link

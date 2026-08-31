@@ -35,8 +35,6 @@ export function SiteFooter() {
       style={inter}
     >
       <div className="mx-auto max-w-7xl bg-[#ECEDEC] rounded-xl lg:rounded-2xl overflow-hidden text-black shadow-sm">
-
-
         {/* Brand + contact + socials */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 p-4 sm:p-8 md:p-10 border-b border-black/10">
           <div className="min-w-0 flex items-center gap-3">

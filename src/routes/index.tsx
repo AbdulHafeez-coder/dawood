@@ -27,9 +27,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 const Slider: typeof SlickSlider =
-  typeof SlickSlider === "function"
-    ? SlickSlider
-    : (SlickSlider as any)?.default || SlickSlider;
+  typeof SlickSlider === "function" ? SlickSlider : (SlickSlider as any)?.default || SlickSlider;
 import { useOrders } from "@/lib/orders";
 import heroBg from "@/assets/hero-home.jpg";
 import productTowel from "@/assets/product-towel.jpg";
@@ -271,49 +269,62 @@ function Index() {
     return counts;
   }, [products]);
 
-const heroSlides = [
-  {
-    id: 1,
-    bg: heroBg,
-    tag: "New autumn collection · 2026",
-    title: (
-      <>
-        <div><Word delay="0.3s">Soft</Word> <Word delay="0.4s">homes,</Word> </div>
-        <div><Word delay="0.5s" className="text-white/55">clean</Word> <Word delay="0.6s" className="text-white/55">habits,</Word></div>
-        <div><Word delay="0.7s">thoughtful</Word> <Word delay="0.8s">walls.</Word></div>
-      </>
-    ),
-    subtitle: "Everyday textiles, peel-and-stick wallpaper and plant-based cleaning made for calm, well-kept spaces.",
-    link: "#shop",
-    cta: "Shop the edit",
-  },
-  {
-    id: 2,
-    bg: productTowel,
-    tag: "100% Organic Cotton",
-    title: "Plush towels for your daily reset.",
-    subtitle: "Experience spa-like luxury every day with our ultra-absorbent, quick-drying towel collections.",
-    link: "#collections",
-    category: "Towels",
-    cta: "Shop Towels",
-  },
-  {
-    id: 3,
-    bg: productWallpaper,
-    tag: "Peel & Stick",
-    title: "Transform your space in minutes.",
-    subtitle: "Mess-free, renter-friendly wallpaper in exclusive patterns designed to elevate any room.",
-    link: "#collections",
-    category: "Wallpaper",
-    cta: "Shop Wallpaper",
-  }
-];
+  const heroSlides = [
+    {
+      id: 1,
+      bg: heroBg,
+      tag: "New autumn collection · 2026",
+      title: (
+        <>
+          <div>
+            <Word delay="0.3s">Soft</Word> <Word delay="0.4s">homes,</Word>{" "}
+          </div>
+          <div>
+            <Word delay="0.5s" className="text-white/55">
+              clean
+            </Word>{" "}
+            <Word delay="0.6s" className="text-white/55">
+              habits,
+            </Word>
+          </div>
+          <div>
+            <Word delay="0.7s">thoughtful</Word> <Word delay="0.8s">walls.</Word>
+          </div>
+        </>
+      ),
+      subtitle:
+        "Everyday textiles, peel-and-stick wallpaper and plant-based cleaning made for calm, well-kept spaces.",
+      link: "#shop",
+      cta: "Shop the edit",
+    },
+    {
+      id: 2,
+      bg: productTowel,
+      tag: "100% Organic Cotton",
+      title: "Plush towels for your daily reset.",
+      subtitle:
+        "Experience spa-like luxury every day with our ultra-absorbent, quick-drying towel collections.",
+      link: "#collections",
+      category: "Towels",
+      cta: "Shop Towels",
+    },
+    {
+      id: 3,
+      bg: productWallpaper,
+      tag: "Peel & Stick",
+      title: "Transform your space in minutes.",
+      subtitle:
+        "Mess-free, renter-friendly wallpaper in exclusive patterns designed to elevate any room.",
+      link: "#collections",
+      category: "Wallpaper",
+      cta: "Shop Wallpaper",
+    },
+  ];
 
   return (
     <div className="flex min-h-screen flex-col" style={inter}>
       {/* HERO SECTION */}
       <div className="relative flex flex-col overflow-hidden min-h-[500px] sm:min-h-[600px] lg:min-h-[700px] bg-stone-900">
-        
         {/* Slider Backgrounds & Content */}
         <div className="absolute inset-0 z-0 [&_.slick-slider]:h-full [&_.slick-list]:h-full [&_.slick-track]:h-full [&_.slick-slide>div]:h-full">
           <Slider
@@ -330,9 +341,19 @@ const heroSlides = [
             customPaging={() => (
               <div className="w-2 h-2 rounded-full bg-white/40 mt-4 transition-all duration-300" />
             )}
-            appendDots={dots => (
-              <div style={{ position: "absolute", bottom: "30px", width: "100%", display: "flex", justifyContent: "center" }}>
-                <ul className="m-0 p-0 flex gap-2 [&_.slick-active_div]:bg-white [&_.slick-active_div]:w-6 [&_li]:w-auto [&_li]:h-auto">{dots}</ul>
+            appendDots={(dots) => (
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: "30px",
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <ul className="m-0 p-0 flex gap-2 [&_.slick-active_div]:bg-white [&_.slick-active_div]:w-6 [&_li]:w-auto [&_li]:h-auto">
+                  {dots}
+                </ul>
               </div>
             )}
           >
@@ -371,10 +392,12 @@ const heroSlides = [
                     <button
                       onClick={() => {
                         if (slide.category) {
-                           setActiveCat(slide.category as Category);
-                           document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" });
+                          setActiveCat(slide.category as Category);
+                          document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" });
                         } else {
-                           document.getElementById(slide.link.replace("#", ""))?.scrollIntoView({ behavior: "smooth" });
+                          document
+                            .getElementById(slide.link.replace("#", ""))
+                            ?.scrollIntoView({ behavior: "smooth" });
                         }
                       }}
                       className="inline-flex items-center justify-center gap-2 bg-white text-black rounded-md w-full sm:w-[160px] md:w-[175px] lg:w-[185px] h-9 sm:h-10 lg:h-11 text-sm hover:bg-white/90 transition-colors cursor-pointer"
@@ -385,7 +408,12 @@ const heroSlides = [
                     </button>
                     <p
                       className="text-white max-w-[340px]"
-                      style={{ ...inter, fontWeight: 400, letterSpacing: "-0.03em", lineHeight: 1.45 }}
+                      style={{
+                        ...inter,
+                        fontWeight: 400,
+                        letterSpacing: "-0.03em",
+                        lineHeight: 1.45,
+                      }}
                     >
                       <span className="text-sm sm:text-sm lg:text-base">{slide.subtitle}</span>
                     </p>
@@ -398,155 +426,42 @@ const heroSlides = [
 
         {/* Navbar Layer */}
         <div className="absolute top-0 left-0 right-0 z-20">
-        <nav className="relative z-20 flex items-center justify-between px-5 py-4 sm:px-8 lg:px-10 lg:py-5 animate-fade-in">
-          <div className="flex-1 flex items-center justify-start">
-            <div className="type-wordmark animate-slide-left delay-200 text-white flex items-center gap-2">
-              {settings.logoUrl ? (
-                <img
-                  src={settings.logoUrl}
-                  alt=""
-                  className="w-8 h-8 rounded-md object-cover bg-white/20"
-                />
-              ) : null}
-              {settings.brandName}
-            </div>
-          </div>
-
-          <div
-            className="flex-1 hidden md:flex items-center justify-center gap-6 lg:gap-10 animate-fade-in delay-400"
-            style={dmSans}
-          >
-            {navLinks.map((l) => (
-              <a
-                key={l}
-                href={`#${l.toLowerCase()}`}
-                className="text-white/90 hover:text-white transition-colors"
-                style={{ fontWeight: 500, fontSize: 14 }}
-              >
-                {l}
-              </a>
-            ))}
-          </div>
-          <div className="flex-1 flex items-center justify-end gap-3 sm:gap-4 animate-slide-right delay-300">
-            <div
-              className="hidden lg:flex items-stretch bg-white border-[1.5px] border-[#ff0055] rounded-md overflow-hidden transition-all duration-300 focus-within:ring-4 focus-within:ring-[#ff0055]/10 w-[320px] xl:w-[480px]"
-            >
-              <div className="pl-3 pr-2 flex items-center justify-center bg-white">
-                <Camera size={18} strokeWidth={2} className="text-[#ff0055]" />
-              </div>
-              <input
-                id="header-search"
-                type="search"
-                value={query}
-                onChange={(e) => {
-                  setQuery(e.target.value);
-                  if (e.target.value) setActiveCat("All");
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") scrollToProducts();
-                }}
-                placeholder="Enter keyword/product link, snap/upload picture"
-                className="bg-transparent outline-none text-black placeholder:text-black/30 text-[13px] w-full py-2.5 px-1"
-                style={inter}
-              />
-              {query && (
-                <button
-                  aria-label="Clear search"
-                  onClick={() => setQuery("")}
-                  className="text-gray-400 hover:text-gray-600 shrink-0 px-2 flex items-center bg-white"
-                >
-                  <X size={16} />
-                </button>
-              )}
-              <button 
-                onClick={() => { if(query) scrollToProducts(); }}
-                className="bg-[#ff0055] hover:bg-[#e6004c] text-white px-6 xl:px-8 flex items-center justify-center transition-colors shrink-0"
-              >
-                <Search size={20} strokeWidth={2.5} />
-              </button>
-            </div>
-            <button
-              aria-label="Search"
-              onClick={focusSearch}
-              className="sm:hidden text-white/90 hover:text-white"
-            >
-              <Search size={20} strokeWidth={1.5} />
-            </button>
-            <Link
-              to="/favorites"
-              aria-label="Favourites"
-              className="relative text-white/90 hover:text-white"
-            >
-              <Heart size={20} strokeWidth={1.5} />
-              {favCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 bg-white text-black text-[10px] font-medium min-w-4 h-4 px-1 rounded-full flex items-center justify-center">
-                  {favCount}
-                </span>
-              )}
-            </Link>
-            <Link
-              to="/orders"
-              aria-label="Orders"
-              className="relative text-white/90 hover:text-white"
-            >
-              <ScrollText size={20} strokeWidth={1.5} />
-              {orderCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 bg-white text-black text-[10px] font-medium min-w-4 h-4 px-1 rounded-full flex items-center justify-center">
-                  {orderCount}
-                </span>
-              )}
-            </Link>
-            <button
-              aria-label="Cart"
-              onClick={() => setCartOpen(true)}
-              className="relative text-white/90 hover:text-white"
-            >
-              <ShoppingBag size={20} strokeWidth={1.5} />
-              {cartCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 bg-white text-black text-[10px] font-medium min-w-4 h-4 px-1 rounded-full flex items-center justify-center">
-                  {cartCount}
-                </span>
-              )}
-            </button>
-            <button
-              aria-label="Menu"
-              className="md:hidden text-white"
-              onClick={() => setMenuOpen((v) => !v)}
-            >
-              {menuOpen ? <X size={22} /> : <Menu size={22} />}
-            </button>
-          </div>
-        </nav>
-
-        <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-          <SheetContent
-            side="right"
-            className="w-[86%] max-w-sm bg-stone-950 text-white border-l border-white/10 p-0 flex flex-col"
-          >
-            <SheetHeader className="px-6 pt-6 pb-4 border-b border-white/10 text-left">
-              <SheetTitle className="text-white type-wordmark flex items-center gap-2">
+          <nav className="relative z-20 flex items-center justify-between px-5 py-4 sm:px-8 lg:px-10 lg:py-5 animate-fade-in">
+            <div className="flex-1 flex items-center justify-start">
+              <div className="type-wordmark animate-slide-left delay-200 text-white flex items-center gap-2">
                 {settings.logoUrl ? (
                   <img
                     src={settings.logoUrl}
                     alt=""
-                    className="w-7 h-7 rounded-md object-cover bg-white/10"
+                    className="w-8 h-8 rounded-md object-cover bg-white/20"
                   />
                 ) : null}
                 {settings.brandName}
-              </SheetTitle>
-              <SheetDescription className="text-white/60 text-xs" style={inter}>
-                Browse the shop
-              </SheetDescription>
-            </SheetHeader>
+              </div>
+            </div>
 
-            <div className="px-6 py-5 border-b border-white/10">
-              <label htmlFor="mobile-menu-search" className="sr-only">
-                Search products
-              </label>
-              <div className="flex items-center gap-2 bg-white/10 rounded-full px-4 py-2.5 focus-within:bg-white/15 transition-colors">
-                <Search size={16} className="text-white/70 shrink-0" />
+            <div
+              className="flex-1 hidden md:flex items-center justify-center gap-6 lg:gap-10 animate-fade-in delay-400"
+              style={dmSans}
+            >
+              {navLinks.map((l) => (
+                <a
+                  key={l}
+                  href={`#${l.toLowerCase()}`}
+                  className="text-white/90 hover:text-white transition-colors"
+                  style={{ fontWeight: 500, fontSize: 14 }}
+                >
+                  {l}
+                </a>
+              ))}
+            </div>
+            <div className="flex-1 flex items-center justify-end gap-3 sm:gap-4 animate-slide-right delay-300">
+              <div className="hidden lg:flex items-stretch bg-white border-[1.5px] border-[#ff0055] rounded-md overflow-hidden transition-all duration-300 focus-within:ring-4 focus-within:ring-[#ff0055]/10 w-[320px] xl:w-[480px]">
+                <div className="pl-3 pr-2 flex items-center justify-center bg-white">
+                  <Camera size={18} strokeWidth={2} className="text-[#ff0055]" />
+                </div>
                 <input
-                  id="mobile-menu-search"
+                  id="header-search"
                   type="search"
                   value={query}
                   onChange={(e) => {
@@ -554,210 +469,322 @@ const heroSlides = [
                     if (e.target.value) setActiveCat("All");
                   }}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      setMenuOpen(false);
-                      setTimeout(scrollToProducts, 100);
-                    }
+                    if (e.key === "Enter") scrollToProducts();
                   }}
-                  placeholder="Search products…"
-                  className="bg-transparent outline-none text-white placeholder:text-white/50 text-sm w-full"
+                  placeholder="Enter keyword/product link, snap/upload picture"
+                  className="bg-transparent outline-none text-black placeholder:text-black/30 text-[13px] w-full py-2.5 px-1"
                   style={inter}
                 />
                 {query && (
                   <button
-                    aria-label="Clear"
+                    aria-label="Clear search"
                     onClick={() => setQuery("")}
-                    className="text-white/60 hover:text-white shrink-0"
+                    className="text-gray-400 hover:text-gray-600 shrink-0 px-2 flex items-center bg-white"
                   >
-                    <X size={14} />
+                    <X size={16} />
                   </button>
                 )}
+                <button
+                  onClick={() => {
+                    if (query) scrollToProducts();
+                  }}
+                  className="bg-[#ff0055] hover:bg-[#e6004c] text-white px-6 xl:px-8 flex items-center justify-center transition-colors shrink-0"
+                >
+                  <Search size={20} strokeWidth={2.5} />
+                </button>
               </div>
+              <button
+                aria-label="Search"
+                onClick={focusSearch}
+                className="sm:hidden text-white/90 hover:text-white"
+              >
+                <Search size={20} strokeWidth={1.5} />
+              </button>
+              <Link
+                to="/favorites"
+                aria-label="Favourites"
+                className="relative text-white/90 hover:text-white"
+              >
+                <Heart size={20} strokeWidth={1.5} />
+                {favCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 bg-white text-black text-[10px] font-medium min-w-4 h-4 px-1 rounded-full flex items-center justify-center">
+                    {favCount}
+                  </span>
+                )}
+              </Link>
+              <Link
+                to="/orders"
+                aria-label="Orders"
+                className="relative text-white/90 hover:text-white"
+              >
+                <ScrollText size={20} strokeWidth={1.5} />
+                {orderCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 bg-white text-black text-[10px] font-medium min-w-4 h-4 px-1 rounded-full flex items-center justify-center">
+                    {orderCount}
+                  </span>
+                )}
+              </Link>
+              <button
+                aria-label="Cart"
+                onClick={() => setCartOpen(true)}
+                className="relative text-white/90 hover:text-white"
+              >
+                <ShoppingBag size={20} strokeWidth={1.5} />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 bg-white text-black text-[10px] font-medium min-w-4 h-4 px-1 rounded-full flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </button>
+              <button
+                aria-label="Menu"
+                className="md:hidden text-white"
+                onClick={() => setMenuOpen((v) => !v)}
+              >
+                {menuOpen ? <X size={22} /> : <Menu size={22} />}
+              </button>
             </div>
+          </nav>
 
-            <nav className="flex-1 overflow-y-auto px-3 py-4" style={dmSans}>
-              <ul className="flex flex-col">
-                {navLinks.map((l, i) => (
-                  <li
-                    key={l}
-                    className="animate-fade-in"
-                    style={{ animationDelay: `${i * 60}ms`, animationFillMode: "both" }}
+          <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+            <SheetContent
+              side="right"
+              className="w-[86%] max-w-sm bg-stone-950 text-white border-l border-white/10 p-0 flex flex-col"
+            >
+              <SheetHeader className="px-6 pt-6 pb-4 border-b border-white/10 text-left">
+                <SheetTitle className="text-white type-wordmark flex items-center gap-2">
+                  {settings.logoUrl ? (
+                    <img
+                      src={settings.logoUrl}
+                      alt=""
+                      className="w-7 h-7 rounded-md object-cover bg-white/10"
+                    />
+                  ) : null}
+                  {settings.brandName}
+                </SheetTitle>
+                <SheetDescription className="text-white/60 text-xs" style={inter}>
+                  Browse the shop
+                </SheetDescription>
+              </SheetHeader>
+
+              <div className="px-6 py-5 border-b border-white/10">
+                <label htmlFor="mobile-menu-search" className="sr-only">
+                  Search products
+                </label>
+                <div className="flex items-center gap-2 bg-white/10 rounded-full px-4 py-2.5 focus-within:bg-white/15 transition-colors">
+                  <Search size={16} className="text-white/70 shrink-0" />
+                  <input
+                    id="mobile-menu-search"
+                    type="search"
+                    value={query}
+                    onChange={(e) => {
+                      setQuery(e.target.value);
+                      if (e.target.value) setActiveCat("All");
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        setMenuOpen(false);
+                        setTimeout(scrollToProducts, 100);
+                      }
+                    }}
+                    placeholder="Search products…"
+                    className="bg-transparent outline-none text-white placeholder:text-white/50 text-sm w-full"
+                    style={inter}
+                  />
+                  {query && (
+                    <button
+                      aria-label="Clear"
+                      onClick={() => setQuery("")}
+                      className="text-white/60 hover:text-white shrink-0"
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <nav className="flex-1 overflow-y-auto px-3 py-4" style={dmSans}>
+                <ul className="flex flex-col">
+                  {navLinks.map((l, i) => (
+                    <li
+                      key={l}
+                      className="animate-fade-in"
+                      style={{ animationDelay: `${i * 60}ms`, animationFillMode: "both" }}
+                    >
+                      <a
+                        href={`#${l.toLowerCase()}`}
+                        onClick={() => {
+                          setMenuOpen(false);
+                          if (l.toLowerCase() === "shop") setTimeout(scrollToProducts, 250);
+                        }}
+                        className="flex items-center justify-between px-3 py-3.5 rounded-lg text-white/90 hover:text-white hover:bg-white/5 focus-visible:bg-white/10 focus-visible:outline-none transition-colors text-lg"
+                      >
+                        <span>{l}</span>
+                        <ArrowUpRight size={18} className="text-white/40" />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="mt-6 px-3">
+                  <div
+                    className="text-[11px] uppercase tracking-[0.18em] text-white/40 mb-2"
+                    style={inter}
                   >
-                    <a
-                      href={`#${l.toLowerCase()}`}
+                    Quick links
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <Link
+                      to="/favorites"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex flex-col items-center gap-1.5 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+                    >
+                      <Heart size={18} />
+                      <span className="text-xs" style={inter}>
+                        Favourites{" "}
+                        {favCount > 0 && <span className="text-white/60">({favCount})</span>}
+                      </span>
+                    </Link>
+                    <Link
+                      to="/orders"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex flex-col items-center gap-1.5 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+                    >
+                      <ScrollText size={18} />
+                      <span className="text-xs" style={inter}>
+                        Orders{" "}
+                        {orderCount > 0 && <span className="text-white/60">({orderCount})</span>}
+                      </span>
+                    </Link>
+                    <button
                       onClick={() => {
                         setMenuOpen(false);
-                        if (l.toLowerCase() === "shop") setTimeout(scrollToProducts, 250);
+                        setCartOpen(true);
                       }}
-                      className="flex items-center justify-between px-3 py-3.5 rounded-lg text-white/90 hover:text-white hover:bg-white/5 focus-visible:bg-white/10 focus-visible:outline-none transition-colors text-lg"
+                      className="flex flex-col items-center gap-1.5 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
                     >
-                      <span>{l}</span>
-                      <ArrowUpRight size={18} className="text-white/40" />
-                    </a>
-                  </li>
-                ))}
-              </ul>
+                      <ShoppingBag size={18} />
+                      <span className="text-xs" style={inter}>
+                        Cart {cartCount > 0 && <span className="text-white/60">({cartCount})</span>}
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </nav>
 
-              <div className="mt-6 px-3">
-                <div
-                  className="text-[11px] uppercase tracking-[0.18em] text-white/40 mb-2"
-                  style={inter}
-                >
-                  Quick links
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  <Link
-                    to="/favorites"
-                    onClick={() => setMenuOpen(false)}
-                    className="flex flex-col items-center gap-1.5 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
-                  >
-                    <Heart size={18} />
-                    <span className="text-xs" style={inter}>
-                      Favourites{" "}
-                      {favCount > 0 && <span className="text-white/60">({favCount})</span>}
-                    </span>
-                  </Link>
-                  <Link
-                    to="/orders"
-                    onClick={() => setMenuOpen(false)}
-                    className="flex flex-col items-center gap-1.5 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
-                  >
-                    <ScrollText size={18} />
-                    <span className="text-xs" style={inter}>
-                      Orders{" "}
-                      {orderCount > 0 && <span className="text-white/60">({orderCount})</span>}
-                    </span>
-                  </Link>
-                  <button
-                    onClick={() => {
-                      setMenuOpen(false);
-                      setCartOpen(true);
-                    }}
-                    className="flex flex-col items-center gap-1.5 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
-                  >
-                    <ShoppingBag size={18} />
-                    <span className="text-xs" style={inter}>
-                      Cart {cartCount > 0 && <span className="text-white/60">({cartCount})</span>}
-                    </span>
-                  </button>
-                </div>
+              <div
+                className="px-6 py-4 border-t border-white/10 text-[11px] text-white/40"
+                style={inter}
+              >
+                © {new Date().getFullYear()} {settings.brandName}
               </div>
-            </nav>
-
-            <div
-              className="px-6 py-4 border-t border-white/10 text-[11px] text-white/40"
-              style={inter}
-            >
-              © {new Date().getFullYear()} {settings.brandName}
-            </div>
-          </SheetContent>
-        </Sheet>
-
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
 
-        {/* Promotion Cards anchored below hero */}
-        <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 mt-auto">
-          {(() => {
-            const active = promotions.filter((p) => p.isActive);
-            const cards =
-              active.length > 0
-                ? active.map((p) => ({
-                    key: p.id,
-                    label: p.label,
-                    bg: p.bgColor,
-                    chipBg: p.chipStyle === "dark" ? "bg-black" : "bg-white",
-                    chipText: p.chipStyle === "dark" ? "text-white" : "text-black",
-                    off: p.headline,
-                    img: p.imageUrl || null,
-                    linkCategory: p.linkCategory,
-                  }))
-                : [
-                    {
-                      key: "TOWELS",
-                      label: "TOWELS",
-                      bg: "#ECEDEC",
-                      chipBg: "bg-white",
-                      chipText: "text-black",
-                      off: "UP to 40% OFF",
-                      img: productTowel,
-                      linkCategory: "Towels",
-                    },
-                    {
-                      key: "WALLPAPER",
-                      label: "WALLPAPER",
-                      bg: "#FEF3C7",
-                      chipBg: "bg-black",
-                      chipText: "text-white",
-                      off: "UP to 60% OFF",
-                      img: productWallpaper,
-                      linkCategory: "Wallpaper",
-                    },
-                    {
-                      key: "CLEANING",
-                      label: "CLEANING",
-                      bg: "#FCE7D8",
-                      chipBg: "bg-white",
-                      chipText: "text-black",
-                      off: "UP to 35% OFF",
-                      img: productSponge,
-                      linkCategory: "Cloths",
-                    },
-                  ];
-            return cards.map((c, i) => (
-              <a
-                key={c.key}
-                href={c.linkCategory ? `#collections` : undefined}
-                onClick={(e) => {
-                  if (c.linkCategory) {
-                    e.preventDefault();
-                    setActiveCat(c.linkCategory as Category);
-                    document.getElementById("collections")?.scrollIntoView({ behavior: "smooth" });
-                  }
-                }}
-                className="relative overflow-hidden p-4 sm:p-5 md:p-6 lg:p-7 min-h-[140px] sm:h-[160px] md:min-h-[175px] lg:min-h-[190px] flex items-center gap-3 sm:gap-4 animate-fade-up cursor-pointer group"
-                style={{
-                  backgroundColor: c.bg,
-                  animationDelay: `${900 + i * 100}ms`,
-                  animationFillMode: "both",
-                }}
-              >
-                <div className="flex-1 min-w-0 flex flex-col gap-2 sm:gap-3">
-                  <span
-                    className={`${c.chipBg} ${c.chipText} self-start text-[10px] sm:text-xs tracking-[0.15em] px-3 py-1.5 rounded-md`}
-                    style={{ ...inter, fontWeight: 600 }}
-                  >
-                    {c.label}
-                  </span>
-                  <div
-                    className="text-black break-words"
-                    style={{
-                      ...dmSans,
-                      fontWeight: 500,
-                      letterSpacing: "-0.03em",
-                      lineHeight: 1.15,
-                      fontSize: "clamp(15px, 2.2vw, 28px)",
-                    }}
-                  >
-                    {c.off}
-                  </div>
+      {/* Promotion Cards anchored below hero */}
+      <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 mt-auto">
+        {(() => {
+          const active = promotions.filter((p) => p.isActive);
+          const cards =
+            active.length > 0
+              ? active.map((p) => ({
+                  key: p.id,
+                  label: p.label,
+                  bg: p.bgColor,
+                  chipBg: p.chipStyle === "dark" ? "bg-black" : "bg-white",
+                  chipText: p.chipStyle === "dark" ? "text-white" : "text-black",
+                  off: p.headline,
+                  img: p.imageUrl || null,
+                  linkCategory: p.linkCategory,
+                }))
+              : [
+                  {
+                    key: "TOWELS",
+                    label: "TOWELS",
+                    bg: "#ECEDEC",
+                    chipBg: "bg-white",
+                    chipText: "text-black",
+                    off: "UP to 40% OFF",
+                    img: productTowel,
+                    linkCategory: "Towels",
+                  },
+                  {
+                    key: "WALLPAPER",
+                    label: "WALLPAPER",
+                    bg: "#FEF3C7",
+                    chipBg: "bg-black",
+                    chipText: "text-white",
+                    off: "UP to 60% OFF",
+                    img: productWallpaper,
+                    linkCategory: "Wallpaper",
+                  },
+                  {
+                    key: "CLEANING",
+                    label: "CLEANING",
+                    bg: "#FCE7D8",
+                    chipBg: "bg-white",
+                    chipText: "text-black",
+                    off: "UP to 35% OFF",
+                    img: productSponge,
+                    linkCategory: "Cloths",
+                  },
+                ];
+          return cards.map((c, i) => (
+            <a
+              key={c.key}
+              href={c.linkCategory ? `#collections` : undefined}
+              onClick={(e) => {
+                if (c.linkCategory) {
+                  e.preventDefault();
+                  setActiveCat(c.linkCategory as Category);
+                  document.getElementById("collections")?.scrollIntoView({ behavior: "smooth" });
+                }
+              }}
+              className="relative overflow-hidden p-4 sm:p-5 md:p-6 lg:p-7 min-h-[140px] sm:h-[160px] md:min-h-[175px] lg:min-h-[190px] flex items-center gap-3 sm:gap-4 animate-fade-up cursor-pointer group"
+              style={{
+                backgroundColor: c.bg,
+                animationDelay: `${900 + i * 100}ms`,
+                animationFillMode: "both",
+              }}
+            >
+              <div className="flex-1 min-w-0 flex flex-col gap-2 sm:gap-3">
+                <span
+                  className={`${c.chipBg} ${c.chipText} self-start text-[10px] sm:text-xs tracking-[0.15em] px-3 py-1.5 rounded-md`}
+                  style={{ ...inter, fontWeight: 600 }}
+                >
+                  {c.label}
+                </span>
+                <div
+                  className="text-black break-words"
+                  style={{
+                    ...dmSans,
+                    fontWeight: 500,
+                    letterSpacing: "-0.03em",
+                    lineHeight: 1.15,
+                    fontSize: "clamp(15px, 2.2vw, 28px)",
+                  }}
+                >
+                  {c.off}
                 </div>
-                <div className="absolute -right-6 -top-6 w-40 h-40 sm:w-48 sm:h-48 rounded-full bg-white/40 blur-2xl pointer-events-none" />
-                {c.img && (
-                  <SafeImage
-                    src={c.img}
-                    alt=""
-                    width={1024}
-                    height={1024}
-                    loading="lazy"
-                    decoding="async"
-                    className="relative w-[64px] h-[64px] sm:w-[88px] sm:h-[88px] md:w-[108px] md:h-[108px] lg:w-[130px] lg:h-[130px] rounded-xl object-cover shrink-0 transition-transform group-hover:scale-105"
-                  />
-                )}
-              </a>
-            ));
-          })()}
-        </div>
+              </div>
+              <div className="absolute -right-6 -top-6 w-40 h-40 sm:w-48 sm:h-48 rounded-full bg-white/40 blur-2xl pointer-events-none" />
+              {c.img && (
+                <SafeImage
+                  src={c.img}
+                  alt=""
+                  width={1024}
+                  height={1024}
+                  loading="lazy"
+                  decoding="async"
+                  className="relative w-[64px] h-[64px] sm:w-[88px] sm:h-[88px] md:w-[108px] md:h-[108px] lg:w-[130px] lg:h-[130px] rounded-xl object-cover shrink-0 transition-transform group-hover:scale-105"
+                />
+              )}
+            </a>
+          ));
+        })()}
+      </div>
 
       {/* CATEGORIES SECTION */}
       <section
@@ -867,7 +894,6 @@ const heroSlides = [
           <>
             <div className="sticky top-0 z-30 bg-[#ECEDEC]/90 backdrop-blur-md py-4 -mx-4 px-4 sm:-mx-6 sm:px-6 md:-mx-8 md:px-8 lg:-mx-10 lg:px-10 mb-4 lg:mb-8 transition-all">
               <div className="bg-white rounded-2xl p-2 lg:p-2.5 border border-black/5 shadow-sm flex flex-col xl:flex-row xl:items-center gap-3 xl:gap-4 justify-between">
-                
                 {/* Category Filter Chips Row */}
                 <div className="relative flex items-center flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar px-1 py-0.5 w-full scroll-smooth mask-edges">
@@ -903,7 +929,6 @@ const heroSlides = [
 
                 {/* Controls Row: Price range, Active filter count, Sort dropdown */}
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 shrink-0 px-1 xl:px-0">
-                  
                   {/* Price slider */}
                   <div className="flex items-center gap-3 bg-black/[0.02] hover:bg-black/[0.04] transition-colors px-3 py-1.5 rounded-xl border border-black/5 flex-1 xl:flex-none xl:w-[220px]">
                     <div className="flex flex-col min-w-[75px]">

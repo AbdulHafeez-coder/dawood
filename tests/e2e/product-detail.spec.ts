@@ -15,12 +15,12 @@ test("product detail page shows gallery, variants and add to cart", async ({ pag
   await expect(addButton).toBeVisible();
   await expect(page.getByRole("button", { name: /select size & colour/i })).toBeDisabled();
 
-  await page.locator('button[aria-pressed]').first().click(); // first size chip
-  await page.locator('button[aria-label][aria-pressed]').first().click(); // first colour swatch
+  await page.locator("button[aria-pressed]").first().click(); // first size chip
+  await page.locator("button[aria-label][aria-pressed]").first().click(); // first colour swatch
 
   const enabled = page.getByRole("button", { name: /add to cart/i });
   await expect(enabled).toBeEnabled();
   await enabled.click();
 
-  await expect(page.locator("button[aria-label=\"Cart\"]").first()).toBeVisible();
+  await expect(page.locator('button[aria-label="Cart"]').first()).toBeVisible();
 });

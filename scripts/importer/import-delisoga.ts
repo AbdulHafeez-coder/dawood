@@ -1,7 +1,14 @@
 import { chromium } from "playwright-extra";
 import stealth from "puppeteer-extra-plugin-stealth";
 import fs from "fs";
-import { normalizeTitle, generateSlug, mapCategory, cleanDescription, generateSEOTitle, generateSEODescription } from "./normalizer";
+import {
+  normalizeTitle,
+  generateSlug,
+  mapCategory,
+  cleanDescription,
+  generateSEOTitle,
+  generateSEODescription,
+} from "./normalizer";
 import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
 import path from "path";
@@ -23,17 +30,17 @@ chromium.use(stealth());
 
 async function run() {
   console.log("Launching headless browser...");
-  const browser = await chromium.launch({ headless: true, channel: 'chrome' });
+  const browser = await chromium.launch({ headless: true, channel: "chrome" });
   const context = await browser.newContext();
   const page = await context.newPage();
-  
+
   console.log("Fetching products from DeliSoga...");
   const limit = 250;
-  
+
   await page.goto(`https://delisogapakistan.com/products.json?limit=${limit}`);
-  
+
   let productsJson: any = { products: [] };
-  
+
   try {
     const text = await page.evaluate(() => document.body.innerText);
     productsJson = JSON.parse(text);
@@ -42,7 +49,7 @@ async function run() {
     await browser.close();
     return;
   }
-  
+
   await browser.close();
 
   const sourceProducts = productsJson.products || [];
@@ -53,42 +60,42 @@ async function run() {
     imported: 0,
     skippedDuplicates: 0,
     failed: 0,
-    errors: [] as string[]
+    errors: [] as string[],
   };
 
   // Fetch existing slugs to avoid duplicates
   const { data: existingProducts, error: dbError } = await supabase
-    .from('products')
-    .select('slug, id');
-    
+    .from("products")
+    .select("slug, id");
+
   if (dbError) {
     console.error("Failed to fetch existing products:", dbError);
     process.exit(1);
   }
-  
-  const existingSlugs = new Set(existingProducts.map(p => p.slug).filter(Boolean));
+
+  const existingSlugs = new Set(existingProducts.map((p) => p.slug).filter(Boolean));
 
   for (const sp of sourceProducts) {
     const rawTitle = sp.title || "";
     const title = normalizeTitle(rawTitle);
-    
+
     const slug = generateSlug(title);
-    
+
     if (existingSlugs.has(slug)) {
       console.log(`Skipping duplicate: ${title}`);
       report.skippedDuplicates++;
       continue;
     }
-    
+
     const category = mapCategory(sp.product_type || "", rawTitle);
     const price = parseFloat(sp.variants?.[0]?.price || "0");
     const images = (sp.images || []).map((img: any) => img.src);
     const description = cleanDescription(sp.body_html || "");
     const seoTitle = generateSEOTitle(title);
     const seoDesc = generateSEODescription(title, category);
-    
+
     // Generate a short tagline
-    const tagline = description.split('\n')[0].substring(0, 100) || title;
+    const tagline = description.split("\n")[0].substring(0, 100) || title;
 
     const newProduct = {
       id: `p-${sp.id}`,
@@ -109,9 +116,9 @@ async function run() {
     };
 
     try {
-      const { error } = await supabase.from('products').insert(newProduct);
+      const { error } = await supabase.from("products").insert(newProduct);
       if (error) throw error;
-      
+
       console.log(`Imported: ${title}`);
       existingSlugs.add(slug);
       report.imported++;
@@ -130,7 +137,7 @@ async function run() {
   console.log("Failed products:", report.failed);
   if (report.errors.length > 0) {
     console.log("Errors:");
-    report.errors.forEach(e => console.log(e));
+    report.errors.forEach((e) => console.log(e));
   }
   console.log("===============================");
 }

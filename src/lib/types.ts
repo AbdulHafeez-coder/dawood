@@ -17,6 +17,7 @@ export type Product = {
   slug?: string | null;
   seo_title?: string | null;
   seo_description?: string | null;
+  original_price?: number;
 };
 
 export type CartItem = Product & {

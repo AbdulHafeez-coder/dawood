@@ -15,8 +15,6 @@ import { ErrorView } from "@/components/ui/ErrorView";
 import { NotFoundView } from "@/components/ui/NotFoundView";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-
-
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [

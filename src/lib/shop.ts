@@ -18,7 +18,8 @@ const SEED_PRODUCTS: Product[] = [
     bg: "bg-gray-100",
     category: "Table Covers",
     tagline: "Elegant marble design waterproof table sheet",
-    description: "Premium quality 6-seater dining table sheet with a beautiful white marble and gold vein design. Waterproof, easy to clean, and protects your table from scratches and spills.",
+    description:
+      "Premium quality 6-seater dining table sheet with a beautiful white marble and gold vein design. Waterproof, easy to clean, and protects your table from scratches and spills.",
     details: ["Size: 6 Seater", "Material: PVC/Waterproof", "Design: Marble Gold"],
     gallery: ["/images/products/dining-table-sheet.jpg"],
   },
@@ -32,8 +33,14 @@ const SEED_PRODUCTS: Product[] = [
     bg: "bg-gray-100",
     category: "Table Covers",
     tagline: "Style • Elegance • Durability",
-    description: "Upgrade your dining experience with this Premium Table Sheet. Made with high-quality vinyl and polyester backing for long-lasting durability. It is water resistant, easy to clean, and features a non-slip backing.",
-    details: ["Size: 3 x 5 feet (36x60 inches)", "Front: Premium Vinyl", "Back: Polyester Backing", "Water Resistant & Easy to Clean"],
+    description:
+      "Upgrade your dining experience with this Premium Table Sheet. Made with high-quality vinyl and polyester backing for long-lasting durability. It is water resistant, easy to clean, and features a non-slip backing.",
+    details: [
+      "Size: 3 x 5 feet (36x60 inches)",
+      "Front: Premium Vinyl",
+      "Back: Polyester Backing",
+      "Water Resistant & Easy to Clean",
+    ],
     gallery: ["/images/products/premium-table-sheet.jpg"],
   },
   {
@@ -46,10 +53,17 @@ const SEED_PRODUCTS: Product[] = [
     bg: "bg-[#f5e6d3]",
     category: "Serving & Dining",
     tagline: "A premium 7-piece bowl set crafted for modern kitchens",
-    description: "A premium 7-piece bowl set crafted for modern kitchens — crystal-clear, durable, and perfect for serving, mixing, storing, or daily meals. High-quality heat-resistant glass, Dishwasher & Microwave safe. Food-grade material with a modern aesthetic design.",
-    details: ["1 × Large Glass Bowl", "6 × Matching Small Glass Bowls", "High-quality heat-resistant glass", "Dishwasher safe", "Microwave safe"],
+    description:
+      "A premium 7-piece bowl set crafted for modern kitchens — crystal-clear, durable, and perfect for serving, mixing, storing, or daily meals. High-quality heat-resistant glass, Dishwasher & Microwave safe. Food-grade material with a modern aesthetic design.",
+    details: [
+      "1 × Large Glass Bowl",
+      "6 × Matching Small Glass Bowls",
+      "High-quality heat-resistant glass",
+      "Dishwasher safe",
+      "Microwave safe",
+    ],
     gallery: ["/images/products/7-pcs-bowl-set.jpg"],
-  }
+  },
 ];
 
 // ---------- LIVE STORE (products + categories) ----------
@@ -60,11 +74,16 @@ type ProductRow = Database["public"]["Tables"]["products"]["Row"];
 type ProductInsert = Database["public"]["Tables"]["products"]["Insert"];
 
 function rowToProduct(r: ProductRow): Product {
+  const originalPrice = typeof r.price === "string" ? Number(r.price) : r.price;
+  const discountRate = 0.2; // 20% discount
+  const discountedPrice = Math.round(originalPrice * (1 - discountRate));
+
   return {
     id: r.id,
     name: r.name,
     tag: r.tag ?? "",
-    price: typeof r.price === "string" ? Number(r.price) : r.price,
+    price: discountedPrice,
+    original_price: originalPrice,
     rating: typeof r.rating === "string" ? Number(r.rating) : r.rating,
     img: r.img ?? "",
     bg: r.bg ?? "",
@@ -81,7 +100,7 @@ function productToRow(p: Product): ProductInsert {
     id: p.id,
     name: p.name,
     tag: p.tag ?? "",
-    price: p.price,
+    price: p.original_price ?? p.price,
     rating: p.rating,
     img: p.img,
     bg: p.bg,
@@ -183,7 +202,12 @@ async function hydrateFromSupabase() {
       sortOrder: r.sort_order ?? i,
     };
   });
-  products.splice(0, products.length, ...((prodData ?? []) as ProductRow[]).map(rowToProduct), ...SEED_PRODUCTS);
+  products.splice(
+    0,
+    products.length,
+    ...((prodData ?? []) as ProductRow[]).map(rowToProduct),
+    ...SEED_PRODUCTS,
+  );
   promotionsLive.splice(
     0,
     promotionsLive.length,

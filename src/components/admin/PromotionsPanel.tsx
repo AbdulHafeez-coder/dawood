@@ -96,11 +96,7 @@ export function PromotionsPanel({ categories }: { categories: string[] }) {
                 </div>
                 <div className="w-16 h-16 rounded-lg overflow-hidden bg-white/60 grid place-items-center shrink-0">
                   {p.imageUrl ? (
-                    <SafeImage
-                      src={p.imageUrl}
-                      alt=""
-                      className="w-full h-full object-cover"
-                    />
+                    <SafeImage src={p.imageUrl} alt="" className="w-full h-full object-cover" />
                   ) : (
                     <ImageIcon className="w-4 h-4 text-black/40" />
                   )}

@@ -271,7 +271,10 @@ function ProductPage() {
             {/* Mobile Touch-Friendly Swipe Gallery */}
             <div className="flex md:hidden overflow-x-auto snap-x snap-mandatory -mx-4 px-4 gap-3 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
               {product.gallery.map((g: string, i: number) => (
-                <div key={i} className={`${product.bg} min-w-[85vw] shrink-0 snap-center rounded-2xl overflow-hidden aspect-square`}>
+                <div
+                  key={i}
+                  className={`${product.bg} min-w-[85vw] shrink-0 snap-center rounded-2xl overflow-hidden aspect-square`}
+                >
                   <SafeImage
                     src={g}
                     alt={`${product.name} ${i + 1}`}
@@ -285,7 +288,9 @@ function ProductPage() {
             </div>
 
             {/* Desktop Main Image */}
-            <div className={`hidden md:block ${product.bg} rounded-2xl aspect-square overflow-hidden`}>
+            <div
+              className={`hidden md:block ${product.bg} rounded-2xl aspect-square overflow-hidden`}
+            >
               <SafeImage
                 src={product.gallery[activeImg] ?? product.img}
                 alt={product.name}
@@ -326,8 +331,26 @@ function ProductPage() {
           <p className="mt-3 text-black/70 max-w-md">{product.tagline}</p>
 
           <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
-            <div className="type-price-lg text-black whitespace-nowrap">
-              {formatPKR(product.price)}
+            <div className="flex flex-col gap-1">
+              {product.original_price && product.original_price > product.price ? (
+                <>
+                  <div className="flex items-center gap-3">
+                    <span className="text-black/50 line-through text-lg">
+                      {formatPKR(product.original_price)}
+                    </span>
+                    <span className="text-red-600 text-sm font-bold bg-red-50 px-2 py-1 rounded">
+                      20% OFF
+                    </span>
+                  </div>
+                  <div className="type-price-lg text-black whitespace-nowrap">
+                    {formatPKR(product.price)}
+                  </div>
+                </>
+              ) : (
+                <div className="type-price-lg text-black whitespace-nowrap">
+                  {formatPKR(product.price)}
+                </div>
+              )}
             </div>
             <div className="flex items-center gap-1 text-black/60 text-sm whitespace-nowrap">
               <Star size={14} className="fill-black text-black" /> {product.rating} · 240 reviews

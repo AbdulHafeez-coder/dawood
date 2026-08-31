@@ -21,10 +21,10 @@ export async function adminSignIn(page: Page) {
 
   if (storageKey && sessionJson) {
     await page.goto("/");
-    await page.evaluate(
-      ([key, value]) => window.localStorage.setItem(key, value),
-      [storageKey, sessionJson] as const,
-    );
+    await page.evaluate(([key, value]) => window.localStorage.setItem(key, value), [
+      storageKey,
+      sessionJson,
+    ] as const);
     await page.goto("/admin");
   } else if (email && password) {
     await page.goto("/admin");
@@ -32,10 +32,7 @@ export async function adminSignIn(page: Page) {
     await page.getByPlaceholder("••••••••").fill(password);
     await page.getByRole("button", { name: "Sign in" }).click();
   } else {
-    test.skip(
-      true,
-      "No admin session available. Set E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD.",
-    );
+    test.skip(true, "No admin session available. Set E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD.");
     return;
   }
 
