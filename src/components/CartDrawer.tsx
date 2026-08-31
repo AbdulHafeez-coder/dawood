@@ -170,6 +170,9 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                             <span className="text-black/50 line-through text-xs font-normal">
                               {formatPKR(i.original_price * i.qty)}
                             </span>
+                            <span className="text-red-600 text-[10px] font-bold bg-red-50 px-1 py-0.5 rounded">
+                              20% OFF
+                            </span>
                             <span>{formatPKR(i.price * i.qty)}</span>
                           </>
                         ) : (
