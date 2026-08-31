@@ -268,7 +268,24 @@ function ProductPage() {
           <ProductGallerySkeleton />
         ) : (
           <div className="flex flex-col gap-3">
-            <div className={`${product.bg} rounded-2xl aspect-square overflow-hidden`}>
+            {/* Mobile Touch-Friendly Swipe Gallery */}
+            <div className="flex md:hidden overflow-x-auto snap-x snap-mandatory -mx-4 px-4 gap-3 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              {product.gallery.map((g: string, i: number) => (
+                <div key={i} className={`${product.bg} min-w-[85vw] shrink-0 snap-center rounded-2xl overflow-hidden aspect-square`}>
+                  <SafeImage
+                    src={g}
+                    alt={`${product.name} ${i + 1}`}
+                    width={800}
+                    height={800}
+                    className="w-full h-full object-cover"
+                    loading={i === 0 ? "eager" : "lazy"}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Main Image */}
+            <div className={`hidden md:block ${product.bg} rounded-2xl aspect-square overflow-hidden`}>
               <SafeImage
                 src={product.gallery[activeImg] ?? product.img}
                 alt={product.name}
@@ -277,24 +294,28 @@ function ProductPage() {
                 className="w-full h-full object-cover"
               />
             </div>
-            <div className="grid grid-cols-4 gap-3">
-              {product.gallery.map((g: string, i: number) => (
-                <button
-                  key={i}
-                  onClick={() => setActiveImg(i)}
-                  aria-label={`Show image ${i + 1}`}
-                  className={`aspect-square rounded-xl overflow-hidden border-2 transition-colors ${activeImg === i ? "border-black" : "border-transparent hover:border-black/20"} ${product.bg}`}
-                >
-                  <SafeImage
-                    src={g}
-                    alt=""
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </button>
-              ))}
-            </div>
+
+            {/* Desktop Thumbnails */}
+            {product.gallery.length > 1 && (
+              <div className="hidden md:grid grid-cols-4 lg:grid-cols-5 gap-3">
+                {product.gallery.map((g: string, i: number) => (
+                  <button
+                    key={i}
+                    onClick={() => setActiveImg(i)}
+                    aria-label={`Show image ${i + 1}`}
+                    className={`aspect-square rounded-xl overflow-hidden border-2 transition-colors ${activeImg === i ? "border-black" : "border-transparent hover:border-black/20"} ${product.bg}`}
+                  >
+                    <SafeImage
+                      src={g}
+                      alt=""
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
 

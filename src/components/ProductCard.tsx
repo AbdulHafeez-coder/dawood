@@ -41,8 +41,29 @@ function ProductCardImpl({ product: p, isFavourite, onToggleFav, favAction = "he
           height={1024}
           loading="lazy"
           decoding="async"
-          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          className={`absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-all duration-500 ${p.gallery && p.gallery.length > 1 ? 'group-hover:opacity-0 hidden sm:block' : ''}`}
         />
+        {/* Mobile image (never fades on hover) */}
+        <SafeImage
+          src={p.img}
+          alt={p.name}
+          width={1024}
+          height={1024}
+          loading="lazy"
+          decoding="async"
+          className={`absolute inset-0 w-full h-full object-cover sm:hidden`}
+        />
+        {p.gallery && p.gallery.length > 1 && (
+          <SafeImage
+            src={p.gallery[1]}
+            alt={`${p.name} alternate view`}
+            width={1024}
+            height={1024}
+            loading="lazy"
+            decoding="async"
+            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 opacity-0 group-hover:opacity-100 transition-all duration-500 hidden sm:block"
+          />
+        )}
       </Link>
       <button
         onClick={() => onToggleFav(p)}
