@@ -29,10 +29,6 @@ import "slick-carousel/slick/slick-theme.css";
 const Slider: typeof SlickSlider =
   typeof SlickSlider === "function" ? SlickSlider : (SlickSlider as any)?.default || SlickSlider;
 import { useOrders } from "@/lib/orders";
-import heroBg from "@/assets/hero-home.jpg";
-import productTowel from "@/assets/product-towel.jpg";
-import productWallpaper from "@/assets/product-wallpaper.jpg";
-import productSponge from "@/assets/product-sponge.jpg";
 import {
   useProducts,
   useCategories,
@@ -272,52 +268,81 @@ function Index() {
   const heroSlides = [
     {
       id: 1,
-      bg: heroBg,
-      tag: "New autumn collection · 2026",
+      bg: "linear-gradient(135deg, #000000 0%, #434343 100%)",
+      img: "/images/products/crown-jar-dryfruits-gold-tray.png",
+      tag: "Flat 20% Discount",
       title: (
         <>
           <div>
-            <Word delay="0.3s">Soft</Word> <Word delay="0.4s">homes,</Word>{" "}
+            <Word delay="0.3s">DeliSoga</Word> <Word delay="0.4s">Luxury</Word>{" "}
           </div>
           <div>
             <Word delay="0.5s" className="text-white/55">
-              clean
+              crown
             </Word>{" "}
             <Word delay="0.6s" className="text-white/55">
-              habits,
+              jars.
             </Word>
-          </div>
-          <div>
-            <Word delay="0.7s">thoughtful</Word> <Word delay="0.8s">walls.</Word>
           </div>
         </>
       ),
       subtitle:
-        "Everyday textiles, peel-and-stick wallpaper and plant-based cleaning made for calm, well-kept spaces.",
+        "Fast Delivery on all DeliSoga premium glassware products. Enhance your home with elegance.",
       link: "#shop",
-      cta: "Shop the edit",
+      category: "All",
+      cta: "Shop the offer",
     },
     {
       id: 2,
-      bg: productTowel,
-      tag: "100% Organic Cotton",
-      title: "Plush towels for your daily reset.",
+      bg: "linear-gradient(135deg, #0F2027 0%, #203A43 50%, #2C5364 100%)",
+      img: "/images/products/timy-mugs-group.png",
+      tag: "Flat 20% Discount",
+      title: (
+        <>
+          <div>
+            <Word delay="0.3s">Premium</Word> <Word delay="0.4s">Glass</Word>{" "}
+          </div>
+          <div>
+            <Word delay="0.5s" className="text-white/55">
+              tea
+            </Word>{" "}
+            <Word delay="0.6s" className="text-white/55">
+              mugs.
+            </Word>
+          </div>
+        </>
+      ),
       subtitle:
-        "Experience spa-like luxury every day with our ultra-absorbent, quick-drying towel collections.",
-      link: "#collections",
-      category: "Towels",
-      cta: "Shop Towels",
+        "Fast Delivery. Experience premium quality everyday with our exclusive DeliSoga mugs.",
+      link: "#shop",
+      category: "All",
+      cta: "Shop the offer",
     },
     {
       id: 3,
-      bg: productWallpaper,
-      tag: "Peel & Stick",
-      title: "Transform your space in minutes.",
+      bg: "linear-gradient(135deg, #141E30 0%, #243B55 100%)",
+      img: "/images/products/crown-jar-empty-gold-tray.png",
+      tag: "Flat 20% Discount",
+      title: (
+        <>
+          <div>
+            <Word delay="0.3s">Elegant</Word> <Word delay="0.4s">Storage</Word>{" "}
+          </div>
+          <div>
+            <Word delay="0.5s" className="text-white/55">
+              for
+            </Word>{" "}
+            <Word delay="0.6s" className="text-white/55">
+              home.
+            </Word>
+          </div>
+        </>
+      ),
       subtitle:
-        "Mess-free, renter-friendly wallpaper in exclusive patterns designed to elevate any room.",
-      link: "#collections",
-      category: "Wallpaper",
-      cta: "Shop Wallpaper",
+        "Fast Delivery. Perfect for gifts and home decor. Explore the latest DeliSoga arrivals.",
+      link: "#shop",
+      category: "All",
+      cta: "Shop the offer",
     },
   ];
 
@@ -362,15 +387,21 @@ function Index() {
                 <div
                   className="absolute inset-0 transition-transform duration-[10000ms] ease-out hover:scale-105"
                   style={{
-                    backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.6)), url(${slide.bg})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    backgroundRepeat: "no-repeat",
+                    background: slide.bg,
                   }}
                 />
-                <div className="relative z-10 h-[500px] sm:h-[600px] lg:h-[700px] flex flex-col justify-center px-4 sm:px-6 md:px-8 lg:px-10 pt-[80px]">
+                <div className="absolute inset-0 z-0 flex items-center justify-end px-4 sm:px-10 opacity-30 md:opacity-100 md:w-1/2 md:left-1/2 pointer-events-none overflow-hidden">
+                  {slide.img && (
+                    <img 
+                      src={slide.img} 
+                      alt="" 
+                      className="w-full max-w-lg max-h-[60%] sm:max-h-[70%] object-contain drop-shadow-2xl animate-fade-up delay-300"
+                    />
+                  )}
+                </div>
+                <div className="relative z-10 h-[500px] sm:h-[600px] lg:h-[700px] flex flex-col justify-center px-4 sm:px-6 md:px-8 lg:px-10 pt-[80px] md:w-[60%]">
                   <span
-                    className="inline-flex self-start items-center gap-2 rounded-full bg-white/15 backdrop-blur-sm px-4 py-1.5 text-white/90 text-xs sm:text-sm animate-fade-up delay-200"
+                    className="inline-flex self-start items-center gap-2 rounded-full bg-red-600 px-4 py-1.5 text-white text-xs sm:text-sm font-bold uppercase tracking-wider animate-fade-up delay-200 shadow-md"
                     style={inter}
                   >
                     <Sparkles size={14} /> {slide.tag}
@@ -391,7 +422,7 @@ function Index() {
                   <div className="mt-8 sm:mt-12 lg:mt-14 flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-8 lg:gap-[50px] animate-fade-up delay-600">
                     <button
                       onClick={() => {
-                        if (slide.category) {
+                        if (slide.category && slide.category !== "All") {
                           setActiveCat(slide.category as Category);
                           document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" });
                         } else {
@@ -400,18 +431,18 @@ function Index() {
                             ?.scrollIntoView({ behavior: "smooth" });
                         }
                       }}
-                      className="inline-flex items-center justify-center gap-2 bg-white text-black rounded-md w-full sm:w-[160px] md:w-[175px] lg:w-[185px] h-9 sm:h-10 lg:h-11 text-sm hover:bg-white/90 transition-colors cursor-pointer"
-                      style={{ ...inter, fontWeight: 500, letterSpacing: "-0.02em" }}
+                      className="inline-flex items-center justify-center gap-2 bg-white text-black rounded-full w-full sm:w-[160px] md:w-[175px] lg:w-[185px] h-10 sm:h-11 lg:h-12 text-sm hover:bg-gray-200 hover:scale-105 transition-all cursor-pointer font-bold shadow-lg"
+                      style={{ ...inter, letterSpacing: "-0.02em" }}
                     >
                       {slide.cta}
-                      <ArrowUpRight size={18} strokeWidth={1.75} />
+                      <ArrowUpRight size={18} strokeWidth={2} />
                     </button>
                     <p
                       className="text-white max-w-[340px]"
                       style={{
                         ...inter,
-                        fontWeight: 400,
-                        letterSpacing: "-0.03em",
+                        fontWeight: 500,
+                        letterSpacing: "-0.02em",
                         lineHeight: 1.45,
                       }}
                     >
