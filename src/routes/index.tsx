@@ -29,6 +29,9 @@ import "slick-carousel/slick/slick-theme.css";
 const Slider: typeof SlickSlider =
   typeof SlickSlider === "function" ? SlickSlider : (SlickSlider as any)?.default || SlickSlider;
 import { useOrders } from "@/lib/orders";
+import productTowel from "@/assets/product-towel.jpg";
+import productWallpaper from "@/assets/product-wallpaper.jpg";
+import productSponge from "@/assets/product-sponge.jpg";
 import {
   useProducts,
   useCategories,
