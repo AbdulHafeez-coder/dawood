@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import { ErrorView } from "@/components/ui/ErrorView";
 import { NotFoundView } from "@/components/ui/NotFoundView";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { SourcingWidget } from "@/components/SourcingWidget";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
@@ -75,7 +76,9 @@ function RootComponent() {
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
         <Toaster position="bottom-right" richColors closeButton />
+        <SourcingWidget />
       </TooltipProvider>
     </QueryClientProvider>
   );
 }
+

@@ -21,9 +21,9 @@ const DEFAULTS: Settings = {
   brandName: "Dawood Mart",
   tagline: "Essentials for a tactile home",
   logoUrl: "",
-  whatsappNumber: "03011234567",
+  whatsappNumber: "03024201342",
   contactEmail: "hello@dawoodmart.co",
-  contactPhone: "0301-1234567",
+  contactPhone: "0302-4201342",
   address: "12 Linden Row, Copenhagen",
   socials: {
     instagram: "https://instagram.com/dawoodmart",

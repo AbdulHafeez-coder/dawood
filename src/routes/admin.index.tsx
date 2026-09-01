@@ -29,6 +29,7 @@ import {
   Megaphone,
 } from "lucide-react";
 import { PromotionsPanel } from "@/components/admin/PromotionsPanel";
+import { SourcingPanel } from "@/components/admin/SourcingPanel";
 import { toast } from "sonner";
 import { useAdminAuth } from "@/lib/admin-auth";
 import {
@@ -94,7 +95,7 @@ import {
 const dmSans = { fontFamily: "'DM Sans', sans-serif" };
 const inter = { fontFamily: "'Inter', sans-serif" };
 
-type TabId = "overview" | "products" | "categories" | "promotions" | "orders" | "settings";
+type TabId = "overview" | "products" | "categories" | "promotions" | "orders" | "settings" | "sourcing";
 
 type ProductImportItem = {
   id?: string;
@@ -160,7 +161,7 @@ function AdminDashboard() {
     if (typeof window === "undefined") return "overview";
     const saved = window.localStorage.getItem("mt_admin_tab") as TabId | null;
     return saved &&
-      ["overview", "products", "categories", "promotions", "orders", "settings"].includes(saved)
+      ["overview", "products", "categories", "promotions", "orders", "settings", "sourcing"].includes(saved)
       ? saved
       : "overview";
   });
@@ -602,6 +603,13 @@ function AdminDashboard() {
               icon={<Megaphone className="w-3.5 h-3.5" />}
             >
               Promotions
+            </TabButton>
+            <TabButton
+              active={tab === "sourcing"}
+              onClick={() => setTab("sourcing")}
+              icon={<Search className="w-3.5 h-3.5" />}
+            >
+              Sourcing
             </TabButton>
             <TabButton
               active={tab === "orders"}
@@ -1269,6 +1277,8 @@ function AdminDashboard() {
           )}
 
           {tab === "promotions" && <PromotionsPanel categories={categories} />}
+
+          {tab === "sourcing" && <SourcingPanel />}
 
           {tab === "settings" && <SettingsPanel />}
         </div>

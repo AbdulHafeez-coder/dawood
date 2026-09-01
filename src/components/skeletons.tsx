@@ -368,9 +368,9 @@ export function AdminSettingsSkeleton() {
 }
 
 export function AdminDashboardSkeleton({
-  tab = "overview",
+  tab,
 }: {
-  tab?: "overview" | "products" | "categories" | "promotions" | "orders" | "settings";
+  tab?: "overview" | "products" | "categories" | "promotions" | "orders" | "settings" | "sourcing";
 }) {
   return (
     <div className="min-h-screen flex flex-col bg-[#FEFDF9] text-black">

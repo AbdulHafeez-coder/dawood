@@ -7,7 +7,7 @@ function buildUrl(text: string) {
   const raw = (getSettings().whatsappNumber || "").replace(/\D/g, "");
   // Pakistani local (11 digits, starts with 03) → 92XXXXXXXXXX
   const number =
-    raw.length === 11 && raw.startsWith("03") ? `92${raw.slice(1)}` : raw || "923011234567";
+    raw.length === 11 && raw.startsWith("03") ? `92${raw.slice(1)}` : raw || "923024201342";
   return `https://wa.me/${number}?text=${encodeURIComponent(text)}`;
 }
 
@@ -93,4 +93,65 @@ export function whatsappProductUrl(product: Product, qty: number = 1) {
 }
 export function whatsappCartUrl(cart: CartItem[], subtotal: number) {
   return buildWhatsappCartOrder(cart, subtotal).url;
+}
+
+export function buildCheckoutWhatsappOrder(
+  orderId: string,
+  cart: CartItem[],
+  subtotal: number,
+  customer: { name: string; phone: string; city: string; address: string; notes: string }
+) {
+  const shipping = computeShipping(subtotal);
+  const total = subtotal + shipping;
+  const itemCount = cart.reduce((n, i) => n + i.qty, 0);
+
+  const itemBlocks = cart.flatMap((i, idx) => {
+    const displayName = i.baseName ?? i.name;
+    const sizeLine = i.variantSizeLabel
+      ? `   Size:      ${i.variantSizeLabel}${i.variantSizeNote ? ` (${i.variantSizeNote})` : ""}`
+      : null;
+    const colorLine = i.variantColorLabel ? `   Colour:    ${i.variantColorLabel}` : null;
+    return [
+      `*${idx + 1}. ${displayName}*`,
+      sizeLine,
+      colorLine,
+      `   Quantity:  ${i.qty}`,
+      `   Price:     ${money(i.price)} each`,
+      `   Subtotal:  ${money(i.price * i.qty)}`,
+      "",
+    ].filter((x): x is string => x !== null);
+  });
+
+  const brand = getSettings().brandName || "Store";
+  const lines = [
+    `*${brand} — New Order Confirmation*`,
+    `Order ID: *${orderId}*`,
+    "",
+    `Hi! I've placed an order on your website. Here are my details:`,
+    "",
+    DIVIDER,
+    `*Customer Information*`,
+    `Name:     ${customer.name}`,
+    `Phone:    ${customer.phone}`,
+    `City:     ${customer.city}`,
+    `Address:  ${customer.address}`,
+    customer.notes ? `Notes:    ${customer.notes}` : "",
+    DIVIDER,
+    "",
+    `*Order Items (${itemCount})*`,
+    ...itemBlocks,
+    DIVIDER,
+    "",
+    "*Order Summary*",
+    `Subtotal:  ${money(subtotal)}`,
+    `Shipping:  ${shipping === 0 ? "Free" : money(shipping)}`,
+    `*Total:     ${money(total)}*`,
+    "",
+    `Payment Method: *Cash on Delivery (COD)*`,
+    "",
+    "Please confirm my order. Thanks!",
+  ].filter(Boolean);
+
+  const text = lines.join("\n");
+  return { text, url: buildUrl(text), total, itemCount };
 }

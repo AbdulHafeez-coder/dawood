@@ -1,4 +1,5 @@
-import { ShoppingBag, X, Plus, Minus, Trash2, MessageCircle } from "lucide-react";
+import { ShoppingBag, X, Plus, Minus, Trash2, ArrowRight } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useCart, computeShipping } from "@/lib/shop";
 import { buildWhatsappCartOrder } from "@/lib/whatsapp";
@@ -14,6 +15,7 @@ import {
 } from "@/components/ui/sheet";
 
 export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const navigate = useNavigate();
   const { cart, changeQty, removeItem, restoreItem, cartCount, subtotal } = useCart();
 
   const handleQty = (item: (typeof cart)[number], delta: number) => {
@@ -232,30 +234,15 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
             <button
               type="button"
               onClick={() => {
-                const { text, url, total, itemCount } = buildWhatsappCartOrder(cart, subtotal);
-                const primary = cart[0];
-                saveOrder({
-                  kind: "cart",
-                  url,
-                  message: text,
-                  total,
-                  itemCount,
-                  primaryName: primary?.baseName ?? primary?.name ?? "Order",
-                  primaryImg: primary?.img,
-                  primaryBg: primary?.bg,
-                  extraCount: Math.max(0, cart.length - 1),
-                });
-                toast.success("Order draft saved", {
-                  description: "You can resend it any time from Orders.",
-                });
-                window.open(url, "_blank", "noopener,noreferrer");
+                onClose();
+                navigate({ to: "/checkout" });
               }}
-              className="mt-2 inline-flex items-center justify-center gap-2 bg-[#25D366] text-white rounded-md h-10 text-sm font-medium hover:bg-[#1ebe57] transition-colors"
+              className="mt-2 inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-10 text-sm font-medium hover:bg-black/85 transition-colors"
             >
-              <MessageCircle size={18} /> Order on WhatsApp
+              Proceed to Checkout <ArrowRight size={18} />
             </button>
             <p className="text-[11px] text-black/50 text-center">
-              You'll be redirected to WhatsApp with your order details pre-filled.
+              Taxes and shipping calculated at checkout.
             </p>
           </div>
         )}

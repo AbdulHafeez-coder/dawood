@@ -134,81 +134,22 @@ function ProductPage() {
   const [activeImg, setActiveImg] = useState(0);
   const [added, setAdded] = useState(false);
 
-  const variants = getVariants(product.category);
-  const variantStorageKey = `mt-variant:${product.id}`;
-  const [size, setSize] = useState<string | null>(null);
-  const [color, setColor] = useState<string | null>(null);
-
-  // Restore last-selected size/colour for this product from localStorage on mount.
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      const raw = window.localStorage.getItem(variantStorageKey);
-      if (!raw) return;
-      const saved = JSON.parse(raw) as { size?: string; color?: string };
-      if (saved.size && variants.sizes.some((s) => s.id === saved.size)) setSize(saved.size);
-      if (saved.color && variants.colors.some((c) => c.id === saved.color)) setColor(saved.color);
-    } catch {
-      /* ignore */
-    }
-    // Re-run when navigating to a different product id.
-  }, [variantStorageKey, variants]);
-
-  // Persist whenever the selection changes (including partial selections).
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (size === null && color === null) return;
-    try {
-      window.localStorage.setItem(variantStorageKey, JSON.stringify({ size, color }));
-    } catch {
-      /* ignore */
-    }
-  }, [size, color, variantStorageKey]);
-
-  const selectedSize = variants.sizes.find((s) => s.id === size) ?? null;
-  const selectedColor = variants.colors.find((c) => c.id === color) ?? null;
-  const canAdd = selectedSize !== null && selectedColor !== null;
-
-  const variantProduct: Product = canAdd
-    ? {
-        ...product,
-        id: `${product.id}::${size}::${color}`,
-        name: `${product.display_name || product.name} — ${selectedSize.label} / ${selectedColor.label}`,
-      }
-    : product;
-
-  const { products: liveProducts } = useProducts();
-  const related = liveProducts
-    .filter((p) => p.category === product.category && p.id !== product.id)
-    .slice(0, 4);
-
   const handleAdd = () => {
-    if (!selectedSize || !selectedColor) {
-      const missing =
-        !selectedSize && !selectedColor
-          ? "a size and colour"
-          : !selectedSize
-            ? "a size"
-            : "a colour";
-      toast.error(`Please select ${missing} first`);
-      return;
-    }
-    addToCart(variantProduct, qty, {
+    addToCart(product, qty, {
       baseId: product.id,
       baseName: product.display_name || product.name,
-      variantSize: selectedSize.id,
-      variantColor: selectedColor.id,
-      variantSizeLabel: selectedSize.label,
-      variantSizeNote: selectedSize.note,
-      variantColorLabel: selectedColor.label,
-      variantColorSwatch: selectedColor.swatch,
     });
-    toast.success(`${variantProduct.name} added to cart`, {
+    toast.success(`${product.display_name || product.name} added to cart`, {
       description: `Qty ${qty} · ${formatPKR(product.price * qty)}`,
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 1600);
   };
+
+  const { products: liveProducts } = useProducts();
+  const related = liveProducts
+    .filter((p) => p.category === product.category && p.id !== product.id)
+    .slice(0, 4);
 
   return (
     <div className="flex min-h-screen flex-col bg-[#FEFDF9]" style={inter}>
@@ -367,71 +308,7 @@ function ProductPage() {
             ))}
           </ul>
 
-          {!mounted ? (
-            <div className="mt-8">
-              <VariantOptionsSkeleton />
-            </div>
-          ) : (
-            <>
-              {/* SIZE */}
-              <div className="mt-8 max-w-md">
-                <div className="flex items-baseline justify-between mb-2">
-                  <div className="text-sm text-black" style={{ fontWeight: 500 }}>
-                    Size
-                  </div>
-                  <div className="text-xs text-black/50">
-                    {selectedSize ? (selectedSize.note ?? selectedSize.label) : "Select a size"}
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {variants.sizes.map((s) => {
-                    const active = size === s.id;
-                    return (
-                      <button
-                        key={s.id}
-                        onClick={() => setSize(s.id)}
-                        aria-pressed={active}
-                        className={`px-4 h-9 rounded-full border text-sm transition-colors ${active ? "border-black bg-black text-white" : "border-black/15 text-black hover:border-black"}`}
-                      >
-                        {s.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* COLOR */}
-              <div className="mt-6 max-w-md">
-                <div className="flex items-baseline justify-between mb-2">
-                  <div className="text-sm text-black" style={{ fontWeight: 500 }}>
-                    Colour
-                  </div>
-                  <div className="text-xs text-black/50">
-                    {selectedColor ? selectedColor.label : "Select a colour"}
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  {variants.colors.map((c) => {
-                    const active = color === c.id;
-                    const isGradient = c.swatch.startsWith("linear-gradient");
-                    return (
-                      <button
-                        key={c.id}
-                        onClick={() => setColor(c.id)}
-                        aria-label={c.label}
-                        aria-pressed={active}
-                        title={c.label}
-                        className={`h-9 w-9 rounded-full border-2 transition-colors ${active ? "border-black" : "border-black/15 hover:border-black/40"}`}
-                        style={
-                          isGradient ? { backgroundImage: c.swatch } : { backgroundColor: c.swatch }
-                        }
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-            </>
-          )}
+          {/* Variants Removed for simplicity */}
 
           {!mounted ? (
             <div className="mt-8">
@@ -458,21 +335,13 @@ function ProductPage() {
                     <Plus size={16} />
                   </button>
                 </div>
-                <div
-                  className="flex-1"
-                  onClick={() => {
-                    if (!canAdd) handleAdd();
-                  }}
-                >
+                <div className="flex-1">
                   <button
                     onClick={handleAdd}
-                    disabled={!canAdd}
                     className="w-full inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-10 text-sm hover:bg-black/85"
                     style={{ fontWeight: 500 }}
                   >
-                    {!canAdd ? (
-                      "Select size & colour"
-                    ) : added ? (
+                    {added ? (
                       <>
                         <Check size={18} /> Added
                       </>
@@ -494,47 +363,10 @@ function ProductPage() {
                 </button>
               </div>
 
-              {canAdd ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    const { text, url, total } = buildWhatsappProductOrder(variantProduct, qty);
-                    saveOrder({
-                      kind: "product",
-                      url,
-                      message: text,
-                      total,
-                      itemCount: qty,
-                      primaryName: variantProduct.name,
-                      primaryImg: product.img,
-                      primaryBg: product.bg,
-                    });
-                    toast.success("Order draft saved", {
-                      description: "You can resend it any time from Orders.",
-                    });
-                    window.open(url, "_blank", "noopener,noreferrer");
-                  }}
-                  className="mt-3 inline-flex items-center justify-center gap-2 bg-[#25D366] text-white rounded-md h-10 text-sm w-full hover:bg-[#1ebe57] transition-colors"
-                  style={{ fontWeight: 500 }}
-                >
-                  <MessageCircle size={18} /> Order on WhatsApp
-                </button>
-              ) : (
-                <button
-                  disabled
-                  className="mt-3 inline-flex items-center justify-center gap-2 bg-black/10 text-black/40 rounded-md h-10 text-sm w-full cursor-not-allowed border border-black/10"
-                  style={{ fontWeight: 500 }}
-                >
-                  <MessageCircle size={18} /> Order on WhatsApp
-                </button>
-              )}
-              <p className="mt-2 text-[11px] text-black/50">
-                {canAdd
-                  ? "Chat with us on WhatsApp — product details pre-filled."
-                  : "Pick a size and colour to continue."}
-              </p>
             </>
           )}
+
+          {/* Order on WhatsApp button removed to enforce Checkout Flow */}
 
           <div className="mt-8 grid grid-cols-3 gap-3 max-w-md">
             {[
