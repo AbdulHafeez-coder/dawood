@@ -154,8 +154,9 @@ function ProductPage() {
     .slice(0, 4);
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#FEFDF9]" style={inter}>
+    <div className="flex min-h-screen flex-col bg-[#FEFDF9] pb-20 md:pb-0" style={inter}>
       {/* NAV */}
+
       <nav className="sticky top-0 z-20 bg-[#FEFDF9]/90 backdrop-blur border-b border-black/5 flex items-center justify-between px-5 py-4 sm:px-8 lg:px-10">
         <Link to="/" className="type-wordmark text-black">
           Dawood Mart
@@ -269,7 +270,17 @@ function ProductPage() {
 
         {/* INFO */}
         <div>
-          <div className="type-eyebrow text-black/50">{product.category}</div>
+          <div className="flex items-center gap-2">
+            <span className="type-eyebrow text-black/50">{product.category}</span>
+            {product.brand && (
+              <>
+                <span className="text-black/30">·</span>
+                <span className="text-xs font-semibold bg-black/5 text-black/70 px-2 py-0.5 rounded-md">
+                  Brand: {product.brand}
+                </span>
+              </>
+            )}
+          </div>
           <h1 className="type-h1 mt-3 text-black">{product.display_name || product.name}</h1>
           <p className="mt-3 text-black/70 max-w-md">{product.tagline}</p>
 
@@ -323,15 +334,15 @@ function ProductPage() {
                 <div className="inline-flex items-center border border-black/15 rounded-full h-10">
                   <button
                     onClick={() => setQty((q) => Math.max(1, q - 1))}
-                    className="w-9 h-10 flex items-center justify-center text-black/70 hover:text-black"
+                    className="w-9 h-10 flex items-center justify-center text-black/70 hover:text-black cursor-pointer"
                     aria-label="Decrease"
                   >
                     <Minus size={16} />
                   </button>
-                  <span className="w-8 text-center text-sm text-black">{qty}</span>
+                  <span className="w-8 text-center text-sm text-black font-semibold">{qty}</span>
                   <button
                     onClick={() => setQty((q) => q + 1)}
-                    className="w-9 h-10 flex items-center justify-center text-black/70 hover:text-black"
+                    className="w-9 h-10 flex items-center justify-center text-black/70 hover:text-black cursor-pointer"
                     aria-label="Increase"
                   >
                     <Plus size={16} />
@@ -340,12 +351,12 @@ function ProductPage() {
                 <div className="flex-1">
                   <button
                     onClick={handleAdd}
-                    className="w-full inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-10 text-sm hover:bg-black/85"
+                    className="w-full inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-10 text-sm hover:bg-black/85 cursor-pointer transition-colors shadow-sm"
                     style={{ fontWeight: 500 }}
                   >
                     {added ? (
                       <>
-                        <Check size={18} /> Added
+                        <Check size={18} /> Added to Cart
                       </>
                     ) : (
                       <>Add to cart · {formatPKR(product.price * qty)}</>
@@ -356,7 +367,7 @@ function ProductPage() {
                   onClick={handleFav}
                   aria-label={isFav(product.id) ? "Remove from favourites" : "Add to favourites"}
                   aria-pressed={isFav(product.id)}
-                  className="h-10 w-10 shrink-0 inline-flex items-center justify-center rounded-full border border-black/15 hover:border-black transition-colors"
+                  className="h-10 w-10 shrink-0 inline-flex items-center justify-center rounded-full border border-black/15 hover:border-black transition-colors cursor-pointer"
                 >
                   <Heart
                     size={18}
@@ -367,8 +378,6 @@ function ProductPage() {
 
             </>
           )}
-
-          {/* Order on WhatsApp button removed to enforce Checkout Flow */}
 
           <div className="mt-8 grid grid-cols-3 gap-3 max-w-md">
             {[
@@ -404,6 +413,58 @@ function ProductPage() {
           </div>
         </section>
       )}
+
+      {/* MOBILE STICKY ADD TO CART BAR */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-black/10 p-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] flex items-center justify-between gap-3 safe-area-bottom">
+        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+          <div className={`w-10 h-10 rounded-lg overflow-hidden shrink-0 ${product.bg}`}>
+            <SafeImage src={product.img} alt="" className="w-full h-full object-cover" width={40} height={40} />
+          </div>
+          <div className="min-w-0 flex flex-col">
+            <span className="text-xs font-bold text-black truncate leading-tight">
+              {product.display_name || product.name}
+            </span>
+            <span className="text-xs font-semibold text-black/80">
+              {formatPKR(product.price * qty)}
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="inline-flex items-center border border-black/15 rounded-full h-9 bg-white">
+            <button
+              onClick={() => setQty((q) => Math.max(1, q - 1))}
+              className="w-7 h-9 flex items-center justify-center text-black/70 hover:text-black cursor-pointer"
+              aria-label="Decrease"
+            >
+              <Minus size={13} />
+            </button>
+            <span className="w-5 text-center text-xs text-black font-semibold">{qty}</span>
+            <button
+              onClick={() => setQty((q) => q + 1)}
+              className="w-7 h-9 flex items-center justify-center text-black/70 hover:text-black cursor-pointer"
+              aria-label="Increase"
+            >
+              <Plus size={13} />
+            </button>
+          </div>
+
+          <button
+            onClick={handleAdd}
+            className="bg-black text-white px-3.5 h-9 rounded-xl text-xs font-semibold hover:bg-black/85 transition-colors flex items-center gap-1.5 shadow-sm cursor-pointer"
+          >
+            {added ? (
+              <>
+                <Check size={14} /> Added
+              </>
+            ) : (
+              <>
+                <ShoppingBag size={14} /> Add to cart
+              </>
+            )}
+          </button>
+        </div>
+      </div>
 
       <div className="mt-auto">
         <SiteFooter />
@@ -446,3 +507,4 @@ function RelatedCard({ product: p }: { product: Product }) {
     </Link>
   );
 }
+

@@ -35,6 +35,7 @@ import productSponge from "@/assets/product-sponge.jpg";
 import {
   useProducts,
   useCategories,
+  useBrands,
   useCart,
   useFavourites,
   usePromotions,
@@ -44,7 +45,11 @@ import {
 import { useSettings } from "@/lib/settings";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { LazyCartDrawer as CartDrawer } from "@/components/LazyCartDrawer";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { SearchAutocomplete } from "@/components/SearchAutocomplete";
 import { SiteFooter } from "@/components/SiteFooter";
+
+
 import { FiltersSkeleton, ProductGridSkeleton, useMounted } from "@/components/skeletons";
 import {
   Sheet,
@@ -143,7 +148,11 @@ function Index() {
   const { orderCount } = useOrders();
   const { products } = useProducts();
   const { categories: liveCategories, categoryInfo } = useCategories();
+  const { brands: liveBrands } = useBrands();
   const { promotions } = usePromotions();
+
+  const [activeCat, setActiveCat] = useState<Category | "All">("All");
+  const [activeBrand, setActiveBrand] = useState<string>("All");
 
   const categorySliderRef = useRef<Slider | null>(null);
 
@@ -199,7 +208,6 @@ function Index() {
     [toggleFav],
   );
 
-  const [activeCat, setActiveCat] = useState<Category | "All">("All");
   const { priceMin, priceMax } = useMemo(() => {
     if (!products.length) return { priceMin: 0, priceMax: 100 };
     let lo = products[0].price;
@@ -236,11 +244,19 @@ function Index() {
 
   const visibleProducts = useMemo(() => {
     const q = debouncedQuery.trim().toLowerCase();
-    let list = products.filter((p) => (activeCat === "All" ? true : p.category === activeCat));
+    let list = products.filter((p) => {
+      const matchCat = activeCat === "All" ? true : p.category === activeCat;
+      const matchBrand =
+        activeBrand === "All"
+          ? true
+          : p.brand?.toLowerCase() === activeBrand.toLowerCase() ||
+            p.name.toLowerCase().includes(activeBrand.toLowerCase());
+      return matchCat && matchBrand;
+    });
     list = list.filter((p) => p.price <= maxPrice);
     if (q) {
       list = list.filter((p) =>
-        [p.name, p.category, p.tag, p.tagline, p.description]
+        [p.name, p.category, p.brand, p.tag, p.tagline, p.description]
           .filter(Boolean)
           .some((s) => String(s).toLowerCase().includes(q)),
       );
@@ -257,7 +273,7 @@ function Index() {
         break;
     }
     return list;
-  }, [products, activeCat, maxPrice, sort, debouncedQuery]);
+  }, [products, activeCat, activeBrand, maxPrice, sort, debouncedQuery]);
 
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = { All: products.length };
@@ -268,6 +284,18 @@ function Index() {
     }
     return counts;
   }, [products]);
+
+  const brandCounts = useMemo(() => {
+    const counts: Record<string, number> = { All: products.length };
+    for (const p of products) {
+      const b = p.brand;
+      if (b) {
+        counts[b] = (counts[b] || 0) + 1;
+      }
+    }
+    return counts;
+  }, [products]);
+
 
   const heroSlides = [
     {
@@ -351,8 +379,9 @@ function Index() {
   ];
 
   return (
-    <div className="flex min-h-screen flex-col" style={inter}>
+    <div className="flex min-h-screen flex-col pb-20 lg:pb-0" style={inter}>
       {/* HERO SECTION */}
+
       <div className="relative flex flex-col overflow-hidden min-h-[500px] sm:min-h-[600px] lg:min-h-[700px] bg-stone-900">
         {/* Slider Backgrounds & Content */}
         <div className="absolute inset-0 z-0 [&_.slick-slider]:h-full [&_.slick-list]:h-full [&_.slick-track]:h-full [&_.slick-slide>div]:h-full">
@@ -491,47 +520,30 @@ function Index() {
               ))}
             </div>
             <div className="flex-1 flex items-center justify-end gap-3 sm:gap-4 animate-slide-right delay-300">
-              <div className="hidden lg:flex items-stretch bg-white border-[1.5px] border-[#ff0055] rounded-md overflow-hidden transition-all duration-300 focus-within:ring-4 focus-within:ring-[#ff0055]/10 w-[320px] xl:w-[480px]">
-                <button 
-                  onClick={(e) => { e.preventDefault(); document.dispatchEvent(new Event("open-sourcing")); }}
-                  className="pl-3 pr-2 flex items-center justify-center bg-white hover:bg-gray-50 transition-colors"
-                  aria-label="Search by Image"
-                  title="Search by Image"
-                >
-                  <Camera size={18} strokeWidth={2} className="text-[#ff0055]" />
-                </button>
-                <input
-                  id="header-search"
-                  type="search"
-                  value={query}
-                  onChange={(e) => {
-                    setQuery(e.target.value);
-                    if (e.target.value) setActiveCat("All");
+              <div className="hidden lg:block w-[320px] xl:w-[480px]">
+                <SearchAutocomplete
+                  products={products}
+                  categories={liveCategories}
+                  brands={liveBrands}
+                  query={query}
+                  onQueryChange={(q) => {
+                    setQuery(q);
+                    if (q) setActiveCat("All");
                   }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") scrollToProducts();
+                  onSelectCategory={(c) => {
+                    setActiveCat(c);
+                    setActiveBrand("All");
+                    scrollToProducts();
                   }}
-                  placeholder="Enter keyword/product link, snap/upload picture"
-                  className="bg-transparent outline-none text-black placeholder:text-black/30 text-[13px] w-full py-2.5 px-1"
-                  style={inter}
+                  onSelectBrand={(b) => {
+                    setActiveBrand(b);
+                    setActiveCat("All");
+                    scrollToProducts();
+                  }}
+                  onSearchSubmit={scrollToProducts}
+                  placeholder="Enter keyword, brand or product name…"
+                  variant="header"
                 />
-                {query && (
-                  <button
-                    aria-label="Clear search"
-                    onClick={() => setQuery("")}
-                    className="text-gray-400 hover:text-gray-600 shrink-0 px-2 flex items-center bg-white"
-                  >
-                    <X size={16} />
-                  </button>
-                )}
-                <button
-                  onClick={() => {
-                    if (query) scrollToProducts();
-                  }}
-                  className="bg-[#ff0055] hover:bg-[#e6004c] text-white px-6 xl:px-8 flex items-center justify-center transition-colors shrink-0"
-                >
-                  <Search size={20} strokeWidth={2.5} />
-                </button>
               </div>
               <button
                 aria-label="Search"
@@ -608,40 +620,37 @@ function Index() {
               </SheetHeader>
 
               <div className="px-6 py-5 border-b border-white/10">
-                <label htmlFor="mobile-menu-search" className="sr-only">
-                  Search products
-                </label>
-                <div className="flex items-center gap-2 bg-white/10 rounded-full px-4 py-2.5 focus-within:bg-white/15 transition-colors">
-                  <Search size={16} className="text-white/70 shrink-0" />
-                  <input
-                    id="mobile-menu-search"
-                    type="search"
-                    value={query}
-                    onChange={(e) => {
-                      setQuery(e.target.value);
-                      if (e.target.value) setActiveCat("All");
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        setMenuOpen(false);
-                        setTimeout(scrollToProducts, 100);
-                      }
-                    }}
-                    placeholder="Search products…"
-                    className="bg-transparent outline-none text-white placeholder:text-white/50 text-sm w-full"
-                    style={inter}
-                  />
-                  {query && (
-                    <button
-                      aria-label="Clear"
-                      onClick={() => setQuery("")}
-                      className="text-white/60 hover:text-white shrink-0"
-                    >
-                      <X size={14} />
-                    </button>
-                  )}
-                </div>
+                <SearchAutocomplete
+                  products={products}
+                  categories={liveCategories}
+                  brands={liveBrands}
+                  query={query}
+                  onQueryChange={(q) => {
+                    setQuery(q);
+                    if (q) setActiveCat("All");
+                  }}
+                  onSelectCategory={(c) => {
+                    setActiveCat(c);
+                    setActiveBrand("All");
+                    setMenuOpen(false);
+                    setTimeout(scrollToProducts, 150);
+                  }}
+                  onSelectBrand={(b) => {
+                    setActiveBrand(b);
+                    setActiveCat("All");
+                    setMenuOpen(false);
+                    setTimeout(scrollToProducts, 150);
+                  }}
+                  onSelectProduct={() => setMenuOpen(false)}
+                  onSearchSubmit={() => {
+                    setMenuOpen(false);
+                    setTimeout(scrollToProducts, 150);
+                  }}
+                  placeholder="Search products, brands…"
+                  variant="mobile"
+                />
               </div>
+
 
               <nav className="flex-1 overflow-y-auto px-3 py-4" style={dmSans}>
                 <ul className="flex flex-col">
@@ -934,13 +943,24 @@ function Index() {
           <>
             <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
               
-              {/* DESKTOP SIDEBAR */}
-              <aside className="hidden lg:block w-[260px] shrink-0 sticky top-24">
-                <div className="bg-white rounded-2xl p-6 border border-black/5 shadow-sm flex flex-col gap-8">
+              {/* DESKTOP SIDEBAR - STICKY INDEPENDENT SCROLL */}
+              <aside className="hidden lg:block w-[280px] shrink-0 sticky top-20 max-h-[calc(100vh-5.5rem)] overflow-y-auto pr-2 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-black/10 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-black/20">
+                <div className="bg-white rounded-2xl p-5 border border-black/5 shadow-sm flex flex-col gap-6">
                   
+                  {/* Categories Section */}
                   <div>
-                    <h3 className="font-bold text-lg mb-4 text-black" style={dmSans}>Categories</h3>
-                    <div className="flex flex-col gap-2">
+                    <h3 className="font-bold text-base mb-3 text-black flex items-center justify-between" style={dmSans}>
+                      <span>Categories</span>
+                      {activeCat !== "All" && (
+                        <button
+                          onClick={() => setActiveCat("All")}
+                          className="text-[11px] text-black/50 hover:text-black font-normal underline cursor-pointer"
+                        >
+                          All
+                        </button>
+                      )}
+                    </h3>
+                    <div className="flex flex-col gap-1 max-h-[220px] overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-black/10 [&::-webkit-scrollbar-thumb]:rounded-full">
                       {(["All", ...liveCategories] as const).map((c) => {
                         const active = activeCat === c;
                         const count = categoryCounts[c];
@@ -949,15 +969,19 @@ function Index() {
                             key={c}
                             onClick={() => setActiveCat(c)}
                             aria-pressed={active}
-                            className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all cursor-pointer ${
+                            className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-all cursor-pointer ${
                               active
-                                ? "bg-black text-white shadow-sm"
+                                ? "bg-black text-white shadow-sm font-semibold"
                                 : "bg-transparent text-black/70 hover:bg-black/5 hover:text-black font-medium"
                             }`}
                           >
-                            <span>{c}</span>
+                            <span className="truncate pr-2">{c}</span>
                             {count !== undefined && (
-                              <span className={`text-[10px] px-2 py-0.5 rounded-md font-bold ${active ? "bg-white/20 text-white" : "bg-black/5 text-black/50"}`}>
+                              <span
+                                className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold shrink-0 ${
+                                  active ? "bg-white/20 text-white" : "bg-black/5 text-black/50"
+                                }`}
+                              >
                                 {count}
                               </span>
                             )}
@@ -967,12 +991,51 @@ function Index() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="font-bold text-lg mb-4 text-black" style={dmSans}>Price Range</h3>
-                    <div className="flex flex-col gap-3">
-                      <div className="flex justify-between items-center text-sm font-medium text-black">
-                        <span>Up to:</span>
-                        <span>{formatPKR(maxPrice)}</span>
+                  {/* Brands Section */}
+                  <div className="pt-4 border-t border-black/5">
+                    <h3 className="font-bold text-base mb-3 text-black flex items-center justify-between" style={dmSans}>
+                      <span>Brands</span>
+                      {activeBrand !== "All" && (
+                        <button
+                          onClick={() => setActiveBrand("All")}
+                          className="text-[11px] text-black/50 hover:text-black font-normal underline cursor-pointer"
+                        >
+                          All
+                        </button>
+                      )}
+                    </h3>
+                    <div className="flex flex-wrap gap-1.5 max-h-[160px] overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-black/10 [&::-webkit-scrollbar-thumb]:rounded-full">
+                      {(["All", ...liveBrands] as const).map((b) => {
+                        const active = activeBrand === b;
+                        const count = brandCounts[b];
+                        return (
+                          <button
+                            key={b}
+                            onClick={() => setActiveBrand(b)}
+                            aria-pressed={active}
+                            className={`px-2.5 py-1.5 rounded-lg text-xs transition-all cursor-pointer font-medium flex items-center gap-1 ${
+                              active
+                                ? "bg-black text-white shadow-sm font-bold"
+                                : "bg-black/[0.04] text-black/70 hover:bg-black/10 hover:text-black"
+                            }`}
+                          >
+                            <span>{b}</span>
+                            {count !== undefined && b !== "All" && (
+                              <span className="text-[10px] opacity-60">({count})</span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Price Range Section */}
+                  <div className="pt-4 border-t border-black/5">
+                    <h3 className="font-bold text-base mb-3 text-black" style={dmSans}>Price Range</h3>
+                    <div className="flex flex-col gap-2.5">
+                      <div className="flex justify-between items-center text-xs font-medium text-black">
+                        <span>Max Price:</span>
+                        <span className="font-bold">{formatPKR(maxPrice)}</span>
                       </div>
                       <input
                         type="range"
@@ -987,17 +1050,18 @@ function Index() {
                   </div>
 
                   {/* Reset button if filters active */}
-                  {(activeCat !== "All" || maxPrice < priceMax || debouncedQuery) && (
+                  {(activeCat !== "All" || activeBrand !== "All" || maxPrice < priceMax || debouncedQuery) && (
                     <button
                       onClick={() => {
                         setActiveCat("All");
+                        setActiveBrand("All");
                         setMaxPrice(priceMax);
                         setSort("featured");
                         setQuery("");
                       }}
-                      className="text-sm text-black hover:text-black flex items-center justify-center gap-2 bg-black/5 hover:bg-black/10 px-4 py-2.5 rounded-xl transition-colors font-semibold w-full cursor-pointer"
+                      className="text-xs text-black hover:text-black flex items-center justify-center gap-2 bg-black/5 hover:bg-black/10 px-4 py-2.5 rounded-xl transition-colors font-semibold w-full cursor-pointer mt-1"
                     >
-                      <RotateCcw size={16} /> Reset Filters
+                      <RotateCcw size={14} /> Reset All Filters
                     </button>
                   )}
                 </div>
@@ -1007,57 +1071,88 @@ function Index() {
               <div className="flex-1 min-w-0 w-full">
                 
                 {/* Mobile Filter & Sort Bar */}
-                <div className="lg:hidden sticky top-0 z-30 bg-[#ECEDEC]/90 backdrop-blur-md py-4 -mx-4 px-4 sm:-mx-6 sm:px-6 md:-mx-8 md:px-8 mb-4 transition-all">
-                  <div className="bg-white rounded-2xl p-2 sm:p-3 border border-black/5 shadow-sm flex items-center justify-between gap-3">
+                <div className="lg:hidden sticky top-0 z-30 bg-[#ECEDEC]/90 backdrop-blur-md py-3 -mx-4 px-4 sm:-mx-6 sm:px-6 md:-mx-8 md:px-8 mb-4 transition-all">
+                  <div className="bg-white rounded-2xl p-2 sm:p-2.5 border border-black/5 shadow-sm flex items-center justify-between gap-2">
                     
                     {/* Mobile Drawer Trigger */}
                     <Sheet>
                       <SheetTrigger asChild>
-                        <button className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-black/5 hover:bg-black/10 transition-colors rounded-xl text-sm font-semibold text-black cursor-pointer">
-                          <Menu size={16} /> <span className="hidden sm:inline">Filters & Categories</span><span className="sm:hidden">Filters</span>
+                        <button className="flex items-center gap-2 px-3 py-2 bg-black/5 hover:bg-black/10 transition-colors rounded-xl text-xs sm:text-sm font-semibold text-black cursor-pointer">
+                          <SlidersHorizontal size={15} /> <span>Filters</span>
+                          {(activeCat !== "All" || activeBrand !== "All") && (
+                            <span className="w-2 h-2 rounded-full bg-red-600" />
+                          )}
                         </button>
                       </SheetTrigger>
                       <SheetContent side="left" className="w-[85vw] max-w-[320px] bg-white p-6 overflow-y-auto">
-                        <SheetHeader className="mb-6">
-                          <SheetTitle className="text-left text-xl font-bold" style={dmSans}>Filters</SheetTitle>
+                        <SheetHeader className="mb-5">
+                          <SheetTitle className="text-left text-xl font-bold" style={dmSans}>Filters & Brands</SheetTitle>
                         </SheetHeader>
-                        <div className="flex flex-col gap-8">
+                        <div className="flex flex-col gap-6">
                           
+                          {/* Categories */}
                           <div>
-                            <h3 className="font-bold text-base mb-3 text-black" style={dmSans}>Categories</h3>
-                            <div className="flex flex-col gap-2">
+                            <h3 className="font-bold text-sm mb-2.5 text-black" style={dmSans}>Categories</h3>
+                            <div className="flex flex-col gap-1.5 max-h-[180px] overflow-y-auto pr-1">
                               {(["All", ...liveCategories] as const).map((c) => {
                                 const active = activeCat === c;
                                 const count = categoryCounts[c];
                                 return (
-                                  <SheetTrigger asChild key={c}>
-                                    <button
-                                      onClick={() => setActiveCat(c)}
-                                      className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-sm transition-all cursor-pointer ${
-                                        active
-                                          ? "bg-black text-white shadow-sm"
-                                          : "bg-transparent text-black/70 hover:bg-black/5 hover:text-black font-medium"
-                                      }`}
-                                    >
-                                      <span>{c}</span>
-                                      {count !== undefined && (
-                                        <span className={`text-[10px] px-2 py-0.5 rounded-md font-bold ${active ? "bg-white/20 text-white" : "bg-black/5 text-black/50"}`}>
-                                          {count}
-                                        </span>
-                                      )}
-                                    </button>
-                                  </SheetTrigger>
+                                  <button
+                                    key={c}
+                                    onClick={() => setActiveCat(c)}
+                                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-all cursor-pointer ${
+                                      active
+                                        ? "bg-black text-white shadow-sm font-semibold"
+                                        : "bg-transparent text-black/70 hover:bg-black/5 hover:text-black font-medium"
+                                    }`}
+                                  >
+                                    <span>{c}</span>
+                                    {count !== undefined && (
+                                      <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold ${active ? "bg-white/20 text-white" : "bg-black/5 text-black/50"}`}>
+                                        {count}
+                                      </span>
+                                    )}
+                                  </button>
                                 );
                               })}
                             </div>
                           </div>
 
-                          <div>
-                            <h3 className="font-bold text-base mb-3 text-black" style={dmSans}>Price Range</h3>
-                            <div className="flex flex-col gap-3">
-                              <div className="flex justify-between items-center text-sm font-medium text-black">
+                          {/* Brands */}
+                          <div className="pt-4 border-t border-black/5">
+                            <h3 className="font-bold text-sm mb-2.5 text-black" style={dmSans}>Brands</h3>
+                            <div className="flex flex-wrap gap-1.5 max-h-[140px] overflow-y-auto pr-1">
+                              {(["All", ...liveBrands] as const).map((b) => {
+                                const active = activeBrand === b;
+                                const count = brandCounts[b];
+                                return (
+                                  <button
+                                    key={b}
+                                    onClick={() => setActiveBrand(b)}
+                                    className={`px-2.5 py-1.5 rounded-lg text-xs transition-all cursor-pointer font-medium flex items-center gap-1 ${
+                                      active
+                                        ? "bg-black text-white shadow-sm font-bold"
+                                        : "bg-black/[0.04] text-black/70 hover:bg-black/10 hover:text-black"
+                                    }`}
+                                  >
+                                    <span>{b}</span>
+                                    {count !== undefined && b !== "All" && (
+                                      <span className="text-[10px] opacity-60">({count})</span>
+                                    )}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                          {/* Price Range */}
+                          <div className="pt-4 border-t border-black/5">
+                            <h3 className="font-bold text-sm mb-2.5 text-black" style={dmSans}>Price Range</h3>
+                            <div className="flex flex-col gap-2">
+                              <div className="flex justify-between items-center text-xs font-medium text-black">
                                 <span>Up to:</span>
-                                <span>{formatPKR(maxPrice)}</span>
+                                <span className="font-bold">{formatPKR(maxPrice)}</span>
                               </div>
                               <input
                                 type="range"
@@ -1070,18 +1165,19 @@ function Index() {
                             </div>
                           </div>
 
-                          {(activeCat !== "All" || maxPrice < priceMax || debouncedQuery) && (
+                          {(activeCat !== "All" || activeBrand !== "All" || maxPrice < priceMax || debouncedQuery) && (
                             <SheetTrigger asChild>
                               <button
                                 onClick={() => {
                                   setActiveCat("All");
+                                  setActiveBrand("All");
                                   setMaxPrice(priceMax);
                                   setSort("featured");
                                   setQuery("");
                                 }}
-                                className="text-sm text-black flex items-center justify-center gap-2 bg-black/5 hover:bg-black/10 px-4 py-3 rounded-xl transition-colors font-semibold w-full cursor-pointer mt-4"
+                                className="text-xs text-black flex items-center justify-center gap-2 bg-black/5 hover:bg-black/10 px-4 py-2.5 rounded-xl transition-colors font-semibold w-full cursor-pointer mt-2"
                               >
-                                <RotateCcw size={16} /> Reset Filters
+                                <RotateCcw size={14} /> Reset Filters
                               </button>
                             </SheetTrigger>
                           )}
@@ -1090,26 +1186,38 @@ function Index() {
                       </SheetContent>
                     </Sheet>
 
+                    {/* Active filter badge display on mobile */}
+                    <div className="flex items-center gap-1 text-[11px] text-black/60 truncate flex-1 justify-center">
+                      <span className="font-medium text-black truncate">
+                        {activeCat !== "All" ? activeCat : activeBrand !== "All" ? activeBrand : "All Products"}
+                      </span>
+                      <span>({visibleProducts.length})</span>
+                    </div>
+
                     {/* Sort Select */}
-                    <div className="flex items-center gap-2 bg-black/[0.02] hover:bg-black/[0.04] transition-colors px-3 py-2 rounded-xl border border-black/5 ml-auto lg:ml-0">
-                      <SlidersHorizontal size={14} className="text-black/50 shrink-0" />
+                    <div className="flex items-center gap-1.5 bg-black/[0.02] hover:bg-black/[0.04] transition-colors px-2.5 py-1.5 rounded-xl border border-black/5 shrink-0">
                       <select
                         value={sort}
                         onChange={(e) => setSort(e.target.value as SortKey)}
-                        className="bg-transparent text-sm text-black font-semibold outline-none cursor-pointer pr-1 w-full sm:w-auto"
+                        className="bg-transparent text-xs text-black font-semibold outline-none cursor-pointer pr-1"
                         aria-label="Sort products"
                       >
                         <option value="featured">Featured</option>
-                        <option value="price-asc">Price: low to high</option>
-                        <option value="price-desc">Price: high to low</option>
-                        <option value="rating">Top rated</option>
+                        <option value="price-asc">Price: Low-High</option>
+                        <option value="price-desc">Price: High-Low</option>
+                        <option value="rating">Top Rated</option>
                       </select>
                     </div>
                   </div>
                 </div>
 
-                {/* Desktop Sort Bar (since it was removed from sidebar) */}
-                <div className="hidden lg:flex items-center justify-end mb-6">
+                {/* Desktop Sort Bar */}
+                <div className="hidden lg:flex items-center justify-between mb-6">
+                   <div className="flex items-center gap-2 text-sm text-black/70">
+                      <span className="font-medium">Showing {visibleProducts.length}</span>
+                      {activeCat !== "All" && <span className="bg-black/5 px-2 py-0.5 rounded text-xs">Category: <b>{activeCat}</b></span>}
+                      {activeBrand !== "All" && <span className="bg-black/5 px-2 py-0.5 rounded text-xs">Brand: <b>{activeBrand}</b></span>}
+                   </div>
                    <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-black/5 shadow-sm">
                       <SlidersHorizontal size={14} className="text-black/50 shrink-0" />
                       <select
@@ -1132,17 +1240,18 @@ function Index() {
                 <button
                   onClick={() => {
                     setActiveCat("All");
+                    setActiveBrand("All");
                     setMaxPrice(priceMax);
                     setSort("featured");
                     setQuery("");
                   }}
-                  className="underline text-black"
+                  className="underline text-black font-semibold cursor-pointer"
                 >
-                  Reset
+                  Reset All Filters
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 lg:gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 lg:gap-4">
                 {visibleProducts.map((p) => (
                   <ProductCard
                     key={p.id}
@@ -1163,8 +1272,15 @@ function Index() {
       {/* FOOTER */}
       <SiteFooter />
 
+      {/* MOBILE BOTTOM NAVIGATION DOCK */}
+      <MobileBottomNav
+        onOpenCart={() => setCartOpen(true)}
+        onOpenCategories={() => document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" })}
+      />
+
       {/* CART DRAWER */}
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </div>
   );
 }
+

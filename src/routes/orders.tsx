@@ -12,6 +12,7 @@ import {
 import { useCart } from "@/lib/shop";
 import { useOrders, type SavedOrder } from "@/lib/orders";
 import { LazyCartDrawer as CartDrawer } from "@/components/LazyCartDrawer";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { OrdersListSkeleton, useMounted } from "@/components/skeletons";
 import { toast } from "sonner";
@@ -38,7 +39,6 @@ export const Route = createFileRoute("/orders")({
   component: OrdersPage,
 });
 
-const dmSans = { fontFamily: "'DM Sans', sans-serif" };
 const inter = { fontFamily: "'Inter', sans-serif" };
 
 function formatDate(ts: number) {
@@ -49,7 +49,7 @@ function formatDate(ts: number) {
 }
 
 function OrdersPage() {
-  const { orders, removeOrder, clearOrders, orderCount } = useOrders();
+  const { orders, removeOrder, clearOrders } = useOrders();
   const { cartCount } = useCart();
   const [cartOpen, setCartOpen] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -58,27 +58,22 @@ function OrdersPage() {
 
   const resend = (o: SavedOrder) => {
     window.open(o.url, "_blank", "noopener,noreferrer");
-    toast.success("Reopening WhatsApp draft");
   };
 
-  const copy = async (o: SavedOrder) => {
-    try {
-      await navigator.clipboard.writeText(o.message);
-      setCopiedId(o.id);
-      setTimeout(() => setCopiedId((v) => (v === o.id ? null : v)), 1600);
-      toast.success("Order message copied");
-    } catch {
-      toast.error("Couldn't copy — try again");
-    }
+  const copy = (o: SavedOrder) => {
+    navigator.clipboard.writeText(o.message);
+    setCopiedId(o.id);
+    toast.success("Order message copied to clipboard");
+    setTimeout(() => setCopiedId(null), 1800);
   };
 
   const remove = (o: SavedOrder) => {
     removeOrder(o.id);
-    toast(`Removed ${o.primaryName}`);
+    toast("Order removed from history");
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#FEFDF9]" style={inter}>
+    <div className="flex min-h-screen flex-col bg-[#FEFDF9] pb-20 lg:pb-0" style={inter}>
       <nav className="sticky top-0 z-20 bg-[#FEFDF9]/90 backdrop-blur border-b border-black/5 flex items-center justify-between px-5 py-4 sm:px-8 lg:px-10">
         <Link to="/" className="type-wordmark text-black">
           Dawood Mart
@@ -93,60 +88,52 @@ function OrdersPage() {
         </button>
       </nav>
 
-      <div className="px-4 sm:px-6 md:px-8 lg:px-10 pt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
+      <div className="px-4 sm:px-6 md:px-8 lg:px-10 pt-6">
         <Link
           to="/"
           className="inline-flex items-center gap-2 text-sm text-black/70 hover:text-black"
         >
           <ArrowLeft size={16} /> Back to shop
         </Link>
-        <span className="text-black/20">|</span>
-        <div className="text-xs text-black/50 flex items-center gap-2">
-          <Link to="/" className="hover:text-black">
-            Shop
-          </Link>
-          <span>/</span>
-          <span className="text-black/80">Orders</span>
-        </div>
       </div>
 
-      <section className="px-4 sm:px-6 md:px-8 lg:px-10 py-6 sm:py-8 lg:py-12 flex-1">
+      <section className="px-4 sm:px-6 md:px-8 lg:px-10 py-6 sm:py-8 lg:py-10">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6 lg:mb-8">
           <div>
-            <h1 className="type-h1 text-black flex items-center gap-2">
-              <ScrollText size={22} strokeWidth={1.5} /> Orders
+            <h1 className="type-h1 text-black flex items-center gap-3">
+              <ScrollText size={22} /> Your Orders
             </h1>
-            <p className="text-black/60 mt-2 text-sm">
-              {orderCount === 0
-                ? "No orders yet. Every WhatsApp order you send is saved here for one-click resend."
-                : `${orderCount} saved draft${orderCount === 1 ? "" : "s"} — resend, copy, or remove any time.`}
+            <p className="mt-2 text-black/60 text-sm max-w-md">
+              Past WhatsApp order drafts saved on this device. Resend anytime in one click.
             </p>
           </div>
-          {orderCount > 0 && (
+          {orders.length > 0 && (
             <button
-              onClick={() => {
-                clearOrders();
-                toast("All order drafts cleared");
-              }}
-              className="self-start inline-flex items-center gap-2 text-xs text-black/60 hover:text-black border border-black/15 rounded-full px-3 py-1.5"
+              onClick={clearOrders}
+              className="self-start sm:self-auto text-xs text-black/60 hover:text-red-600 underline cursor-pointer"
             >
-              <Trash2 size={13} /> Clear all
+              Clear order history
             </button>
           )}
         </div>
 
         {!mounted ? (
-          <OrdersListSkeleton count={3} />
-        ) : orderCount === 0 ? (
-          <div className="border border-dashed border-black/15 rounded-2xl p-10 text-center text-black/60">
-            <p className="mb-4">
-              Your WhatsApp order drafts will appear here after your first order.
+          <OrdersListSkeleton />
+        ) : orders.length === 0 ? (
+          <div className="bg-white rounded-xl p-8 sm:p-12 text-center flex flex-col items-center gap-3">
+            <div className="h-12 w-12 rounded-full bg-black/5 flex items-center justify-center">
+              <ScrollText size={20} className="text-black/50" />
+            </div>
+            <div className="type-h3 text-black">No saved orders</div>
+            <p className="text-black/60 max-w-sm text-sm">
+              When you send an order on WhatsApp, a copy will be saved here so you can review or re-order.
             </p>
             <Link
               to="/"
-              className="inline-flex items-center gap-2 bg-black text-white rounded-full px-5 py-2.5 text-sm hover:bg-black/85"
+              className="mt-2 inline-flex items-center gap-2 bg-black text-white rounded-md h-9 px-4 text-sm"
+              style={{ fontWeight: 500 }}
             >
-              Browse the shop
+              Explore the shop
             </Link>
           </div>
         ) : (
@@ -156,81 +143,70 @@ function OrdersPage() {
               return (
                 <li
                   key={o.id}
-                  className="border border-black/10 rounded-2xl bg-white overflow-hidden"
+                  className="bg-white rounded-xl border border-black/5 overflow-hidden shadow-xs"
                 >
-                  <div className="flex flex-col sm:flex-row gap-3 p-3 sm:p-4">
-                    <div
-                      className={`${o.primaryBg ?? "bg-black/[0.04]"} w-full sm:w-24 h-24 rounded-xl shrink-0 overflow-hidden`}
-                    >
-                      {o.primaryImg && (
+                  <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+                    {o.primaryImg && (
+                      <div
+                        className={`${o.primaryBg ?? "bg-stone-100"} w-16 h-16 rounded-lg overflow-hidden shrink-0`}
+                      >
                         <SafeImage
                           src={o.primaryImg}
-                          alt={o.primaryName}
-                          width={512}
-                          height={512}
-                          loading="lazy"
-                          decoding="async"
+                          alt=""
                           className="w-full h-full object-cover"
+                          width={64}
+                          height={64}
                         />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0 flex flex-col gap-2">
-                      <div className="flex flex-wrap items-center gap-2 text-[11px]">
-                        <span className="inline-flex items-center rounded-full bg-black/[0.05] px-2 py-0.5 text-black/70 uppercase tracking-wider">
-                          {o.kind === "cart" ? "Cart order" : "Product order"}
-                        </span>
-                        <span className="text-black/50">{formatDate(o.createdAt)}</span>
                       </div>
-                      <div className="type-title text-black truncate">
-                        {o.primaryName}
-                        {o.extraCount && o.extraCount > 0 ? (
-                          <span className="text-black/50 text-sm"> · +{o.extraCount} more</span>
-                        ) : null}
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                        <span className="font-mono text-xs text-black/50">{o.id}</span>
+                        <span className="text-xs text-black/40">{formatDate(o.createdAt)}</span>
                       </div>
-                      <div className="text-sm text-black/60">
-                        {o.itemCount} item{o.itemCount === 1 ? "" : "s"} ·{" "}
-                        <span className="text-black">{formatPKR(o.total)}</span>
+                      <div className="text-black font-medium mt-1 truncate">{o.primaryName}</div>
+                      <div className="text-xs text-black/60 mt-0.5">
+                        {o.itemCount} item{o.itemCount === 1 ? "" : "s"} · Total {formatPKR(o.total)}
                       </div>
-                      <div className="mt-auto flex flex-wrap gap-2 pt-2">
+                      <div className="mt-3 flex flex-wrap items-center gap-2">
                         <button
                           onClick={() => resend(o)}
-                          className="inline-flex items-center gap-2 bg-[#25D366] text-white rounded-full px-4 h-9 text-sm hover:bg-[#1ebe57] transition-colors"
-                          style={{ fontWeight: 500 }}
+                          className="inline-flex items-center gap-1.5 bg-[#25D366] text-white rounded-full px-3.5 h-8 text-xs font-medium hover:bg-[#20ba59] transition-colors"
                         >
-                          <MessageCircle size={15} /> Resend on WhatsApp
+                          <MessageCircle size={14} /> Resend on WhatsApp
                         </button>
                         <button
                           onClick={() => copy(o)}
-                          className="inline-flex items-center gap-2 border border-black/15 rounded-full px-4 h-9 text-sm text-black/80 hover:text-black hover:border-black transition-colors"
+                          className="inline-flex items-center gap-1.5 border border-black/15 rounded-full px-3 h-8 text-xs text-black/80 hover:text-black hover:border-black transition-colors cursor-pointer"
                         >
                           {copiedId === o.id ? (
                             <>
-                              <Check size={14} /> Copied
+                              <Check size={13} /> Copied
                             </>
                           ) : (
                             <>
-                              <ClipboardCopy size={14} /> Copy message
+                              <ClipboardCopy size={13} /> Copy
                             </>
                           )}
                         </button>
                         <button
                           onClick={() => setExpanded(isOpen ? null : o.id)}
-                          className="inline-flex items-center gap-2 text-sm text-black/60 hover:text-black px-2 h-9"
+                          className="inline-flex items-center gap-1 text-xs text-black/60 hover:text-black px-2 h-8 cursor-pointer"
                         >
                           {isOpen ? "Hide draft" : "View draft"}
                         </button>
                         <button
                           onClick={() => remove(o)}
                           aria-label="Delete order"
-                          className="ml-auto inline-flex items-center gap-1 text-xs text-black/50 hover:text-black px-2 h-9"
+                          className="ml-auto inline-flex items-center gap-1 text-xs text-black/40 hover:text-red-600 px-2 h-8 cursor-pointer transition-colors"
                         >
-                          <Trash2 size={14} /> Delete
+                          <Trash2 size={13} />
                         </button>
                       </div>
                     </div>
                   </div>
                   {isOpen && (
-                    <pre className="whitespace-pre-wrap break-words border-t border-black/10 bg-black/[0.02] px-5 py-4 text-[12.5px] text-black/80 font-mono">
+                    <pre className="whitespace-pre-wrap break-words border-t border-black/10 bg-black/[0.02] px-5 py-4 text-[12px] text-black/80 font-mono">
                       {o.message}
                     </pre>
                   )}
@@ -241,7 +217,12 @@ function OrdersPage() {
         )}
       </section>
 
-      <SiteFooter />
+      <div className="mt-auto">
+        <SiteFooter />
+      </div>
+
+      <MobileBottomNav onOpenCart={() => setCartOpen(true)} />
+
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </div>
   );

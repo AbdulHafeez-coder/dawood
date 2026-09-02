@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { ArrowLeft, CheckCircle2, MessageCircle, MapPin, User, Phone, Truck, Banknote, PackageOpen } from "lucide-react";
-import { useCart, computeShipping } from "@/lib/shop";
+import { ArrowLeft, CheckCircle2, MessageCircle, MapPin, User, Phone, Truck, Banknote, PackageOpen, Tag } from "lucide-react";
+import { useCart, computeShipping, useCoupon } from "@/lib/shop";
 import { formatPKR } from "@/lib/format";
 import { buildCheckoutWhatsappOrder } from "@/lib/whatsapp";
 import { saveOrder } from "@/lib/orders";
@@ -15,8 +15,11 @@ export const Route = createFileRoute("/checkout")({
 function CheckoutPage() {
   const navigate = useNavigate();
   const { cart, subtotal } = useCart();
-  const shipping = computeShipping(subtotal);
-  const total = subtotal + shipping;
+  const { activeCoupon, calculateDiscount } = useCoupon();
+  const discount = calculateDiscount(subtotal);
+  const discountedSubtotal = Math.max(0, subtotal - discount);
+  const shipping = computeShipping(discountedSubtotal);
+  const total = discountedSubtotal + shipping;
 
   const [step, setStep] = useState<"info" | "review">("info");
 
@@ -64,11 +67,14 @@ function CheckoutPage() {
     const orderId = `DM-${randomNum}`;
     const customerInfo = { name, phone, city, address, notes };
 
+    const couponInfo = activeCoupon && discount > 0 ? { code: activeCoupon.code, discount } : undefined;
+
     const { text, url, total: finalTotal, itemCount } = buildCheckoutWhatsappOrder(
       orderId,
       cart,
       subtotal,
-      customerInfo
+      customerInfo,
+      couponInfo
     );
 
     const primary = cart[0];
@@ -96,6 +102,7 @@ function CheckoutPage() {
       navigate({ to: "/" });
     }, 1000);
   };
+
 
   if (cart.length === 0) {
     return (
@@ -252,10 +259,18 @@ function CheckoutPage() {
                   <div className="flex justify-between text-black/60">
                     <span>Subtotal</span><span>{formatPKR(subtotal)}</span>
                   </div>
+                  {discount > 0 && (
+                    <div className="flex justify-between text-emerald-700 font-medium">
+                      <span className="flex items-center gap-1">
+                        <Tag size={13} /> Coupon ({activeCoupon?.code})
+                      </span>
+                      <span>-{formatPKR(discount)}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-black/60">
                     <span>Shipping</span><span>{shipping === 0 ? "Free" : formatPKR(shipping)}</span>
                   </div>
-                  <div className="flex justify-between font-medium text-black text-lg pt-2 border-t border-black/10">
+                  <div className="flex justify-between font-bold text-black text-lg pt-2 border-t border-black/10">
                     <span>Total</span><span>{formatPKR(total)}</span>
                   </div>
                 </div>
@@ -319,15 +334,24 @@ function CheckoutPage() {
                 <span>Subtotal</span>
                 <span>{formatPKR(subtotal)}</span>
               </div>
+              {discount > 0 && (
+                <div className="flex justify-between text-sm text-emerald-700 font-medium">
+                  <span className="flex items-center gap-1">
+                    <Tag size={13} /> Coupon ({activeCoupon?.code})
+                  </span>
+                  <span>-{formatPKR(discount)}</span>
+                </div>
+              )}
               <div className="flex justify-between text-sm text-black/60">
                 <span>Shipping</span>
                 <span>{shipping === 0 ? "Free" : formatPKR(shipping)}</span>
               </div>
-              <div className="flex justify-between text-base font-semibold text-black pt-3 border-t border-black/10">
+              <div className="flex justify-between text-base font-bold text-black pt-3 border-t border-black/10">
                 <span>Total</span>
                 <span>{formatPKR(total)}</span>
               </div>
             </div>
+
 
             {/* Desktop Trust Badges */}
             <div className="mt-6 bg-[#f4f5f4] p-4 rounded-lg space-y-3">

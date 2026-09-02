@@ -42,9 +42,15 @@ export function buildWhatsappProductOrder(product: Product, qty: number = 1) {
   return { text, url: buildUrl(text), total: subtotal };
 }
 
-export function buildWhatsappCartOrder(cart: CartItem[], subtotal: number) {
-  const shipping = computeShipping(subtotal);
-  const total = subtotal + shipping;
+export function buildWhatsappCartOrder(
+  cart: CartItem[],
+  subtotal: number,
+  couponInfo?: { code: string; discount: number },
+) {
+  const discount = couponInfo?.discount ?? 0;
+  const discountedSubtotal = Math.max(0, subtotal - discount);
+  const shipping = computeShipping(discountedSubtotal);
+  const total = discountedSubtotal + shipping;
   const itemCount = cart.reduce((n, i) => n + i.qty, 0);
 
   const itemBlocks = cart.flatMap((i, idx) => {
@@ -77,11 +83,12 @@ export function buildWhatsappCartOrder(cart: CartItem[], subtotal: number) {
     "",
     "*Order summary*",
     `Subtotal:  ${money(subtotal)}`,
+    discount > 0 ? `Coupon (${couponInfo?.code}):  -${money(discount)}` : null,
     `Shipping:  ${shipping === 0 ? "Free" : money(shipping)}`,
     `*Total:     ${money(total)}*`,
     "",
     "Please share payment & delivery details. Thanks!",
-  ];
+  ].filter(Boolean);
 
   const text = lines.join("\n");
   return { text, url: buildUrl(text), total, itemCount };
@@ -99,10 +106,13 @@ export function buildCheckoutWhatsappOrder(
   orderId: string,
   cart: CartItem[],
   subtotal: number,
-  customer: { name: string; phone: string; city: string; address: string; notes: string }
+  customer: { name: string; phone: string; city: string; address: string; notes: string },
+  couponInfo?: { code: string; discount: number },
 ) {
-  const shipping = computeShipping(subtotal);
-  const total = subtotal + shipping;
+  const discount = couponInfo?.discount ?? 0;
+  const discountedSubtotal = Math.max(0, subtotal - discount);
+  const shipping = computeShipping(discountedSubtotal);
+  const total = discountedSubtotal + shipping;
   const itemCount = cart.reduce((n, i) => n + i.qty, 0);
 
   const itemBlocks = cart.flatMap((i, idx) => {
@@ -144,6 +154,7 @@ export function buildCheckoutWhatsappOrder(
     "",
     "*Order Summary*",
     `Subtotal:  ${money(subtotal)}`,
+    discount > 0 ? `Coupon (${couponInfo?.code}):  -${money(discount)}` : null,
     `Shipping:  ${shipping === 0 ? "Free" : money(shipping)}`,
     `*Total:     ${money(total)}*`,
     "",
@@ -155,3 +166,4 @@ export function buildCheckoutWhatsappOrder(
   const text = lines.join("\n");
   return { text, url: buildUrl(text), total, itemCount };
 }
+

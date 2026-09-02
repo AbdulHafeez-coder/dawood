@@ -28,12 +28,13 @@ function ProductCardImpl({ product: p, isFavourite, onToggleFav, favAction = "he
         params={{ id: p.slug || p.id }}
         className={`${p.bg} relative aspect-square overflow-hidden block`}
       >
-        <span className="absolute top-4 left-4 z-10 bg-black text-white text-xs px-3 py-1 rounded-full">
+        <span className="absolute top-4 left-4 z-10 bg-black text-white text-xs px-3 py-1 rounded-full font-medium">
           {p.tag}
         </span>
-        <span className="absolute bottom-4 left-4 z-10 bg-white/85 text-black text-[11px] px-2 py-1 rounded-full">
-          {p.category}
+        <span className="absolute bottom-4 left-4 z-10 bg-white/90 text-black text-[11px] font-medium px-2.5 py-0.5 rounded-full shadow-xs backdrop-blur-xs">
+          {p.brand ? `${p.brand} · ` : ""}{p.category}
         </span>
+
         <SafeImage
           src={p.img}
           alt={p.name}

@@ -22,8 +22,47 @@ export const SEED_CATEGORIES: readonly string[] = [
   "Electronics & Gadgets",
 ];
 
+export const SEED_BRANDS: readonly string[] = [
+  "Classic",
+  "Three Star",
+  "Elite",
+  "JBI",
+  "DeliSoga",
+  "Sonex",
+  "Royal",
+  "Other",
+];
+
+// Pre-configured active coupon codes
+export const AVAILABLE_COUPONS: Record<string, { discountType: "percent" | "fixed"; discountValue: number; minSpend?: number; description: string }> = {
+  WELCOME10: {
+    discountType: "percent",
+    discountValue: 10,
+    description: "10% off your entire order",
+  },
+  FLAT500: {
+    discountType: "fixed",
+    discountValue: 500,
+    minSpend: 2500,
+    description: "PKR 500 off on orders above PKR 2,500",
+  },
+  DAWOOD15: {
+    discountType: "percent",
+    discountValue: 15,
+    minSpend: 4000,
+    description: "15% off on orders above PKR 4,000",
+  },
+  SPECIAL20: {
+    discountType: "percent",
+    discountValue: 20,
+    minSpend: 6000,
+    description: "20% off on mega orders above PKR 6,000",
+  },
+};
+
 // Kept for backwards-compat imports in existing components; treat as seed.
 export const CATEGORY_LIST = SEED_CATEGORIES;
+
 
 export const DEFAULT_VARIANTS: VariantOptions = {
   sizes: [

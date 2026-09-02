@@ -3,6 +3,7 @@ import { useCallback, useState } from "react";
 import { ArrowLeft, Heart, ShoppingBag } from "lucide-react";
 import { useProducts, useCart, useFavourites, type Product } from "@/lib/shop";
 import { LazyCartDrawer as CartDrawer } from "@/components/LazyCartDrawer";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductGridSkeleton, useMounted } from "@/components/skeletons";
@@ -25,7 +26,7 @@ export const Route = createFileRoute("/favorites")({
 const inter = { fontFamily: "'Inter', sans-serif" };
 
 function FavoritesPage() {
-  const { favs, toggleFav, favCount } = useFavourites();
+  const { favs, toggleFav } = useFavourites();
   const { cartCount } = useCart();
   const { products } = useProducts();
   const [cartOpen, setCartOpen] = useState(false);
@@ -41,7 +42,7 @@ function FavoritesPage() {
   );
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#FEFDF9]" style={inter}>
+    <div className="flex min-h-screen flex-col bg-[#FEFDF9] pb-20 lg:pb-0" style={inter}>
       <nav className="sticky top-0 z-20 bg-[#FEFDF9]/90 backdrop-blur border-b border-black/5 flex items-center justify-between px-5 py-4 sm:px-8 lg:px-10">
         <Link to="/" className="type-wordmark text-black">
           Dawood Mart
@@ -63,28 +64,12 @@ function FavoritesPage() {
         >
           <ArrowLeft size={16} /> Back to shop
         </Link>
-        <span className="text-black/20">|</span>
-        <div className="text-xs text-black/50 flex items-center gap-2">
-          <Link to="/" className="hover:text-black">
-            Shop
-          </Link>
-          <span>/</span>
-          <span className="text-black/80">Favourites</span>
-        </div>
       </div>
 
-      <section className="px-4 sm:px-6 md:px-8 lg:px-10 py-6 sm:py-8 lg:py-12">
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6 lg:mb-8">
-          <div>
-            <h1 className="type-h1 text-black flex items-center gap-3">
-              <Heart className="fill-black text-black" size={22} /> Favourites
-            </h1>
-            <p className="mt-3 text-black/60 max-w-md">
-              {favCount === 0
-                ? "You haven't saved anything yet. Tap the heart on any piece to keep it here."
-                : `${favCount} piece${favCount === 1 ? "" : "s"} you've saved for later.`}
-            </p>
-          </div>
+      <section className="px-4 sm:px-6 md:px-8 lg:px-10 py-6 sm:py-8 lg:py-10">
+        <div className="flex items-baseline justify-between mb-6">
+          <h1 className="type-h1 text-black">Favourites</h1>
+          <span className="text-black/50 text-sm">{items.length} saved</span>
         </div>
 
         {!mounted ? (
@@ -124,6 +109,9 @@ function FavoritesPage() {
       <div className="mt-auto">
         <SiteFooter />
       </div>
+
+      {/* MOBILE BOTTOM NAVIGATION DOCK */}
+      <MobileBottomNav onOpenCart={() => setCartOpen(true)} />
 
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </div>

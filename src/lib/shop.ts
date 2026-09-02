@@ -3,39 +3,46 @@ import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import type { Database } from "@/integrations/supabase/types";
 import type { Product, Category, CartItem } from "./types";
-import { SEED_CATEGORIES, getVariants } from "./constants";
+import { SEED_CATEGORIES, SEED_BRANDS, AVAILABLE_COUPONS, getVariants } from "./constants";
 export * from "./types";
 export * from "./constants";
 
 const SEED_PRODUCTS: Product[] = [
   {
     id: "p-dining-sheet-6s",
-    name: "Dining Table Sheet 6 Seater (Marble Design)",
-    tag: "NEW",
+    name: "Classic Marble Dining Table Sheet (6 Seater)",
+    display_name: "Classic Marble Dining Sheet",
+    tag: "BESTSELLER",
     price: 1499,
+    original_price: 1899,
     rating: 4.8,
     img: "/images/products/dining-table-sheet.jpg",
     bg: "bg-gray-100",
-    category: "Table Covers",
+    category: "Home Sheets & Covers",
+    brand: "Classic",
     tagline: "Elegant marble design waterproof table sheet",
     description:
       "Premium quality 6-seater dining table sheet with a beautiful white marble and gold vein design. Waterproof, easy to clean, and protects your table from scratches and spills.",
-    details: ["Size: 6 Seater", "Material: PVC/Waterproof", "Design: Marble Gold"],
+    details: ["Brand: Classic", "Size: 6 Seater", "Material: PVC/Waterproof", "Design: Marble Gold"],
     gallery: ["/images/products/dining-table-sheet.jpg"],
   },
   {
     id: "p-premium-table-sheet",
-    name: "Premium Table Sheet",
+    name: "Elite Waterproof Table Sheet",
+    display_name: "Elite Waterproof Sheet",
     tag: "PREMIUM",
     price: 1999,
+    original_price: 2499,
     rating: 4.9,
     img: "/images/products/premium-table-sheet.jpg",
     bg: "bg-gray-100",
-    category: "Table Covers",
+    category: "Home Sheets & Covers",
+    brand: "Elite",
     tagline: "Style • Elegance • Durability",
     description:
       "Upgrade your dining experience with this Premium Table Sheet. Made with high-quality vinyl and polyester backing for long-lasting durability. It is water resistant, easy to clean, and features a non-slip backing.",
     details: [
+      "Brand: Elite",
       "Size: 3 x 5 feet (36x60 inches)",
       "Front: Premium Vinyl",
       "Back: Polyester Backing",
@@ -45,26 +52,102 @@ const SEED_PRODUCTS: Product[] = [
   },
   {
     id: "p-7-pcs-bowl-set-gd1914",
-    name: "7 Pcs Bowl Set |GD1914/L7HA",
-    tag: "PREMIUM",
+    name: "DeliSoga 7 Pcs Glass Bowl Set | GD1914",
+    display_name: "DeliSoga 7 Pcs Bowl Set",
+    tag: "POPULAR",
     price: 3250,
+    original_price: 4000,
     rating: 4.9,
     img: "/images/products/7-pcs-bowl-set.jpg",
     bg: "bg-[#f5e6d3]",
     category: "Serving & Dining",
+    brand: "DeliSoga",
     tagline: "A premium 7-piece bowl set crafted for modern kitchens",
     description:
-      "A premium 7-piece bowl set crafted for modern kitchens — crystal-clear, durable, and perfect for serving, mixing, storing, or daily meals. High-quality heat-resistant glass, Dishwasher & Microwave safe. Food-grade material with a modern aesthetic design.",
+      "A premium 7-piece bowl set crafted for modern kitchens — crystal-clear, durable, and perfect for serving, mixing, storing, or daily meals. High-quality heat-resistant glass, Dishwasher & Microwave safe.",
     details: [
+      "Brand: DeliSoga",
       "1 × Large Glass Bowl",
       "6 × Matching Small Glass Bowls",
       "High-quality heat-resistant glass",
-      "Dishwasher safe",
-      "Microwave safe",
+      "Dishwasher & Microwave safe",
+    ],
+    gallery: ["/images/products/7-pcs-bowl-set.jpg"],
+  },
+  {
+    id: "p-3star-crown-jar",
+    name: "Three Star Luxury Crown Jar with Gold Tray",
+    display_name: "Three Star Luxury Crown Jar",
+    tag: "NEW",
+    price: 2850,
+    original_price: 3500,
+    rating: 4.9,
+    img: "/images/products/crown-jar-dryfruits-gold-tray.png",
+    bg: "bg-[#ede7db]",
+    category: "Decoration & Gift Items",
+    brand: "Three Star",
+    tagline: "Luxury dry fruits & candy storage with embossed gold finish",
+    description:
+      "Crafted with heavy-duty embossed glass and a luxurious gold crown finial, this jar set comes with an ornate gold serving tray. Perfect for Ramadan, Eid, weddings, and drawing room centerpieces.",
+    details: [
+      "Brand: Three Star",
+      "Material: Heavy crystal-cut glassware",
+      "Finish: Electroplated gold lid & tray",
+      "Usage: Dry fruit, sweets, center decor",
+    ],
+    gallery: [
+      "/images/products/crown-jar-dryfruits-gold-tray.png",
+      "/images/products/crown-jar-empty-gold-tray.png",
+    ],
+  },
+  {
+    id: "p-jbi-tea-mugs",
+    name: "JBI Timy Glass Tea & Coffee Mugs (Set of 6)",
+    display_name: "JBI Timy Glass Mugs (6 Pcs)",
+    tag: "HOT",
+    price: 1850,
+    original_price: 2300,
+    rating: 4.7,
+    img: "/images/products/timy-mugs-group.png",
+    bg: "bg-[#e8efea]",
+    category: "Cups & Drinkware",
+    brand: "JBI",
+    tagline: "Heat resistant crystal clear daily drinkware",
+    description:
+      "Ergonomic handle and durable high-borosilicate glass construction. Ideal for everyday hot chai, green tea, latte, and iced beverages.",
+    details: [
+      "Brand: JBI",
+      "Set: 6 Mugs",
+      "Capacity: 220ml each",
+      "Microwave & Dishwasher Safe",
+    ],
+    gallery: ["/images/products/timy-mugs-group.png"],
+  },
+  {
+    id: "p-sonex-nonstick-pan",
+    name: "Sonex Royal Non-Stick Fry Pan 24cm",
+    display_name: "Sonex Royal Fry Pan 24cm",
+    tag: "ESSENTIAL",
+    price: 2450,
+    original_price: 2999,
+    rating: 4.8,
+    img: "/images/products/7-pcs-bowl-set.jpg",
+    bg: "bg-[#f3e9d8]",
+    category: "Kitchen Items",
+    brand: "Sonex",
+    tagline: "Heavy gauge aluminum with 3-layer granite non-stick coating",
+    description:
+      "Cook with minimal oil using Sonex's durable non-stick skillet. Heat-resistant bakelite handle and induction-compatible base.",
+    details: [
+      "Brand: Sonex",
+      "Diameter: 24 cm",
+      "Coating: 3-Layer Granite PFOA-Free",
+      "Heat-resistant soft-touch handle",
     ],
     gallery: ["/images/products/7-pcs-bowl-set.jpg"],
   },
 ];
+
 
 // ---------- LIVE STORE (products + categories) ----------
 // Backed by Supabase (public.products, public.categories). Cart + favourites
@@ -89,6 +172,21 @@ function getDisplayName(name: string): string {
   return name.trim();
 }
 
+function extractBrand(name: string, details?: string[] | null): string {
+  if (details && Array.isArray(details)) {
+    const brandDetail = details.find((d) => d.toLowerCase().startsWith("brand:"));
+    if (brandDetail) {
+      return brandDetail.split(":")[1].trim();
+    }
+  }
+  for (const b of SEED_BRANDS) {
+    if (name.toLowerCase().includes(b.toLowerCase())) {
+      return b;
+    }
+  }
+  return "Classic";
+}
+
 function rowToProduct(r: ProductRow): Product {
   const originalPrice = typeof r.price === "string" ? Number(r.price) : r.price;
   const discountRate = 0.2; // 20% discount
@@ -105,6 +203,7 @@ function rowToProduct(r: ProductRow): Product {
     img: r.img ?? "",
     bg: r.bg ?? "",
     category: r.category,
+    brand: extractBrand(r.name, r.details),
     tagline: r.tagline ?? "",
     description: r.description ?? "",
     details: r.details ?? [],
@@ -128,6 +227,7 @@ function productToRow(p: Product): ProductInsert {
     gallery: p.gallery && p.gallery.length ? p.gallery : [p.img],
   };
 }
+
 
 // Exported live arrays. Seeded synchronously so SSR + first paint have data.
 export const products: Product[] = [...SEED_PRODUCTS];
@@ -649,7 +749,117 @@ export function useCart() {
   return { cart, addToCart, changeQty, removeItem, restoreItem, cartCount, subtotal };
 }
 
+// ---------- BRANDS HOOK ----------
+export function useBrands() {
+  const { products } = useProducts();
+  const [brands, setBrands] = useState<string[]>(() => {
+    const set = new Set<string>(SEED_BRANDS);
+    for (const p of products) {
+      if (p.brand) set.add(p.brand);
+    }
+    return Array.from(set);
+  });
+
+  useEffect(() => {
+    const set = new Set<string>(SEED_BRANDS);
+    for (const p of products) {
+      if (p.brand) set.add(p.brand);
+    }
+    setBrands(Array.from(set));
+  }, [products]);
+
+  return { brands };
+}
+
+// ---------- COUPONS HOOK ----------
+const COUPON_STORAGE_KEY = "dm-active-coupon";
+let activeCouponState: string | null = null;
+const couponListeners = new Set<(c: string | null) => void>();
+
+function parsePersistedCoupon(): string | null {
+  if (typeof window === "undefined") return null;
+  return window.localStorage.getItem(COUPON_STORAGE_KEY);
+}
+
+let couponHydrated = false;
+function ensureCouponHydrated() {
+  if (couponHydrated || typeof window === "undefined") return;
+  couponHydrated = true;
+  activeCouponState = parsePersistedCoupon();
+}
+
+function emitCoupon() {
+  if (typeof window !== "undefined") {
+    if (activeCouponState) {
+      window.localStorage.setItem(COUPON_STORAGE_KEY, activeCouponState);
+    } else {
+      window.localStorage.removeItem(COUPON_STORAGE_KEY);
+    }
+  }
+  for (const l of couponListeners) l(activeCouponState);
+}
+
+export function useCoupon() {
+  ensureCouponHydrated();
+  const [couponCode, setCouponCode] = useState<string | null>(activeCouponState);
+
+  useEffect(() => {
+    ensureCouponHydrated();
+    setCouponCode(activeCouponState);
+    const l = (c: string | null) => setCouponCode(c);
+    couponListeners.add(l);
+    return () => {
+      couponListeners.delete(l);
+    };
+  }, []);
+
+  const applyCoupon = useCallback((code: string, subtotal: number): { ok: boolean; message: string } => {
+    const clean = code.trim().toUpperCase();
+    const found = AVAILABLE_COUPONS[clean];
+    if (!found) {
+      return { ok: false, message: "Invalid coupon code. Try WELCOME10 or FLAT500." };
+    }
+    if (found.minSpend && subtotal < found.minSpend) {
+      return {
+        ok: false,
+        message: `Minimum order of PKR ${found.minSpend.toLocaleString()} required for this coupon.`,
+      };
+    }
+    activeCouponState = clean;
+    emitCoupon();
+    return { ok: true, message: `Coupon ${clean} applied! (${found.description})` };
+  }, []);
+
+  const removeCoupon = useCallback(() => {
+    activeCouponState = null;
+    emitCoupon();
+  }, []);
+
+  const activeCouponData = couponCode ? AVAILABLE_COUPONS[couponCode] : null;
+
+  const calculateDiscount = useCallback(
+    (subtotal: number): number => {
+      if (!couponCode || !activeCouponData) return 0;
+      if (activeCouponData.minSpend && subtotal < activeCouponData.minSpend) return 0;
+      if (activeCouponData.discountType === "percent") {
+        return Math.round((subtotal * activeCouponData.discountValue) / 100);
+      }
+      return Math.min(subtotal, activeCouponData.discountValue);
+    },
+    [couponCode, activeCouponData],
+  );
+
+  return {
+    couponCode,
+    activeCoupon: activeCouponData ? { code: couponCode!, ...activeCouponData } : null,
+    applyCoupon,
+    removeCoupon,
+    calculateDiscount,
+  };
+}
+
 // ---------- FAVOURITES ----------
+
 const FAV_KEY = "mt-favs-v1";
 let favState: string[] = [];
 let favHydrated = false;
