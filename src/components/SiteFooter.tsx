@@ -13,6 +13,9 @@ import {
   Clock,
   RotateCcw,
   MessageCircle,
+  Banknote,
+  PackageOpen,
+  Heart,
 } from "lucide-react";
 import { useSettings, type SocialKey } from "@/lib/settings";
 import { Logo } from "@/components/ui/Logo";
@@ -44,50 +47,41 @@ export function SiteFooter() {
         {/* Service Features Strip */}
         <div className="border-b border-black/10 bg-[#f4f5f4]">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 py-6">
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-6 text-sm">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
               <div className="flex flex-col items-center md:items-start text-center md:text-left gap-2">
                 <div className="w-10 h-10 rounded-full bg-black/5 flex items-center justify-center text-black/70">
                   <Truck className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="font-semibold text-black/90">Shipping Available</div>
-                  <div className="text-xs text-black/60">Lahore Rs. 199 <br/>Pakistan Rs. 299</div>
+                  <div className="font-semibold text-black/90">3–5 Days Delivery</div>
+                  <div className="text-xs text-black/60">Standard nationwide delivery</div>
                 </div>
               </div>
               <div className="flex flex-col items-center md:items-start text-center md:text-left gap-2">
                 <div className="w-10 h-10 rounded-full bg-black/5 flex items-center justify-center text-black/70">
-                  <Store className="w-5 h-5" />
+                  <Banknote className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="font-semibold text-black/90">Lahore Self Pickup</div>
-                  <div className="text-xs text-black/60">Available from our warehouse</div>
+                  <div className="font-semibold text-black/90">COD Available</div>
+                  <div className="text-xs text-black/60">Pay on delivery for eligible orders</div>
                 </div>
               </div>
               <div className="flex flex-col items-center md:items-start text-center md:text-left gap-2">
                 <div className="w-10 h-10 rounded-full bg-black/5 flex items-center justify-center text-black/70">
-                  <Clock className="w-5 h-5" />
+                  <PackageOpen className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="font-semibold text-black/90">Same-Day Delivery</div>
-                  <div className="text-xs text-black/60">inDrive / Yango Parcel (Lahore)</div>
+                  <div className="font-semibold text-black/90">Open & Check</div>
+                  <div className="text-xs text-black/60">Available on eligible COD parcels</div>
                 </div>
               </div>
               <div className="flex flex-col items-center md:items-start text-center md:text-left gap-2">
                 <div className="w-10 h-10 rounded-full bg-black/5 flex items-center justify-center text-black/70">
-                  <RotateCcw className="w-5 h-5" />
+                  <Heart className="w-5 h-5 text-red-500" />
                 </div>
                 <div>
-                  <div className="font-semibold text-black/90">14 Days Return</div>
-                  <div className="text-xs text-black/60">Delivery charges paid by customer</div>
-                </div>
-              </div>
-              <div className="flex flex-col items-center md:items-start text-center md:text-left gap-2 col-span-2 md:col-span-1">
-                <div className="w-10 h-10 rounded-full bg-black/5 flex items-center justify-center text-black/70">
-                  <MessageCircle className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="font-semibold text-black/90">Customer Support</div>
-                  <div className="text-xs text-black/60">WhatsApp assistance available</div>
+                  <div className="font-semibold text-black/90">Customer Satisfaction</div>
+                  <div className="text-xs text-black/60">Your satisfaction matters to us ❤️</div>
                 </div>
               </div>
             </div>
@@ -96,7 +90,7 @@ export function SiteFooter() {
 
         {/* Main Footer Content */}
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 py-10 md:py-16">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 md:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-8">
             
             {/* Column 1: Dawood Mart Brand */}
             <div className="flex flex-col items-center sm:items-start text-center sm:text-left space-y-4">
@@ -176,7 +170,8 @@ export function SiteFooter() {
             <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
               <h3 className="font-bold text-black/90 mb-4" style={dmSans}>Customer Care</h3>
               <ul className="space-y-3 text-sm text-black/70">
-                <li><a href="#" className="hover:text-black transition-colors">Shipping Policy</a></li>
+                <li><a href="#" className="hover:text-black transition-colors">Contact Us</a></li>
+                <li><a href="#" className="hover:text-black transition-colors">Shipping Information</a></li>
                 <li><a href="#" className="hover:text-black transition-colors">Return & Refund Policy</a></li>
                 <li><a href="#" className="hover:text-black transition-colors">Privacy Policy</a></li>
                 <li><a href="#" className="hover:text-black transition-colors">Terms & Conditions</a></li>
@@ -184,7 +179,18 @@ export function SiteFooter() {
               </ul>
             </div>
 
-            {/* Column 4: Contact & Location */}
+            {/* Column 4: Delivery & Pickup */}
+            <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
+              <h3 className="font-bold text-black/90 mb-4" style={dmSans}>Delivery & Pickup</h3>
+              <ul className="space-y-3 text-sm text-black/70">
+                <li className="flex items-center gap-2"><MapPin className="w-4 h-4 text-black/40" /> Lahore Delivery — Rs. 199</li>
+                <li className="flex items-center gap-2"><Truck className="w-4 h-4 text-black/40" /> All Pakistan Delivery — Rs. 299</li>
+                <li className="flex items-center gap-2"><Store className="w-4 h-4 text-black/40" /> Lahore Self Pickup</li>
+                <li className="flex items-center gap-2"><Clock className="w-4 h-4 text-black/40" /> inDrive / Yango Parcel</li>
+              </ul>
+            </div>
+
+            {/* Column 5: Contact & Location */}
             <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
               <h3 className="font-bold text-black/90 mb-4" style={dmSans}>Contact & Location</h3>
               <ul className="space-y-4 text-sm text-black/70">

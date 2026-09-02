@@ -1,6 +1,10 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
+  PackageOpen,
+  Banknote,
+  ShieldCheck,
+  Leaf,
   ArrowLeft,
   ShoppingBag,
   Star,
@@ -8,8 +12,6 @@ import {
   Minus,
   Check,
   Truck,
-  ShieldCheck,
-  Leaf,
   Heart,
   MessageCircle,
 } from "lucide-react";
@@ -370,9 +372,9 @@ function ProductPage() {
 
           <div className="mt-8 grid grid-cols-3 gap-3 max-w-md">
             {[
-              { Icon: Truck, label: "Free over PKR 5,000" },
-              { Icon: ShieldCheck, label: "60-day returns" },
-              { Icon: Leaf, label: "OEKO-TEX" },
+              { Icon: Truck, label: "3-5 Days Delivery" },
+              { Icon: Banknote, label: "COD Available" },
+              { Icon: PackageOpen, label: "Open & Check" },
             ].map(({ Icon, label }) => (
               <div
                 key={label}

@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { ArrowLeft, CheckCircle2, MessageCircle, MapPin, User, Phone } from "lucide-react";
+import { ArrowLeft, CheckCircle2, MessageCircle, MapPin, User, Phone, Truck, Banknote, PackageOpen } from "lucide-react";
 import { useCart, computeShipping } from "@/lib/shop";
 import { formatPKR } from "@/lib/format";
 import { buildCheckoutWhatsappOrder } from "@/lib/whatsapp";
@@ -259,6 +259,22 @@ function CheckoutPage() {
                     <span>Total</span><span>{formatPKR(total)}</span>
                   </div>
                 </div>
+                
+                {/* Mobile Trust Badges */}
+                <div className="mt-5 bg-[#f4f5f4] p-4 rounded-lg space-y-3">
+                  <div className="flex items-center gap-3 text-sm text-black/80">
+                    <Truck size={16} className="shrink-0 text-black/60" />
+                    <span><span className="font-medium">3-5 Working Days</span> Standard Delivery</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-black/80">
+                    <Banknote size={16} className="shrink-0 text-black/60" />
+                    <span><span className="font-medium">Cash on Delivery</span> Available</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-black/80">
+                    <PackageOpen size={16} className="shrink-0 text-black/60" />
+                    <span><span className="font-medium">Open & Check</span> Available on eligible parcels</span>
+                  </div>
+                </div>
               </div>
 
               <button
@@ -268,8 +284,8 @@ function CheckoutPage() {
                 <MessageCircle size={20} />
                 Confirm & Send via WhatsApp
               </button>
-              <p className="text-xs text-center text-black/50 mt-4">
-                You will be redirected to WhatsApp to send your pre-filled order receipt. Payment is Cash on Delivery.
+              <p className="text-xs text-center text-black/50 mt-4 max-w-sm mx-auto">
+                You will be redirected to WhatsApp to send your pre-filled order receipt. Pay securely via Cash on Delivery when your parcel arrives.
               </p>
             </div>
           )}
@@ -310,6 +326,22 @@ function CheckoutPage() {
               <div className="flex justify-between text-base font-semibold text-black pt-3 border-t border-black/10">
                 <span>Total</span>
                 <span>{formatPKR(total)}</span>
+              </div>
+            </div>
+
+            {/* Desktop Trust Badges */}
+            <div className="mt-6 bg-[#f4f5f4] p-4 rounded-lg space-y-3">
+              <div className="flex items-center gap-3 text-sm text-black/80">
+                <Truck size={16} className="shrink-0 text-black/60" />
+                <span><span className="font-medium">3-5 Working Days</span> Standard Delivery</span>
+              </div>
+              <div className="flex items-center gap-3 text-sm text-black/80">
+                <Banknote size={16} className="shrink-0 text-black/60" />
+                <span><span className="font-medium">Cash on Delivery</span> Available</span>
+              </div>
+              <div className="flex items-center gap-3 text-sm text-black/80">
+                <PackageOpen size={16} className="shrink-0 text-black/60" />
+                <span><span className="font-medium">Open & Check</span> Available on eligible parcels</span>
               </div>
             </div>
           </div>
