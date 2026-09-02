@@ -119,8 +119,8 @@ create table if not exists public.settings (
   logo_url text not null default '',
   whatsapp_number text not null default '03011234567',
   contact_email text not null default 'hello@maisonterra.co',
-  contact_phone text not null default '0301-1234567',
-  address text not null default '12 Linden Row, Copenhagen',
+  contact_phone text not null default '03024201342',
+  address text not null default 'Shakeel Crockery Store, Opposite Al Shams Jewellers, Al Noor Town Bazar, Walton Road, Lahore Cantt, Lahore, Pakistan',
   socials jsonb not null default '{
     "instagram": "https://instagram.com/maisonterra",
     "facebook": "",
