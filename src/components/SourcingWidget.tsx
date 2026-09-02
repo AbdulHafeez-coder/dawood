@@ -44,6 +44,12 @@ export function SourcingWidget() {
     setOpen(v);
   };
 
+  React.useEffect(() => {
+    const handleOpen = () => setOpen(true);
+    document.addEventListener("open-sourcing", handleOpen);
+    return () => document.removeEventListener("open-sourcing", handleOpen);
+  }, []);
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -53,26 +59,15 @@ export function SourcingWidget() {
   };
 
   const handleSearch = () => {
-    if (!query && !image) {
-      toast.error("Please enter a product name or upload a picture");
+    if (!image) {
+      toast.error("Product image is required. Please upload a photo or screenshot.");
       return;
     }
     
     setLoading(true);
-    // Simulate AI/Search delay
+    // Simulate Image Search delay / Sourcing Routing
     setTimeout(() => {
-      // Basic local catalog search
-      if (query) {
-        const q = query.toLowerCase();
-        const found = products.filter(p => 
-          p.name.toLowerCase().includes(q) || 
-          p.category?.toLowerCase().includes(q) || 
-          p.tagline?.toLowerCase().includes(q)
-        );
-        setMatches(found.slice(0, 3));
-      } else {
-        setMatches([]);
-      }
+      setMatches([]); // Image search fallback directly routes to sourcing request
       setStep("catalog_search");
       setLoading(false);
     }, 800);
@@ -160,26 +155,8 @@ export function SourcingWidget() {
             {step === "initial" && (
               <div className="space-y-4 animate-in fade-in zoom-in duration-300">
                 <div className="space-y-2">
-                  <Label>Search by Name</Label>
-                  <Input 
-                    placeholder="e.g., White ceramic dinner set" 
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  />
-                </div>
-                
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-brand-line" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-brand-paper px-2 text-brand-mute">Or</span>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Upload Product Picture</Label>
+                  <Label>What are you looking for?</Label>
+                  <p className="text-sm text-brand-mute mb-2">Send us a photo or screenshot of the product you're looking for and we'll try to find it for you.</p>
                   <div className="border-2 border-dashed border-brand-line rounded-xl p-6 flex flex-col items-center justify-center gap-3 bg-brand-sand hover:bg-brand-stone transition-colors cursor-pointer relative">
                     <input 
                       type="file" 
@@ -194,14 +171,14 @@ export function SourcingWidget() {
                     ) : (
                       <>
                         <Camera className="w-8 h-8 text-brand-mute" />
-                        <span className="text-sm font-medium text-brand-ink">Tap to upload a photo</span>
+                        <span className="text-sm font-medium text-brand-ink">📷 Upload Product Photo</span>
                       </>
                     )}
                   </div>
                 </div>
 
-                <Button className="w-full" onClick={handleSearch} disabled={loading}>
-                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Check Availability"}
+                <Button className="w-full" onClick={handleSearch} disabled={loading || !image}>
+                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Search by Image"}
                 </Button>
               </div>
             )}
@@ -242,14 +219,14 @@ export function SourcingWidget() {
                   </>
                 ) : (
                   <>
-                    <div className="bg-amber-50 text-amber-900 p-4 rounded-lg text-sm text-center">
-                      We couldn't find this exact product in our current catalog.
+                    <div className="bg-brand-sand text-brand-ink p-4 rounded-lg text-sm text-center">
+                      We've received your image. We couldn't find an exact match in our online catalog right now.
                     </div>
-                    <p className="text-center text-brand-ink text-sm font-medium">
-                      But we may be able to arrange it for you!
+                    <p className="text-center text-brand-ink text-sm font-medium mt-2">
+                      But our sourcing team can arrange it for you!
                     </p>
-                    <p className="text-center text-brand-mute text-xs">
-                      Our team will check availability and supplier pricing first.
+                    <p className="text-center text-brand-mute text-xs mt-1">
+                      Provide a few details and we will check availability and pricing.
                     </p>
                     <Button className="w-full mt-4" onClick={() => setStep("specs")}>
                       Continue Request

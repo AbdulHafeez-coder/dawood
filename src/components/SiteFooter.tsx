@@ -94,7 +94,9 @@ export function SiteFooter() {
             
             {/* Column 1: Dawood Mart Brand */}
             <div className="flex flex-col items-center sm:items-start text-center sm:text-left space-y-4">
-              <Logo className="w-48 h-auto text-black" />
+              <Link to="/">
+                <Logo className="w-48 h-auto text-black hover:opacity-80 transition-opacity" />
+              </Link>
               <div className="text-sm font-medium tracking-wide text-black/80">
                 Smart Shopping, Better Living!
               </div>
@@ -160,9 +162,8 @@ export function SiteFooter() {
               <ul className="space-y-3 text-sm text-black/70">
                 <li><Link to="/" className="hover:text-black transition-colors">Home</Link></li>
                 <li><Link to="/" className="hover:text-black transition-colors">Shop / Categories</Link></li>
-                {/* Fallback items if dedicated pages don't exist yet */}
-                <li><a href="#" className="hover:text-black transition-colors">New Arrivals</a></li>
-                <li><a href="#" className="hover:text-black transition-colors">Deals / Offers</a></li>
+                <li><Link to="/" className="hover:text-black transition-colors">New Arrivals</Link></li>
+                <li><Link to="/" className="hover:text-black transition-colors">Deals / Offers</Link></li>
               </ul>
             </div>
 
@@ -170,12 +171,10 @@ export function SiteFooter() {
             <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
               <h3 className="font-bold text-black/90 mb-4" style={dmSans}>Customer Care</h3>
               <ul className="space-y-3 text-sm text-black/70">
-                <li><a href="#" className="hover:text-black transition-colors">Contact Us</a></li>
-                <li><a href="#" className="hover:text-black transition-colors">Shipping Information</a></li>
-                <li><a href="#" className="hover:text-black transition-colors">Return & Refund Policy</a></li>
-                <li><a href="#" className="hover:text-black transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-black transition-colors">Terms & Conditions</a></li>
-                <li><a href="#" className="hover:text-black transition-colors">FAQs</a></li>
+                <li><Link to="/support" className="hover:text-black transition-colors">Contact Us</Link></li>
+                <li><Link to="/shipping" className="hover:text-black transition-colors">Shipping Information</Link></li>
+                <li><Link to="/returns" className="hover:text-black transition-colors">Return & Refund Policy</Link></li>
+                <li><Link to="/support" className="hover:text-black transition-colors">FAQs</Link></li>
               </ul>
             </div>
 
@@ -227,21 +226,30 @@ export function SiteFooter() {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 py-6">
             <div className="flex flex-col md:flex-row justify-between items-center gap-6">
               
-              {/* Payment Methods */}
-              <div className="flex items-center gap-3">
-                <span className="text-xs font-semibold text-black/50 uppercase tracking-widest mr-2">We Accept</span>
-                <div className="flex gap-2">
-                  <span className="px-2 py-1 bg-white border border-black/10 rounded text-[10px] font-bold text-[#4B207F]">Meezan Bank</span>
-                  <span className="px-2 py-1 bg-white border border-black/10 rounded text-[10px] font-bold text-[#EE2D36]">JazzCash</span>
-                  <span className="px-2 py-1 bg-white border border-black/10 rounded text-[10px] font-bold text-[#4CAF50]">Easypaisa</span>
+              {/* Storewide Discount vs Secure Payment (Clearly Separated) */}
+              <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-10">
+                {/* Promo Badge */}
+                <div className="flex items-center gap-2 bg-black text-white px-3 py-1.5 rounded-full shadow-sm">
+                  <span className="text-sm font-bold tracking-wider">🎉 FLAT 20% OFF</span>
+                  <span className="text-[10px] font-medium bg-white/20 px-2 py-0.5 rounded-full uppercase tracking-widest">On All Products</span>
+                </div>
+
+                <div className="hidden sm:block w-px h-6 bg-black/10"></div>
+
+                {/* Payment Methods */}
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-semibold text-black/50 uppercase tracking-widest mr-2">Secure Payment Options</span>
+                  <div className="flex gap-2">
+                    <span className="px-2 py-1 bg-white border border-black/10 rounded text-[10px] font-bold text-[#4B207F]">Meezan Bank</span>
+                    <span className="px-2 py-1 bg-white border border-black/10 rounded text-[10px] font-bold text-[#EE2D36]">JazzCash</span>
+                    <span className="px-2 py-1 bg-white border border-black/10 rounded text-[10px] font-bold text-[#4CAF50]">Easypaisa</span>
+                  </div>
                 </div>
               </div>
 
               {/* Legal */}
-              <div className="flex flex-col sm:flex-row items-center gap-4 text-xs text-black/50">
+              <div className="flex flex-col sm:flex-row items-center gap-4 text-xs text-black/50 mt-4 md:mt-0">
                 <div className="flex gap-4">
-                  <a href="#" className="hover:text-black transition-colors">Privacy</a>
-                  <a href="#" className="hover:text-black transition-colors">Terms</a>
                   <Link to="/admin" className="hover:text-black transition-colors">Admin</Link>
                 </div>
                 <div className="hidden sm:block text-black/20">•</div>

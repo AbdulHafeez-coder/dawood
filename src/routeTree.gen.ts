@@ -13,6 +13,9 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as OrdersRouteImport } from './routes/orders'
+import { Route as ReturnsRouteImport } from './routes/returns'
+import { Route as ShippingRouteImport } from './routes/shipping'
+import { Route as SupportRouteImport } from './routes/support'
 import { Route as TrackRequestRouteImport } from './routes/track-request'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminSplatRouteImport } from './routes/admin.$'
@@ -37,6 +40,21 @@ const FavoritesRoute = FavoritesRouteImport.update({
 const OrdersRoute = OrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReturnsRoute = ReturnsRouteImport.update({
+  id: '/returns',
+  path: '/returns',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShippingRoute = ShippingRouteImport.update({
+  id: '/shipping',
+  path: '/shipping',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SupportRoute = SupportRouteImport.update({
+  id: '/support',
+  path: '/support',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TrackRequestRoute = TrackRequestRouteImport.update({
@@ -70,6 +88,9 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/favorites': typeof FavoritesRoute
   '/orders': typeof OrdersRoute
+  '/returns': typeof ReturnsRoute
+  '/shipping': typeof ShippingRoute
+  '/support': typeof SupportRoute
   '/track-request': typeof TrackRequestRoute
   '/admin/$': typeof AdminSplatRoute
   '/admin/login': typeof AdminLoginRoute
@@ -81,6 +102,9 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/favorites': typeof FavoritesRoute
   '/orders': typeof OrdersRoute
+  '/returns': typeof ReturnsRoute
+  '/shipping': typeof ShippingRoute
+  '/support': typeof SupportRoute
   '/track-request': typeof TrackRequestRoute
   '/admin/$': typeof AdminSplatRoute
   '/admin/login': typeof AdminLoginRoute
@@ -93,6 +117,9 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/favorites': typeof FavoritesRoute
   '/orders': typeof OrdersRoute
+  '/returns': typeof ReturnsRoute
+  '/shipping': typeof ShippingRoute
+  '/support': typeof SupportRoute
   '/track-request': typeof TrackRequestRoute
   '/admin/$': typeof AdminSplatRoute
   '/admin/login': typeof AdminLoginRoute
@@ -106,6 +133,9 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/favorites'
     | '/orders'
+    | '/returns'
+    | '/shipping'
+    | '/support'
     | '/track-request'
     | '/admin/$'
     | '/admin/login'
@@ -117,6 +147,9 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/favorites'
     | '/orders'
+    | '/returns'
+    | '/shipping'
+    | '/support'
     | '/track-request'
     | '/admin/$'
     | '/admin/login'
@@ -128,6 +161,9 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/favorites'
     | '/orders'
+    | '/returns'
+    | '/shipping'
+    | '/support'
     | '/track-request'
     | '/admin/$'
     | '/admin/login'
@@ -140,6 +176,9 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   FavoritesRoute: typeof FavoritesRoute
   OrdersRoute: typeof OrdersRoute
+  ReturnsRoute: typeof ReturnsRoute
+  ShippingRoute: typeof ShippingRoute
+  SupportRoute: typeof SupportRoute
   TrackRequestRoute: typeof TrackRequestRoute
   AdminSplatRoute: typeof AdminSplatRoute
   AdminLoginRoute: typeof AdminLoginRoute
@@ -175,6 +214,27 @@ declare module '@tanstack/react-router' {
       path: '/orders'
       fullPath: '/orders'
       preLoaderRoute: typeof OrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/returns': {
+      id: '/returns'
+      path: '/returns'
+      fullPath: '/returns'
+      preLoaderRoute: typeof ReturnsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shipping': {
+      id: '/shipping'
+      path: '/shipping'
+      fullPath: '/shipping'
+      preLoaderRoute: typeof ShippingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/support': {
+      id: '/support'
+      path: '/support'
+      fullPath: '/support'
+      preLoaderRoute: typeof SupportRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/track-request': {
@@ -220,6 +280,9 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   FavoritesRoute: FavoritesRoute,
   OrdersRoute: OrdersRoute,
+  ReturnsRoute: ReturnsRoute,
+  ShippingRoute: ShippingRoute,
+  SupportRoute: SupportRoute,
   TrackRequestRoute: TrackRequestRoute,
   AdminSplatRoute: AdminSplatRoute,
   AdminLoginRoute: AdminLoginRoute,
