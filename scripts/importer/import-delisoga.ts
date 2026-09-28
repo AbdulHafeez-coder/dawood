@@ -39,7 +39,17 @@ async function run() {
 
   await page.goto(`https://delisogapakistan.com/products.json?limit=${limit}`);
 
-  let productsJson: any = { products: [] };
+  let productsJson: {
+    products: {
+      id: string | number;
+      title?: string;
+      product_type?: string;
+      variants?: { price: string }[];
+      images?: { src: string }[];
+      body_html?: string;
+      tags?: string[];
+    }[];
+  } = { products: [] };
 
   try {
     const text = await page.evaluate(() => document.body.innerText);
@@ -89,7 +99,7 @@ async function run() {
 
     const category = mapCategory(sp.product_type || "", rawTitle);
     const price = parseFloat(sp.variants?.[0]?.price || "0");
-    const images = (sp.images || []).map((img: any) => img.src);
+    const images = (sp.images || []).map((img: { src: string }) => img.src);
     const description = cleanDescription(sp.body_html || "");
     const seoTitle = generateSEOTitle(title);
     const seoDesc = generateSEODescription(title, category);
@@ -122,10 +132,10 @@ async function run() {
       console.log(`Imported: ${title}`);
       existingSlugs.add(slug);
       report.imported++;
-    } catch (err: any) {
-      console.error(`Failed to import ${title}:`, err.message);
+    } catch (err: unknown) {
+      console.error(`Failed to import ${title}:`, err instanceof Error ? err.message : String(err));
       report.failed++;
-      report.errors.push(`[${title}] ${err.message}`);
+      report.errors.push(`[${title}] ${err instanceof Error ? err.message : String(err)}`);
     }
   }
 

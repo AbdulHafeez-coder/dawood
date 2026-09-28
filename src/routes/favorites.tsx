@@ -1,13 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ArrowLeft, Heart, ShoppingBag } from "lucide-react";
-import { useProducts, useCart, useFavourites, type Product } from "@/lib/shop";
+import { useCart, useFavourites, type Product } from "@/lib/shop";
 import { LazyCartDrawer as CartDrawer } from "@/components/LazyCartDrawer";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductGridSkeleton, useMounted } from "@/components/skeletons";
 import { toast } from "sonner";
+import { supabase } from "@/lib/supabase";
+import { mapCatalogProduct } from "@/lib/catalog-model";
 
 export const Route = createFileRoute("/favorites")({
   head: () => ({
@@ -28,7 +30,28 @@ const inter = { fontFamily: "'Inter', sans-serif" };
 function FavoritesPage() {
   const { favs, toggleFav } = useFavourites();
   const { cartCount } = useCart();
-  const { products } = useProducts();
+  const [products, setProducts] = useState<Product[]>([]);
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      const items: Product[] = [];
+      for (let start = 0; start < favs.length; start += 24) {
+        const { data, error } = await supabase
+          .from("products")
+          .select("*")
+          .in("id", favs.slice(start, start + 24));
+        if (error) throw error;
+        items.push(
+          ...(data || []).map(mapCatalogProduct).filter((p) => p.status !== "discontinued"),
+        );
+      }
+      if (!cancelled) setProducts(items);
+    }
+    void load().catch(() => toast.error("Unable to load favourites. Please reload."));
+    return () => {
+      cancelled = true;
+    };
+  }, [favs]);
   const [cartOpen, setCartOpen] = useState(false);
   const mounted = useMounted();
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { Database } from "@/integrations/supabase/types";
+import { persistConfirmedOrder } from "./checkout-validation";
 
 export type OrderStatus = "new" | "processing" | "completed" | "cancelled";
 
@@ -133,10 +134,10 @@ async function pushOrderToSupabase(entry: SavedOrder) {
     };
 
     const { error } = await supabase.from("orders").insert(row);
-    if (error) console.error("[orders] save failed:", error.message);
+    if (error) throw new Error(error.message);
   } catch (error) {
     console.error("[orders] save failed:", error);
-    // best effort — local cache remains source of truth for the shopper.
+    throw error;
   }
 }
 
@@ -150,19 +151,21 @@ async function deleteOrderInSupabase(id: string) {
   }
 }
 
-export function saveOrder(order: Omit<SavedOrder, "id" | "createdAt">) {
+export async function saveOrder(order: Omit<SavedOrder, "id" | "createdAt"> & { id?: string }) {
   ensureHydrated();
   const entry: SavedOrder = {
     ...order,
     id:
-      typeof crypto !== "undefined" && "randomUUID" in crypto
+      order.id ??
+      (typeof crypto !== "undefined" && "randomUUID" in crypto
         ? crypto.randomUUID()
-        : `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        : `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`),
     createdAt: Date.now(),
   };
-  const next = [entry, ...state].slice(0, MAX_ORDERS);
-  persist(next);
-  void pushOrderToSupabase(entry);
+  await persistConfirmedOrder(
+    () => pushOrderToSupabase(entry),
+    () => persist([entry, ...state].slice(0, MAX_ORDERS)),
+  );
   return entry;
 }
 

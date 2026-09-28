@@ -167,3 +167,10 @@ export function buildCheckoutWhatsappOrder(
   return { text, url: buildUrl(text), total, itemCount };
 }
 
+export function buildWhatsappProductRequest(product: Product) {
+  const origin =
+    typeof window !== "undefined" ? window.location.origin : "https://dawood-virid.vercel.app";
+  const link = `${origin}/product/${encodeURIComponent(product.slug || product.id)}`;
+  const text = `Assalam o Alaikum, I want to request this product:\n\nProduct: ${product.name}\nProduct ID: ${product.id}\nLink: ${link}`;
+  return { text, url: buildUrl(text) };
+}

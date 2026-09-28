@@ -1,5 +1,16 @@
 import { useState } from "react";
-import { ShoppingBag, X, Plus, Minus, Trash2, ArrowRight, Truck, Sparkles, Tag, Check } from "lucide-react";
+import {
+  ShoppingBag,
+  X,
+  Plus,
+  Minus,
+  Trash2,
+  ArrowRight,
+  Truck,
+  Sparkles,
+  Tag,
+  Check,
+} from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useCart, computeShipping, useCoupon, FREE_SHIPPING_THRESHOLD } from "@/lib/shop";
@@ -24,7 +35,10 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
   const shipping = computeShipping(discountedSubtotal);
   const finalTotal = discountedSubtotal + shipping;
 
-  const freeShippingProgress = Math.min(100, Math.round((subtotal / FREE_SHIPPING_THRESHOLD) * 100));
+  const freeShippingProgress = Math.min(
+    100,
+    Math.round((subtotal / FREE_SHIPPING_THRESHOLD) * 100),
+  );
   const amountToFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
 
   const handleApplyCoupon = (e: React.FormEvent) => {
@@ -113,11 +127,7 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
 
   return (
     <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <SheetContent
-        side="right"
-        className="w-full sm:w-[420px] p-0 flex flex-col border-l-0 gap-0"
-        hideCloseButton
-      >
+      <SheetContent side="right" className="w-full sm:w-[420px] p-0 flex flex-col border-l-0 gap-0">
         <SheetHeader className="sr-only">
           <SheetTitle>Your basket</SheetTitle>
           <SheetDescription>View and manage items in your cart.</SheetDescription>
@@ -149,7 +159,8 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                 </span>
               ) : (
                 <span>
-                  Add <strong className="text-black">{formatPKR(amountToFreeShipping)}</strong> more for <strong>FREE Delivery</strong>
+                  Add <strong className="text-black">{formatPKR(amountToFreeShipping)}</strong> more
+                  for <strong>FREE Delivery</strong>
                 </span>
               )}
             </span>
@@ -200,7 +211,8 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                           {i.baseName ?? i.name}
                         </div>
                         <div className="text-black/50 text-xs">
-                          {i.brand ? `${i.brand} · ` : ""}{i.category}
+                          {i.brand ? `${i.brand} · ` : ""}
+                          {i.category}
                         </div>
                         {(i.variantSizeLabel || i.variantColorLabel) && (
                           <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
@@ -282,7 +294,9 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                   <div className="flex items-center gap-1.5 text-emerald-800 font-semibold">
                     <Tag size={14} />
                     <span>{activeCoupon.code}</span>
-                    <span className="font-normal text-emerald-600">({activeCoupon.description})</span>
+                    <span className="font-normal text-emerald-600">
+                      ({activeCoupon.description})
+                    </span>
                   </div>
                   <button
                     type="button"
@@ -296,7 +310,10 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
               ) : (
                 <form onSubmit={handleApplyCoupon} className="flex gap-2">
                   <div className="relative flex-1">
-                    <Tag size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-black/40" />
+                    <Tag
+                      size={14}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-black/40"
+                    />
                     <input
                       type="text"
                       value={couponInput}
@@ -358,4 +375,3 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
     </Sheet>
   );
 }
-

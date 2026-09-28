@@ -5,22 +5,12 @@ import productSponge from "@/assets/product-sponge.jpg";
 import productBathset from "@/assets/product-bathset.jpg";
 import heroBg from "@/assets/hero-home.jpg";
 import type { Category, VariantOptions } from "./types";
+import { SHOP_CATEGORIES } from "./categories";
 
 export const PLACEHOLDER_IMAGE =
   "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='800' viewBox='0 0 800 800'%3E%3Cdefs%3E%3ClinearGradient id='a' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23F9F8F6'/%3E%3Cstop offset='100%25' stop-color='%23EBE9E4'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='800' height='800' fill='url(%23a)'/%3E%3Cpath d='M384 384h32v32h-32z' fill='%23D4D1CB'/%3E%3C/svg%3E";
 
-export const SEED_CATEGORIES: readonly string[] = [
-  "Cups & Drinkware",
-  "Serving & Dining",
-  "Watches",
-  "Plastic Items",
-  "Kitchen Items",
-  "Towels",
-  "Cleaning Items",
-  "Home Sheets & Covers",
-  "Decoration & Gift Items",
-  "Electronics & Gadgets",
-];
+export const SEED_CATEGORIES: readonly string[] = SHOP_CATEGORIES;
 
 export const SEED_BRANDS: readonly string[] = [
   "Classic",
@@ -34,7 +24,15 @@ export const SEED_BRANDS: readonly string[] = [
 ];
 
 // Pre-configured active coupon codes
-export const AVAILABLE_COUPONS: Record<string, { discountType: "percent" | "fixed"; discountValue: number; minSpend?: number; description: string }> = {
+export const AVAILABLE_COUPONS: Record<
+  string,
+  {
+    discountType: "percent" | "fixed";
+    discountValue: number;
+    minSpend?: number;
+    description: string;
+  }
+> = {
   WELCOME10: {
     discountType: "percent",
     discountValue: 10,
@@ -62,7 +60,6 @@ export const AVAILABLE_COUPONS: Record<string, { discountType: "percent" | "fixe
 
 // Kept for backwards-compat imports in existing components; treat as seed.
 export const CATEGORY_LIST = SEED_CATEGORIES;
-
 
 export const DEFAULT_VARIANTS: VariantOptions = {
   sizes: [

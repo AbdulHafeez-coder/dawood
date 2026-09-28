@@ -41,7 +41,13 @@ import {
   type Product,
 } from "@/lib/shop";
 import { useAllOrders, ORDER_STATUSES, type OrderStatus, type SavedOrder } from "@/lib/orders";
-import { useSettings, type SettingsSection } from "@/lib/settings";
+import {
+  useSettings,
+  updateSettings,
+  saveSettingsAsync,
+  resetSettings,
+  type SocialKey,
+} from "@/lib/settings";
 import { SafeImage } from "@/components/ui/SafeImage";
 import {
   formatPkPhone,
@@ -94,8 +100,16 @@ import {
 
 const dmSans = { fontFamily: "'DM Sans', sans-serif" };
 const inter = { fontFamily: "'Inter', sans-serif" };
+const PRODUCT_STATUS_LABELS = {
+  available: "Available",
+  on_demand: "On Demand",
+  sold_out: "Sold Out",
+  coming_soon: "Coming Soon",
+  discontinued: "Discontinued",
+} as const;
 
-type TabId = "overview" | "products" | "categories" | "promotions" | "orders" | "settings" | "sourcing";
+type TabId =
+  "overview" | "products" | "categories" | "promotions" | "orders" | "settings" | "sourcing";
 
 type ProductImportItem = {
   id?: string;
@@ -146,22 +160,23 @@ function AdminDashboard() {
     error: ordersError,
     refetch: refetchOrders,
   } = useAllOrders();
-  const { products, addProduct, updateProduct, deleteProduct, resetProducts } = useProducts();
-  const {
-    categories,
-    categoryInfo,
-    addCategory,
-    renameCategory,
-    updateCategoryImage,
-    deleteCategory,
-    resetCategories,
-  } = useCategories();
+  const { products, addProduct, updateProduct, deleteProduct } = useProducts();
+  const { categories, categoryInfo, addCategory, renameCategory, updateCategoryImage } =
+    useCategories();
 
   const [tab, setTab] = useState<TabId>(() => {
     if (typeof window === "undefined") return "overview";
     const saved = window.localStorage.getItem("mt_admin_tab") as TabId | null;
     return saved &&
-      ["overview", "products", "categories", "promotions", "orders", "settings", "sourcing"].includes(saved)
+      [
+        "overview",
+        "products",
+        "categories",
+        "promotions",
+        "orders",
+        "settings",
+        "sourcing",
+      ].includes(saved)
       ? saved
       : "overview";
   });
@@ -179,9 +194,6 @@ function AdminDashboard() {
     name?: string;
   } | null>(null);
   const [confirmProduct, setConfirmProduct] = useState<Product | null>(null);
-  const [confirmCategory, setConfirmCategory] = useState<string | null>(null);
-  const [confirmResetProducts, setConfirmResetProducts] = useState(false);
-  const [confirmResetCategories, setConfirmResetCategories] = useState(false);
   const productImportRef = useRef<HTMLInputElement>(null);
   const categoryImportRef = useRef<HTMLInputElement>(null);
   const [productImportPlan, setProductImportPlan] = useState<ProductImportPlan | null>(null);
@@ -303,9 +315,13 @@ function AdminDashboard() {
       duration: 6000,
       action: {
         label: "Undo",
-        onClick: () => {
-          snapshot.forEach((p) => addProduct(p));
-          toast.success(`Restored ${snapshot.length} product${snapshot.length === 1 ? "" : "s"}`);
+        onClick: async () => {
+          try {
+            await Promise.all(snapshot.map((p) => addProduct(p)));
+            toast.success(`Restored ${snapshot.length} product${snapshot.length === 1 ? "" : "s"}`);
+          } catch (error) {
+            toast.error(error instanceof Error ? error.message : "Could not restore products");
+          }
         },
       },
     });
@@ -313,21 +329,31 @@ function AdminDashboard() {
     setConfirmBulkDelete(false);
   }
 
-  function applyBulkCategory() {
+  async function applyBulkCategory() {
     if (!bulkCategory) return;
     const ids = Array.from(selectedIds);
-    ids.forEach((id) => updateProduct(id, { category: bulkCategory }));
-    toast.success(`Moved ${ids.length} to ${bulkCategory}`);
-    setBulkCategory("");
+    try {
+      await Promise.all(
+        ids.map((id) => updateProduct(id, { category: bulkCategory, subCategory: "" })),
+      );
+      toast.success(`Moved ${ids.length} to ${bulkCategory}`);
+      setBulkCategory("");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Some products could not be updated");
+    }
   }
 
-  function applyBulkTag() {
+  async function applyBulkTag() {
     const t = bulkTag.trim();
     if (!t) return;
     const ids = Array.from(selectedIds);
-    ids.forEach((id) => updateProduct(id, { tag: t }));
-    toast.success(`Tagged ${ids.length} as “${t}”`);
-    setBulkTag("");
+    try {
+      await Promise.all(ids.map((id) => updateProduct(id, { tag: t })));
+      toast.success(`Tagged ${ids.length} as “${t}”`);
+      setBulkTag("");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Some products could not be updated");
+    }
   }
 
   function applyBulkExport() {
@@ -385,7 +411,7 @@ function AdminDashboard() {
       if (rows.length === 0) return toast.error("CSV is empty");
       const headerError = rows.find((r) => r.error && r.row === 1);
       if (headerError) return toast.error("Invalid CSV", { description: headerError.error });
-      const fallbackImg = PRODUCT_IMAGE_CHOICES[0]?.url ?? "";
+      const fallbackImg = "";
       const fallbackBg = PRODUCT_BG_CHOICES[0] ?? "";
       const knownCats = new Set(categories.map((c) => c.toLowerCase()));
       const createRows: ProductImportItem[] = [];
@@ -398,23 +424,25 @@ function AdminDashboard() {
           continue;
         }
         const d = r.data;
+        const existing = d.id ? products.find((p) => p.id === d.id) : undefined;
         if (!knownCats.has(d.category.toLowerCase()) && !newCats.has(d.category.toLowerCase())) {
           newCats.add(d.category.toLowerCase());
         }
         const payload = {
           name: d.name,
-          tag: d.tag || "New",
+          display_name: d.name,
+          status: existing?.status ?? ("on_demand" as const),
+          tag: d.tag || "",
           price: d.price,
-          rating: d.rating ?? 4.7,
+          rating: d.rating ?? 0,
           img: d.img || fallbackImg,
           bg: d.bg || fallbackBg,
           category: d.category,
           tagline: d.tagline ?? "",
           description: d.description ?? "",
           details: d.details ?? [],
-          gallery: d.gallery && d.gallery.length ? d.gallery : [d.img || fallbackImg],
+          gallery: d.gallery && d.gallery.length ? d.gallery : d.img ? [d.img] : [],
         };
-        const existing = d.id ? products.find((p) => p.id === d.id) : undefined;
         if (existing) {
           updateRows.push({ id: existing.id, name: d.name, category: d.category, payload });
         } else {
@@ -438,7 +466,7 @@ function AdminDashboard() {
     }
   }
 
-  function applyProductImport(plan: ProductImportPlan) {
+  async function applyProductImport(plan: ProductImportPlan) {
     const known = new Set(categories.map((c) => c.toLowerCase()));
     // Create missing categories first (preserve original casing from first occurrence)
     for (const item of [...plan.create, ...plan.update]) {
@@ -448,9 +476,17 @@ function AdminDashboard() {
         known.add(key);
       }
     }
-    for (const item of plan.update) updateProduct(item.id!, item.payload);
-    for (const item of plan.create)
-      addProduct(item.id ? { id: item.id, ...item.payload } : item.payload);
+    try {
+      for (const item of plan.update) await updateProduct(item.id!, item.payload);
+      for (const item of plan.create)
+        await addProduct(item.id ? { id: item.id, ...item.payload } : item.payload);
+    } catch (error) {
+      toast.error("Import stopped. Some rows may have saved.", {
+        description: error instanceof Error ? error.message : "Review the catalog before retrying.",
+      });
+      setProductImportPlan(null);
+      return;
+    }
     toast.success("Products imported", {
       description: `${plan.create.length} created · ${plan.update.length} updated${plan.skip.length ? ` · ${plan.skip.length} skipped` : ""}`,
     });
@@ -796,12 +832,6 @@ function AdminDashboard() {
                     <Download className="w-3 h-3" /> Export CSV
                   </button>
                   <button
-                    onClick={() => setConfirmResetProducts(true)}
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em]"
-                  >
-                    <RotateCcw className="w-3 h-3" /> Reset
-                  </button>
-                  <button
                     onClick={() => setProductDialog({ mode: "create" })}
                     className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-black text-white hover:bg-black/85 transition text-[10px] uppercase tracking-[0.18em] active:scale-[0.98]"
                   >
@@ -1028,6 +1058,7 @@ function AdminDashboard() {
                               </th>
                               <th className="py-2 pr-3 font-medium">Item</th>
                               <th className="py-2 pr-3 font-medium">Category</th>
+                              <th className="py-2 pr-3 font-medium">Availability</th>
                               <th className="py-2 pr-3 font-medium">Tag</th>
                               <th className="py-2 pr-3 font-medium">Rating</th>
                               <th className="py-2 pr-3 font-medium text-right">Price</th>
@@ -1070,7 +1101,15 @@ function AdminDashboard() {
                                       </div>
                                     </div>
                                   </td>
-                                  <td className="py-3 pr-3 text-black/70">{p.category}</td>
+                                  <td className="py-3 pr-3 text-black/70">
+                                    {p.category}
+                                    {p.subCategory && (
+                                      <div className="text-xs text-black/50">{p.subCategory}</div>
+                                    )}
+                                  </td>
+                                  <td className="py-3 pr-3 text-black/70">
+                                    {PRODUCT_STATUS_LABELS[p.status ?? "on_demand"] ?? "On Demand"}
+                                  </td>
                                   <td className="py-3 pr-3 text-black/70">{p.tag}</td>
                                   <td className="py-3 pr-3 text-black/70 tabular-nums">
                                     {p.rating.toFixed(1)}
@@ -1189,12 +1228,6 @@ function AdminDashboard() {
                     <Download className="w-3 h-3" /> Export CSV
                   </button>
                   <button
-                    onClick={() => setConfirmResetCategories(true)}
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-black/15 hover:border-black transition text-[10px] uppercase tracking-[0.18em]"
-                  >
-                    <RotateCcw className="w-3 h-3" /> Reset
-                  </button>
-                  <button
                     onClick={() => setCategoryDialog({ mode: "create" })}
                     className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-black text-white hover:bg-black/85 transition text-[10px] uppercase tracking-[0.18em] active:scale-[0.98]"
                   >
@@ -1249,13 +1282,6 @@ function AdminDashboard() {
                           >
                             <Pencil className="w-3.5 h-3.5" />
                           </button>
-                          <button
-                            onClick={() => setConfirmCategory(c)}
-                            aria-label={`Delete ${c}`}
-                            className="w-8 h-8 rounded-full grid place-items-center text-black/60 hover:text-white hover:bg-black transition"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
                         </div>
                       </li>
                     );
@@ -1292,13 +1318,13 @@ function AdminDashboard() {
           product={productDialog.product}
           categories={categories}
           onClose={() => setProductDialog(null)}
-          onCreate={(data) => {
-            addProduct(data);
+          onCreate={async (data) => {
+            await addProduct(data);
             toast.success("Product created", { description: data.name });
             setProductDialog(null);
           }}
-          onSave={(id, patch) => {
-            updateProduct(id, patch);
+          onSave={async (id, patch) => {
+            await updateProduct(id, patch);
             toast.success("Product updated", { description: patch.name });
             setProductDialog(null);
           }}
@@ -1425,127 +1451,6 @@ function AdminDashboard() {
               onClick={applyBulkDelete}
             >
               Delete {selectedCount}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* Delete category confirm */}
-      <AlertDialog open={!!confirmCategory} onOpenChange={(o) => !o && setConfirmCategory(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete “{confirmCategory}” category?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This category will be permanently removed. This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          {confirmCategory &&
-            (() => {
-              const affected = products.filter((p) => p.category === confirmCategory);
-              if (affected.length === 0) {
-                return (
-                  <div className="p-3 rounded-lg border border-black/10 bg-black/[0.02] text-[12px] text-black/60">
-                    No products are assigned to this category.
-                  </div>
-                );
-              }
-              return (
-                <div className="p-3 rounded-lg border border-red-200 bg-red-50 space-y-2">
-                  <div className="flex items-start gap-2 text-[12px] text-red-800">
-                    <Trash2 className="w-3.5 h-3.5 mt-0.5 shrink-0" />
-                    <div>
-                      <div className="font-medium uppercase tracking-[0.12em] text-[10px] mb-1">
-                        Cascade warning
-                      </div>
-                      <div>
-                        Deleting this category will also permanently remove{" "}
-                        <span className="font-semibold">
-                          {affected.length} product{affected.length === 1 ? "" : "s"}
-                        </span>{" "}
-                        assigned to it.
-                      </div>
-                    </div>
-                  </div>
-                  <ul className="max-h-32 overflow-y-auto text-[12px] text-red-900/80 space-y-0.5 pl-5 list-disc">
-                    {affected.slice(0, 6).map((p) => (
-                      <li key={p.id} className="truncate">
-                        {p.name}
-                      </li>
-                    ))}
-                    {affected.length > 6 && (
-                      <li className="list-none text-red-800/70">+{affected.length - 6} more…</li>
-                    )}
-                  </ul>
-                </div>
-              );
-            })()}
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-red-600 hover:bg-red-700 text-white focus-visible:ring-red-600"
-              onClick={() => {
-                if (confirmCategory) {
-                  const res = deleteCategory(confirmCategory);
-                  if (res.ok) {
-                    toast.success("Category deleted", {
-                      description: res.orphaned
-                        ? `${res.orphaned} product${res.orphaned === 1 ? "" : "s"} removed`
-                        : undefined,
-                    });
-                  }
-                }
-                setConfirmCategory(null);
-              }}
-            >
-              {confirmCategory && products.some((p) => p.category === confirmCategory)
-                ? "Delete category & products"
-                : "Delete category"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* Reset confirms */}
-      <AlertDialog open={confirmResetProducts} onOpenChange={setConfirmResetProducts}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Reset products to seed?</AlertDialogTitle>
-            <AlertDialogDescription>
-              All local changes to products will be replaced with the original catalogue.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                resetProducts();
-                toast.success("Products reset to seed");
-                setConfirmResetProducts(false);
-              }}
-            >
-              Reset
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-      <AlertDialog open={confirmResetCategories} onOpenChange={setConfirmResetCategories}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Reset categories to seed?</AlertDialogTitle>
-            <AlertDialogDescription>
-              The original four categories will be restored.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                resetCategories();
-                toast.success("Categories reset to seed");
-                setConfirmResetCategories(false);
-              }}
-            >
-              Reset
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -1758,34 +1663,44 @@ function ProductFormDialog({
   product?: Product;
   categories: string[];
   onClose: () => void;
-  onCreate: (p: Omit<Product, "id">) => void;
-  onSave: (id: string, patch: Partial<Product>) => void;
+  onCreate: (p: Omit<Product, "id">) => Promise<void>;
+  onSave: (id: string, patch: Partial<Product>) => Promise<void>;
 }) {
   const initial: Omit<Product, "id"> = product
-    ? { ...product }
+    ? {
+        ...product,
+        status:
+          product.status && product.status in PRODUCT_STATUS_LABELS ? product.status : "on_demand",
+      }
     : {
         name: "",
-        tag: "New",
-        price: 20,
-        rating: 4.7,
-        img: PRODUCT_IMAGE_CHOICES[0].url,
+        display_name: "",
+        tag: "",
+        price: 0,
+        rating: 0,
+        img: "",
+        status: "on_demand",
+        subCategory: "",
         bg: PRODUCT_BG_CHOICES[0],
         category: categories[0] ?? "",
         tagline: "",
         description: "",
         details: [],
-        gallery: [PRODUCT_IMAGE_CHOICES[0].url],
+        gallery: [],
       };
 
   const [form, setForm] = useState<Omit<Product, "id">>(initial);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [detailsText, setDetailsText] = useState((initial.details ?? []).join("\n"));
 
   function set<K extends keyof Omit<Product, "id">>(key: K, value: Omit<Product, "id">[K]) {
     setForm((f) => ({ ...f, [key]: value }));
   }
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (saving) return;
     if (!form.name.trim()) return toast.error("Name is required");
     if (!form.category.trim()) return toast.error("Category is required");
     if (form.price < 0) return toast.error("Price must be positive");
@@ -1795,17 +1710,30 @@ function ProductFormDialog({
       .filter(Boolean);
     const payload: Omit<Product, "id"> = {
       ...form,
+      name: form.name.trim(),
+      display_name: form.name.trim(),
+      subCategory: form.subCategory?.trim() ?? "",
       details,
-      gallery: form.gallery && form.gallery.length ? form.gallery : [form.img],
+      gallery: form.gallery && form.gallery.length ? form.gallery : form.img ? [form.img] : [],
     };
-    if (mode === "create") onCreate(payload);
-    else if (product) onSave(product.id, payload);
+    setSaving(true);
+    setSaveError(null);
+    try {
+      if (mode === "create") await onCreate(payload);
+      else if (product) await onSave(product.id, payload);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Could not save product. Try again.";
+      setSaveError(message);
+      toast.error("Product was not saved", { description: message });
+    } finally {
+      setSaving(false);
+    }
   }
 
   const ready = useMounted();
 
   return (
-    <Dialog open onOpenChange={(o) => !o && onClose()}>
+    <Dialog open onOpenChange={(o) => !o && !saving && onClose()}>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle style={{ ...dmSans, fontWeight: 400, letterSpacing: "-0.02em" }}>
@@ -1821,191 +1749,254 @@ function ProductFormDialog({
         {!ready ? (
           <ProductFormSkeleton mode={mode} />
         ) : (
-          <form onSubmit={submit} className="space-y-4" style={inter}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Field label="Name">
-                <input
-                  required
-                  value={form.name}
-                  onChange={(e) => set("name", e.target.value)}
-                  className="mt-input"
-                  placeholder="Aegean Bath Towel"
-                />
-              </Field>
-              <Field label="Tag">
-                <input
-                  value={form.tag}
-                  onChange={(e) => set("tag", e.target.value)}
-                  className="mt-input"
-                  placeholder="Bestseller"
-                />
-              </Field>
-            </div>
+          <form onSubmit={submit} className="space-y-4" style={inter} aria-busy={saving}>
+            <fieldset disabled={saving} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Field label="Name">
+                  <input
+                    required
+                    value={form.name}
+                    onChange={(e) => set("name", e.target.value)}
+                    className="mt-input"
+                    placeholder="Aegean Bath Towel"
+                  />
+                </Field>
+                <Field label="Tag">
+                  <input
+                    value={form.tag}
+                    onChange={(e) => set("tag", e.target.value)}
+                    className="mt-input"
+                    placeholder="Bestseller"
+                  />
+                </Field>
+              </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <Field label="Category">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <Field label="Category">
+                  <select
+                    aria-label="Category"
+                    value={form.category}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, category: e.target.value, subCategory: "" }))
+                    }
+                    className="mt-input mt-select"
+                  >
+                    {categories.length === 0 && <option value="">— none —</option>}
+                    {form.category && !categories.includes(form.category) && (
+                      <option value={form.category}>{form.category}</option>
+                    )}
+                    {categories.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+                <Field label="Price (PKR)">
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    min={0}
+                    step="0.01"
+                    value={form.price === 0 ? "" : form.price}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      set("price", v === "" ? 0 : Number(v));
+                    }}
+                    placeholder="0.00"
+                    className="mt-input tabular-nums"
+                  />
+                  <div className="mt-1 text-[11px] text-black/55 tabular-nums">
+                    {form.price > 0
+                      ? `Displays as ${formatPKR(form.price)}`
+                      : "Leave blank when the price is unconfirmed."}
+                  </div>
+                </Field>
+                <Field label="Rating">
+                  <input
+                    type="number"
+                    min={0}
+                    max={5}
+                    step="0.1"
+                    value={form.rating || ""}
+                    onChange={(e) => set("rating", Number(e.target.value))}
+                    className="mt-input"
+                  />
+                </Field>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Field label="Subcategory">
+                  {["Sheets", "Sheet House"].includes(form.category) ? (
+                    <select
+                      aria-label="Subcategory"
+                      className="mt-input mt-select"
+                      value={form.subCategory ?? ""}
+                      onChange={(e) => set("subCategory", e.target.value)}
+                    >
+                      <option value="">Select subcategory</option>
+                      {form.subCategory &&
+                        !["Table Sheets", "Wallpaper Sheets", "Other"].includes(
+                          form.subCategory,
+                        ) && <option value={form.subCategory}>{form.subCategory}</option>}
+                      {["Table Sheets", "Wallpaper Sheets", "Other"].map((name) => (
+                        <option key={name} value={name}>
+                          {name}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      aria-label="Subcategory"
+                      className="mt-input"
+                      value={form.subCategory ?? ""}
+                      onChange={(e) => set("subCategory", e.target.value)}
+                      placeholder="Optional product type"
+                    />
+                  )}
+                </Field>
+              </div>
+              <Field label="Availability">
                 <select
-                  value={form.category}
-                  onChange={(e) => set("category", e.target.value)}
+                  aria-label="Availability"
+                  aria-describedby="product-availability-help"
                   className="mt-input mt-select"
+                  value={form.status ?? "on_demand"}
+                  onChange={(e) => set("status", e.target.value as Product["status"])}
                 >
-                  {categories.length === 0 && <option value="">— none —</option>}
-                  {categories.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
+                  {Object.entries(PRODUCT_STATUS_LABELS).map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
                     </option>
                   ))}
                 </select>
+                <p id="product-availability-help" className="mt-1 text-xs text-black/55">
+                  Use On Demand when stock is unconfirmed. Choose Available only after confirming
+                  stock.
+                </p>
               </Field>
-              <Field label="Price (PKR)">
+
+              <Field label="Tagline">
                 <input
-                  type="number"
-                  inputMode="decimal"
-                  min={0}
-                  step="0.01"
-                  value={form.price === 0 ? "" : form.price}
-                  onChange={(e) => {
-                    const v = e.target.value;
-                    set("price", v === "" ? 0 : Number(v));
-                  }}
-                  placeholder="0.00"
-                  className="mt-input tabular-nums"
-                />
-                <div className="mt-1 text-[11px] text-black/55 tabular-nums">
-                  Displays as{" "}
-                  <span className="text-black font-medium">
-                    {formatPKR(Number(form.price) || 0)}
-                  </span>
-                </div>
-              </Field>
-              <Field label="Rating">
-                <input
-                  type="number"
-                  min={0}
-                  max={5}
-                  step="0.1"
-                  value={form.rating}
-                  onChange={(e) => set("rating", Number(e.target.value))}
+                  value={form.tagline}
+                  onChange={(e) => set("tagline", e.target.value)}
                   className="mt-input"
+                  placeholder="Short elevator pitch"
                 />
               </Field>
-            </div>
 
-            <Field label="Tagline">
-              <input
-                value={form.tagline}
-                onChange={(e) => set("tagline", e.target.value)}
-                className="mt-input"
-                placeholder="Short elevator pitch"
-              />
-            </Field>
+              <Field label="Description">
+                <textarea
+                  value={form.description}
+                  onChange={(e) => set("description", e.target.value)}
+                  className="mt-input min-h-[96px] resize-y"
+                  placeholder="Full description shown on the product page."
+                />
+              </Field>
 
-            <Field label="Description">
-              <textarea
-                value={form.description}
-                onChange={(e) => set("description", e.target.value)}
-                className="mt-input min-h-[96px] resize-y"
-                placeholder="Full description shown on the product page."
-              />
-            </Field>
+              <Field label="Details (one per line)">
+                <textarea
+                  value={detailsText}
+                  onChange={(e) => setDetailsText(e.target.value)}
+                  className="mt-input min-h-[96px] resize-y font-mono text-[13px]"
+                  placeholder={"600 GSM combed cotton\nOEKO-TEX certified"}
+                />
+              </Field>
 
-            <Field label="Details (one per line)">
-              <textarea
-                value={detailsText}
-                onChange={(e) => setDetailsText(e.target.value)}
-                className="mt-input min-h-[96px] resize-y font-mono text-[13px]"
-                placeholder={"600 GSM combed cotton\nOEKO-TEX certified"}
-              />
-            </Field>
-
-            <Field label="Image">
-              <ImageUploader
-                value={form.img}
-                onChange={(url) =>
-                  setForm((f) => ({
-                    ...f,
-                    img: url,
-                    gallery:
-                      f.gallery && f.gallery.length
-                        ? [url, ...f.gallery.filter((x) => x !== url)].slice(0, 4)
-                        : [url],
-                  }))
-                }
-              />
-              <div className="mt-3">
-                <div className="text-[10px] uppercase tracking-[0.18em] text-black/45 mb-2">
-                  Or pick a preset
+              <Field label="Image">
+                <ImageUploader
+                  value={form.img}
+                  onChange={(url) =>
+                    setForm((f) => ({
+                      ...f,
+                      img: url,
+                      gallery:
+                        f.gallery && f.gallery.length
+                          ? [url, ...f.gallery.filter((x) => x !== url)].slice(0, 4)
+                          : [url],
+                    }))
+                  }
+                />
+                <div className="mt-3">
+                  <div className="text-[10px] uppercase tracking-[0.18em] text-black/45 mb-2">
+                    Or pick a preset
+                  </div>
+                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                    {PRODUCT_IMAGE_CHOICES.map((choice) => {
+                      const active = form.img === choice.url;
+                      return (
+                        <button
+                          type="button"
+                          key={choice.id}
+                          onClick={() =>
+                            setForm((f) => ({
+                              ...f,
+                              img: choice.url,
+                              gallery:
+                                f.gallery && f.gallery.length
+                                  ? [
+                                      choice.url,
+                                      ...f.gallery.filter((x) => x !== choice.url),
+                                    ].slice(0, 4)
+                                  : [choice.url],
+                            }))
+                          }
+                          className={`relative aspect-square rounded-lg overflow-hidden border-2 transition ${
+                            active ? "border-black" : "border-transparent hover:border-black/30"
+                          }`}
+                          aria-label={choice.label}
+                        >
+                          <img src={choice.url} alt="" className="w-full h-full object-cover" />
+                          {active && (
+                            <div className="absolute inset-0 ring-2 ring-black rounded-lg" />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                  {PRODUCT_IMAGE_CHOICES.map((choice) => {
-                    const active = form.img === choice.url;
+              </Field>
+
+              <Field label="Card background">
+                <div className="flex flex-wrap gap-2">
+                  {PRODUCT_BG_CHOICES.map((bg) => {
+                    const active = form.bg === bg;
                     return (
                       <button
                         type="button"
-                        key={choice.id}
-                        onClick={() =>
-                          setForm((f) => ({
-                            ...f,
-                            img: choice.url,
-                            gallery:
-                              f.gallery && f.gallery.length
-                                ? [choice.url, ...f.gallery.filter((x) => x !== choice.url)].slice(
-                                    0,
-                                    4,
-                                  )
-                                : [choice.url],
-                          }))
-                        }
-                        className={`relative aspect-square rounded-lg overflow-hidden border-2 transition ${
-                          active ? "border-black" : "border-transparent hover:border-black/30"
+                        key={bg}
+                        onClick={() => set("bg", bg)}
+                        className={`${bg} w-8 h-8 rounded-full border-2 transition ${
+                          active ? "border-black" : "border-black/10 hover:border-black/40"
                         }`}
-                        aria-label={choice.label}
-                      >
-                        <img src={choice.url} alt="" className="w-full h-full object-cover" />
-                        {active && (
-                          <div className="absolute inset-0 ring-2 ring-black rounded-lg" />
-                        )}
-                      </button>
+                        aria-label={bg}
+                      />
                     );
                   })}
                 </div>
-              </div>
-            </Field>
+              </Field>
 
-            <Field label="Card background">
-              <div className="flex flex-wrap gap-2">
-                {PRODUCT_BG_CHOICES.map((bg) => {
-                  const active = form.bg === bg;
-                  return (
-                    <button
-                      type="button"
-                      key={bg}
-                      onClick={() => set("bg", bg)}
-                      className={`${bg} w-8 h-8 rounded-full border-2 transition ${
-                        active ? "border-black" : "border-black/10 hover:border-black/40"
-                      }`}
-                      aria-label={bg}
-                    />
-                  );
-                })}
-              </div>
-            </Field>
-
-            <DialogFooter className="pt-2">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-4 py-2 rounded-full border border-black/15 text-[11px] uppercase tracking-[0.18em] hover:bg-black/5"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-5 py-2 rounded-full bg-black text-white text-[11px] uppercase tracking-[0.18em] hover:bg-black/85 active:scale-[0.98]"
-              >
-                {mode === "create" ? "Create product" : "Save changes"}
-              </button>
-            </DialogFooter>
+              {saveError && (
+                <p role="alert" className="text-sm text-red-700">
+                  {saveError}
+                </p>
+              )}
+              <DialogFooter className="pt-2">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="px-4 py-2 rounded-full border border-black/15 text-[11px] uppercase tracking-[0.18em] hover:bg-black/5"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-full bg-black text-white text-[11px] uppercase tracking-[0.18em] hover:bg-black/85 active:scale-[0.98]"
+                >
+                  {saving ? "Saving…" : mode === "create" ? "Create product" : "Save changes"}
+                </button>
+              </DialogFooter>
+            </fieldset>
           </form>
         )}
       </DialogContent>

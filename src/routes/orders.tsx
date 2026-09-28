@@ -126,7 +126,8 @@ function OrdersPage() {
             </div>
             <div className="type-h3 text-black">No saved orders</div>
             <p className="text-black/60 max-w-sm text-sm">
-              When you send an order on WhatsApp, a copy will be saved here so you can review or re-order.
+              When you send an order on WhatsApp, a copy will be saved here so you can review or
+              re-order.
             </p>
             <Link
               to="/"
@@ -166,7 +167,8 @@ function OrdersPage() {
                       </div>
                       <div className="text-black font-medium mt-1 truncate">{o.primaryName}</div>
                       <div className="text-xs text-black/60 mt-0.5">
-                        {o.itemCount} item{o.itemCount === 1 ? "" : "s"} · Total {formatPKR(o.total)}
+                        {o.itemCount} item{o.itemCount === 1 ? "" : "s"} · Total{" "}
+                        {formatPKR(o.total)}
                       </div>
                       <div className="mt-3 flex flex-wrap items-center gap-2">
                         <button

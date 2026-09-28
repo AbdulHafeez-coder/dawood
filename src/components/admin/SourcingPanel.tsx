@@ -1,3 +1,4 @@
+import type { SourcingRequest } from "@/integrations/supabase/types";
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { SafeImage } from "@/components/ui/SafeImage";
@@ -14,7 +15,7 @@ import {
 import { Loader2, Search } from "lucide-react";
 
 export function SourcingPanel() {
-  const [requests, setRequests] = useState<any[]>([]);
+  const [requests, setRequests] = useState<SourcingRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<string | null>(null);
 
@@ -25,13 +26,13 @@ export function SourcingPanel() {
   const fetchRequests = async () => {
     setLoading(true);
     try {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from("sourcing_requests")
         .select("*")
         .order("created_at", { ascending: false });
-        
+
       if (error) {
-        if (error.code === '42P01') {
+        if (error.code === "42P01") {
           // Table doesn't exist yet
           toast.error("Database migration required for Sourcing Requests.");
         } else {
@@ -47,13 +48,10 @@ export function SourcingPanel() {
     }
   };
 
-  const handleUpdate = async (id: string, updates: any) => {
+  const handleUpdate = async (id: string, updates: Partial<SourcingRequest>) => {
     setUpdating(id);
     try {
-      const { error } = await (supabase as any)
-        .from("sourcing_requests")
-        .update(updates)
-        .eq("id", id);
+      const { error } = await supabase.from("sourcing_requests").update(updates).eq("id", id);
       if (error) throw error;
       toast.success("Request updated");
       fetchRequests();
@@ -80,21 +78,32 @@ export function SourcingPanel() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center p-10"><Loader2 className="animate-spin text-black/50 w-8 h-8" /></div>
+        <div className="flex justify-center p-10">
+          <Loader2 className="animate-spin text-black/50 w-8 h-8" />
+        </div>
       ) : requests.length === 0 ? (
         <div className="text-center p-12 border border-black/10 border-dashed rounded-xl bg-black/5">
           <Search className="w-8 h-8 text-black/30 mx-auto mb-3" />
           <h3 className="font-medium text-black/70">No Requests Yet</h3>
-          <p className="text-sm text-black/50">When customers submit custom requests, they will appear here.</p>
+          <p className="text-sm text-black/50">
+            When customers submit custom requests, they will appear here.
+          </p>
         </div>
       ) : (
         <div className="space-y-4">
-          {requests.map(req => (
-            <div key={req.id} className="bg-white border border-black/10 rounded-xl p-5 shadow-sm space-y-4">
+          {requests.map((req) => (
+            <div
+              key={req.id}
+              className="bg-white border border-black/10 rounded-xl p-5 shadow-sm space-y-4"
+            >
               <div className="flex justify-between items-start">
                 <div className="flex items-center gap-4">
                   {req.image_url ? (
-                    <SafeImage src={req.image_url} alt="Requested item" className="w-20 h-20 object-cover rounded-md border" />
+                    <SafeImage
+                      src={req.image_url}
+                      alt="Requested item"
+                      className="w-20 h-20 object-cover rounded-md border"
+                    />
                   ) : (
                     <div className="w-20 h-20 bg-black/5 rounded-md flex items-center justify-center text-xs text-black/40">
                       No Image
@@ -102,14 +111,20 @@ export function SourcingPanel() {
                   )}
                   <div>
                     <h3 className="font-medium text-base">Request {req.id}</h3>
-                    <p className="text-sm text-black/70 mt-1">Customer: {req.customer_name} ({req.customer_phone})</p>
-                    <p className="text-sm text-black/70">Query: <span className="font-semibold">{req.product_query}</span></p>
-                    <p className="text-sm text-black/50 text-xs mt-1">Placed: {new Date(req.created_at).toLocaleString()}</p>
+                    <p className="text-sm text-black/70 mt-1">
+                      Customer: {req.customer_name} ({req.customer_phone})
+                    </p>
+                    <p className="text-sm text-black/70">
+                      Query: <span className="font-semibold">{req.product_query}</span>
+                    </p>
+                    <p className="text-sm text-black/50 text-xs mt-1">
+                      Placed: {new Date(req.created_at).toLocaleString()}
+                    </p>
                   </div>
                 </div>
                 <div>
-                  <Select 
-                    value={req.status} 
+                  <Select
+                    value={req.status}
                     onValueChange={(val) => handleUpdate(req.id, { status: val })}
                     disabled={updating === req.id}
                   >
@@ -131,45 +146,55 @@ export function SourcingPanel() {
                   </Select>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-black/5 p-4 rounded-lg text-sm">
                 <div>
-                  <p className="text-black/50 text-[10px] uppercase tracking-wider mb-1">Quantity</p>
+                  <p className="text-black/50 text-[10px] uppercase tracking-wider mb-1">
+                    Quantity
+                  </p>
                   <p className="font-medium">{req.quantity || "N/A"}</p>
                 </div>
                 <div className="col-span-3">
-                  <p className="text-black/50 text-[10px] uppercase tracking-wider mb-1">Specifications</p>
+                  <p className="text-black/50 text-[10px] uppercase tracking-wider mb-1">
+                    Specifications
+                  </p>
                   <p>{req.specs || "None provided"}</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase tracking-wider text-black/50">Total Price (PKR)</label>
-                  <Input 
-                    type="number" 
-                    defaultValue={req.quoted_price || ""} 
+                  <label className="text-[10px] uppercase tracking-wider text-black/50">
+                    Total Price (PKR)
+                  </label>
+                  <Input
+                    type="number"
+                    defaultValue={req.quoted_price || ""}
                     placeholder="e.g. 50000"
                     onBlur={(e) => {
                       const val = Number(e.target.value);
                       if (val !== Number(req.quoted_price)) {
-                        handleUpdate(req.id, { quoted_price: val, advance_amount: val * 0.10 });
+                        handleUpdate(req.id, { quoted_price: val, advance_amount: val * 0.1 });
                       }
                     }}
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase tracking-wider text-black/50">10% Advance</label>
-                  <Input 
-                    type="number" 
+                  <label className="text-[10px] uppercase tracking-wider text-black/50">
+                    10% Advance
+                  </label>
+                  <Input
+                    type="number"
                     value={req.advance_amount || ""}
                     disabled
                     className="bg-black/5"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase tracking-wider text-black/50">Delivery Estimate</label>
-                  <Input 
+                  <label className="text-[10px] uppercase tracking-wider text-black/50">
+                    Delivery Estimate
+                  </label>
+                  <Input
                     defaultValue={req.estimated_delivery || ""}
                     placeholder="e.g. 10-15 days"
                     onBlur={(e) => {

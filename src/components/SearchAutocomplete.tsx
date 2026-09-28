@@ -1,6 +1,15 @@
 import { useState, useRef, useEffect, useMemo, type KeyboardEvent } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Search, X, Camera, Sparkles, TrendingUp, ChevronRight, Tag, ArrowRight } from "lucide-react";
+import {
+  Search,
+  X,
+  Camera,
+  Sparkles,
+  TrendingUp,
+  ChevronRight,
+  Tag,
+  ArrowRight,
+} from "lucide-react";
 import { formatPKR } from "@/lib/format";
 import { SafeImage } from "@/components/ui/SafeImage";
 import type { Product, Category } from "@/lib/types";
@@ -70,7 +79,8 @@ export function SearchAutocomplete({
     const tokens = cleanQ.split(/\s+/).filter(Boolean);
     return products
       .filter((p) => {
-        const fullText = `${p.name} ${p.display_name || ""} ${p.category} ${p.brand || ""} ${p.tag || ""} ${p.tagline || ""} ${p.description || ""}`.toLowerCase();
+        const fullText =
+          `${p.name} ${p.display_name || ""} ${p.category} ${p.brand || ""} ${p.tag || ""} ${p.tagline || ""} ${p.description || ""}`.toLowerCase();
         return tokens.every((token) => fullText.includes(token));
       })
       .slice(0, 6);
@@ -79,17 +89,13 @@ export function SearchAutocomplete({
   // Matched Categories
   const matchedCategories = useMemo(() => {
     if (!cleanQ) return [];
-    return categories
-      .filter((c) => c.toLowerCase().includes(cleanQ))
-      .slice(0, 3);
+    return categories.filter((c) => c.toLowerCase().includes(cleanQ)).slice(0, 3);
   }, [categories, cleanQ]);
 
   // Matched Brands
   const matchedBrands = useMemo(() => {
     if (!cleanQ) return [];
-    return brands
-      .filter((b) => b !== "All" && b.toLowerCase().includes(cleanQ))
-      .slice(0, 3);
+    return brands.filter((b) => b !== "All" && b.toLowerCase().includes(cleanQ)).slice(0, 3);
   }, [brands, cleanQ]);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -230,150 +236,160 @@ export function SearchAutocomplete({
           style={{ maxHeight: "80vh", overflowY: "auto" }}
         >
           {/* STATE 1: User typed something and matches exist */}
-          {cleanQ && (matchedProducts.length > 0 || matchedCategories.length > 0 || matchedBrands.length > 0) && (
-            <div className="p-3 space-y-3">
-              
-              {/* Category & Brand Pills */}
-              {(matchedCategories.length > 0 || matchedBrands.length > 0) && (
-                <div className="pb-2 border-b border-black/5 flex flex-wrap items-center gap-1.5 px-1">
-                  <span className="text-[11px] font-semibold text-black/40 uppercase tracking-wider mr-1">
-                    Matching:
-                  </span>
-                  {matchedCategories.map((c) => (
-                    <button
-                      key={c}
-                      type="button"
-                      onClick={() => {
-                        onSelectCategory?.(c as Category);
-                        setIsOpen(false);
-                        onSearchSubmit?.();
-                      }}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-black/5 hover:bg-black hover:text-white text-xs text-black/80 font-medium transition-all cursor-pointer"
-                    >
-                      <Tag size={11} /> {c}
-                    </button>
-                  ))}
-                  {matchedBrands.map((b) => (
-                    <button
-                      key={b}
-                      type="button"
-                      onClick={() => {
-                        onSelectBrand?.(b);
-                        setIsOpen(false);
-                        onSearchSubmit?.();
-                      }}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#ff0055]/10 text-[#ff0055] hover:bg-[#ff0055] hover:text-white text-xs font-semibold transition-all cursor-pointer"
-                    >
-                      <Sparkles size={11} /> Brand: {b}
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {/* Matched Products List */}
-              {matchedProducts.length > 0 && (
-                <div>
-                  <div className="flex items-center justify-between px-2 pb-1 text-xs font-bold text-black/50">
-                    <span>Products ({matchedProducts.length})</span>
-                    <span className="text-[11px] font-normal text-black/40">Use ↑↓ arrows to pick</span>
+          {cleanQ &&
+            (matchedProducts.length > 0 ||
+              matchedCategories.length > 0 ||
+              matchedBrands.length > 0) && (
+              <div className="p-3 space-y-3">
+                {/* Category & Brand Pills */}
+                {(matchedCategories.length > 0 || matchedBrands.length > 0) && (
+                  <div className="pb-2 border-b border-black/5 flex flex-wrap items-center gap-1.5 px-1">
+                    <span className="text-[11px] font-semibold text-black/40 uppercase tracking-wider mr-1">
+                      Matching:
+                    </span>
+                    {matchedCategories.map((c) => (
+                      <button
+                        key={c}
+                        type="button"
+                        onClick={() => {
+                          onSelectCategory?.(c as Category);
+                          setIsOpen(false);
+                          onSearchSubmit?.();
+                        }}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-black/5 hover:bg-black hover:text-white text-xs text-black/80 font-medium transition-all cursor-pointer"
+                      >
+                        <Tag size={11} /> {c}
+                      </button>
+                    ))}
+                    {matchedBrands.map((b) => (
+                      <button
+                        key={b}
+                        type="button"
+                        onClick={() => {
+                          onSelectBrand?.(b);
+                          setIsOpen(false);
+                          onSearchSubmit?.();
+                        }}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#ff0055]/10 text-[#ff0055] hover:bg-[#ff0055] hover:text-white text-xs font-semibold transition-all cursor-pointer"
+                      >
+                        <Sparkles size={11} /> Brand: {b}
+                      </button>
+                    ))}
                   </div>
+                )}
 
-                  <div className="space-y-1 mt-1">
-                    {matchedProducts.map((p, idx) => {
-                      const isSelected = selectedIndex === idx;
-                      return (
-                        <Link
-                          key={p.id}
-                          to="/product/$id"
-                          params={{ id: p.slug || p.id }}
-                          onClick={() => {
-                            onSelectProduct?.(p);
-                            setIsOpen(false);
-                          }}
-                          onMouseEnter={() => setSelectedIndex(idx)}
-                          className={`flex items-center gap-3 p-2 rounded-xl transition-all ${
-                            isSelected
-                              ? "bg-black/5 ring-1 ring-black/10 scale-[1.005]"
-                              : "hover:bg-black/[0.03]"
-                          }`}
-                        >
-                          <div className={`w-12 h-12 rounded-lg overflow-hidden shrink-0 ${p.bg}`}>
-                            <SafeImage
-                              src={p.img}
-                              alt=""
-                              className="w-full h-full object-cover"
-                              width={48}
-                              height={48}
-                            />
-                          </div>
-                          <div className="flex-1 min-w-0 flex flex-col justify-center">
-                            <span className="text-xs font-bold text-black truncate leading-tight">
-                              {highlightMatch(p.display_name || p.name, query)}
-                            </span>
-                            <div className="flex items-center gap-2 mt-0.5 text-[11px] text-black/50">
-                              <span className="truncate">{p.category}</span>
-                              {p.brand && (
-                                <>
-                                  <span>·</span>
-                                  <span className="font-semibold text-black/70">{p.brand}</span>
-                                </>
+                {/* Matched Products List */}
+                {matchedProducts.length > 0 && (
+                  <div>
+                    <div className="flex items-center justify-between px-2 pb-1 text-xs font-bold text-black/50">
+                      <span>Products ({matchedProducts.length})</span>
+                      <span className="text-[11px] font-normal text-black/40">
+                        Use ↑↓ arrows to pick
+                      </span>
+                    </div>
+
+                    <div className="space-y-1 mt-1">
+                      {matchedProducts.map((p, idx) => {
+                        const isSelected = selectedIndex === idx;
+                        return (
+                          <Link
+                            key={p.id}
+                            to="/product/$id"
+                            params={{ id: p.slug || p.id }}
+                            onClick={() => {
+                              onSelectProduct?.(p);
+                              setIsOpen(false);
+                            }}
+                            onMouseEnter={() => setSelectedIndex(idx)}
+                            className={`flex items-center gap-3 p-2 rounded-xl transition-all ${
+                              isSelected
+                                ? "bg-black/5 ring-1 ring-black/10 scale-[1.005]"
+                                : "hover:bg-black/[0.03]"
+                            }`}
+                          >
+                            <div
+                              className={`w-12 h-12 rounded-lg overflow-hidden shrink-0 ${p.bg}`}
+                            >
+                              <SafeImage
+                                src={p.img}
+                                alt=""
+                                className="w-full h-full object-cover"
+                                width={48}
+                                height={48}
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0 flex flex-col justify-center">
+                              <span className="text-xs font-bold text-black truncate leading-tight">
+                                {highlightMatch(p.display_name || p.name, query)}
+                              </span>
+                              <div className="flex items-center gap-2 mt-0.5 text-[11px] text-black/50">
+                                <span className="truncate">{p.category}</span>
+                                {p.brand && (
+                                  <>
+                                    <span>·</span>
+                                    <span className="font-semibold text-black/70">{p.brand}</span>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                            <div className="text-right shrink-0">
+                              <span className="text-xs font-bold text-black block">
+                                {formatPKR(p.price)}
+                              </span>
+                              {p.original_price && p.original_price > p.price && (
+                                <span className="text-[10px] text-red-600 font-semibold line-through">
+                                  {formatPKR(p.original_price)}
+                                </span>
                               )}
                             </div>
-                          </div>
-                          <div className="text-right shrink-0">
-                            <span className="text-xs font-bold text-black block">
-                              {formatPKR(p.price)}
-                            </span>
-                            {p.original_price && p.original_price > p.price && (
-                              <span className="text-[10px] text-red-600 font-semibold line-through">
-                                {formatPKR(p.original_price)}
-                              </span>
-                            )}
-                          </div>
-                          <ChevronRight size={14} className="text-black/30 shrink-0" />
-                        </Link>
-                      );
-                    })}
+                            <ChevronRight size={14} className="text-black/30 shrink-0" />
+                          </Link>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* View All Search Results Bar */}
-              <button
-                type="button"
-                onClick={() => {
-                  setIsOpen(false);
-                  onSearchSubmit?.();
-                }}
-                className="w-full mt-2 py-2.5 px-4 bg-black/5 hover:bg-black hover:text-white rounded-xl text-xs font-semibold text-black flex items-center justify-center gap-2 transition-colors cursor-pointer"
-              >
-                <span>View all products matching &ldquo;{query}&rdquo;</span>
-                <ArrowRight size={14} />
-              </button>
-            </div>
-          )}
+                {/* View All Search Results Bar */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsOpen(false);
+                    onSearchSubmit?.();
+                  }}
+                  className="w-full mt-2 py-2.5 px-4 bg-black/5 hover:bg-black hover:text-white rounded-xl text-xs font-semibold text-black flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                >
+                  <span>View all products matching &ldquo;{query}&rdquo;</span>
+                  <ArrowRight size={14} />
+                </button>
+              </div>
+            )}
 
           {/* STATE 2: User typed something but NO matches */}
-          {cleanQ && matchedProducts.length === 0 && matchedCategories.length === 0 && matchedBrands.length === 0 && (
-            <div className="p-6 text-center">
-              <p className="text-sm font-semibold text-black/80">
-                No direct matches found for &ldquo;{query}&rdquo;
-              </p>
-              <p className="text-xs text-black/50 mt-1">
-                Try searching for general keywords like &ldquo;glass&rdquo;, &ldquo;bedsheet&rdquo;, &ldquo;bottle&rdquo;, or &ldquo;jar&rdquo;.
-              </p>
-              <button
-                type="button"
-                onClick={() => {
-                  setIsOpen(false);
-                  onSearchSubmit?.();
-                }}
-                className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-[#ff0055] hover:underline"
-              >
-                Search all catalog <ArrowRight size={12} />
-              </button>
-            </div>
-          )}
+          {cleanQ &&
+            matchedProducts.length === 0 &&
+            matchedCategories.length === 0 &&
+            matchedBrands.length === 0 && (
+              <div className="p-6 text-center">
+                <p className="text-sm font-semibold text-black/80">
+                  No direct matches found for &ldquo;{query}&rdquo;
+                </p>
+                <p className="text-xs text-black/50 mt-1">
+                  Try searching for general keywords like &ldquo;glass&rdquo;,
+                  &ldquo;bedsheet&rdquo;, &ldquo;bottle&rdquo;, or &ldquo;jar&rdquo;.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsOpen(false);
+                    onSearchSubmit?.();
+                  }}
+                  className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-[#ff0055] hover:underline"
+                >
+                  Search all catalog <ArrowRight size={12} />
+                </button>
+              </div>
+            )}
 
           {/* STATE 3: Query is EMPTY — Show Trending & Popular Searches */}
           {!cleanQ && (
@@ -424,7 +440,6 @@ export function SearchAutocomplete({
               </div>
             </div>
           )}
-
         </div>
       )}
     </div>

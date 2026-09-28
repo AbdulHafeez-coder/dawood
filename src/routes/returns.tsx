@@ -16,7 +16,10 @@ function ReturnsPage() {
       {/* Simple Header */}
       <header className="bg-white border-b border-black/10 py-4 px-6 sticky top-0 z-20">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <Link to="/" className="font-bold text-xl tracking-tight text-black hover:opacity-70 transition-opacity font-dmSans">
+          <Link
+            to="/"
+            className="font-bold text-xl tracking-tight text-black hover:opacity-70 transition-opacity font-dmSans"
+          >
             DAWOOD MART
           </Link>
           <div className="text-sm font-medium text-black/60">Returns & Refunds</div>
@@ -28,11 +31,11 @@ function ReturnsPage() {
           Returns & Refunds Policy
         </h1>
         <p className="text-black/70 mb-10 text-lg">
-          Your satisfaction is our priority. Please review our standard return and refund procedures.
+          Your satisfaction is our priority. Please review our standard return and refund
+          procedures.
         </p>
 
         <div className="space-y-8">
-          
           {/* General Return Conditions */}
           <section className="bg-white border border-black/10 rounded-2xl p-6 md:p-8 shadow-sm">
             <div className="flex items-start gap-4">
@@ -43,9 +46,18 @@ function ReturnsPage() {
                 <h2 className="text-xl font-semibold text-black mb-2">General Return Conditions</h2>
                 <ul className="list-disc pl-4 space-y-2 text-black/70 mt-4 marker:text-black/40">
                   <li>Products must be returned in their original condition and packaging.</li>
-                  <li>Items that have been used, washed, or damaged by the customer are not eligible for return.</li>
-                  <li>Returns must be initiated within the applicable return window stated at the time of purchase (typically 14 days unless specified otherwise).</li>
-                  <li>Customers are responsible for the return delivery charges unless the product was damaged upon arrival.</li>
+                  <li>
+                    Items that have been used, washed, or damaged by the customer are not eligible
+                    for return.
+                  </li>
+                  <li>
+                    Returns must be initiated within the applicable return window stated at the time
+                    of purchase (typically 14 days unless specified otherwise).
+                  </li>
+                  <li>
+                    Customers are responsible for the return delivery charges unless the product was
+                    damaged upon arrival.
+                  </li>
                 </ul>
               </div>
             </div>
@@ -60,13 +72,17 @@ function ReturnsPage() {
               <div>
                 <h2 className="text-xl font-semibold text-black mb-2">Parcel Open & Check</h2>
                 <p className="text-black/70 leading-relaxed mb-4">
-                  We highly recommend utilizing our <strong className="text-black font-semibold">Open & Check</strong> policy available on eligible COD parcels. 
-                  Inspect your item(s) before making payment to the courier. If the product does not match your expectations or appears damaged, you can refuse the parcel on the spot.
+                  We highly recommend utilizing our{" "}
+                  <strong className="text-black font-semibold">Open & Check</strong> policy
+                  available on eligible COD parcels. Inspect your item(s) before making payment to
+                  the courier. If the product does not match your expectations or appears damaged,
+                  you can refuse the parcel on the spot.
                 </p>
                 <div className="bg-amber-50 p-4 rounded-xl border border-amber-200 flex items-start gap-3">
                   <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                   <p className="text-sm text-amber-900 leading-relaxed">
-                    If you accept the parcel and later discover an issue, the standard return process will apply.
+                    If you accept the parcel and later discover an issue, the standard return
+                    process will apply.
                   </p>
                 </div>
               </div>
@@ -82,8 +98,10 @@ function ReturnsPage() {
               <div>
                 <h2 className="text-xl font-semibold text-black mb-2">Damaged or Wrong Product</h2>
                 <p className="text-black/70 leading-relaxed">
-                  If you receive a defective or incorrect item and were unable to refuse it at the time of delivery, please contact our support team immediately. 
-                  Provide clear photos of the damaged item or incorrect product along with your order details. We will arrange a replacement or refund at no additional shipping cost to you.
+                  If you receive a defective or incorrect item and were unable to refuse it at the
+                  time of delivery, please contact our support team immediately. Provide clear
+                  photos of the damaged item or incorrect product along with your order details. We
+                  will arrange a replacement or refund at no additional shipping cost to you.
                 </p>
               </div>
             </div>
@@ -98,7 +116,8 @@ function ReturnsPage() {
               <div>
                 <h2 className="text-xl font-semibold text-black mb-2">How to Initiate a Return</h2>
                 <p className="text-black/70 leading-relaxed mb-4">
-                  To start a return or refund request, please contact us on WhatsApp with your Order ID and reason for return.
+                  To start a return or refund request, please contact us on WhatsApp with your Order
+                  ID and reason for return.
                 </p>
                 <a
                   href="https://wa.me/923024201342"
@@ -109,16 +128,17 @@ function ReturnsPage() {
                   <MessageCircle size={20} />
                   Contact Support on WhatsApp
                 </a>
-                
+
                 <h3 className="font-semibold text-black mt-8 mb-2">Refund Processing</h3>
                 <p className="text-black/70 leading-relaxed text-sm">
-                  Once we receive and inspect your returned item, we will notify you of the approval or rejection of your refund. 
-                  Approved refunds for COD orders will be transferred to your provided bank account or mobile wallet (JazzCash/Easypaisa) within 3-5 working days.
+                  Once we receive and inspect your returned item, we will notify you of the approval
+                  or rejection of your refund. Approved refunds for COD orders will be transferred
+                  to your provided bank account or mobile wallet (JazzCash/Easypaisa) within 3-5
+                  working days.
                 </p>
               </div>
             </div>
           </section>
-
         </div>
       </main>
 

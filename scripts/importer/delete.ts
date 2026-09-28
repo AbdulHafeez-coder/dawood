@@ -23,7 +23,7 @@ async function run() {
 
   console.log("Deleted", data?.length, "products. Error:", error);
   if (data) {
-    data.forEach(p => console.log("-", p.name));
+    data.forEach((p) => console.log("-", p.name));
   }
 }
 

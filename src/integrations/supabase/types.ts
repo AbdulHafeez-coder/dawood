@@ -1,3 +1,20 @@
+export type SourcingRequest = {
+  id: string;
+  customer_name: string;
+  customer_phone: string;
+  product_query: string | null;
+  image_url: string | null;
+  quantity: string | null;
+  specs: string | null;
+  status: string;
+  supplier_availability: boolean | null;
+  supplier_cost: number | null;
+  quoted_price: number | null;
+  advance_amount: number | null;
+  estimated_delivery: string | null;
+  internal_notes: string | null;
+  created_at: string;
+};
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
@@ -8,6 +25,13 @@ export type Database = {
   };
   public: {
     Tables: {
+      sourcing_requests: {
+        Row: SourcingRequest;
+        Insert: Partial<SourcingRequest> &
+          Pick<SourcingRequest, "id" | "customer_name" | "customer_phone">;
+        Update: Partial<SourcingRequest>;
+        Relationships: [];
+      };
       categories: {
         Row: {
           created_at: string;
@@ -82,6 +106,10 @@ export type Database = {
       };
       products: {
         Row: {
+          status?: string;
+          subcategory?: string;
+          storefront_category?: string;
+          availability_rank?: number;
           bg: string;
           category: string;
           created_at: string;
@@ -100,6 +128,10 @@ export type Database = {
           seo_description: string | null;
         };
         Insert: {
+          status?: string;
+          subcategory?: string;
+          storefront_category?: string;
+          availability_rank?: number;
           bg?: string;
           category: string;
           created_at?: string;
@@ -118,6 +150,10 @@ export type Database = {
           seo_description?: string | null;
         };
         Update: {
+          status?: string;
+          subcategory?: string;
+          storefront_category?: string;
+          availability_rank?: number;
           bg?: string;
           category?: string;
           created_at?: string;

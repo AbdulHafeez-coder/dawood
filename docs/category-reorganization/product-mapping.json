@@ -1,0 +1,4916 @@
+[
+  {
+    "id": "appollo-6798568947765",
+    "name": "Pasta Lunch Box - (350ml)",
+    "oldCategory": "Lunch Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798569308213",
+    "name": "Hunter Water Bottle Small - (700ml)",
+    "oldCategory": "Water bottle",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798569340981",
+    "name": "Sprinkle Water Bottle M-1 Large - (1200ml)",
+    "oldCategory": "Water bottle",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798569406517",
+    "name": "Spring Thermic Water Bottle - (500ml)",
+    "oldCategory": "Water bottle",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798569734197",
+    "name": "Pearl Compartment Tray",
+    "oldCategory": "Serving Trays",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798569799733",
+    "name": "Deluxe Compartment Tray M-1",
+    "oldCategory": "Serving Trays",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798569996341",
+    "name": "Crisper Food Container Pack of 3 - (S/M/L)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798570061877",
+    "name": "Crisper Food Container Small - (600ml)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798570127413",
+    "name": "Snack Jar Pack of 3",
+    "oldCategory": "Jars",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798570160181",
+    "name": "Partner Lunch Carrier Large",
+    "oldCategory": "Lunch Carrier",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798570225717",
+    "name": "Easy Waste Bin - (1200ml)",
+    "oldCategory": "Dustbins",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798570291253",
+    "name": "Tulip Cutlery Stand",
+    "oldCategory": "Cutlery Stands",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798570356789",
+    "name": "Carry Lunch Carrier Small",
+    "oldCategory": "Lunch Carriers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798570389557",
+    "name": "Carry Lunch Carrier Large",
+    "oldCategory": "Lunch Carriers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798570455093",
+    "name": "Fresh Hut Bin - (8000ml)",
+    "oldCategory": "Dustbins",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798570487861",
+    "name": "Snoopy Glass Stand",
+    "oldCategory": "Cutlery Stands",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798570553397",
+    "name": "Victoria Glass Stand",
+    "oldCategory": "Cutlery Stands",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798570618933",
+    "name": "Elegant Acrylic Sugar Pot - (300ml)",
+    "oldCategory": "Kitchenware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798570881077",
+    "name": "Cute Tissue Holder",
+    "oldCategory": "Tissue Holder",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798570913845",
+    "name": "Right Hanger Pack of 6",
+    "oldCategory": "Storage Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798570979381",
+    "name": "Premio Hanger Pack of 12 - (11inch)",
+    "oldCategory": "Household",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798571175989",
+    "name": "Simple Hanger Pack of 6",
+    "oldCategory": "Storage Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798571241525",
+    "name": "Rock Water Bottle M-2 Pack of 3 - (1200ml)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798571274293",
+    "name": "Sunday Junior Water Bottle Pack of 6 - (1100ml)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798571339829",
+    "name": "Double Summer Water Bottle M-2 Pack of 4 - (1000ml)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798571372597",
+    "name": "Ocean Water Bottle M-1 Pack of 3 - (2100ml)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798571536437",
+    "name": "Fashion Acrylic Jug - (1.7Ltr)",
+    "oldCategory": "JUGS",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798571601973",
+    "name": "Leather Right Gift Set",
+    "oldCategory": "Gift Set",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798571634741",
+    "name": "Leather Right Tissue Box",
+    "oldCategory": "Tissue Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798571667509",
+    "name": "Kids Stool",
+    "oldCategory": "Kids Stool",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798571700277",
+    "name": "Splash Spray Bottle M-1 - (1100ml)",
+    "oldCategory": "Cleaning Spray",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798571831349",
+    "name": "Crisper Food Container Pack of 5",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798571864117",
+    "name": "Deluxe Compartment Tray M-2",
+    "oldCategory": "Serving Trays",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798571896885",
+    "name": "Party Acrylic Glass M-2 Pack of 6 - (250ml)",
+    "oldCategory": "Glasses",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798572159029",
+    "name": "Handy Junior Food Storage Container - (1000ml)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798572191797",
+    "name": "Partner Lunch Carrier Small",
+    "oldCategory": "Lunch Carrier",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798572224565",
+    "name": "Super Cool Jug M-1 - (1.7Ltr)",
+    "oldCategory": "JUGS",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798572257333",
+    "name": "Splash Spray Bottle M-2  - (500ml)",
+    "oldCategory": "Cleaning Spray",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798572290101",
+    "name": "Magnet Lunch Box (600ml)",
+    "oldCategory": "Lunch Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798572421173",
+    "name": "Fresh Food Keeper 9 Piece Bundle (3 set each: 200ml/500ml/900ml)",
+    "oldCategory": "Air-tight Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798572453941",
+    "name": "Kids Chair M-1",
+    "oldCategory": "Kids Chair",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798572748853",
+    "name": "Smart Serving Tray XL",
+    "oldCategory": "Serving Trays",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798572814389",
+    "name": "Grace Basket M-1 Pack of 2",
+    "oldCategory": "Baskets",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798572912693",
+    "name": "Party Acrylic Mug Pack of 6 - (300ml)",
+    "oldCategory": "Tea Mugs",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798572978229",
+    "name": "Right Lock Food Keeper Small - (400ml)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798573010997",
+    "name": "Veggie Basket",
+    "oldCategory": "Kitchenware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798573043765",
+    "name": "Party Acrylic Glass M-1 Pack of 6 - (250ml)",
+    "oldCategory": "Glasses",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798573142069",
+    "name": "Rio Rice Strainer",
+    "oldCategory": "Strainers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798573174837",
+    "name": "Mayo Squeeze Bottle Small Pack of 2 - (400ml)",
+    "oldCategory": "Kitchen Ware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798573240373",
+    "name": "Clear Lock Pack of 3 - (S/M/L)",
+    "oldCategory": "Storage Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798573273141",
+    "name": "Fresh Food Container Medium - (500ml)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798573305909",
+    "name": "Hip Hop Stool",
+    "oldCategory": "Kids Stool",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798573371445",
+    "name": "Crown Cutlery Stand",
+    "oldCategory": "Cutlery Stands",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798573436981",
+    "name": "Premio Bowl Small Pack of 3",
+    "oldCategory": "Serving Bowls",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798573469749",
+    "name": "Super Cool Jug M-3 - (2Ltr)",
+    "oldCategory": "JUGS",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798573535285",
+    "name": "Riwayat Lunch Carrier",
+    "oldCategory": "Lunch Carriers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798573600821",
+    "name": "Kiddy Book Table without sticker",
+    "oldCategory": "Kids Table",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798573633589",
+    "name": "Tiger Water Bottle Small - (1000ml)",
+    "oldCategory": "Water bottle",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798573666357",
+    "name": "Kitchen Multi-Purpose Rack",
+    "oldCategory": "Kitchenware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798573764661",
+    "name": "Double Summer Water Bottle M-1 Pack of 4 - (1000ml)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798573830197",
+    "name": "Double Summer Water Bottle M-3 Pack of 4 - (1000ml)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798573895733",
+    "name": "Cafee Food Keeper Pack of 3 - (S/M/L)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798573928501",
+    "name": "Kids Chair M-3",
+    "oldCategory": "Kids Stool",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798573961269",
+    "name": "Kids Chair M-2",
+    "oldCategory": "Kids Stool",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798573994037",
+    "name": "Fashion Acrylic Bottle - (1200ml)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798574092341",
+    "name": "Flower Waste Bin (8000ml)",
+    "oldCategory": "Dustbins",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798574256181",
+    "name": "Dr. Stool Squatty Potty",
+    "oldCategory": "BATHROOM",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798574288949",
+    "name": "Joy Bath Stool",
+    "oldCategory": "Stool",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798574321717",
+    "name": "Candy Acrylic Jar Pack of 3 Small - (600ml)",
+    "oldCategory": "Jars",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798574354485",
+    "name": "Rainbow Baskets Pack of 3 - (S/M/L)",
+    "oldCategory": "Storage Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798574387253",
+    "name": "Joy Soap Dish pack of 2",
+    "oldCategory": "BATHROOM",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798574420021",
+    "name": "Classic Tissue Box",
+    "oldCategory": "Gift Set",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798574747701",
+    "name": "Prism Glass M-1 Pack of 6",
+    "oldCategory": "Glasses",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798574780469",
+    "name": "Twinkle Glass Pack of 6 - (250ml)",
+    "oldCategory": "Glasses",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798575009845",
+    "name": "Rosee Sugar Pot - (250ml)",
+    "oldCategory": "Serving Trays",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798575075381",
+    "name": "Crystal Water Bottle Pack of 4 - (1200ml)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798575206453",
+    "name": "Trend Food Container Pack of 3 - (S/M/L)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798575239221",
+    "name": "Handy Container Pack of 3 - (S/M/L)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798575304757",
+    "name": "Glow Bath Bucket Transparent",
+    "oldCategory": "BATHROOM",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798575337525",
+    "name": "Oval Lunch Box Pack of 2 - (500ml)",
+    "oldCategory": "Lunch Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798575632437",
+    "name": "Cafee Food Keeper Small Pack of 2 - (300ml)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798575697973",
+    "name": "Jonti Lunch Box Pack of 2 - (280ml)",
+    "oldCategory": "School Lunch Boxes",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798575861813",
+    "name": "Saga Mug Pack of 3 - (200ml)",
+    "oldCategory": "Tea Mugs",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798575960117",
+    "name": "Spirit Water Bottle Pack of 2 Small - (800ml)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798575992885",
+    "name": "Hip Hop Stool Pack of 3",
+    "oldCategory": "Kids Stool",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798576779317",
+    "name": "Handy Mini Food Storage Container Small Pack of 2- (3000ml)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798583332917",
+    "name": "Kids Chair M-1 Pack of 3",
+    "oldCategory": "Kids Stool",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798583365685",
+    "name": "Kids Chair M-2 Pack of 3",
+    "oldCategory": "Kids Stool",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798583398453",
+    "name": "Kids Chair M-3 Pack of 3",
+    "oldCategory": "Kids Stool",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798585659445",
+    "name": "Chilli Spice Rack",
+    "oldCategory": "Cutlery Stands",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798585856053",
+    "name": "Safari Water Bottle Pack of 4 - (600ml)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798585888821",
+    "name": "Smart Jar Pack of 3 Large - (900ml)",
+    "oldCategory": "Jars",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798586085429",
+    "name": "Alpha Cooler M-1 - (7Ltr)",
+    "oldCategory": "Cooler",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798586216501",
+    "name": "Glow Bath Mug - (1400ml)",
+    "oldCategory": "BATHROOM",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798586282037",
+    "name": "Mini Lunch Box Pack of 2 - (250ml)",
+    "oldCategory": "Lunch Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798586511413",
+    "name": "Super Surprise Water Bottle M-1 Pack of 8 - (1000ml)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798586806325",
+    "name": "Mario Lunch Box (850ml)",
+    "oldCategory": "Lunch Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798587166773",
+    "name": "Flower Mug Pack of 3 - (250ml)",
+    "oldCategory": "Tea Mugs",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798587297845",
+    "name": "Jolly Baby Pot",
+    "oldCategory": "Baby Pot",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798588903477",
+    "name": "Bunny Lunch Box M-3 Pack of 2 - (850ml)",
+    "oldCategory": "Lunch Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798589657141",
+    "name": "Clip It Pitcher - (2Ltr)",
+    "oldCategory": "JUGS",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798589755445",
+    "name": "Sizzler Lunch Carrier Small",
+    "oldCategory": "Lunch Carriers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6798589853749",
+    "name": "Sizzler Lunch Carrier Medium",
+    "oldCategory": "Lunch Carriers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6799140061237",
+    "name": "Buddy Pack Lunch Box",
+    "oldCategory": "Lunch Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6799140094005",
+    "name": "Bento Lunch Box M-1 Pack of 2 - (600ml) Without Sticker",
+    "oldCategory": "Lunch Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6799141011509",
+    "name": "Spring Water Bottles Pack of 2 (650ml & 850ml)",
+    "oldCategory": "Water bottle",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6799141175349",
+    "name": "Jet Cooler - (2Ltr)",
+    "oldCategory": "Cooler",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6799141273653",
+    "name": "Bubble Ice Cube Tray",
+    "oldCategory": "Ice Cube Tray",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6799141601333",
+    "name": "Bridal Gift Set",
+    "oldCategory": "Gift Set",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6799141765173",
+    "name": "Bravo Water Bottle M-1 Pack of 6 - (1000ml)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6799141896245",
+    "name": "Bunny Lunch Box M-1 Pack of 2 - (550ml)",
+    "oldCategory": "Lunch Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6799141929013",
+    "name": "Bunny Lunch Box M-2 Pack of 2 - (550ml)",
+    "oldCategory": "Lunch Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6799142387765",
+    "name": "Bundle of Smart Jar Mini 3 Small + 3 Medium + 3 Large",
+    "oldCategory": "Jars",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6799142518837",
+    "name": "Spring Water Bottle Pack of 2 Small - (650ml)",
+    "oldCategory": "Water bottle",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6799144058933",
+    "name": "Bento Lunch Box M-2 Pack of 2 - (600ml) Without Sticker",
+    "oldCategory": "Lunch Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6799144222773",
+    "name": "Alpha Cooler - (10Ltr)",
+    "oldCategory": "Cooler",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6799144255541",
+    "name": "Alpha Mug Pack of 2 - (400ml)",
+    "oldCategory": "Tea Mugs",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6800526147637",
+    "name": "Party Acrylic Glass M-3 Pack of 6 - (250ml)",
+    "oldCategory": "Glasses",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6800529227829",
+    "name": "Party Acrylic Glass M-4 Pack of 6 - (250ml)",
+    "oldCategory": "Glasses",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6800545775669",
+    "name": "Party Acrylic Glass M-6 Pack of 6 - (250ml)",
+    "oldCategory": "Glasses",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6800549314613",
+    "name": "Party Acrylic Glass M-7 Pack of 6 - (250ml)",
+    "oldCategory": "Glasses",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6800552394805",
+    "name": "Party Acrylic Glass M-8 Pack of 6 - (250ml)",
+    "oldCategory": "Glasses",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6800556785717",
+    "name": "Party Acrylic Glass M-9 Pack of 6 - (250ml)",
+    "oldCategory": "Glasses",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6800568156213",
+    "name": "Party Acrylic Glass M-10 Pack of 6 - (250ml)",
+    "oldCategory": "Glasses",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6800571203637",
+    "name": "Party Acrylic Glass M-11 Pack of 6 - (250ml)",
+    "oldCategory": "Glasses",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6800577822773",
+    "name": "Real Acrylic Glass M-1 Pack of 6 - (400ml)",
+    "oldCategory": "Glasses",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6800582344757",
+    "name": "Real Acrylic Glass M-2 Pack of 6 - (400ml)",
+    "oldCategory": "Glasses",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6802699255861",
+    "name": "Sprinkle Water Bottle M-2 Small - (600ml)",
+    "oldCategory": "Kids Water bottle",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6804724154421",
+    "name": "Opal Food Storage Container Small Pack of 2 - (6Ltr) Transparent",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6804731199541",
+    "name": "Bundle of 4 Opal Storage Container Small,Medium,Large & XL (Transparent)",
+    "oldCategory": "food storage buckets",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6805645754421",
+    "name": "Smart Mini Jar Small - (60ml)",
+    "oldCategory": "Jars",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6806321168437",
+    "name": "Super Cool Jug M-2 - (1.7Ltr)",
+    "oldCategory": "JUGS",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6807123361845",
+    "name": "Super Surprise Water Bottle M-2 Pack of 8 - (1000ml)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6807125983285",
+    "name": "Super Surprise Water Bottle M-3 Pack of 8 - (1000ml)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6807127621685",
+    "name": "Super Surprise Water Bottle M-4 Pack of 8",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6807141122101",
+    "name": "Bravo Water Bottle M-2 Pack of 6 - (1000ml)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6807143874613",
+    "name": "Bravo Water Bottle M-3 – Pack of 6 (1000ml)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6807199318069",
+    "name": "Platinum Water Bottle M-2 Pack of 4 - (1000ml)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6807241392181",
+    "name": "Grace Basket M-2 Pack of 2",
+    "oldCategory": "Storage Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6807241949237",
+    "name": "Grace Basket M-3 Pack of 2",
+    "oldCategory": "Storage Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6807242801205",
+    "name": "Grace Basket M-4 Pack of 2",
+    "oldCategory": "Storage Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6807243456565",
+    "name": "Lace Basket Pack of 2",
+    "oldCategory": "Storage Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6808167120949",
+    "name": "Flower Waste Bin Pack of 3 - (8000ml)",
+    "oldCategory": "Dustbins",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6811571814453",
+    "name": "Premio Hanger Pack of 6 - (13inch)",
+    "oldCategory": "Household",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6814644043829",
+    "name": "Premio Hanger Pack of 6 - (15inch)",
+    "oldCategory": "Household",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6814649417781",
+    "name": "Premio Hanger Pack of 6 - (17inch)",
+    "oldCategory": "Household",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6825110110261",
+    "name": "Spirit Water Bottle Pack of 2 - (800ml & 1000ml)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6825134686261",
+    "name": "Smart Serving Tray Bundle Pack of 4",
+    "oldCategory": "Serving Trays",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6825237479477",
+    "name": "Premio Bowls Pack of 4 - (S/M/L/XL)",
+    "oldCategory": "Serving Bowls",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6829842923573",
+    "name": "Fresh Food Container Pack of 6 Small - (250ml)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6831268692021",
+    "name": "Mayo Bottles Pack of 3 - (S/M/L)",
+    "oldCategory": "Kitchenware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6833591222325",
+    "name": "Handy Food Storage Container Small Pack of 2 - (6Ltr)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6833698537525",
+    "name": "Saga Bowl Medium",
+    "oldCategory": "Serving Bowls",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6833707450421",
+    "name": "Saga Plate Small Pack of 4",
+    "oldCategory": "Serving Plates",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6834559025205",
+    "name": "Right Lock Food Keeper Pack of 3 - (S/M/L)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6834684854325",
+    "name": "Crisper Food Container Bundle Pack of 7",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6850464186421",
+    "name": "Ultra Jug 2.5 Ltr",
+    "oldCategory": "JUGS",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6855033716789",
+    "name": "Glow Bath Stool Transparent",
+    "oldCategory": "BATHROOM",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6880274350133",
+    "name": "Trend Food Container Pack of 6 Small - (390ml)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6881205583925",
+    "name": "Sizzler Lunch Carrier Large",
+    "oldCategory": "Lunch Carriers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6882968305717",
+    "name": "Premio Bowl Medium pack of 3",
+    "oldCategory": "Serving Bowls",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6882970730549",
+    "name": "Premio Bowl Large pack of 3",
+    "oldCategory": "Serving Bowls",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6882971811893",
+    "name": "Premio Bowl XL",
+    "oldCategory": "Serving Bowls",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6883005988917",
+    "name": "Kiddy Book Table Pack of 3 without sticker",
+    "oldCategory": "Kids Stool",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6908033564725",
+    "name": "Eco Lock Food Keeper - Small",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6913106411573",
+    "name": "Glow Bath Tub - (24Ltr) Transparent",
+    "oldCategory": "Cleaning Spray",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6914117206069",
+    "name": "Milan Bowl XS 6 pcs set 250ml",
+    "oldCategory": "Serving Bowls",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6914163212341",
+    "name": "Milan Bowl Large Pack of 3 - (3000ml)",
+    "oldCategory": "Serving Bowls",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6915429466165",
+    "name": "Real Acrylic Glass M-3 Pack of 6 - (400ml)",
+    "oldCategory": "Glasses",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6921142140981",
+    "name": "Handy Junior Food Storage Container - (1200ml)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6921786130485",
+    "name": "Milan Bowl Small Pack of 3 - (1000ml)",
+    "oldCategory": "Serving Bowls",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6921817751605",
+    "name": "Handy Mini Food Storage Container Medium Pack of 2 - (6000ml)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6925415448629",
+    "name": "Appollo Glass Bottle M-4 - (1250ml)",
+    "oldCategory": "Glass Bottle",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6928292806709",
+    "name": "Smart Jar Pack of 3 - (S/M/L)",
+    "oldCategory": "Jars",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6928787963957",
+    "name": "Smart Mini Jar Pack of 3 - (S/M/L)",
+    "oldCategory": "Jars",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6986656743477",
+    "name": "Jumbo Water Bottle Pack of 2 - (1.2Ltr)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6988210208821",
+    "name": "Saga Bowl Small Pack of 2",
+    "oldCategory": "Serving Bowls",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6988659130421",
+    "name": "Saga Plates Pack of 3 - (S/M/L)",
+    "oldCategory": "Serving Plates",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6991019442229",
+    "name": "Glow Bath Soap Dish Pack of 2",
+    "oldCategory": "BATHROOM",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-6991983181877",
+    "name": "Chef Food Warmer Pack of 4",
+    "oldCategory": "Food Warmers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7013911003189",
+    "name": "Clear Lock Storage Box Pack of 2 Small - (5Ltr) Transparent",
+    "oldCategory": "Storage Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7013924077621",
+    "name": "Clear Lock Storage Box Pack of 2 Medium - (7Ltr) Transparent",
+    "oldCategory": "Storage Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7013927583797",
+    "name": "Clear Lock Storage Box Pack of 2 Large - (10Ltr) Transparent",
+    "oldCategory": "Storage Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7035680194613",
+    "name": "Chef Food Warmer Small - (800ml)",
+    "oldCategory": "Food Warmers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7045384437813",
+    "name": "Vital Microwave Tray",
+    "oldCategory": "Kitchenware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7048893726773",
+    "name": "Vital Microwave Lid",
+    "oldCategory": "Kitchenware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7055120564277",
+    "name": "Eva Chair Pack of 4",
+    "oldCategory": "Chairs",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7059002490933",
+    "name": "Tiger Water Bottle Medium - (1300ml)",
+    "oldCategory": "Water bottle",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7059003637813",
+    "name": "Tiger Water Bottle Large - (1600ml)",
+    "oldCategory": "Water bottle",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7061449146421",
+    "name": "Smart Jar Bundle Pack of 12",
+    "oldCategory": "Jars",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7066310967349",
+    "name": "Cafee Food Keeper Pack of 4 XS - (150ml)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7080161083445",
+    "name": "Multipurpose Storage Bundle Pack of 6",
+    "oldCategory": "Storage Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7091287523381",
+    "name": "Swing Bin - (20Ltr)",
+    "oldCategory": "Dustbins",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7091301810229",
+    "name": "Candy Acrylic Jar Pack of 6",
+    "oldCategory": "Jars",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7094066511925",
+    "name": "Hydro Water Dispenser",
+    "oldCategory": "Water Dispenser",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7110323109941",
+    "name": "Chef Food Warmer (Hot pot) Medium - (1200ml)",
+    "oldCategory": "Food Warmers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7110329761845",
+    "name": "Chef Food Warmer Large - (2000ml)",
+    "oldCategory": "Food Warmers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7110332186677",
+    "name": "Chef Food Warmer XL - (4000ml)",
+    "oldCategory": "Food Warmers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7112141701173",
+    "name": "Glow Bath Essentials Bundle Pack of 3",
+    "oldCategory": "BATHROOM",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7164976070709",
+    "name": "Alpha Cooler - (14Ltr)",
+    "oldCategory": "Cooler",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7168539852853",
+    "name": "Blocky Cup Holder",
+    "oldCategory": "Kids Drawer",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7169270022197",
+    "name": "Spirit Water Bottle Pack of 2 Medium - (1000ml)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7169309343797",
+    "name": "Spring Water Bottle Pack of 2 Medium - (850ml)",
+    "oldCategory": "Water bottle",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7169467646005",
+    "name": "Cool Time Water Bottle Medium - (1000ml)",
+    "oldCategory": "Water bottle",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7170148237365",
+    "name": "Mayo Squeeze Bottle M-2 Medium - (600ml)",
+    "oldCategory": "Kitchenware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7170149154869",
+    "name": "Mayo Squeeze Bottle Large - (1000ml)",
+    "oldCategory": "Kitchenware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7170149613621",
+    "name": "Rainbow Basket Pack of 2 Small",
+    "oldCategory": "Storage Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7170160984117",
+    "name": "Rainbow Basket Pack of 2 Medium",
+    "oldCategory": "Storage Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7177042395189",
+    "name": "Pasta Lunch Box for Kids | Stainless Steel Bowl | Appollo",
+    "oldCategory": "Lunch Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7177055862837",
+    "name": "Saga Cutlery S/F Pack of 6",
+    "oldCategory": "Serving Bowls",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7185142087733",
+    "name": "Dove Soap Dish Pack of 2",
+    "oldCategory": "BATHROOM",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7187619708981",
+    "name": "Hobby Hanger",
+    "oldCategory": "Household",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7195457093685",
+    "name": "Bingo Water Bottle Large - (1.5Ltr)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7196410314805",
+    "name": "Tower Sizzler Food Warmer Small",
+    "oldCategory": "Food Warmers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7197959290933",
+    "name": "Pearl Coasters",
+    "oldCategory": "Serving Trays",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7200339918901",
+    "name": "Candy Acrylic Jar Medium - (800ml)",
+    "oldCategory": "Jars",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7200340869173",
+    "name": "Candy Acrylic Jar Large - (1000ml)",
+    "oldCategory": "Jars",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7200350863413",
+    "name": "Cafee Food Keeper Large Pack of 2 - (1000ml)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7200360955957",
+    "name": "Handy Container Junior Pack of 2 (1000ml and 1200ml)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7200403030069",
+    "name": "Handy Food Storage Container Large Set of 2 - (16Ltr)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7202052210741",
+    "name": "Saga Plate Medium",
+    "oldCategory": "Serving Plates",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7208330887221",
+    "name": "Jimmy Lunch Box M-1",
+    "oldCategory": "Lunch Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7208332918837",
+    "name": "Jimmy Lunch Box M-2",
+    "oldCategory": "Lunch Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7211179573301",
+    "name": "Serene Acrylic Water Set",
+    "oldCategory": "JUGS",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7214724775989",
+    "name": "Prism Glass M-2 Pack of 6",
+    "oldCategory": "Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216518463541",
+    "name": "Tower Sizzler Food Warmer Medium",
+    "oldCategory": "Food Warmers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216518496309",
+    "name": "Handy Mini Food Storage Container Large Pack of 2 - (9000ml)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216518529077",
+    "name": "Eco Lock Food Keeper - Medium",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216518627381",
+    "name": "Smart Mini Jar Medium - (200ml)",
+    "oldCategory": "Jars",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216518692917",
+    "name": "Smart Mini Jar Large - 400ml",
+    "oldCategory": "Jars",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216518823989",
+    "name": "Smart Jar Small - (250ml)",
+    "oldCategory": "Jars",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216518922293",
+    "name": "Smart Jar Pack of 3 Medium (550ml)",
+    "oldCategory": "Jars",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216518987829",
+    "name": "Trend Food Container Large Pack of 3 - (950ml)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216519086133",
+    "name": "Smart Serving Tray Large",
+    "oldCategory": "Serving Trays",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216519151669",
+    "name": "Smart Serving Tray Medium",
+    "oldCategory": "Serving Trays",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216519249973",
+    "name": "Smart Serving Tray Small",
+    "oldCategory": "Serving Trays",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216519381045",
+    "name": "Crisper Food Container XL - (2500ml)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216519479349",
+    "name": "Hunter Water Bottle Medium - (950ml)",
+    "oldCategory": "Water bottle",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216519512117",
+    "name": "Hunter Water Bottle Large - (1200ml)",
+    "oldCategory": "Water bottle",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216519577653",
+    "name": "Rainbow Basket Pack of 2 Large",
+    "oldCategory": "Storage Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216519675957",
+    "name": "Trend Food Container Medium Pack of 3 - (650ml)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216519741493",
+    "name": "Candy Acrylic Jar Small - (600ml)",
+    "oldCategory": "Jars",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216519774261",
+    "name": "Cool Time Water Bottle Small - (800ml)",
+    "oldCategory": "Water bottle",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216573546549",
+    "name": "Saga Bowl Small Pack of 4",
+    "oldCategory": "Serving Bowls",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216575643701",
+    "name": "Saga Bowl Medium Pack of 4",
+    "oldCategory": "Serving Bowls",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216576626741",
+    "name": "Tower Sizzler Food Warmer Large",
+    "oldCategory": "Food Warmers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216587276341",
+    "name": "Kiddy Book Table Pack of 3 with sticker",
+    "oldCategory": "Kids Stool",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216594583605",
+    "name": "Handy Food Storage Container Medium Pack of 2 - (10Ltr)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216594780213",
+    "name": "Sprinkle Water Bottle M-2 Medium - (900ml)",
+    "oldCategory": "Water bottle",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216594812981",
+    "name": "Sprinkle Water Bottle M-2 Large - (1200ml)",
+    "oldCategory": "Kids Water bottle",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216594878517",
+    "name": "Cafee Food Keeper Medium Pack of 2 - (650ml)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216594944053",
+    "name": "Right Lock Food Keeper Medium - (600ml)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216594976821",
+    "name": "Right Lock Food Keeper Large - (900ml)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216595009589",
+    "name": "Crisper Food Container Medium - (1000ml)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216595075125",
+    "name": "Crisper Food Container Large - (1700ml)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216595140661",
+    "name": "Crisper Food Container XXL - (4000ml)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216595173429",
+    "name": "Sprinkle Water Bottle M-1 Medium - (900ml)",
+    "oldCategory": "Water bottle",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216595206197",
+    "name": "Sprinkle Water Bottle M-1 Small - (600ml)",
+    "oldCategory": "Water bottle",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216595238965",
+    "name": "Kiddy Book Table with sticker",
+    "oldCategory": "Kids Table",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216613097525",
+    "name": "Opal Food Storage Container Medium Pack of 2- (10Ltr) Transparent",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216613654581",
+    "name": "Opal Food Storage Container Large Pack of 2 - (16Ltr) Transparent",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216642424885",
+    "name": "Saga Plate Large",
+    "oldCategory": "Serving Plates",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7216643080245",
+    "name": "Handy Food Storage Container XL Pack of 2 - (24Ltr)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7217913069621",
+    "name": "Milan Bowl Medium Pack of 3 - (1500ml)",
+    "oldCategory": "Serving Bowls",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7217914511413",
+    "name": "Milan Bowl XL Pack of 3 - (5000ml)",
+    "oldCategory": "Serving Bowls",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7217922736181",
+    "name": "Cafee Food Keeper XL Pack of 2 - (2300ml)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7219232407605",
+    "name": "Fresh Food Container Large - (900ml)",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7220188971061",
+    "name": "Chef Food Warmer XXL  - (6500ml)",
+    "oldCategory": "Food Warmers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7220203192373",
+    "name": "Party Acrylic Glass M-5 Pack of 6 - (250ml)",
+    "oldCategory": "Glasses",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7221712519221",
+    "name": "Magnum Cooler - (16Ltr)",
+    "oldCategory": "Cooler",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7226339754037",
+    "name": "Dura Basket",
+    "oldCategory": "Baskets",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7227360575541",
+    "name": "Opal Food Storage Container XL Pack of 2 - (24Ltr) Transparent",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7232259489845",
+    "name": "Sonic Popcorn Bucket Pack of 3",
+    "oldCategory": "Buckets",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7237318475829",
+    "name": "Chef Cooler - (5Ltr)",
+    "oldCategory": "Cooler",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7237334499381",
+    "name": "Chef Cooler - (3.5Ltr)",
+    "oldCategory": "Cooler",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7244776865845",
+    "name": "Platinum Water Bottle M-1 Pack of 4 - (1000ml)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7247196028981",
+    "name": "Saga Glass Pack of 2",
+    "oldCategory": "Glasses",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7247800303669",
+    "name": "Appollo Glass Bottle M-2 - (750ml)",
+    "oldCategory": "Glass Bottle",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7247801516085",
+    "name": "Appollo Glass Bottle M-3 - (750ml)",
+    "oldCategory": "Glass Bottle",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7247803482165",
+    "name": "Appollo Glass Bottle M-4 - (750ml)",
+    "oldCategory": "Glass Bottle",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7247803908149",
+    "name": "Appollo Glass Bottle M-3 - (1250ml)",
+    "oldCategory": "Glass Bottle",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7247804432437",
+    "name": "Appollo Glass Bottle M-1 - (1250ml)",
+    "oldCategory": "Glass Bottle",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7247804989493",
+    "name": "Appollo Glass Bottle M-2 - (1250ml)",
+    "oldCategory": "Glass Bottle",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7265519370293",
+    "name": "Lunch Buddy",
+    "oldCategory": "Lunch Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7266453979189",
+    "name": "Bento Lunch Box M-2 Pack of 2 - (600ml) With Sticker",
+    "oldCategory": "Lunch Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7266454044725",
+    "name": "Bento Lunch Box M-1 Pack of 2 - (600ml) With Sticker",
+    "oldCategory": "Lunch Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7271855849525",
+    "name": "Saga Glass Pack of 4",
+    "oldCategory": "Glasses",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7285870231605",
+    "name": "Ravi Lunch Carrier",
+    "oldCategory": "Lunch Carriers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7286912090165",
+    "name": "Crisper Food Container Pack of 3 - Junior",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7296648151093",
+    "name": "Milan Bowl Pack of 7",
+    "oldCategory": "Serving Bowls",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7325337583669",
+    "name": "Gear Sports Water Bottle Small Pack of 2 - (850ml)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7325371138101",
+    "name": "Gear Sports Water Bottle Large Pack of 2 - (1Ltr)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7325372481589",
+    "name": "Gear Sports Water Bottle Pack of 2 - (850ml & 1Ltr)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7348603027509",
+    "name": "Flower Mug Pack of 6 - (250ml)",
+    "oldCategory": "Tea Mugs",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7348604469301",
+    "name": "Appollo Glass Bottle (1250ml) M-3 and (750ml) M-4",
+    "oldCategory": "Glass Bottle",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7363427794997",
+    "name": "Empire Chair",
+    "oldCategory": "Chairs",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7363599564853",
+    "name": "Chef Water Cooler - (14Ltr)",
+    "oldCategory": "Cooler",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7379332071477",
+    "name": "Glow Bath Essentials Bundle Pack of 5",
+    "oldCategory": "BATHROOM",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7549881778229",
+    "name": "Magnum Cooler 22 Litre",
+    "oldCategory": "Cooler",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7549897441333",
+    "name": "Saga Picnic Set",
+    "oldCategory": "Bundle",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7703296704565",
+    "name": "Bingo Water Bottle Small - (900ml)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7703344382005",
+    "name": "Bingo Water Bottle Medium - (1300ml)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7708713189429",
+    "name": "Alpha Cooler M-2 - (7Ltr)",
+    "oldCategory": "Cooler",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7717174018101",
+    "name": "Chef Family Essential Bundle (5pcs Set)",
+    "oldCategory": "Bundle",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7734152691765",
+    "name": "Crisper Food Container Pack of 2 - Junior",
+    "oldCategory": "Containers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7758060453941",
+    "name": "Platinum Water Bottle M-3 Pack of 4 - (1000ml)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7758060585013",
+    "name": "Empire Chair (Without Arms)",
+    "oldCategory": "Chairs",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7767374495797",
+    "name": "Delight Multipurpose Basket (Pack of 3)",
+    "oldCategory": "Serving Trays",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7771909816373",
+    "name": "Fiji Bin dustbin - (30Ltr)",
+    "oldCategory": "Dustbins",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7774549934133",
+    "name": "Chef Food Warmer - Pack of 3 (L,XL,XXL)",
+    "oldCategory": "Food Warmers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7782199394357",
+    "name": "Glow Handy Mug Pack of 2",
+    "oldCategory": "BATHROOM",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7782257360949",
+    "name": "Polka Basket",
+    "oldCategory": "Baskets",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7834792132661",
+    "name": "Super Cool Jug M-3 - (3Ltr)",
+    "oldCategory": "JUGS",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7846790561845",
+    "name": "Leather Right Gift Set Model - 2",
+    "oldCategory": "Gift Set",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7871810699317",
+    "name": "Chef Food Warmer Jumbo - (9000ml)",
+    "oldCategory": "Food Warmers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7905773256757",
+    "name": "Tango Tumbler Pack of 2",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7914024140853",
+    "name": "Prima Soap Dish Pack of 2",
+    "oldCategory": "BATHROOM",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7922417172533",
+    "name": "Rush Sports Water Bottle Large Pack of 2 - (1Ltr)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7922418024501",
+    "name": "Rush Sports Water Bottle Small Pack of 2 - (800ml)",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7922431164469",
+    "name": "Stack Fit Multi-Purpose Rack",
+    "oldCategory": "Kitchenware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7934198841397",
+    "name": "Coco Tumbler Pack of 6",
+    "oldCategory": "Tumbler",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7935145934901",
+    "name": "Coco Straw Tumbler - (500ml)",
+    "oldCategory": "Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7946522656821",
+    "name": "Tri Fit Multi-Purpose Rack",
+    "oldCategory": "Kitchenware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7964066283573",
+    "name": "Easy Stack Jar Pack of 2 Small - (400ml)",
+    "oldCategory": "Jars",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7964067037237",
+    "name": "Easy Stack Jar Pack of 2 Medium- (850ml)",
+    "oldCategory": "Jars",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7964067463221",
+    "name": "Easy Stack Jar Pack of 2 Large - (1300ml)",
+    "oldCategory": "Jars",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7964069134389",
+    "name": "Easy Stack Jar Pack of 3 - (S/M/L)",
+    "oldCategory": "Jars",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7967263359029",
+    "name": "Mayo Squeeze Bottle M-1 Medium - (600ml)",
+    "oldCategory": "Kitchenware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-7967338299445",
+    "name": "Smart Serving Tray (S/M/L)",
+    "oldCategory": "Serving Trays",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-8002770272309",
+    "name": "Tower Sizzler Food Warmer Pack of 3",
+    "oldCategory": "Food Warmers",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-8148770258997",
+    "name": "Aero Hanger 6 Pcs Set",
+    "oldCategory": "Household",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-8217360203829",
+    "name": "Munch Lunch Box 600ml",
+    "oldCategory": "Lunch Box",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-8221429596213",
+    "name": "Stellar Sports Water bottle 500ml",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "appollo-8221430054965",
+    "name": "Stellar Sports Water bottle 650ml",
+    "oldCategory": "Water Bottles",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "aqua-blue-bath-towel-set",
+    "name": "Aqua Blue Bath Towel Set",
+    "oldCategory": "Towels",
+    "category": "Towels",
+    "sheetType": null
+  },
+  {
+    "id": "ha-7-pieces-table-mat-and-runner-set-placemats-table-runner-dining-table-mats-and-runner-table-mats-table-mat-runner-standard",
+    "name": "7 Pieces Table Mat and Runner Set | Placemats | Table Runner | Dining Table Mats and Runner | Table Mats | Table Mat Runner - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-7-pieces-table-mat-and-runner-set-table-mat-table-runner-dining-table-mats-and-runner-table-mats-table-mat-runner-standard",
+    "name": "7 Pieces Table Mat and Runner Set | Table Mat | Table Runner | Dining Table Mats and Runner | Table Mats | Table Mat Runner - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cloth-dining-table-cover-plastic-dining-table-cover-8-seater-rectangle-60-x-104-inches-fancy-premium-quality-dining-table-cover-cloth-dining-table-cover-sheet-plastic-dining-table-cover-sheet-fancy-8-seater-dining-table-cover-8-chairs-dining-table-cover-standard",
+    "name": "Dining Table Cloth | Dining Table Cover Plastic | Dining Table Cover 8 Seater Rectangle (60 x 104) Inches Fancy Premium Quality | Dining Table Cover Cloth | Dining Table Cover Sheet Plastic | Dining Table Cover Sheet Fancy | 8 Seater Dining Table Cover | 8 Chairs Dining Table Cover - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-cover-dining-table-cover-sheet-dining-table-cover-sheet-plastic-dining-table-cover-sheet-fancy-8-seater-dining-table-cover-8-chairs-dining-table-cover-standard",
+    "name": "Dining Table Cover Cover | Dining Table Cover Sheet | Dining Table Cover Sheet Plastic | Dining Table Cover Sheet Fancy | 8 Seater Dining Table Cover | 8 Chairs Dining Table Cover - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-cover-dining-table-cover-sheet-dining-table-cover-sheet-plastic-lace-dining-table-cover-sheet-fancy-8-seater-dining-table-cover-8-chairs-dining-table-cover-standard",
+    "name": "Dining Table Cover Cover | Dining Table Cover Sheet | Dining Table Cover Sheet Plastic | Lace Dining Table Cover Sheet Fancy | 8 Seater Dining Table Cover | 8 Chairs Dining Table Cover - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-cover-lace-dining-table-cover-sheet-dining-table-cover-sheet-plastic-dining-table-cover-sheet-fancy-6-seater-dining-table-cover-6-chairs-dining-table-cover-standard",
+    "name": "Dining Table Cover Cover | Lace Dining Table Cover Sheet | Dining Table Cover Sheet Plastic | Dining Table Cover Sheet Fancy | 6 Seater Dining Table Cover | 6 Chairs Dining Table Cover - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-dining-table-cover-for-4-seater-dining-table-sheet-plastic-dining-table-cover-table-cloth-dining-table-cover-sheet-standard",
+    "name": "Dining Table Cover Dining Table Cover for 4 Seater | Dining Table Sheet Plastic | Dining Table Cover | Table Cloth | Dining Table Cover Sheet - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-dining-table-cover-for-6-seater-dining-table-sheet-plastic-dining-table-cover-table-cloth-dining-table-cover-sheet-standard",
+    "name": "Dining Table Cover Dining Table Cover for 6 Seater | Dining Table Sheet Plastic | Dining Table Cover | Table Cloth | Dining Table Cover Sheet - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-for-4-6-8-10-12-seater-hacovbge-10-seater-cover",
+    "name": "Dining Table Cover for 4, 6, 8, 10 & 12 Seater – HACOVBGE - 10 Seater Cover",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-for-4-6-8-10-12-seater-hacovbge-12-seater-cover",
+    "name": "Dining Table Cover for 4, 6, 8, 10 & 12 Seater – HACOVBGE - 12 Seater Cover",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-for-4-6-8-10-12-seater-hacovbge-4-seater-cover",
+    "name": "Dining Table Cover for 4, 6, 8, 10 & 12 Seater – HACOVBGE - 4 Seater Cover",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-for-4-6-8-10-12-seater-hacovbge-6-seater-cover",
+    "name": "Dining Table Cover for 4, 6, 8, 10 & 12 Seater – HACOVBGE - 6 Seater Cover",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-for-4-6-8-10-12-seater-hacovbge-8-seater-cover",
+    "name": "Dining Table Cover for 4, 6, 8, 10 & 12 Seater – HACOVBGE - 8 Seater Cover",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-for-4-6-8-10-12-seater-hacovgrc-10-seater",
+    "name": "Dining Table Cover for 4, 6, 8, 10 & 12 Seater – HACOVGRC - 10 Seater",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-for-4-6-8-10-12-seater-hacovgrc-12-seater",
+    "name": "Dining Table Cover for 4, 6, 8, 10 & 12 Seater – HACOVGRC - 12 Seater",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-for-4-6-8-10-12-seater-hacovgrc-4-seater",
+    "name": "Dining Table Cover for 4, 6, 8, 10 & 12 Seater – HACOVGRC - 4 Seater",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-for-4-6-8-10-12-seater-hacovgrc-6-seater",
+    "name": "Dining Table Cover for 4, 6, 8, 10 & 12 Seater – HACOVGRC - 6 Seater",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-for-4-6-8-10-12-seater-hacovgrc-8-seater",
+    "name": "Dining Table Cover for 4, 6, 8, 10 & 12 Seater – HACOVGRC - 8 Seater",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-for-4-6-8-10-12-seater-hacovgree-10-seater",
+    "name": "Dining Table Cover for 4, 6, 8, 10 & 12 Seater – HACOVGREE - 10 Seater",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-for-4-6-8-10-12-seater-hacovgree-12-seater",
+    "name": "Dining Table Cover for 4, 6, 8, 10 & 12 Seater – HACOVGREE - 12 Seater",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-for-4-6-8-10-12-seater-hacovgree-4-seater",
+    "name": "Dining Table Cover for 4, 6, 8, 10 & 12 Seater – HACOVGREE - 4 Seater",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-for-4-6-8-10-12-seater-hacovgree-6-seater",
+    "name": "Dining Table Cover for 4, 6, 8, 10 & 12 Seater – HACOVGREE - 6 Seater",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-for-4-6-8-10-12-seater-hacovgree-8-seater",
+    "name": "Dining Table Cover for 4, 6, 8, 10 & 12 Seater – HACOVGREE - 8 Seater",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-for-4-6-8-10-12-seater-hacovgryy-10-seater",
+    "name": "Dining Table Cover for 4, 6, 8, 10 & 12 Seater – HACOVGRYY - 10 Seater",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-for-4-6-8-10-12-seater-hacovgryy-12-seater",
+    "name": "Dining Table Cover for 4, 6, 8, 10 & 12 Seater – HACOVGRYY - 12 Seater",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-for-4-6-8-10-12-seater-hacovgryy-4-seater",
+    "name": "Dining Table Cover for 4, 6, 8, 10 & 12 Seater – HACOVGRYY - 4 Seater",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-for-4-6-8-10-12-seater-hacovgryy-6-seater",
+    "name": "Dining Table Cover for 4, 6, 8, 10 & 12 Seater – HACOVGRYY - 6 Seater",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-for-4-6-8-10-12-seater-hacovgryy-8-seater",
+    "name": "Dining Table Cover for 4, 6, 8, 10 & 12 Seater – HACOVGRYY - 8 Seater",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-for-4-6-8-seater-hacovllc-4-seater",
+    "name": "Dining Table Cover for 4, 6 & 8 Seater – HACOVLLC - 4 Seater",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-for-4-6-8-seater-hacovllc-6-seater",
+    "name": "Dining Table Cover for 4, 6 & 8 Seater – HACOVLLC - 6 Seater",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-for-4-6-8-seater-hacovllc-8-seater",
+    "name": "Dining Table Cover for 4, 6 & 8 Seater – HACOVLLC - 8 Seater",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-sheet-6-seater-rectangle-54-x-90-inches-table-sheet-plastic-table-sheet-design-table-cover-plastic-dining-table-plastic-sheet-dining-table-cover-design-dining-table-cover-sheet-plastic-sheet-for-dining-table-dining-sheet-dining-table-sheets-dining-table-cover-online-pakistan-table-covers-pakistan-dining-cover-plastic-standard",
+    "name": "Dining Table Cover Sheet 6 Seater Rectangle (54 x 90) Inches | Table Sheet Plastic | Table Sheet Design | Table Cover Plastic | Dining Table Plastic Sheet | Dining Table Cover Design | Dining Table Cover Sheet | Plastic Sheet for Dining Table | Dining Sheet | Dining Table Sheets | Dining Table Cover Online Pakistan | Table Covers Pakistan | Dining Cover Plastic - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-sheet-plastic-table-cloth-dining-table-covers-online-pakistan-dining-table-cover-sheet-dining-table-cover-design-standard",
+    "name": "Dining Table Cover Sheet Plastic | Table Cloth | Dining Table Covers Online Pakistan | Dining Table Cover Sheet | Dining Table Cover Design - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-transparent-plastic-transparent-cover-dining-table-cover-transparent-dining-table-cover-transparent-sheet-plastic-4-seater-dining-table-transparent-sheet-4-chairs-dining-table-cover-transparent-plastic-standard",
+    "name": "Dining Table Cover Transparent Plastic Transparent Cover | Dining Table Cover Transparent | Dining Table Cover Transparent Sheet Plastic | 4 Seater Dining Table Transparent Sheet | 4 Chairs Dining Table Cover Transparent Plastic - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-transparent-plastic-transparent-cover-dining-table-cover-transparent-dining-table-cover-transparent-sheet-plastic-6-seater-dining-table-transparent-sheet-6-chairs-dining-table-cover-transparent-plastic-standard",
+    "name": "Dining Table Cover Transparent Plastic Transparent Cover | Dining Table Cover Transparent | Dining Table Cover Transparent Sheet Plastic | 6 Seater Dining Table Transparent Sheet | 6 Chairs Dining Table Cover Transparent Plastic - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-cover-transparent-plastic-transparent-cover-dining-table-cover-transparent-dining-table-cover-transparent-sheet-plastic-8-seater-dining-table-transparent-sheet-8-chairs-dining-table-cover-transparent-plastic-standard",
+    "name": "Dining Table Cover Transparent Plastic Transparent Cover | Dining Table Cover Transparent | Dining Table Cover Transparent Sheet Plastic | 8 Seater Dining Table Transparent Sheet | 8 Chairs Dining Table Cover Transparent Plastic - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-mats-set-of-6-and-8-pieces-placemats-rectangular-duke-set-of-6-placemats",
+    "name": "Dining Table Mats Set of 6 and 8 Pieces Placemats Rectangular Duke - Set of 6 Placemats",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-mats-set-of-6-and-8-pieces-placemats-rectangular-duke-set-of-8-placemats",
+    "name": "Dining Table Mats Set of 6 and 8 Pieces Placemats Rectangular Duke - Set of 8 Placemats",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-mats-set-of-6-and-8-pieces-placemats-rectangular-fancy-set-of-6-placemats",
+    "name": "Dining Table Mats Set of 6 and 8 Pieces Placemats Rectangular Fancy - Set of 6 Placemats",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-mats-set-of-6-and-8-pieces-placemats-rectangular-fancy-set-of-8-placemats",
+    "name": "Dining Table Mats Set of 6 and 8 Pieces Placemats Rectangular Fancy - Set of 8 Placemats",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-mats-set-of-6-and-8-pieces-placemats-rectangular-grey-white-stripes-set-of-6-placemats",
+    "name": "Dining Table Mats Set of 6 and 8 Pieces Placemats Rectangular Grey White Stripes - Set of 6 Placemats",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-mats-set-of-6-and-8-pieces-placemats-rectangular-grey-white-stripes-set-of-8-placemats",
+    "name": "Dining Table Mats Set of 6 and 8 Pieces Placemats Rectangular Grey White Stripes - Set of 8 Placemats",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-mats-set-of-6-and-8-pieces-placemats-rectangular-royal-set-of-6-placemats",
+    "name": "Dining Table Mats Set of 6 and 8 Pieces Placemats Rectangular Royal - Set of 6 Placemats",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-mats-set-of-6-and-8-pieces-placemats-rectangular-royal-set-of-8-placemats",
+    "name": "Dining Table Mats Set of 6 and 8 Pieces Placemats Rectangular Royal - Set of 8 Placemats",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-mats-set-of-6-and-8-pieces-placemats-rectangular-white-black-stripes-set-of-6-placemats",
+    "name": "Dining Table Mats Set of 6 and 8 Pieces Placemats Rectangular White Black Stripes - Set of 6 Placemats",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-mats-set-of-6-and-8-pieces-placemats-rectangular-white-black-stripes-set-of-8-placemats",
+    "name": "Dining Table Mats Set of 6 and 8 Pieces Placemats Rectangular White Black Stripes - Set of 8 Placemats",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-placemats-set-of-6-and-8-pieces-mats-rectangular-blue-white-stripes-standard",
+    "name": "Dining Table Placemats Set of 6 and 8 Pieces Mats Rectangular Blue White Stripes - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-sheet-cover-online-pakistan-dining-table-cover-sheet-dining-table-cover-sheet-plastic-dining-table-cover-sheet-fancy-10-seater-dining-table-cover-10-chairs-dining-table-cover-standard",
+    "name": "Dining Table Sheet Cover Online Pakistan | Dining Table Cover Sheet | Dining Table Cover Sheet Plastic | Dining Table Cover Sheet Fancy | 10 Seater Dining Table Cover | 10 Chairs Dining Table Cover - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-transparent-cover-protector-clear-plastic-4-seater-60-72-inches",
+    "name": "Dining Table Transparent Cover Protector Clear Plastic - 4 Seater (60*72) Inches",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-transparent-cover-protector-clear-plastic-6-seater-60-90-inches",
+    "name": "Dining Table Transparent Cover Protector Clear Plastic - 6 Seater (60*90) Inches",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-dining-table-transparent-cover-protector-clear-plastic-8-seater-60-104-inches",
+    "name": "Dining Table Transparent Cover Protector Clear Plastic - 8 Seater (60*104) Inches",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-elegant-blue-dining-table-sheet-cover-with-geometric-silver-leaf-pattern-standard",
+    "name": "Elegant Blue Dining Table Sheet Cover with Geometric Silver Leaf Pattern - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-elegant-floral-dining-table-cover-for-4-seater-6-seater-and-8-seater-4-seater-57x72-inches",
+    "name": "Elegant Floral Dining Table Cover for 4 Seater, 6 Seater and 8 Seater - 4 Seater 57x72 Inches",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-elegant-floral-dining-table-cover-for-4-seater-6-seater-and-8-seater-6-seater-57x90-inches",
+    "name": "Elegant Floral Dining Table Cover for 4 Seater, 6 Seater and 8 Seater - 6 Seater 57x90 Inches",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-elegant-floral-dining-table-cover-for-4-seater-6-seater-and-8-seater-8-seater-57x104-inches",
+    "name": "Elegant Floral Dining Table Cover for 4 Seater, 6 Seater and 8 Seater - 8 Seater 57x104 Inches",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-elegant-grey-dining-table-cover-standard",
+    "name": "Elegant Grey Dining Table Cover - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-fancy-dining-table-cover-sheet-plastic-hacovlm-standard",
+    "name": "Fancy Dining Table Cover Sheet Plastic – HACOVLM - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-fancy-dining-table-cover-sheet-plastic-hacovlog-standard",
+    "name": "Fancy Dining Table Cover Sheet Plastic – HACOVLOG - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-fancy-dining-table-cover-sheet-plastic-hacovlyg-standard",
+    "name": "Fancy Dining Table Cover Sheet Plastic – HACOVLYG - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-fancy-dining-table-cover-sheet-plastic-hacovppl-standard",
+    "name": "Fancy Dining Table Cover Sheet Plastic – HACOVPPL - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-fancy-dining-table-cover-sheet-plastic-hacovwgb-standard",
+    "name": "Fancy Dining Table Cover Sheet Plastic – HACOVWGB - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-fancy-dining-table-cover-sheet-plastic-hanarbdg-standard",
+    "name": "Fancy Dining Table Cover Sheet Plastic – HANARBDG - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-fancy-dining-table-cover-sheet-plastic-hanarbgr-standard",
+    "name": "Fancy Dining Table Cover Sheet Plastic – HANARBGR - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-fancy-dining-table-cover-sheet-plastic-hanarcre-standard",
+    "name": "Fancy Dining Table Cover Sheet Plastic – HANARCRE - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-fancy-dining-table-cover-sheet-plastic-hanardb-standard",
+    "name": "Fancy Dining Table Cover Sheet Plastic – HANARDB - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-fancy-dining-table-cover-sheet-plastic-hanargry-standard",
+    "name": "Fancy Dining Table Cover Sheet Plastic – HANARGRY - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-fancy-dining-table-cover-sheet-plastic-hanarlgr-standard",
+    "name": "Fancy Dining Table Cover Sheet Plastic – HANARLGR - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-fancy-dining-table-cover-sheet-plastic-hanarwh-standard",
+    "name": "Fancy Dining Table Cover Sheet Plastic – HANARWH - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-fancy-premium-lace-dining-table-cover-black-flower-pattern-standard",
+    "name": "Fancy Premium Lace Dining Table Cover Black Flower Pattern - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-luxury-geometric-marble-texture-dining-table-cover-for-4-seater-6-seater-and-8-seater-4-seater-60-72-inches",
+    "name": "Luxury Geometric Marble Texture Dining Table Cover for 4 Seater, 6 Seater and 8 Seater - 4 Seater 60*72 Inches",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-luxury-geometric-marble-texture-dining-table-cover-for-4-seater-6-seater-and-8-seater-6-seater-60-90-inches",
+    "name": "Luxury Geometric Marble Texture Dining Table Cover for 4 Seater, 6 Seater and 8 Seater - 6 Seater 60*90 Inches",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-luxury-geometric-marble-texture-dining-table-cover-for-4-seater-6-seater-and-8-seater-8-seater-60-104-inches",
+    "name": "Luxury Geometric Marble Texture Dining Table Cover for 4 Seater, 6 Seater and 8 Seater - 8 Seater 60*104 Inches",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-luxury-leaf-pattern-dining-table-cover-4-seater-58-72-inches",
+    "name": "Luxury Leaf Pattern Dining Table Cover - 4 Seater (58*72) Inches",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-luxury-leaf-pattern-dining-table-cover-6-seater-58-90-inches",
+    "name": "Luxury Leaf Pattern Dining Table Cover - 6 Seater (58*90) Inches",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-luxury-leaf-pattern-dining-table-cover-8-seater-58-104-inches",
+    "name": "Luxury Leaf Pattern Dining Table Cover - 8 Seater (58*104) Inches",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-modern-geometric-dining-table-cover-gold-pattern-standard",
+    "name": "Modern Geometric Dining Table Cover Gold Pattern - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-stylish-herringbone-pattern-dining-table-cover-standard",
+    "name": "Stylish Herringbone Pattern Dining Table Cover - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "ha-table-cover-cover-for-6-seater-dining-table-plastic-sheet-dining-table-cover-table-cloth-dining-table-sheet-plastic-standard",
+    "name": "Table Cover Cover for 6 Seater | Dining Table Plastic Sheet | Dining Table Cover | Table Cloth | Dining Table Sheet Plastic - Standard",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "luxury-lavender-bath-towel-set",
+    "name": "Luxury Lavender Bath Towel Set",
+    "oldCategory": "Towels",
+    "category": "Towels",
+    "sheetType": null
+  },
+  {
+    "id": "luxury-royal-purple-bath-towel-set",
+    "name": "Luxury Royal Purple Bath Towel Set",
+    "oldCategory": "Towels",
+    "category": "Towels",
+    "sheetType": null
+  },
+  {
+    "id": "maham-glory-carton-three-star-bowl",
+    "name": "Glory Carton Three Star Bowl",
+    "oldCategory": "Glory",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "maham-glory-laode-itaot-bottle",
+    "name": "Glory Laode Itaot Bottle",
+    "oldCategory": "Glory",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "maham-glory-set-with-box-mug",
+    "name": "Glory Set With Box Mug",
+    "oldCategory": "Glory",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "maham-glory-star-aqua-sport-bottle",
+    "name": "Glory Star Aqua Sport Bottle",
+    "oldCategory": "Glory",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "maham-omega-air-tight-bowl",
+    "name": "Omega Air Tight Bowl",
+    "oldCategory": "Omega",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "maham-omega-eggstorer-egg-storage-container",
+    "name": "Omega Eggstorer Egg Storage Container",
+    "oldCategory": "Omega",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "maham-omega-kit-kat-jar",
+    "name": "Omega Kit Kat Jar",
+    "oldCategory": "Omega",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "maham-omega-lotus-basket",
+    "name": "Omega Lotus Basket",
+    "oldCategory": "Omega",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "maham-omega-salika-multipurrose-stand",
+    "name": "Omega Salika  Multipurrose Stand",
+    "oldCategory": "Omega",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10161195024701",
+    "name": "3 pcs air-tight bowl set EK13/L3",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10161198956861",
+    "name": "12 Pcs Cup & Saucer set",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10161202856253",
+    "name": "7 Pcs Pizza Plate Set P125B/L7HA",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10161213505853",
+    "name": "7 Pcs Plate set P125A/L7HA",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10161233789245",
+    "name": "7 Pcs Water Set LP-Eh1001-J1140/L7HA",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10161256268093",
+    "name": "7 Pcs Water Set LP-EH1002-1-J1010-L7HA",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10161263313213",
+    "name": "LP-EH1001-J1140/L7HA",
+    "oldCategory": "Kitchen Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10161276715325",
+    "name": "1 PCS JUG FBH 1.74L",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10161280614717",
+    "name": "1 Pcs Jug SBH 1.74L",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10161282810173",
+    "name": "1 Pcs Jug GBH 1.74L",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10161286283581",
+    "name": "DELI GLASSWARE GD125/L7HS",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10161314300221",
+    "name": "7 Pcs Bowl Set GD125A/L7HS",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10161317314877",
+    "name": "7 Pcs Bowl Set GD125B/L7HS",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10161418731837",
+    "name": "7 Pcs Bowl Set GD125B/L7HA",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10161424957757",
+    "name": "7 Pcs Bowl Set TG1080B/L7HA",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10161426694461",
+    "name": "7 Pcs Bowl Set TG1080/L7HS",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10161432559933",
+    "name": "7 Pcs Bowl Set TG1080B/L7HC",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10161435312445",
+    "name": "6 Pcs Ice cup Set BQL026-2",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10162284429629",
+    "name": "6 Pcs Ice cup Set BQL026-2HC",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10162348818749",
+    "name": "3 Pcs Jar Set JS39/L3",
+    "oldCategory": "Decoration & Gift Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10162621022525",
+    "name": "1 Pc Noodles bowl W7048-5",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10162755174717",
+    "name": "3 Pcs Casserole Set With Lid EB20/L3",
+    "oldCategory": "Kitchen Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10162878742845",
+    "name": "6 Pcs Juice Mugs ZB97",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10163017679165",
+    "name": "6 Pcs Cup Set DSZB112D",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10163017810237",
+    "name": "6 Pcs Glass Set Y5187-1",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10163018268989",
+    "name": "7Pcs WATER SET EH1003-2-JS1001-2/L7",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10163034128701",
+    "name": "7 Pcs Bowl Set W7023/L7",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10163166773565",
+    "name": "6 PERSON DINNERSET 32 Pcs ZB24000/L32",
+    "oldCategory": "Kitchen Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10163738575165",
+    "name": "1 Pcs Large plate 10 inches P03-10B",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10163848872253",
+    "name": "Trifle Bowl Set Dstg27/L7",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10163907821885",
+    "name": "7 PCS WATER SET Yzh-33-Dskb151B / L7",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10163951599933",
+    "name": "1PC LARGE JUG EH1028",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10164042137917",
+    "name": "1 Pcs Candy JAR DSTG1804",
+    "oldCategory": "Decoration & Gift Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10164079919421",
+    "name": "1 Pcs Candy JAR TG1078-5B",
+    "oldCategory": "Decoration & Gift Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10164140212541",
+    "name": "Cup & Saucer set ( 6 cups & 6 saucers ) CF023/L12",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10164835746109",
+    "name": "Cup & Saucer Set ( 6 cups & 6 saucers ) CF025/L12",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165053882685",
+    "name": "6 Pcs Glass Set Y5075B",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165068103997",
+    "name": "6 Pcs Glass Set DSY5840-1",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165202616637",
+    "name": "5 Pcs Bowl Set 808 (1-5)",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165409874237",
+    "name": "1 Pcs Decoration Vase DSHP128-1F",
+    "oldCategory": "Kitchen Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165578891581",
+    "name": "1 Pcs Decoration Vase DSHP128-1C",
+    "oldCategory": "Kitchen Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165580792125",
+    "name": "3 Portion Platter(10”inch)P09-9A",
+    "oldCategory": "Kitchen Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165587247421",
+    "name": "3 Portion platter(10inch) P09-9B",
+    "oldCategory": "Kitchen Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165591212349",
+    "name": "12 Pcs Cup Set CF029/L12",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165593932093",
+    "name": "6 Pcs Glass Set Y5076A",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165616476477",
+    "name": "6 Pcs Glass Set J3101-3",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165618606397",
+    "name": "7 Pcs Bowl Set GD1911/L7HC",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165620277565",
+    "name": "6 Pcs Long Tumblers JS5156-2",
+    "oldCategory": "Kitchen Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165621489981",
+    "name": "6 Pcs Wine Glass Set DSKB151E",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165622440253",
+    "name": "6 Pcs Glass Set JS5156-1",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165635481917",
+    "name": "DELI GLASSWARE WATER SET-7PcsDS2026/L7",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165640429885",
+    "name": "6 Pcs Glass SetJS3101-4",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165642723645",
+    "name": "6 Pcs Glass Set KB237C",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165644001597",
+    "name": "6 Pcs Cup Set ZB317C",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165645115709",
+    "name": "1 Pcs Jug EH1005-1",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165645771069",
+    "name": "1 Pcs Jug EH1004-2",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165646590269",
+    "name": "1 Pcs Jug EH1003-4",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165646819645",
+    "name": "1 Pcs Jug EH1003-1",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165744402749",
+    "name": "1 Pcs Jug YZH-36",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165824258365",
+    "name": "1 Pcs Jug YZH-35",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165828550973",
+    "name": "1 Pcs Jug E002H1",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165829271869",
+    "name": "1 Pcs Jug E001H1",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165831106877",
+    "name": "1 Pcs Jug YZH-37",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165831860541",
+    "name": "1 Pcs Jug EH1001",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165833400637",
+    "name": "6 Pcs Cup Set ZB419C",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165835071805",
+    "name": "6 Pcs Cup Set ZB24",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10165836874045",
+    "name": "6 Pcs Cup Set CF036S",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10166027649341",
+    "name": "6 Pcs Cup Set CF028",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10166029943101",
+    "name": "6 Pcs Cup Set DSZB245S",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10166030238013",
+    "name": "6 Pcs Cup Set ZB24S",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10166033547581",
+    "name": "6 Pcs Cup Set DSZB245",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10166034301245",
+    "name": "6 Pcs Cup Set CF001",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10166057009469",
+    "name": "6 Pcs Cup Set CF027",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10167249502525",
+    "name": "6 Pcs Cup Set DSZB246",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10167253532989",
+    "name": "6 Pcs Cup Set ZB324-205",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10167257858365",
+    "name": "7 Pcs Water Set EH1038-Y5076/L7HS",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10167266279741",
+    "name": "12 Pcs Cup & Saucer Set CF036/L12",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10167269949757",
+    "name": "12 Pcs Cup & Saucer Set CF001/L12",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10167273816381",
+    "name": "1 PC AIR-TIGHT JAR 2200ML MFG55-C",
+    "oldCategory": "Decoration & Gift Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10167274438973",
+    "name": "1 Pcs Air Tight Jar DSTG1028-3.5",
+    "oldCategory": "Decoration & Gift Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10167531274557",
+    "name": "1 PC AIR TIGHT JAR 2200ML MFGFF-A",
+    "oldCategory": "Decoration & Gift Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10167534256445",
+    "name": "1 Pcs Air Tight Jar MFG55-D",
+    "oldCategory": "Decoration & Gift Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10167540285757",
+    "name": "1 Pcs Air Tight Jar 2200ML MFGFF-B",
+    "oldCategory": "Decoration & Gift Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10167557816637",
+    "name": "6 Pcs Smoothie Glass BQLO17",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10167625220413",
+    "name": "6 Pcs Wine Glass Set DSKB151D",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10167704125757",
+    "name": "6 PCS LONG NECK MUG SET DSZB226",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10168792383805",
+    "name": "6 Pcs Juice Mug ( 560ml ) ZB01-280",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10168796676413",
+    "name": "6 Pcs Juice Mug ZB375",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10168802312509",
+    "name": "6 Pcs Juice Mug ZB78",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10168803590461",
+    "name": "6 Pcs Juice Mug ZB77",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10168808210749",
+    "name": "6 Pcs Juice Mug ZB438",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10168808833341",
+    "name": "6 Pcs Juice Mug ZB4307",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10168827576637",
+    "name": "6 Pcs Glass Set Y5076",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169246843197",
+    "name": "6 PCS GLASS SET JS5001",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169371066685",
+    "name": "6 Pcs Glass Set Y5981",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169378472253",
+    "name": "6 Pcs Glass Set DSKB010",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169382666557",
+    "name": "6 Pcs Glass Set DSKB036-2",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169384370493",
+    "name": "6 Pcs Glass Set Y5075",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169385025853",
+    "name": "6 Pcs Glass Set 6001-3",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169386369341",
+    "name": "6 Pcs Glass Set JS5163-2",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169388466493",
+    "name": "6 Pcs Glass Set JS5163-2HS",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169391350077",
+    "name": "6 Pcs Glass Set JS7201-1",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169392824637",
+    "name": "6 Pcs Glass Set JS5217",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169395380541",
+    "name": "6 Pcs Glass Set Y5976HS",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169403965757",
+    "name": "6 Pcs Glass Set DSKB033-2",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169410453821",
+    "name": "6 Pcs Glass Set JS5218",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169412190525",
+    "name": "6 Pcs Glass Set JS7201-2",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169413534013",
+    "name": "6 Pcs Glass Set JS2103-2",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169415336253",
+    "name": "6 Pcs Glass Set DSY2035-2",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169417433405",
+    "name": "6 Pcs Glass Set Y5170-2HS",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169418907965",
+    "name": "6 Pcs Glass Set JS5150-1",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169433981245",
+    "name": "6 Pcs Glass Set JS5219",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169497125181",
+    "name": "6 Pcs Glass Set JS2103-2HA",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169499451709",
+    "name": "6 Pcs Glass Set JS3101-3HA",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169503220029",
+    "name": "6 Pcs Glass Set Y5974-1",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169513738557",
+    "name": "6 Pcs Glass Set Y5975-2",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169921503549",
+    "name": "6 PCS GLASS SET Y5975-1",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169926156605",
+    "name": "6 Pcs Glass Set KB237A",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169929433405",
+    "name": "6 Pcs Glass Set 82089",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169931366717",
+    "name": "6 Pcs Glass Set KB245B",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169936052541",
+    "name": "6 Pcs Glass Set KB245A",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169939362109",
+    "name": "6 Pcs Glass Set KB237D",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169942868285",
+    "name": "3 Pcs Casserole Set With Lid EB100/L3HS",
+    "oldCategory": "Kitchen Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169944080701",
+    "name": "3 Pcs Casserole Set With Lid Eb100/L3",
+    "oldCategory": "Kitchen Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169946767677",
+    "name": "7 Pcs Water Set YZH-33/L7",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169949192509",
+    "name": "7 Pcs Water Set YZH-36-DSKB151E/L7HS",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169955844413",
+    "name": "7 Pcs Water Set DSH2035-151D/L7",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169957941565",
+    "name": "7 Pcs Water Set DSH2027-151B/L7",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169960792381",
+    "name": "7 Pcs Water Set EH1028-JS5163",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10169967771965",
+    "name": "7 Pcs Water Set EH1038-Y5076/L7HA",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10170220183869",
+    "name": "7 Pcs Water Set EH1003-1-JS1001-2/L7",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10170221166909",
+    "name": "7 Pcs Water Set DSH2041-DSKB151E",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10170224705853",
+    "name": "7 Pcs Water Set YZH-36/L7HA",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10170226835773",
+    "name": "7 Pcs Water Set YZH-33/L7HA",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10170228179261",
+    "name": "7 Pcs Water Set YZH-35/L7HS",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10170231587133",
+    "name": "7 Pcs Bowl Set DSW2015/L7HA",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10170232963389",
+    "name": "7 Pcs Water Set YZH-36/L7",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10170242662717",
+    "name": "7 Pcs Bowl Set Dstg26/L7",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10170251804989",
+    "name": "7 Pcs Bowl Set GD1914/L7HS",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10170397425981",
+    "name": "7 Pcs Bowl Set TG24/L7",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10170404372797",
+    "name": "7 Pcs Bowl Set DSW2015/L7HC",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10170405847357",
+    "name": "7 Pcs Bowl SetGD1914/L7",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10170417709373",
+    "name": "3PCS DEEP DISH SET EQ100/L3",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10170429014333",
+    "name": "5.5 INCH DEEP PLATE ( For Sweet ) P4001",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10170437763389",
+    "name": "9’INCH DEEP DINNER PLATE P84-9",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10170441498941",
+    "name": "6 Pcs Plate Set 7’INCH DEEP PLATE EQ4001-1",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10170446250301",
+    "name": "6 PCS QUATER PLATE SET EQ4002-1",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10170446807357",
+    "name": "3 Pcs Bowl Set W107-6",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10170448609597",
+    "name": "7’Inch Medium Bowl EW2007",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10170451329341",
+    "name": "6 Pcs Bowl Set EW2005",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10170452443453",
+    "name": "7 Pcs Platter Set Dsp2015/l7ha",
+    "oldCategory": "Kitchen Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10172119712061",
+    "name": "6 Pcs Glass Set Y5170-2",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10172130492733",
+    "name": "6 Pcs Glass Set JS1001-2",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10172152840509",
+    "name": "7 Pcs Bowl Set DSW2015/L7",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10172160115005",
+    "name": "7 Pcs Bowl Set GD1914/L7HA",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10172161360189",
+    "name": "7 Pcs Bowl Set W7030/L7HA",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10172900770109",
+    "name": "6 Pcs Plate Set 5.5 INCH DEEP P4001",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10172970271037",
+    "name": "6 Pcs Wine Glass Set DSKB151B",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10173055402301",
+    "name": "1 Pcs Candy Jar Dstg21",
+    "oldCategory": "Decoration & Gift Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10174709203261",
+    "name": "1 Pcs Candy JarDSTG1804",
+    "oldCategory": "Decoration & Gift Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10174718116157",
+    "name": "6 Pcs Glass Set KB103-2B",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10175932268861",
+    "name": "6 Pcs Glass Set Y5589-2",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10188365398333",
+    "name": "6pcs wine glass K325B",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10188367266109",
+    "name": "6pcs wine glass K325C",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10188370116925",
+    "name": "6pcs wine glass K325A",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10190482604349",
+    "name": "12pcs cup & saucer set GA901",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10193407967549",
+    "name": "6 pcs cup set CF023",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10195413991741",
+    "name": "7 pcs bowl set Dstg26/l7hs",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10197673804093",
+    "name": "7pcs Bowlset GD1911/L7HS",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10197674426685",
+    "name": "7 pcs Bowlset GD1911/L7",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10197675114813",
+    "name": "7 pcs Bowlset Gd1911/L7HA",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10197675770173",
+    "name": "7 pcs Bowlset Dstg26/L7",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10197679046973",
+    "name": "3 Pcs Candy jar set",
+    "oldCategory": "Decoration & Gift Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10197679866173",
+    "name": "6 pcs cup set Zb317b",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10197680521533",
+    "name": "6 pcs cup set Zb419A",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10197681340733",
+    "name": "6 pcs Cupset Zb419B",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10197681668413",
+    "name": "6 pcs cup set Zb24Hs",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10197682225469",
+    "name": "6 Pcs cup set Zb317A",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10197682389309",
+    "name": "6 pcs cup set Cf029",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10202040860989",
+    "name": "7 Pcs Waterset DS2026/L7",
+    "oldCategory": "Kitchen Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10202881655101",
+    "name": "1pc Air-tight jar ( 1.64L ) MFG60-1640",
+    "oldCategory": "Decoration & Gift Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10202883129661",
+    "name": "1 pc Air-tight Jar ( 1.85L ) MFG60-1840",
+    "oldCategory": "Decoration & Gift Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10202988118333",
+    "name": "6 pcs Glass set Y5970",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10203584594237",
+    "name": "3 Pcs Air-tight bowl set 400ml , 690ml , 950ml",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10203641512253",
+    "name": "7 Pcs Bowl Set Dsw2047/L7",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10203646099773",
+    "name": "1 Pc 14.4 Inch Dish P131-10",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10203646492989",
+    "name": "3 Pcs Dish Set P133-L3",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10203646787901",
+    "name": "7 Pcs Bowl Set Dsw2047-L7HA",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10207387451709",
+    "name": "Rs : 2000 Mystery Box 🎊",
+    "oldCategory": "Kitchen Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10207421661501",
+    "name": "Rs : 5000 Mystery Box",
+    "oldCategory": "Kitchen Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10207437553981",
+    "name": "Rs : 10000 Mystery Box 🎊",
+    "oldCategory": "Kitchen Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10208053788989",
+    "name": "7 Pcs Gold Water Set Yzh-36/L7Ha",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10209197097277",
+    "name": "3 Pcs Serving Dish Set",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10209764704573",
+    "name": "1 pcs Air-tight juice mug with straw & lid",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10210172010813",
+    "name": "1 Pcs Tea Mug Large With Lid Dsz001",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10241226309949",
+    "name": "7 Pcs Bowlset Ew10/L7",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10243012723005",
+    "name": "6 Pcs Glass set Js3101-3",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10265491669309",
+    "name": "18 Pcs Crystal Plateset",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10316092178749",
+    "name": "Candy jar large DSTG21",
+    "oldCategory": "Decoration & Gift Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10323807600957",
+    "name": "18 Pcs Crystal Plateset GA18",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-10423963025725",
+    "name": "9’Inch Dinner Plate 🍽️ Eq4002-2",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-mt9p2t2y-dmie",
+    "name": "TEA MUG ",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "p-mtc7393u-6ybm",
+    "name": "storge jar 3 pice",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "premium-crown-storage-jar-medium",
+    "name": "Premium Crown Storage Jar (Medium)",
+    "oldCategory": "Kitchen Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "premium-navy-blue-bath-towel-set",
+    "name": "Premium Navy Blue Bath Towel Set",
+    "oldCategory": "Towels",
+    "category": "Towels",
+    "sheetType": null
+  },
+  {
+    "id": "prod-0c2ee254",
+    "name": "Vegetable Cutters",
+    "oldCategory": "Kitchen Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-0eec84e8",
+    "name": "Women's Watches",
+    "oldCategory": "Watches",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-1",
+    "name": "Artisan Terracotta Vase",
+    "oldCategory": "Ceramics",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-10af1adc",
+    "name": "Multi-purpose Brushes",
+    "oldCategory": "Cleaning Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-1227b561",
+    "name": "Dining Table Runners",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "prod-154a2dea",
+    "name": "Table Sheets",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "prod-1ec6fb38",
+    "name": "Trays",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-2",
+    "name": "Minimal Brass Table Lamp",
+    "oldCategory": "Lighting",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-21de2db7",
+    "name": "Smart Utility Products",
+    "oldCategory": "Electronics & Gadgets",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-21ee07ec",
+    "name": "Dining Accessories",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-22da68da",
+    "name": "Electric Cutters",
+    "oldCategory": "Electronics & Gadgets",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-246c7719",
+    "name": "Men's Watches",
+    "oldCategory": "Watches",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-27af4328",
+    "name": "Tubs",
+    "oldCategory": "JPI",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-29726d53",
+    "name": "Kitchen Electronics",
+    "oldCategory": "Electronics & Gadgets",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-29c95aae",
+    "name": "Plastic Kitchen Containers",
+    "oldCategory": "Three Star",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-3",
+    "name": "Nordic Oak Lounge Chair",
+    "oldCategory": "Furniture",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-3da1c0b8",
+    "name": "Electric Choppers",
+    "oldCategory": "Electronics & Gadgets",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-4",
+    "name": "Woven Organic Linen Throw",
+    "oldCategory": "Textiles",
+    "category": "Sheet House",
+    "sheetType": null
+  },
+  {
+    "id": "prod-430cb50f",
+    "name": "Peelers",
+    "oldCategory": "Kitchen Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-4a86c77d",
+    "name": "Cleaning Brushes",
+    "oldCategory": "Cleaning Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-4e2afa17",
+    "name": "Cool Sets",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-4eb396b7",
+    "name": "Serving Bowls",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-53f5fe33",
+    "name": "Dressing Table Sheets",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "prod-558db722",
+    "name": "Tea Mugs",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-5bd32f60",
+    "name": "Slicers",
+    "oldCategory": "Kitchen Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-5d9a8cc3",
+    "name": "Gift Items",
+    "oldCategory": "Decoration & Gift Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-5e42686d",
+    "name": "Choppers",
+    "oldCategory": "Kitchen Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-5f1b8ba8",
+    "name": "Household Electronic Accessories",
+    "oldCategory": "Electronics & Gadgets",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-60b7eda0",
+    "name": "Home Decor",
+    "oldCategory": "Decoration & Gift Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-6455ba5b",
+    "name": "Marble Sticker Sheets",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Wallpaper Sheets"
+  },
+  {
+    "id": "prod-650f7bd6",
+    "name": "Other Kitchen Accessories",
+    "oldCategory": "Kitchen Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-65140184",
+    "name": "Knives",
+    "oldCategory": "Kitchen Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-682d287f",
+    "name": "Dust Cleaning Tools",
+    "oldCategory": "Cleaning Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-7478d47a",
+    "name": "Floor Sheets",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": null
+  },
+  {
+    "id": "prod-748a7343",
+    "name": "Water Sets",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-76a4dce1",
+    "name": "Showpieces",
+    "oldCategory": "Decoration & Gift Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-7c584e73",
+    "name": "Wall Sheets",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Wallpaper Sheets"
+  },
+  {
+    "id": "prod-7e9bfcc4",
+    "name": "Plates",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-80bf8075",
+    "name": "Shelf Mats",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": null
+  },
+  {
+    "id": "prod-8466f8d3",
+    "name": "Fridge Mats",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": null
+  },
+  {
+    "id": "prod-853abd15",
+    "name": "Cake Sets",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-86ba4986",
+    "name": "Plastic Jars",
+    "oldCategory": "Rockstar",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-8c908555",
+    "name": "Brooms",
+    "oldCategory": "Cleaning Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-91ec0db9",
+    "name": "Electric Juicers",
+    "oldCategory": "Electronics & Gadgets",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-94ab1ed7",
+    "name": "Bath Towels",
+    "oldCategory": "Towels",
+    "category": "Towels",
+    "sheetType": null
+  },
+  {
+    "id": "prod-956a6423",
+    "name": "Kids' Watches",
+    "oldCategory": "Watches",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-96dadf17",
+    "name": "Kitchen Organizers",
+    "oldCategory": "Kitchen Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-9dc7afdb",
+    "name": "Decorative Pieces",
+    "oldCategory": "Decoration & Gift Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-9dda19df",
+    "name": "Dining Table Sheets",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "prod-a1cf143b",
+    "name": "Artificial Flowers",
+    "oldCategory": "Decoration & Gift Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-b185a271",
+    "name": "Glasses",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-b4764402",
+    "name": "Cups",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-c0b0aa44",
+    "name": "Household Plastic Items",
+    "oldCategory": "Plastic Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-c0e83bf2",
+    "name": "Graters",
+    "oldCategory": "Kitchen Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-c1b06a18",
+    "name": "Water Jugs",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-c227b373",
+    "name": "Floor Brushes",
+    "oldCategory": "Cleaning Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-c5fd53b3",
+    "name": "Side Table Sheets",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Table Sheets"
+  },
+  {
+    "id": "prod-c87347a8",
+    "name": "Mops",
+    "oldCategory": "Cleaning Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-c9724b71",
+    "name": "Coffee Mugs",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-cda06bcf",
+    "name": "Buckets",
+    "oldCategory": "Classic",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-d0ade8ef",
+    "name": "Jewellery Boxes",
+    "oldCategory": "Prince Ware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-d7f30f11",
+    "name": "Decorative Sticker Sheets",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Wallpaper Sheets"
+  },
+  {
+    "id": "prod-d8a00777",
+    "name": "Storage Boxes",
+    "oldCategory": "Elite Royal",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-d93090c8",
+    "name": "Cleaning Accessories",
+    "oldCategory": "Cleaning Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-de997193",
+    "name": "Firni Sets",
+    "oldCategory": "Serving & Dining",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-e068d7c7",
+    "name": "Rechargeable Gadgets",
+    "oldCategory": "Electronics & Gadgets",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-ecabd9b0",
+    "name": "Hand Towels",
+    "oldCategory": "Towels",
+    "category": "Towels",
+    "sheetType": null
+  },
+  {
+    "id": "prod-f1942b8d",
+    "name": "Kitchen Gadgets",
+    "oldCategory": "Kitchen Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "prod-f75c4bc8",
+    "name": "Face Towels",
+    "oldCategory": "Towels",
+    "category": "Towels",
+    "sheetType": null
+  },
+  {
+    "id": "prod-f955056e",
+    "name": "Kitchen Towels",
+    "oldCategory": "Towels",
+    "category": "Towels",
+    "sheetType": null
+  },
+  {
+    "id": "prod-ff0bdcf9",
+    "name": "Toilet Brushes",
+    "oldCategory": "Cleaning Items",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "timy-coffee-mug-insulated",
+    "name": "Timy Coffee Mug (Double Wall Insulated)",
+    "oldCategory": "Cups & Drinkware",
+    "category": "Crockery",
+    "sheetType": null
+  },
+  {
+    "id": "white-marble-wall-sheet-10x5",
+    "name": "Premium White Marble Wall Sheet (10x5)",
+    "oldCategory": "Home Sheets & Covers",
+    "category": "Sheet House",
+    "sheetType": "Wallpaper Sheets"
+  }
+]

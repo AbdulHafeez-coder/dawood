@@ -24,7 +24,8 @@ const DEFAULTS: Settings = {
   whatsappNumber: "03024201342",
   contactEmail: "abdulhafeez828@gmail.com",
   contactPhone: "0302-4201342",
-  address: "Shakeel Crockery Store, Opposite Al Shams Jewellers, Al Noor Town Bazar, Walton Road, Lahore Cantt, Lahore, Pakistan",
+  address:
+    "Shakeel Crockery Store, Opposite Al Shams Jewellers, Al Noor Town Bazar, Walton Road, Lahore Cantt, Lahore, Pakistan",
   socials: {
     instagram: "https://instagram.com/dawoodmart",
     facebook: "",

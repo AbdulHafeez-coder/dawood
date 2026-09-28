@@ -16,7 +16,10 @@ function SupportPage() {
       {/* Simple Header */}
       <header className="bg-white border-b border-black/10 py-4 px-6 sticky top-0 z-20">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <Link to="/" className="font-bold text-xl tracking-tight text-black hover:opacity-70 transition-opacity font-dmSans">
+          <Link
+            to="/"
+            className="font-bold text-xl tracking-tight text-black hover:opacity-70 transition-opacity font-dmSans"
+          >
             DAWOOD MART
           </Link>
           <div className="text-sm font-medium text-black/60">Contact Us</div>
@@ -28,11 +31,11 @@ function SupportPage() {
           Customer Support
         </h1>
         <p className="text-black/70 mb-10 text-lg">
-          We're here to help. Reach out to us for order inquiries, sourcing requests, or general questions.
+          We're here to help. Reach out to us for order inquiries, sourcing requests, or general
+          questions.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          
           {/* WhatsApp Contact */}
           <a
             href="https://wa.me/923024201342"
@@ -68,13 +71,11 @@ function SupportPage() {
               abdulhafeez828@gmail.com
             </div>
           </a>
-
         </div>
 
         {/* Location & Hours */}
         <div className="bg-white border border-black/10 rounded-2xl p-6 md:p-8 shadow-sm">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            
             <div className="flex items-start gap-4">
               <div className="w-10 h-10 rounded-full bg-black/5 flex items-center justify-center shrink-0">
                 <MapPin className="w-5 h-5 text-black/80" />
@@ -82,10 +83,14 @@ function SupportPage() {
               <div>
                 <h3 className="font-semibold text-black mb-2">Our Store</h3>
                 <address className="not-italic text-sm text-black/70 leading-relaxed">
-                  <strong>Shakeel Crockery Store</strong><br />
-                  Opposite Al Shams Jewellers<br />
-                  Al Noor Town Bazar<br />
-                  Walton Road<br />
+                  <strong>Shakeel Crockery Store</strong>
+                  <br />
+                  Opposite Al Shams Jewellers
+                  <br />
+                  Al Noor Town Bazar
+                  <br />
+                  Walton Road
+                  <br />
                   Lahore Cantt, Lahore, Pakistan
                 </address>
               </div>
@@ -109,7 +114,6 @@ function SupportPage() {
                 </ul>
               </div>
             </div>
-
           </div>
         </div>
       </main>

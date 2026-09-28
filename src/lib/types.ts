@@ -12,6 +12,7 @@ export type Product = {
   bg: string;
   category: Category;
   brand?: string;
+  status?: "available" | "on_demand" | "sold_out" | "coming_soon" | "discontinued";
   subCategory?: string;
   tagline: string;
   description: string;
@@ -49,4 +50,3 @@ export type Coupon = {
   minSpend?: number;
   description: string;
 };
-

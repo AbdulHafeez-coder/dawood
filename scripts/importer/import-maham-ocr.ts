@@ -19,11 +19,13 @@ const BRANDS = [
 
 function fetchOcr(url: string): Promise<string> {
   return new Promise((resolve) => {
-    https.get(`https://api.ocr.space/parse/imageurl?apikey=helloworld&url=${url}`, (res) => {
-      let data = "";
-      res.on("data", (c) => (data += c));
-      res.on("end", () => resolve(data));
-    }).on("error", () => resolve(""));
+    https
+      .get(`https://api.ocr.space/parse/imageurl?apikey=helloworld&url=${url}`, (res) => {
+        let data = "";
+        res.on("data", (c) => (data += c));
+        res.on("end", () => resolve(data));
+      })
+      .on("error", () => resolve(""));
   });
 }
 
@@ -40,18 +42,22 @@ async function run() {
     try {
       await page.goto(brand.url, { waitUntil: "domcontentloaded", timeout: 30000 });
       const images = await page.$$eval("img", (imgs) =>
-        imgs.map((i) => i.src).filter((src) => src.includes("images/") && !src.includes("logo") && !src.includes("banner"))
+        imgs
+          .map((i) => i.src)
+          .filter(
+            (src) => src.includes("images/") && !src.includes("logo") && !src.includes("banner"),
+          ),
       );
       const uniqueImages = Array.from(new Set(images));
-      
+
       for (const img of uniqueImages) {
         allImages.push({ brand: brand.name, url: img });
       }
-    } catch (e: any) {
-      console.log(`Failed to load ${brand.name}:`, e.message);
+    } catch (e: unknown) {
+      console.log(`Failed to load ${brand.name}:`, e instanceof Error ? e.message : String(e));
     }
   }
-  
+
   await browser.close();
   console.log(`Found ${allImages.length} images. Starting OCR (this may take a few minutes)...`);
 
@@ -72,15 +78,18 @@ async function run() {
           console.log(`OCR failed for ${item.url}`);
         }
         return { ...item, text: text.trim().replace(/\n/g, " ") };
-      })
+      }),
     );
     results.push(...chunkResults);
     console.log(`Processed ${results.length}/${allImages.length}...`);
     // sleep 2 seconds
-    await new Promise(r => setTimeout(r, 2000));
+    await new Promise((r) => setTimeout(r, 2000));
   }
 
-  fs.writeFileSync(path.resolve(__dirname, "../../scratch/maham-ocr.json"), JSON.stringify(results, null, 2));
+  fs.writeFileSync(
+    path.resolve(__dirname, "../../scratch/maham-ocr.json"),
+    JSON.stringify(results, null, 2),
+  );
   console.log("Saved OCR results to scratch/maham-ocr.json");
 }
 

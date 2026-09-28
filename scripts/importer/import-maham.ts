@@ -30,7 +30,7 @@ const BRANDS = [
 ];
 
 async function ensureCategory() {
-  const catName = "Maham Enterprises";
+  const catName = "Crockery";
   const { data } = await supabase.from("categories").select("name").eq("name", catName).single();
   if (!data) {
     await supabase.from("categories").insert({ name: catName });
@@ -66,10 +66,13 @@ async function run() {
     console.log(`\nProcessing brand: ${brand.name} (${brand.url})`);
     try {
       await page.goto(brand.url, { waitUntil: "domcontentloaded", timeout: 30000 });
-      
-      const images = await page.$$eval("img", (imgs) => 
-        imgs.map(i => i.src)
-            .filter(src => src.includes("images/") && !src.includes("logo") && !src.includes("banner"))
+
+      const images = await page.$$eval("img", (imgs) =>
+        imgs
+          .map((i) => i.src)
+          .filter(
+            (src) => src.includes("images/") && !src.includes("logo") && !src.includes("banner"),
+          ),
       );
 
       const uniqueImages = Array.from(new Set(images));
@@ -103,7 +106,7 @@ async function run() {
           img: img,
           slug: slug,
           seo_title: `${title} | Maham Enterprises`,
-          seo_description: `Shop ${title} from Maham Enterprises. Discover quality ${brand.name} collections.`
+          seo_description: `Shop ${title} from Maham Enterprises. Discover quality ${brand.name} collections.`,
         };
 
         try {
@@ -112,16 +115,24 @@ async function run() {
           console.log(`  Imported: ${title}`);
           existingSlugs.add(slug);
           report.imported++;
-        } catch (err: any) {
-          console.error(`  Failed to import ${title}:`, err.message);
+        } catch (err: unknown) {
+          console.error(
+            `  Failed to import ${title}:`,
+            err instanceof Error ? err.message : String(err),
+          );
           report.failed++;
-          report.errors.push(`[${title}] ${err.message}`);
+          report.errors.push(`[${title}] ${err instanceof Error ? err.message : String(err)}`);
         }
         count++;
       }
-    } catch (err: any) {
-      console.error(`Failed to process brand ${brand.name}:`, err.message);
-      report.errors.push(`[Brand ${brand.name}] ${err.message}`);
+    } catch (err: unknown) {
+      console.error(
+        `Failed to process brand ${brand.name}:`,
+        err instanceof Error ? err.message : String(err),
+      );
+      report.errors.push(
+        `[Brand ${brand.name}] ${err instanceof Error ? err.message : String(err)}`,
+      );
     }
   }
 
@@ -138,9 +149,12 @@ async function run() {
     report.errors.forEach((e) => console.log(e));
   }
   console.log("===============================");
-  
+
   // Write report to JSON for the IDE
-  fs.writeFileSync(path.resolve(__dirname, "../../scratch/maham-report.json"), JSON.stringify(report, null, 2));
+  fs.writeFileSync(
+    path.resolve(__dirname, "../../scratch/maham-report.json"),
+    JSON.stringify(report, null, 2),
+  );
 }
 
 import fs from "fs";

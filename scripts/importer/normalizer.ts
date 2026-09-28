@@ -1,4 +1,4 @@
-import { CATEGORY_MAP, DEFAULT_CATEGORY } from "./config";
+import { classifyCategory } from "../../src/lib/categories.ts";
 
 export function normalizeTitle(rawTitle: string): string {
   let clean = rawTitle.replace(/\|/g, "").replace(/\s+/g, " ").trim();
@@ -31,23 +31,7 @@ export function generateSEODescription(normalizedTitle: string, category: string
 }
 
 export function mapCategory(sourceCategory: string, title: string): string {
-  if (sourceCategory && CATEGORY_MAP[sourceCategory]) {
-    return CATEGORY_MAP[sourceCategory];
-  }
-  const t = title.toLowerCase();
-  if (t.includes("bowl") || t.includes("plate") || t.includes("dish") || t.includes("serving"))
-    return "Serving & Dining";
-  if (
-    t.includes("cup") ||
-    t.includes("glass") ||
-    t.includes("mug") ||
-    t.includes("jug") ||
-    t.includes("water set") ||
-    t.includes("tea set")
-  )
-    return "Cups & Drinkware";
-  if (t.includes("jar") || t.includes("candy")) return "Decoration & Gift Items";
-  return DEFAULT_CATEGORY;
+  return classifyCategory({ name: title, category: sourceCategory });
 }
 
 export function cleanDescription(rawHtml: string): string {
