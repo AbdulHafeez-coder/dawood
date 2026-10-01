@@ -9,7 +9,7 @@ export function reconcileCartCatalog(
     const id = item.baseId || item.id;
     if (!requested.has(id)) return item;
     const current = fresh.get(id);
-    return current
+    return current && current.visible !== false
       ? {
           ...item,
           price: current.price,

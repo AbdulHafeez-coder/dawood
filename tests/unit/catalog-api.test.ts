@@ -17,22 +17,14 @@ function client(handler: (url: URL) => Response) {
     global: { fetch: async (input) => handler(new URL(String(input))) },
   });
 }
-test("catalog requests bounded server filters and stable availability-first order", async () => {
-  let seen: URL | undefined;
+test("catalog filters legacy rows before paging and uses current real prices", async () => {
+  const rows = Array.from({ length: 25 }, (_, i) => ({ ...row, id: "prod-" + i }));
   const result = await fetchCatalog(
-    client((url) => {
-      seen = url;
-      return new Response(JSON.stringify([row]), {
-        headers: { "content-type": "application/json", "content-range": "24-24/25" },
-      });
-    }),
+    client(() => Response.json(rows)),
     { page: 1, category: "Crockery", status: "available", search: "mug", maxPrice: 1000 },
   );
-  assert.equal(seen?.searchParams.get("offset"), "24");
-  assert.equal(seen?.searchParams.get("limit"), "24");
-  assert.equal(seen?.searchParams.get("storefront_category"), "eq.Crockery");
-  assert.match(seen?.searchParams.get("order") || "", /^availability_rank.asc,/);
   assert.equal(result.total, 25);
+  assert.equal(result.products.length, 1);
   assert.equal(result.products[0].price, 500);
 });
 test("database errors are surfaced, never replaced by demo products", async () => {

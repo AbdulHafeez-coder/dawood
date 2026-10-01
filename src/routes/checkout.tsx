@@ -18,6 +18,7 @@ import { buildCheckoutWhatsappOrder } from "@/lib/whatsapp";
 import { saveOrder } from "@/lib/orders";
 import { supabase } from "@/lib/supabase";
 import { validateCheckoutItems } from "@/lib/checkout-validation";
+import { mapCatalogProduct } from "@/lib/catalog-model";
 import { toast } from "sonner";
 import { SafeImage } from "@/components/ui/SafeImage";
 
@@ -86,7 +87,7 @@ function CheckoutPage() {
       const ids = [...new Set(cart.map((item) => item.baseId ?? item.id.split("::")[0]))];
       const { data, error } = await supabase.from("products").select("*").in("id", ids);
       if (error) throw new Error("Could not verify current availability. Please try again.");
-      validateCheckoutItems(cart, data ?? []);
+      validateCheckoutItems(cart, (data ?? []).map(mapCatalogProduct));
       const orderId = crypto.randomUUID();
       const customerInfo = { name, phone, city, address, notes };
       const couponInfo =

@@ -3,6 +3,13 @@ import test from "node:test";
 import { validateCheckoutItems, persistConfirmedOrder } from "../../src/lib/checkout-validation.ts";
 
 const cart = [{ id: "one", name: "Cup", price: 100, qty: 2 }];
+test("hidden in-stock products cannot be checked out", () => {
+  assert.throws(
+    () =>
+      validateCheckoutItems(cart, [{ id: "one", price: 100, status: "available", visible: false }]),
+    /not available/,
+  );
+});
 test("only available products with current prices can be ordered", () => {
   assert.doesNotThrow(() =>
     validateCheckoutItems(cart, [{ id: "one", price: 100, status: "available" }]),

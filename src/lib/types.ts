@@ -12,6 +12,8 @@ export type Product = {
   bg: string;
   category: Category;
   brand?: string;
+  visible?: boolean;
+  legacyCategory?: string;
   status?: "available" | "on_demand" | "sold_out" | "coming_soon" | "discontinued";
   subCategory?: string;
   tagline: string;

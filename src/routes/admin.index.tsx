@@ -1,3 +1,5 @@
+import { STATUS_LABELS, SUBCATEGORIES } from "@/lib/catalog-model";
+import { PREVIEW_WRITE_MESSAGE } from "@/lib/preview-safety";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
@@ -100,13 +102,7 @@ import {
 
 const dmSans = { fontFamily: "'DM Sans', sans-serif" };
 const inter = { fontFamily: "'Inter', sans-serif" };
-const PRODUCT_STATUS_LABELS = {
-  available: "Available",
-  on_demand: "On Demand",
-  sold_out: "Sold Out",
-  coming_soon: "Coming Soon",
-  discontinued: "Discontinued",
-} as const;
+const PRODUCT_STATUS_LABELS = STATUS_LABELS;
 
 type TabId =
   "overview" | "products" | "categories" | "promotions" | "orders" | "settings" | "sourcing";
@@ -301,32 +297,15 @@ function AdminDashboard() {
   const clearSelection = () => setSelectedIds(new Set());
   const selectedCount = selectedIds.size;
 
-  function applyBulkDelete() {
-    const ids = Array.from(selectedIds);
-    const snapshot = ids
-      .map((id) => products.find((p) => p.id === id))
-      .filter((p): p is Product => Boolean(p));
-    ids.forEach((id) => deleteProduct(id));
-    const names = snapshot.map((p) => p.name);
-    const preview =
-      names.slice(0, 3).join(", ") + (names.length > 3 ? ` +${names.length - 3} more` : "");
-    toast.success(`${ids.length} product${ids.length === 1 ? "" : "s"} deleted`, {
-      description: `Undo within 6s to restore: ${preview}`,
-      duration: 6000,
-      action: {
-        label: "Undo",
-        onClick: async () => {
-          try {
-            await Promise.all(snapshot.map((p) => addProduct(p)));
-            toast.success(`Restored ${snapshot.length} product${snapshot.length === 1 ? "" : "s"}`);
-          } catch (error) {
-            toast.error(error instanceof Error ? error.message : "Could not restore products");
-          }
-        },
-      },
-    });
-    clearSelection();
-    setConfirmBulkDelete(false);
+  async function applyBulkDelete() {
+    try {
+      await Promise.all(Array.from(selectedIds).map((id) => deleteProduct(id)));
+      toast.success("Selected products hidden. All records and images are preserved.");
+      clearSelection();
+      setConfirmBulkDelete(false);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Some products could not be hidden");
+    }
   }
 
   async function applyBulkCategory() {
@@ -666,6 +645,14 @@ function AdminDashboard() {
       </header>
 
       <main className="flex-1 px-4 sm:px-6 md:px-8 py-6 sm:py-10">
+        {String(import.meta.env.VITE_SUPABASE_URL || "").includes("jowinhlsiofthbrtjind") && (
+          <p
+            role="status"
+            className="mx-auto mb-5 max-w-7xl rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm"
+          >
+            {PREVIEW_WRITE_MESSAGE}
+          </p>
+        )}
         <div className="mx-auto max-w-7xl space-y-6 sm:space-y-8">
           {tab === "overview" && (
             <>
@@ -1029,7 +1016,7 @@ function AdminDashboard() {
                               onClick={() => setConfirmBulkDelete(true)}
                               className="px-3 py-1.5 rounded-full bg-red-600 text-white text-[10px] uppercase tracking-[0.18em] hover:bg-red-700 transition inline-flex items-center gap-1.5"
                             >
-                              <Trash2 className="w-3 h-3" /> Delete
+                              <Trash2 className="w-3 h-3" /> Hide
                             </button>
                             <button
                               onClick={clearSelection}
@@ -1109,6 +1096,9 @@ function AdminDashboard() {
                                   </td>
                                   <td className="py-3 pr-3 text-black/70">
                                     {PRODUCT_STATUS_LABELS[p.status ?? "on_demand"] ?? "On Demand"}
+                                    {p.visible === false && (
+                                      <div className="text-xs text-black/50">Hidden</div>
+                                    )}
                                   </td>
                                   <td className="py-3 pr-3 text-black/70">{p.tag}</td>
                                   <td className="py-3 pr-3 text-black/70 tabular-nums">
@@ -1131,7 +1121,7 @@ function AdminDashboard() {
                                       <button
                                         onClick={() => setConfirmProduct(p)}
                                         className="w-8 h-8 rounded-full grid place-items-center text-black/60 hover:text-white hover:bg-black transition"
-                                        aria-label={`Delete ${p.name}`}
+                                        aria-label={`Hide ${p.name}`}
                                       >
                                         <Trash2 className="w-3.5 h-3.5" />
                                       </button>
@@ -1370,9 +1360,10 @@ function AdminDashboard() {
       <AlertDialog open={!!confirmProduct} onOpenChange={(o) => !o && setConfirmProduct(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete “{confirmProduct?.name}”?</AlertDialogTitle>
+            <AlertDialogTitle>Hide “{confirmProduct?.name}”?</AlertDialogTitle>
             <AlertDialogDescription>
-              This product will be permanently removed from the shop. This action cannot be undone.
+              Hide this product from customers. Its data and images stay in the catalog; restore it
+              using Product visibility.
             </AlertDialogDescription>
           </AlertDialogHeader>
           {confirmProduct && (
@@ -1394,15 +1385,18 @@ function AdminDashboard() {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               className="bg-red-600 hover:bg-red-700 text-white focus-visible:ring-red-600"
-              onClick={() => {
-                if (confirmProduct) {
-                  deleteProduct(confirmProduct.id);
-                  toast.success("Product deleted", { description: confirmProduct.name });
+              onClick={async () => {
+                if (!confirmProduct) return;
+                try {
+                  await deleteProduct(confirmProduct.id);
+                  toast.success("Product hidden", { description: confirmProduct.name });
+                  setConfirmProduct(null);
+                } catch (error) {
+                  toast.error(error instanceof Error ? error.message : "Could not hide product");
                 }
-                setConfirmProduct(null);
               }}
             >
-              Delete product
+              Hide product
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -1437,11 +1431,11 @@ function AdminDashboard() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              Delete {selectedCount} product{selectedCount === 1 ? "" : "s"}?
+              Hide {selectedCount} product{selectedCount === 1 ? "" : "s"}?
             </AlertDialogTitle>
             <AlertDialogDescription>
-              These products will be permanently removed from the shop. This action cannot be
-              undone.
+              These products will be hidden from customers. All product records and images remain
+              available in admin.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -1450,7 +1444,7 @@ function AdminDashboard() {
               className="bg-red-600 hover:bg-red-700 text-white focus-visible:ring-red-600"
               onClick={applyBulkDelete}
             >
-              Delete {selectedCount}
+              Hide {selectedCount}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -1827,33 +1821,19 @@ function ProductFormDialog({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <Field label="Subcategory">
-                  {["Sheets", "Sheet House"].includes(form.category) ? (
-                    <select
-                      aria-label="Subcategory"
-                      className="mt-input mt-select"
-                      value={form.subCategory ?? ""}
-                      onChange={(e) => set("subCategory", e.target.value)}
-                    >
-                      <option value="">Select subcategory</option>
-                      {form.subCategory &&
-                        !["Table Sheets", "Wallpaper Sheets", "Other"].includes(
-                          form.subCategory,
-                        ) && <option value={form.subCategory}>{form.subCategory}</option>}
-                      {["Table Sheets", "Wallpaper Sheets", "Other"].map((name) => (
-                        <option key={name} value={name}>
-                          {name}
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    <input
-                      aria-label="Subcategory"
-                      className="mt-input"
-                      value={form.subCategory ?? ""}
-                      onChange={(e) => set("subCategory", e.target.value)}
-                      placeholder="Optional product type"
-                    />
-                  )}
+                  <select
+                    aria-label="Subcategory"
+                    className="mt-input mt-select"
+                    value={form.subCategory ?? ""}
+                    onChange={(e) => set("subCategory", e.target.value)}
+                  >
+                    <option value="">No subcategory</option>
+                    {(SUBCATEGORIES[form.category] || []).map((name) => (
+                      <option key={name} value={name}>
+                        {name}
+                      </option>
+                    ))}
+                  </select>
                 </Field>
               </div>
               <Field label="Availability">
@@ -1871,11 +1851,22 @@ function ProductFormDialog({
                   ))}
                 </select>
                 <p id="product-availability-help" className="mt-1 text-xs text-black/55">
-                  Use On Demand when stock is unconfirmed. Choose Available only after confirming
-                  stock.
+                  Choose In Stock only after confirming stock. Apollo products appear to customers
+                  only when In Stock and visible.
                 </p>
               </Field>
 
+              <Field label="Product visibility">
+                <select
+                  aria-label="Product visibility"
+                  className="mt-input mt-select"
+                  value={form.visible === false ? "hidden" : "visible"}
+                  onChange={(e) => set("visible", e.target.value === "visible")}
+                >
+                  <option value="visible">Visible to customers</option>
+                  <option value="hidden">Hidden from customers</option>
+                </select>
+              </Field>
               <Field label="Tagline">
                 <input
                   value={form.tagline}

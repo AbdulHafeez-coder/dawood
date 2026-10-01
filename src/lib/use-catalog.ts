@@ -7,22 +7,33 @@ export function useCatalog(filters: CatalogFilters) {
   const [retry, setRetry] = useState(0);
   const [state, setState] = useState<{
     products: Product[];
+    highlights: Product[];
+    subcategories: string[];
     total: number;
     loading: boolean;
     error: string;
-  }>({ products: [], total: 0, loading: true, error: "" });
+  }>({ products: [], highlights: [], subcategories: [], total: 0, loading: true, error: "" });
   useEffect(() => {
     const controller = new AbortController();
     setState((s) => ({ ...s, loading: true, error: "" }));
     fetchCatalog(supabase, JSON.parse(key), controller.signal)
       .then((result) => {
         if (!controller.signal.aborted)
-          setState({ products: result.products, total: result.total, loading: false, error: "" });
+          setState({
+            products: result.products,
+            highlights: result.highlights,
+            subcategories: result.subcategories,
+            total: result.total,
+            loading: false,
+            error: "",
+          });
       })
       .catch((error) => {
         if (!controller.signal.aborted)
           setState({
             products: [],
+            highlights: [],
+            subcategories: [],
             total: 0,
             loading: false,
             error: error instanceof Error ? error.message : "Unable to load products.",

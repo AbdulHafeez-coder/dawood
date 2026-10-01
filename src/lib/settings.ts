@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { VERIFIED_DAWOOD_CONTACT, cleanBusinessSettings } from "./business-settings";
 
 export type SocialKey = "instagram" | "facebook" | "twitter" | "tiktok" | "pinterest" | "youtube";
 
@@ -14,27 +15,10 @@ export type Settings = {
   socials: Record<SocialKey, string>;
 };
 
-const CACHE_KEY = "dawood-mart-settings-v2";
+const CACHE_KEY = "dawood-mart-settings-v3";
 const SETTINGS_ID = "global";
 
-const DEFAULTS: Settings = {
-  brandName: "Dawood Mart",
-  tagline: "Essentials for a tactile home",
-  logoUrl: "",
-  whatsappNumber: "03024201342",
-  contactEmail: "abdulhafeez828@gmail.com",
-  contactPhone: "0302-4201342",
-  address:
-    "Shakeel Crockery Store, Opposite Al Shams Jewellers, Al Noor Town Bazar, Walton Road, Lahore Cantt, Lahore, Pakistan",
-  socials: {
-    instagram: "https://instagram.com/dawoodmart",
-    facebook: "",
-    twitter: "",
-    tiktok: "",
-    pinterest: "",
-    youtube: "",
-  },
-};
+const DEFAULTS: Settings = VERIFIED_DAWOOD_CONTACT;
 
 // Shape returned from Supabase.
 type SettingsRow = {
@@ -49,7 +33,7 @@ type SettingsRow = {
 };
 
 function fromRow(row: SettingsRow): Settings {
-  return {
+  return cleanBusinessSettings({
     brandName: row.brand_name ?? DEFAULTS.brandName,
     tagline: row.tagline ?? DEFAULTS.tagline,
     logoUrl: row.logo_url ?? "",
@@ -58,7 +42,7 @@ function fromRow(row: SettingsRow): Settings {
     contactPhone: row.contact_phone ?? "",
     address: row.address ?? "",
     socials: { ...DEFAULTS.socials, ...(row.socials ?? {}) },
-  };
+  });
 }
 
 function toRow(s: Settings) {
@@ -82,11 +66,11 @@ function loadCache(): Settings {
     const raw = window.localStorage.getItem(CACHE_KEY);
     if (!raw) return DEFAULTS;
     const parsed = JSON.parse(raw);
-    return {
+    return cleanBusinessSettings({
       ...DEFAULTS,
       ...parsed,
       socials: { ...DEFAULTS.socials, ...(parsed?.socials ?? {}) },
-    };
+    });
   } catch {
     return DEFAULTS;
   }
@@ -192,7 +176,9 @@ export async function saveSettingsAsync(
     throw new Error(msg);
   }
 
-  current = data ? fromRow(data as SettingsRow) : next;
+  if (!data)
+    throw new Error("Database did not confirm the settings save. Check admin permissions.");
+  current = fromRow(data as SettingsRow);
   persistCache();
   emit();
   return current;
@@ -219,7 +205,11 @@ if (typeof window !== "undefined") {
     try {
       const parsed = e.newValue ? JSON.parse(e.newValue) : null;
       current = parsed
-        ? { ...DEFAULTS, ...parsed, socials: { ...DEFAULTS.socials, ...(parsed?.socials ?? {}) } }
+        ? cleanBusinessSettings({
+            ...DEFAULTS,
+            ...parsed,
+            socials: { ...DEFAULTS.socials, ...(parsed?.socials ?? {}) },
+          })
         : { ...DEFAULTS, socials: { ...DEFAULTS.socials } };
       emit();
     } catch {

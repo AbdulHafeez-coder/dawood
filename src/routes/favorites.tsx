@@ -9,7 +9,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { ProductGridSkeleton, useMounted } from "@/components/skeletons";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
-import { mapCatalogProduct } from "@/lib/catalog-model";
+import { mapCatalogProduct, isStorefrontVisible } from "@/lib/catalog-model";
 
 export const Route = createFileRoute("/favorites")({
   head: () => ({
@@ -41,9 +41,7 @@ function FavoritesPage() {
           .select("*")
           .in("id", favs.slice(start, start + 24));
         if (error) throw error;
-        items.push(
-          ...(data || []).map(mapCatalogProduct).filter((p) => p.status !== "discontinued"),
-        );
+        items.push(...(data || []).map(mapCatalogProduct).filter(isStorefrontVisible));
       }
       if (!cancelled) setProducts(items);
     }

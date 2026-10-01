@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Heart, MessageCircle } from "lucide-react";
 import { SafeImage } from "./ui/SafeImage";
 import type { Product } from "@/lib/types";
-import { normalizeStatus, STATUS_LABELS } from "@/lib/catalog-model";
+import { normalizeStatus, STATUS_LABELS, isStorefrontVisible } from "@/lib/catalog-model";
 import { formatPKR } from "@/lib/format";
 import { buildWhatsappProductRequest } from "@/lib/whatsapp";
 
@@ -19,7 +19,7 @@ export const ProductCard = memo(function ProductCard({
   onToggleFav,
 }: Props) {
   const status = normalizeStatus(p.status);
-  if (status === "discontinued") return null;
+  if (!isStorefrontVisible(p)) return null;
   return (
     <article
       className="group flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white"

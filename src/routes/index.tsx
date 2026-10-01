@@ -1,3 +1,5 @@
+import { SafeImage } from "@/components/ui/SafeImage";
+import { Logo } from "@/components/ui/Logo";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Search, ShoppingBag, MessageCircle, ArrowRight, RefreshCw } from "lucide-react";
@@ -56,12 +58,12 @@ function Storefront() {
   return (
     <div className="min-h-screen bg-[#faf9f6] text-stone-900">
       <div className="bg-emerald-950 px-4 py-2 text-center text-xs text-white">
-        Home essentials, thoughtfully selected. Lahore, Pakistan.
+        Smart Shopping, Better Living · Lahore, Pakistan
       </div>
       <header className="sticky top-0 z-30 border-b border-stone-200 bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-3 px-4 py-4 sm:px-6">
           <Link to="/" className="mr-auto text-xl font-extrabold tracking-tight text-emerald-950">
-            Dawood<span className="font-normal"> Mart</span>
+            <Logo className="h-10 w-44" aria-label="Dawood Mart" />
           </Link>
           <a
             href={`https://wa.me/${phone}`}
@@ -119,24 +121,58 @@ function Storefront() {
           ))}
         </nav>
         {!search && !category && page === 0 && (
-          <section className="mb-8 rounded-3xl bg-emerald-950 px-6 py-9 text-white sm:px-10 sm:py-12">
-            <p className="mb-3 text-xs uppercase tracking-[.2em] text-emerald-200">
-              Dawood Mart · Everyday essentials
-            </p>
-            <h1 className="max-w-xl text-3xl font-semibold leading-tight sm:text-5xl">
-              A little more comfort.
-              <br />A home that feels yours.
-            </h1>
-            <p className="mt-4 max-w-md text-sm leading-6 text-emerald-100">
-              Explore sheets, crockery and towels. Can't find it in stock? Request it directly from
-              our team.
-            </p>
-            <a
-              href="#shop"
-              className="mt-6 inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-emerald-950"
-            >
-              Explore the catalog <ArrowRight size={16} />
-            </a>
+          <section className="mb-9 overflow-hidden rounded-3xl border border-stone-200 bg-[#f1eee7]">
+            <div className="flex flex-col gap-5 px-6 py-7 sm:flex-row sm:items-end sm:justify-between sm:px-8">
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-[.18em] text-emerald-800">
+                  Dawood Mart · For your everyday home
+                </p>
+                <h1 className="max-w-xl text-3xl font-semibold tracking-tight sm:text-4xl">
+                  Small comforts. Everyday essentials.
+                </h1>
+                <p className="mt-3 max-w-lg text-sm leading-6 text-stone-600">
+                  Sheets for your spaces. Towels for a fresh start. Crockery and kitchen favourites
+                  for every day.
+                </p>
+              </div>
+              <a
+                href="#shop"
+                className="inline-flex shrink-0 items-center gap-2 self-start rounded-full bg-emerald-900 px-5 py-3 text-sm font-semibold text-white sm:self-auto"
+              >
+                Browse the collection <ArrowRight size={16} />
+              </a>
+            </div>
+            <div className="grid grid-cols-1 gap-px bg-stone-200 sm:grid-cols-3">
+              {catalog.highlights.map((product) => (
+                <button
+                  key={product.category}
+                  onClick={() => chooseCategory(product.category)}
+                  className="group relative grid grid-cols-[1fr_1fr] items-center bg-white px-5 py-4 text-left sm:block sm:p-5"
+                >
+                  <div className="aspect-[4/3] overflow-hidden rounded-xl bg-stone-50 sm:mb-4">
+                    <SafeImage
+                      src={product.img}
+                      alt={product.category}
+                      loading="eager"
+                      className="h-full w-full object-contain p-3 transition-transform group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between gap-3 pl-5 sm:pl-0">
+                    <div>
+                      <h2 className="text-lg font-semibold">{product.category}</h2>
+                      <p className="mt-1 text-xs text-stone-500">
+                        {product.category === "Sheets"
+                          ? "Wallpaper, dining sheets & mats"
+                          : product.category === "Towels"
+                            ? "Everyday softness for your home"
+                            : "Tableware & home / kitchen essentials"}
+                      </p>
+                    </div>
+                    <ArrowRight size={18} className="shrink-0 text-emerald-800" />
+                  </div>
+                </button>
+              ))}
+            </div>
           </section>
         )}
         <section id="shop" className="scroll-mt-40">
@@ -201,11 +237,11 @@ function Storefront() {
                 className="mt-1 block h-11 w-full rounded-lg border bg-white px-3 text-sm"
               />
             </label>
-            {category === "Sheets" && (
+            {category && catalog.subcategories.length > 0 && (
               <label className="text-xs text-stone-600">
-                Sheet type
+                Subcategory
                 <select
-                  aria-label="Sheet type"
+                  aria-label="Subcategory"
                   value={subcategory}
                   onChange={(e) => {
                     setSubcategory(e.target.value);
@@ -213,9 +249,10 @@ function Storefront() {
                   }}
                   className="mt-1 block h-11 w-full rounded-lg border bg-white px-3 text-sm"
                 >
-                  <option value="">All sheets</option>
-                  <option>Table Sheets</option>
-                  <option>Wallpaper Sheets</option>
+                  <option value="">All types</option>
+                  {catalog.subcategories.map((name) => (
+                    <option key={name}>{name}</option>
+                  ))}
                 </select>
               </label>
             )}

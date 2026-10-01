@@ -21,7 +21,7 @@ export * from "./constants";
 // stay in localStorage — they're per-visitor session data.
 
 type ProductRow = Database["public"]["Tables"]["products"]["Row"];
-type ProductInsert = Database["public"]["Tables"]["products"]["Insert"];
+type ProductInsert = Database["public"]["Tables"]["products"]["Insert"] & { is_visible?: boolean };
 
 function rowToProduct(r: ProductRow): Product {
   return mapCatalogProduct(r);
@@ -34,6 +34,7 @@ function productToRow(p: Product): ProductInsert {
     tag: p.tag ?? "",
     price: p.price,
     status: normalizeStatus(p.status),
+    is_visible: p.visible !== false,
     storefront_category: classifyCategory(p),
     subcategory: p.subCategory ?? "",
     slug: p.slug,
@@ -42,7 +43,7 @@ function productToRow(p: Product): ProductInsert {
     rating: p.rating,
     img: p.img,
     bg: p.bg,
-    category: p.category,
+    category: p.legacyCategory || p.category,
     tagline: p.tagline ?? "",
     description: p.description ?? "",
     details: p.details ?? [],
@@ -208,9 +209,9 @@ export function useProducts() {
     async (p: Omit<Product, "id"> & { id?: string }): Promise<string> => {
       const id = p.id ?? crypto.randomUUID();
       const next: Product = { ...p, id };
-      const { error } = await saveCatalogProduct(supabase, productToRow(next));
+      const { error, data } = await saveCatalogProduct(supabase, productToRow(next));
       if (error) throw new Error(error.message);
-      products.unshift(next);
+      products.unshift(data ? rowToProduct(data) : next);
       emitProducts();
       return id;
     },
@@ -220,29 +221,17 @@ export function useProducts() {
     const index = products.findIndex((p) => p.id === id);
     if (index < 0) throw new Error("Product not found. Reload the catalog.");
     const next = { ...products[index], ...patch };
-    const { error } = await saveCatalogProduct(supabase, productToRow(next), true);
+    const { error, data } = await saveCatalogProduct(supabase, productToRow(next), true);
     if (error) throw new Error(error.message);
-    products[index] = next;
+    products[index] = data ? rowToProduct(data) : next;
     emitProducts();
   }, []);
-  const deleteProduct = useCallback((id: string) => {
-    const idx = products.findIndex((p) => p.id === id);
-    if (idx < 0) return;
-    const removed = products[idx];
-    products.splice(idx, 1);
-    emitProducts();
-    supabase
-      .from("products")
-      .delete()
-      .eq("id", id)
-      .then(({ error }) => {
-        if (error) {
-          console.error("[shop] deleteProduct failed:", error.message);
-          products.splice(idx, 0, removed);
-          emitProducts();
-        }
-      });
-  }, []);
+  const deleteProduct = useCallback(
+    async (id: string) => {
+      await updateProduct(id, { visible: false });
+    },
+    [updateProduct],
+  );
 
   const resetProducts = useCallback(async () => {
     throw new Error("Catalog reset is disabled to protect real products.");
@@ -353,30 +342,11 @@ export function useCategories() {
     return true;
   }, []);
 
-  const deleteCategory = useCallback((name: string) => {
-    if (SHOP_CATEGORIES.some((category) => category === name)) {
-      toast.error("Keep all three shop categories. Move or edit products instead.");
-      return { ok: false as const, orphaned: 0 };
-    }
-    const idx = categoriesLive.indexOf(name);
-    if (idx < 0) return { ok: false as const, orphaned: 0 };
-    const orphaned = products.filter((p) => p.category === name).length;
-    categoriesLive.splice(idx, 1);
-    delete categoryInfoLive[name];
-    for (let i = products.length - 1; i >= 0; i--) {
-      if (products[i].category === name) products.splice(i, 1);
-    }
-    emitCategories();
-    emitProducts();
-    // ON DELETE CASCADE on products.category clears the child rows.
-    supabase
-      .from("categories")
-      .delete()
-      .eq("name", name)
-      .then(({ error }) => {
-        if (error) console.error("[shop] deleteCategory failed:", error.message);
-      });
-    return { ok: true as const, orphaned };
+  const deleteCategory = useCallback((_name: string) => {
+    toast.error(
+      "Category deletion is disabled to preserve the catalog. Edit product category mapping instead.",
+    );
+    return { ok: false as const, orphaned: 0 };
   }, []);
 
   const resetCategories = useCallback(async () => {
@@ -546,7 +516,7 @@ export function useCart() {
   }, []);
 
   const addToCart = useCallback((p: Product, qty = 1, extras: Partial<CartItem> = {}) => {
-    if (normalizeStatus(p.status) !== "available") {
+    if (normalizeStatus(p.status) !== "available" || p.visible === false) {
       toast.error("This product is not currently available. Request it on WhatsApp.");
       return;
     }
