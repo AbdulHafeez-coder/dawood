@@ -82,6 +82,7 @@ export type Database = {
       };
       products: {
         Row: {
+          is_active: boolean;
           bg: string;
           category: string;
           created_at: string;
@@ -100,6 +101,7 @@ export type Database = {
           seo_description: string | null;
         };
         Insert: {
+          is_active?: boolean;
           bg?: string;
           category: string;
           created_at?: string;
@@ -118,6 +120,7 @@ export type Database = {
           seo_description?: string | null;
         };
         Update: {
+          is_active?: boolean;
           bg?: string;
           category?: string;
           created_at?: string;

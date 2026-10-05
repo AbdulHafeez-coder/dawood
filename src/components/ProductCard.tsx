@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Heart, Plus, Star, X } from "lucide-react";
 import { getVariants, type Category, type Product } from "@/lib/shop";
@@ -16,6 +16,9 @@ type Props = {
 };
 
 function ProductCardImpl({ product: p, isFavourite, onToggleFav, favAction = "heart" }: Props) {
+  const secondImage = p.gallery?.find((image) => image && image !== p.img);
+  const [loadedImage, setLoadedImage] = useState("");
+  const [failedImage, setFailedImage] = useState("");
   const v = getVariants(p.category as Category);
   const colors = v.colors.slice(0, 4);
   const extraColors = Math.max(0, v.colors.length - colors.length);
@@ -28,7 +31,7 @@ function ProductCardImpl({ product: p, isFavourite, onToggleFav, favAction = "he
         params={{ id: p.slug || p.id }}
         className={`${p.bg} relative aspect-square overflow-hidden block`}
       >
-        <span className="absolute top-4 left-4 z-10 bg-black text-white text-xs px-3 py-1 rounded-full font-medium">
+        <span className="absolute top-4 left-4 z-10 bg-brand-primary text-white text-xs px-3 py-1 rounded-full font-medium">
           {p.tag}
         </span>
         <span className="absolute bottom-4 left-4 z-10 bg-white/90 text-black text-[11px] font-medium px-2.5 py-0.5 rounded-full shadow-xs backdrop-blur-xs">
@@ -42,27 +45,19 @@ function ProductCardImpl({ product: p, isFavourite, onToggleFav, favAction = "he
           height={1024}
           loading="lazy"
           decoding="async"
-          className={`absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-all duration-500 ${p.gallery && p.gallery.length > 1 ? "group-hover:opacity-0 hidden sm:block" : ""}`}
+          className="absolute inset-0 w-full h-full object-cover motion-safe:transition-transform motion-safe:duration-300 [@media(hover:hover)]:group-hover:scale-[1.02]"
         />
-        {/* Mobile image (never fades on hover) */}
-        <SafeImage
-          src={p.img}
-          alt={p.name}
-          width={1024}
-          height={1024}
-          loading="lazy"
-          decoding="async"
-          className={`absolute inset-0 w-full h-full object-cover sm:hidden`}
-        />
-        {p.gallery && p.gallery.length > 1 && (
+        {secondImage && failedImage !== secondImage && (
           <SafeImage
-            src={p.gallery[1]}
+            src={secondImage}
             alt={`${p.name} alternate view`}
             width={1024}
             height={1024}
             loading="lazy"
             decoding="async"
-            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 opacity-0 group-hover:opacity-100 transition-all duration-500 hidden sm:block"
+            onLoad={() => setLoadedImage(secondImage)}
+            onError={() => setFailedImage(secondImage)}
+            className={`absolute inset-0 w-full h-full object-cover opacity-0 motion-safe:transition-opacity motion-safe:duration-300 ${loadedImage === secondImage ? "[@media(hover:hover)_and_(pointer:fine)]:group-hover:opacity-100" : ""}`}
           />
         )}
       </Link>
@@ -120,7 +115,7 @@ function ProductCardImpl({ product: p, isFavourite, onToggleFav, favAction = "he
         <Link
           to="/product/$id"
           params={{ id: p.slug || p.id }}
-          className="mt-auto inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-9 text-xs font-medium hover:bg-black/85 transition-colors"
+          className="mt-auto inline-flex items-center justify-center gap-2 bg-brand-primary text-white rounded-md h-9 text-xs font-medium hover:bg-black/85 transition-colors"
         >
           {favAction === "remove" ? (
             <>

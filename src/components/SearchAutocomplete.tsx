@@ -4,6 +4,9 @@ import { Search, X, Camera, Sparkles, TrendingUp, ChevronRight, Tag, ArrowRight 
 import { formatPKR } from "@/lib/format";
 import { SafeImage } from "@/components/ui/SafeImage";
 import type { Product, Category } from "@/lib/types";
+import { supabase } from "@/lib/supabase";
+import { rowToProduct } from "@/lib/shop";
+import { publicProducts } from "@/lib/product-queries";
 
 interface SearchAutocompleteProps {
   products: Product[];
@@ -19,17 +22,6 @@ interface SearchAutocompleteProps {
   variant?: "header" | "mobile" | "compact";
   className?: string;
 }
-
-const TRENDING_SEARCHES = [
-  "Dry Fruit Jars",
-  "Water Bottles",
-  "Tea & Mug Sets",
-  "Bedsheets",
-  "Sponge & Cleaning",
-  "Classic",
-  "Sonex",
-  "Crown Gold Tray",
-];
 
 export function SearchAutocomplete({
   products,
@@ -63,34 +55,48 @@ export function SearchAutocomplete({
   }, []);
 
   const cleanQ = query.trim().toLowerCase();
+  const [suggestions, setSuggestions] = useState<{ query: string; products: Product[] }>({ query: "", products: [] });
+  useEffect(() => {
+    if (!cleanQ || !isOpen) return;
+    const controller = new AbortController();
+    const timer = setTimeout(async () => {
+      const term = cleanQ.replace(/[%,().*\\]/g, " ").trim();
+      if (!term) return;
+      const { data, error } = await publicProducts(supabase)
+        .or(`name.ilike.%${term}%,category.ilike.%${term}%,id.ilike.%${term}%`)
+        .order("name").limit(6).abortSignal(controller.signal);
+      if (!controller.signal.aborted) setSuggestions({ query: cleanQ, products: error ? [] : (data || []).map(rowToProduct) });
+    }, 120);
+    return () => { clearTimeout(timer); controller.abort(); };
+  }, [cleanQ, isOpen]);
 
   // Matched products computation (fuzzy-like token match across name, brand, category, tags, description)
   const matchedProducts = useMemo(() => {
     if (!cleanQ) return [];
     const tokens = cleanQ.split(/\s+/).filter(Boolean);
-    return products
+    return (suggestions.query === cleanQ ? suggestions.products : [])
       .filter((p) => {
         const fullText = `${p.name} ${p.display_name || ""} ${p.category} ${p.brand || ""} ${p.tag || ""} ${p.tagline || ""} ${p.description || ""}`.toLowerCase();
         return tokens.every((token) => fullText.includes(token));
       })
       .slice(0, 6);
-  }, [products, cleanQ]);
+  }, [suggestions, cleanQ]);
 
   // Matched Categories
   const matchedCategories = useMemo(() => {
     if (!cleanQ) return [];
-    return categories
+    return Array.from(new Set(matchedProducts.map(p => p.category)))
       .filter((c) => c.toLowerCase().includes(cleanQ))
       .slice(0, 3);
-  }, [categories, cleanQ]);
+  }, [matchedProducts, cleanQ]);
 
   // Matched Brands
   const matchedBrands = useMemo(() => {
     if (!cleanQ) return [];
-    return brands
+    return Array.from(new Set(matchedProducts.map(p => p.brand).filter((b): b is string => !!b)))
       .filter((b) => b !== "All" && b.toLowerCase().includes(cleanQ))
       .slice(0, 3);
-  }, [brands, cleanQ]);
+  }, [matchedProducts, cleanQ]);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -122,7 +128,7 @@ export function SearchAutocomplete({
       <>
         {parts.map((part, i) =>
           part.toLowerCase() === q.toLowerCase() ? (
-            <span key={i} className="font-bold text-[#ff0055] bg-[#ff0055]/10 rounded px-0.5">
+            <span key={i} className="font-bold text-brand-primary bg-brand-primary/10 rounded px-0.5">
               {part}
             </span>
           ) : (
@@ -139,7 +145,7 @@ export function SearchAutocomplete({
       <div
         className={`flex items-stretch bg-white rounded-xl overflow-hidden transition-all duration-300 ${
           variant === "header"
-            ? "border-[1.5px] border-[#ff0055] focus-within:ring-4 focus-within:ring-[#ff0055]/15 shadow-sm"
+            ? "border-[1.5px] border-brand-primary focus-within:ring-4 focus-within:ring-brand-primary/15 shadow-sm"
             : variant === "mobile"
               ? "bg-white/10 text-white rounded-xl border border-white/15 focus-within:bg-white/15"
               : "border border-black/10 rounded-xl focus-within:border-black"
@@ -156,7 +162,7 @@ export function SearchAutocomplete({
             aria-label="Search by Image"
             title="Search with Image / Sourcing"
           >
-            <Camera size={18} strokeWidth={2} className="text-[#ff0055]" />
+            <Camera size={18} strokeWidth={2} className="text-brand-primary" />
           </button>
         )}
 
@@ -180,6 +186,11 @@ export function SearchAutocomplete({
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           autoComplete="off"
+          role="combobox"
+          aria-label="Search products"
+          aria-expanded={isOpen}
+          aria-controls={`${variant}-search-results`}
+          aria-activedescendant={selectedIndex >= 0 ? `${variant}-search-option-${selectedIndex}` : undefined}
           className={`bg-transparent outline-none text-[13px] w-full py-2.5 px-2.5 ${
             variant === "mobile"
               ? "text-white placeholder:text-white/50"
@@ -199,7 +210,7 @@ export function SearchAutocomplete({
             className={`shrink-0 px-2.5 flex items-center transition-colors cursor-pointer ${
               variant === "mobile"
                 ? "text-white/70 hover:text-white"
-                : "text-gray-400 hover:text-black bg-white"
+                : "text-gray-400 hover:text-brand-primary bg-white"
             }`}
           >
             <X size={15} />
@@ -213,7 +224,7 @@ export function SearchAutocomplete({
               setIsOpen(false);
               onSearchSubmit?.();
             }}
-            className="bg-[#ff0055] hover:bg-[#e6004c] text-white px-5 xl:px-7 flex items-center justify-center transition-colors shrink-0 cursor-pointer shadow-sm"
+            className="bg-brand-primary hover:bg-brand-primary-hover text-white px-5 xl:px-7 flex items-center justify-center transition-colors shrink-0 cursor-pointer shadow-sm"
             aria-label="Submit Search"
           >
             <Search size={18} strokeWidth={2.5} />
@@ -225,7 +236,7 @@ export function SearchAutocomplete({
       {isOpen && (
         <div
           className={`absolute top-full left-0 right-0 mt-2 z-50 bg-white rounded-2xl shadow-2xl border border-black/10 overflow-hidden text-black animate-in fade-in-50 zoom-in-95 duration-150 ${
-            variant === "header" ? "min-w-[340px] xl:min-w-[480px] -left-2 -right-2" : "w-full"
+            variant === "header" ? "w-full xl:min-w-[480px]" : "w-full"
           }`}
           style={{ maxHeight: "80vh", overflowY: "auto" }}
         >
@@ -248,7 +259,7 @@ export function SearchAutocomplete({
                         setIsOpen(false);
                         onSearchSubmit?.();
                       }}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-black/5 hover:bg-black hover:text-white text-xs text-black/80 font-medium transition-all cursor-pointer"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-black/5 hover:bg-brand-primary-hover hover:text-white text-xs text-black/80 font-medium transition-all cursor-pointer"
                     >
                       <Tag size={11} /> {c}
                     </button>
@@ -262,7 +273,7 @@ export function SearchAutocomplete({
                         setIsOpen(false);
                         onSearchSubmit?.();
                       }}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#ff0055]/10 text-[#ff0055] hover:bg-[#ff0055] hover:text-white text-xs font-semibold transition-all cursor-pointer"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-brand-primary/10 text-brand-primary hover:bg-brand-primary hover:text-white text-xs font-semibold transition-all cursor-pointer"
                     >
                       <Sparkles size={11} /> Brand: {b}
                     </button>
@@ -278,12 +289,15 @@ export function SearchAutocomplete({
                     <span className="text-[11px] font-normal text-black/40">Use ↑↓ arrows to pick</span>
                   </div>
 
-                  <div className="space-y-1 mt-1">
+                  <div id={`${variant}-search-results`} role="listbox" aria-label="Matching products" className="space-y-1 mt-1">
                     {matchedProducts.map((p, idx) => {
                       const isSelected = selectedIndex === idx;
                       return (
                         <Link
                           key={p.id}
+                          id={`${variant}-search-option-${idx}`}
+                          role="option"
+                          aria-selected={isSelected}
                           to="/product/$id"
                           params={{ id: p.slug || p.id }}
                           onClick={() => {
@@ -345,7 +359,7 @@ export function SearchAutocomplete({
                   setIsOpen(false);
                   onSearchSubmit?.();
                 }}
-                className="w-full mt-2 py-2.5 px-4 bg-black/5 hover:bg-black hover:text-white rounded-xl text-xs font-semibold text-black flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                className="w-full mt-2 py-2.5 px-4 bg-black/5 hover:bg-brand-primary-hover hover:text-white rounded-xl text-xs font-semibold text-black flex items-center justify-center gap-2 transition-colors cursor-pointer"
               >
                 <span>View all products matching &ldquo;{query}&rdquo;</span>
                 <ArrowRight size={14} />
@@ -368,7 +382,7 @@ export function SearchAutocomplete({
                   setIsOpen(false);
                   onSearchSubmit?.();
                 }}
-                className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-[#ff0055] hover:underline"
+                className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-brand-primary hover:underline"
               >
                 Search all catalog <ArrowRight size={12} />
               </button>
@@ -379,11 +393,11 @@ export function SearchAutocomplete({
           {!cleanQ && (
             <div className="p-4 space-y-3">
               <div className="flex items-center gap-1.5 text-xs font-bold text-black/60 px-1">
-                <TrendingUp size={14} className="text-[#ff0055]" />
-                <span>Trending Searches</span>
+                <TrendingUp size={14} className="text-brand-primary" />
+                <span>Browse products</span>
               </div>
               <div className="flex flex-wrap gap-1.5">
-                {TRENDING_SEARCHES.map((term) => (
+                {Array.from(new Set(products.map((p) => p.display_name || p.name))).slice(0, 6).map((term) => (
                   <button
                     key={term}
                     type="button"
@@ -392,7 +406,7 @@ export function SearchAutocomplete({
                       setIsOpen(false);
                       onSearchSubmit?.();
                     }}
-                    className="px-3 py-1.5 rounded-xl bg-black/[0.04] hover:bg-black hover:text-white text-xs font-medium text-black/75 transition-all cursor-pointer"
+                    className="px-3 py-1.5 rounded-xl bg-black/[0.04] hover:bg-brand-primary-hover hover:text-white text-xs font-medium text-black/75 transition-all cursor-pointer"
                   >
                     {term}
                   </button>
@@ -414,7 +428,7 @@ export function SearchAutocomplete({
                         setIsOpen(false);
                         onSearchSubmit?.();
                       }}
-                      className="text-left px-2.5 py-1.5 rounded-lg text-xs font-medium text-black/70 hover:bg-black/5 hover:text-black truncate flex items-center justify-between cursor-pointer"
+                      className="text-left px-2.5 py-1.5 rounded-lg text-xs font-medium text-black/70 hover:bg-black/5 hover:text-brand-primary truncate flex items-center justify-between cursor-pointer"
                     >
                       <span className="truncate">{cat}</span>
                       <ChevronRight size={12} className="text-black/30 shrink-0" />

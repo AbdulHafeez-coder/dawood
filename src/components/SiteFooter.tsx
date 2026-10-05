@@ -43,7 +43,7 @@ export function SiteFooter() {
   return (
     <>
       <PromoBanner />
-      <footer className="bg-[#FEFDF9] text-black" style={inter}>
+      <footer className="bg-[#fbf9fd] text-black" style={inter}>
         {/* Service Features Strip */}
         <div className="border-b border-black/10 bg-[#f4f5f4]">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 py-6">
@@ -98,7 +98,7 @@ export function SiteFooter() {
                 <Logo className="w-48 h-auto text-black hover:opacity-80 transition-opacity" />
               </Link>
               <div className="text-sm font-medium tracking-wide text-black/80">
-                Smart Shopping, Better Living!
+                {s.tagline}
               </div>
               <p className="text-sm text-black/60 leading-relaxed max-w-xs">
                 Your trusted online store for quality products at affordable prices.
@@ -109,29 +109,10 @@ export function SiteFooter() {
                   Follow / Connect With Us
                 </div>
                 <div className="flex items-center gap-3">
-                  {/* Facebook - Placeholder */}
-                  <a
-                    href="#"
-                    aria-label="Facebook"
-                    title="Facebook"
-                    className="w-10 h-10 rounded-full bg-white border border-black/10 flex items-center justify-center text-black/70 hover:bg-[#1877F2] hover:text-white hover:border-transparent hover:scale-110 hover:shadow-lg hover:shadow-[#1877F2]/20 transition-all duration-300"
-                  >
-                    <Facebook className="w-4 h-4" />
-                  </a>
-
-                  {/* Instagram - Placeholder */}
-                  <a
-                    href="#"
-                    aria-label="Instagram"
-                    title="Instagram"
-                    className="w-10 h-10 rounded-full bg-white border border-black/10 flex items-center justify-center text-black/70 hover:bg-gradient-to-tr hover:from-[#F58529] hover:via-[#DD2A7B] hover:to-[#8134AF] hover:text-white hover:border-transparent hover:scale-110 hover:shadow-lg hover:shadow-[#DD2A7B]/20 transition-all duration-300"
-                  >
-                    <Instagram className="w-4 h-4" />
-                  </a>
-
+                  {activeSocials.map((key) => { const Icon = SOCIAL_META[key].Icon; return <a key={key} href={s.socials[key]} aria-label={SOCIAL_META[key].label} target="_blank" rel="noopener noreferrer" className="grid h-10 w-10 place-items-center rounded-full border hover:bg-brand-primary hover:text-white transition-colors"><Icon className="h-4 w-4" /></a>; })}
                   {/* WhatsApp - Connected */}
                   <a
-                    href="https://wa.me/923024201342"
+                    href={`https://wa.me/${s.whatsappNumber.replace(/\D/g, "").replace(/^0/, "92")}`}
                     target="_blank"
                     rel="noreferrer noopener"
                     aria-label="Chat with us on WhatsApp"
@@ -160,10 +141,10 @@ export function SiteFooter() {
             <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
               <h3 className="font-bold text-black/90 mb-4" style={dmSans}>Quick Links</h3>
               <ul className="space-y-3 text-sm text-black/70">
-                <li><Link to="/" className="hover:text-black transition-colors">Home</Link></li>
-                <li><Link to="/" className="hover:text-black transition-colors">Shop / Categories</Link></li>
-                <li><Link to="/" className="hover:text-black transition-colors">New Arrivals</Link></li>
-                <li><Link to="/" className="hover:text-black transition-colors">Deals / Offers</Link></li>
+                <li><Link to="/" className="hover:text-brand-primary transition-colors">Home</Link></li>
+                <li><Link to="/" className="hover:text-brand-primary transition-colors">Shop / Categories</Link></li>
+                <li><Link to="/" className="hover:text-brand-primary transition-colors">New Arrivals</Link></li>
+                <li><Link to="/" className="hover:text-brand-primary transition-colors">Deals / Offers</Link></li>
               </ul>
             </div>
 
@@ -171,10 +152,10 @@ export function SiteFooter() {
             <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
               <h3 className="font-bold text-black/90 mb-4" style={dmSans}>Customer Care</h3>
               <ul className="space-y-3 text-sm text-black/70">
-                <li><Link to="/support" className="hover:text-black transition-colors">Contact Us</Link></li>
-                <li><Link to="/shipping" className="hover:text-black transition-colors">Shipping Information</Link></li>
-                <li><Link to="/returns" className="hover:text-black transition-colors">Return & Refund Policy</Link></li>
-                <li><Link to="/support" className="hover:text-black transition-colors">FAQs</Link></li>
+                <li><Link to="/support" className="hover:text-brand-primary transition-colors">Contact Us</Link></li>
+                <li><Link to="/shipping" className="hover:text-brand-primary transition-colors">Shipping Information</Link></li>
+                <li><Link to="/returns" className="hover:text-brand-primary transition-colors">Return & Refund Policy</Link></li>
+                <li><Link to="/support" className="hover:text-brand-primary transition-colors">FAQs</Link></li>
               </ul>
             </div>
 
@@ -195,24 +176,20 @@ export function SiteFooter() {
               <ul className="space-y-4 text-sm text-black/70">
                 <li className="flex flex-col sm:flex-row items-center sm:items-start gap-3">
                   <Mail className="w-4 h-4 shrink-0 text-black/50 mt-0.5 hidden sm:block" />
-                  <a href="mailto:abdulhafeez828@gmail.com" className="hover:text-black transition-colors">
-                    abdulhafeez828@gmail.com
+                  <a href={`mailto:${s.contactEmail}`} className="hover:text-brand-primary transition-colors">
+                    {s.contactEmail}
                   </a>
                 </li>
                 <li className="flex flex-col sm:flex-row items-center sm:items-start gap-3">
                   <Phone className="w-4 h-4 shrink-0 text-black/50 mt-0.5 hidden sm:block" />
-                  <a href="https://wa.me/923024201342" target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors">
-                    WhatsApp: 03024201342
+                  <a href={`https://wa.me/${s.whatsappNumber.replace(/\D/g, "").replace(/^0/, "92")}`} target="_blank" rel="noopener noreferrer" className="hover:text-brand-primary transition-colors">
+                    WhatsApp: {s.whatsappNumber}
                   </a>
                 </li>
                 <li className="flex flex-col sm:flex-row items-center sm:items-start gap-3">
                   <MapPin className="w-4 h-4 shrink-0 text-black/50 mt-1 hidden sm:block" />
                   <address className="not-italic leading-relaxed text-black/70">
-                    <strong>Shakeel Crockery Store</strong><br/>
-                    Opposite Al Shams Jewellers<br/>
-                    Al Noor Town Bazar<br/>
-                    Walton Road<br/>
-                    Lahore Cantt, Pakistan
+                    {s.address}
                   </address>
                 </li>
               </ul>
@@ -229,7 +206,7 @@ export function SiteFooter() {
               {/* Storewide Discount vs Secure Payment (Clearly Separated) */}
               <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-10">
                 {/* Promo Badge */}
-                <div className="flex items-center gap-2 bg-black text-white px-3 py-1.5 rounded-full shadow-sm">
+                <div className="flex items-center gap-2 bg-brand-primary text-white px-3 py-1.5 rounded-full shadow-sm">
                   <span className="text-sm font-bold tracking-wider">🎉 FLAT 20% OFF</span>
                   <span className="text-[10px] font-medium bg-white/20 px-2 py-0.5 rounded-full uppercase tracking-widest">On All Products</span>
                 </div>
@@ -249,10 +226,6 @@ export function SiteFooter() {
 
               {/* Legal */}
               <div className="flex flex-col sm:flex-row items-center gap-4 text-xs text-black/50 mt-4 md:mt-0">
-                <div className="flex gap-4">
-                  <Link to="/admin" className="hover:text-black transition-colors">Admin</Link>
-                </div>
-                <div className="hidden sm:block text-black/20">•</div>
                 <div>© {new Date().getFullYear()} Dawood Mart. All rights reserved.</div>
               </div>
               

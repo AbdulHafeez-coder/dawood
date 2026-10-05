@@ -146,15 +146,16 @@ function Index() {
   const mounted = useMounted();
 
   const { orderCount } = useOrders();
-  const { products } = useProducts();
-  const { categories: liveCategories, categoryInfo } = useCategories();
+  const priceLimit = useProducts({ sort: "price-desc", pageSize: 1 });
+  const { categories: liveCategories, categoryInfo, loadAll: loadAllCategories } = useCategories();
+  const customerCategories = ["Table Sheets & Table Mats", "Wall Sheets & Wallpaper", ...liveCategories.filter(c => !/table.*(sheet|mat)|wall.*sheet|wallpaper/i.test(c))];
   const { brands: liveBrands } = useBrands();
   const { promotions } = usePromotions();
 
   const [activeCat, setActiveCat] = useState<Category | "All">("All");
   const [activeBrand, setActiveBrand] = useState<string>("All");
 
-  const categorySliderRef = useRef<Slider | null>(null);
+  const categorySliderRef = useRef<SlickSlider | null>(null);
 
   const categorySliderSettings = useMemo(
     () => ({
@@ -208,23 +209,21 @@ function Index() {
     [toggleFav],
   );
 
-  const { priceMin, priceMax } = useMemo(() => {
-    if (!products.length) return { priceMin: 0, priceMax: 100 };
-    let lo = products[0].price;
-    let hi = products[0].price;
-    for (const p of products) {
-      if (p.price < lo) lo = p.price;
-      if (p.price > hi) hi = p.price;
-    }
-    return { priceMin: lo, priceMax: hi };
-  }, [products]);
+  const priceMin = 0;
+  const priceMax = priceLimit.products[0]?.price || 0;
   const [maxPrice, setMaxPrice] = useState(priceMax);
   useEffect(() => {
     setMaxPrice(priceMax);
   }, [priceMax]);
   const [sort, setSort] = useState<SortKey>("featured");
   const [query, setQuery] = useState("");
-  const debouncedQuery = useDebouncedValue(query, 250);
+  const debouncedQuery = useDebouncedValue(query, 180);
+  const [catalogPage, setCatalogPage] = useState(1);
+  const { products, total: catalogTotal, loading: catalogLoading, error: catalogError, refetch: retryCatalog } = useProducts({
+    page: catalogPage, pageSize: 24, search: debouncedQuery, category: activeCat,
+    brand: activeBrand, sort, maxPrice: maxPrice > 0 ? String(maxPrice) : "",
+  });
+  useEffect(() => setCatalogPage(1), [debouncedQuery, activeCat, activeBrand, sort, maxPrice]);
 
   const focusSearch = () => {
     setTimeout(() => document.getElementById("header-search")?.focus(), 50);
@@ -242,38 +241,7 @@ function Index() {
     addToCartShared(p, 1);
   };
 
-  const visibleProducts = useMemo(() => {
-    const q = debouncedQuery.trim().toLowerCase();
-    let list = products.filter((p) => {
-      const matchCat = activeCat === "All" ? true : p.category === activeCat;
-      const matchBrand =
-        activeBrand === "All"
-          ? true
-          : p.brand?.toLowerCase() === activeBrand.toLowerCase() ||
-            p.name.toLowerCase().includes(activeBrand.toLowerCase());
-      return matchCat && matchBrand;
-    });
-    list = list.filter((p) => p.price <= maxPrice);
-    if (q) {
-      list = list.filter((p) =>
-        [p.name, p.category, p.brand, p.tag, p.tagline, p.description]
-          .filter(Boolean)
-          .some((s) => String(s).toLowerCase().includes(q)),
-      );
-    }
-    switch (sort) {
-      case "price-asc":
-        list = [...list].sort((a, b) => a.price - b.price);
-        break;
-      case "price-desc":
-        list = [...list].sort((a, b) => b.price - a.price);
-        break;
-      case "rating":
-        list = [...list].sort((a, b) => b.rating - a.rating);
-        break;
-    }
-    return list;
-  }, [products, activeCat, activeBrand, maxPrice, sort, debouncedQuery]);
+  const visibleProducts = products;
 
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = { All: products.length };
@@ -838,7 +806,7 @@ function Index() {
       {/* CATEGORIES SECTION */}
       <section
         id="collections"
-        className="bg-[#FEFDF9] px-4 sm:px-6 md:px-8 lg:px-10 py-8 sm:py-12 lg:py-16"
+        className="bg-[#fbf9fd] px-4 sm:px-6 md:px-8 lg:px-10 py-8 sm:py-12 lg:py-16"
       >
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6 lg:mb-8">
           <div>
@@ -852,7 +820,7 @@ function Index() {
               <button
                 type="button"
                 onClick={() => categorySliderRef.current?.slickPrev()}
-                className="w-9 h-9 rounded-full border border-black/15 bg-white text-black hover:bg-black hover:text-white transition-all duration-200 flex items-center justify-center shadow-xs active:scale-95 cursor-pointer"
+                className="w-9 h-9 rounded-full border border-black/15 bg-white text-black hover:bg-brand-primary-hover hover:text-white transition-all duration-200 flex items-center justify-center shadow-xs active:scale-95 cursor-pointer"
                 aria-label="Previous categories"
               >
                 <ChevronLeft size={18} />
@@ -860,7 +828,7 @@ function Index() {
               <button
                 type="button"
                 onClick={() => categorySliderRef.current?.slickNext()}
-                className="w-9 h-9 rounded-full border border-black/15 bg-white text-black hover:bg-black hover:text-white transition-all duration-200 flex items-center justify-center shadow-xs active:scale-95 cursor-pointer"
+                className="w-9 h-9 rounded-full border border-black/15 bg-white text-black hover:bg-brand-primary-hover hover:text-white transition-all duration-200 flex items-center justify-center shadow-xs active:scale-95 cursor-pointer"
                 aria-label="Next categories"
               >
                 <ChevronRight size={18} />
@@ -875,7 +843,7 @@ function Index() {
         ) : (
           <div className="category-slick-slider -mx-2">
             <Slider ref={categorySliderRef} {...categorySliderSettings}>
-              {liveCategories.map((name) => {
+              {customerCategories.slice(0, 6).map((name) => {
                 const catProducts = products.filter((p) => p.category === name);
                 const customImg = categoryInfo[name]?.imageUrl;
                 const img = customImg || catProducts.find((p) => p.img)?.img;
@@ -908,7 +876,7 @@ function Index() {
                         <div>
                           <div className="type-h3 text-white drop-shadow-sm">{name}</div>
                           <div className="text-white/80 text-xs sm:text-sm mt-2 font-medium">
-                            {catProducts.length} product{catProducts.length === 1 ? "" : "s"}
+                            Explore collection
                           </div>
                         </div>
                       </div>
@@ -924,13 +892,14 @@ function Index() {
       {/* PRODUCTS SECTION */}
       <section
         id="shop"
-        className="bg-[#ECEDEC] px-4 sm:px-6 md:px-8 lg:px-10 py-8 sm:py-12 lg:py-16"
+        className="bg-brand-lavender px-4 sm:px-6 md:px-8 lg:px-10 py-8 sm:py-12 lg:py-16"
       >
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6 lg:mb-8">
           <h2 className="type-h1 text-black">The Home Edit</h2>
+          <button onClick={() => void loadAllCategories()} className="text-sm underline">Browse all categories</button>
           <div className="flex items-center gap-2 text-black/60 text-sm">
             <SlidersHorizontal size={16} />{" "}
-            {mounted ? `${visibleProducts.length} of ${products.length}` : "Loading…"}
+            {mounted ? `${visibleProducts.length} of ${catalogTotal}` : "Loading…"}
           </div>
         </div>
 
@@ -954,14 +923,14 @@ function Index() {
                       {activeCat !== "All" && (
                         <button
                           onClick={() => setActiveCat("All")}
-                          className="text-[11px] text-black/50 hover:text-black font-normal underline cursor-pointer"
+                          className="text-[11px] text-black/50 hover:text-brand-primary font-normal underline cursor-pointer"
                         >
                           All
                         </button>
                       )}
                     </h3>
                     <div className="flex flex-col gap-1 max-h-[220px] overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-black/10 [&::-webkit-scrollbar-thumb]:rounded-full">
-                      {(["All", ...liveCategories] as const).map((c) => {
+                      {(["All", ...customerCategories] as const).map((c) => {
                         const active = activeCat === c;
                         const count = categoryCounts[c];
                         return (
@@ -971,8 +940,8 @@ function Index() {
                             aria-pressed={active}
                             className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-all cursor-pointer ${
                               active
-                                ? "bg-black text-white shadow-sm font-semibold"
-                                : "bg-transparent text-black/70 hover:bg-black/5 hover:text-black font-medium"
+                                ? "bg-brand-primary text-white shadow-sm font-semibold"
+                                : "bg-transparent text-black/70 hover:bg-black/5 hover:text-brand-primary font-medium"
                             }`}
                           >
                             <span className="truncate pr-2">{c}</span>
@@ -998,7 +967,7 @@ function Index() {
                       {activeBrand !== "All" && (
                         <button
                           onClick={() => setActiveBrand("All")}
-                          className="text-[11px] text-black/50 hover:text-black font-normal underline cursor-pointer"
+                          className="text-[11px] text-black/50 hover:text-brand-primary font-normal underline cursor-pointer"
                         >
                           All
                         </button>
@@ -1015,8 +984,8 @@ function Index() {
                             aria-pressed={active}
                             className={`px-2.5 py-1.5 rounded-lg text-xs transition-all cursor-pointer font-medium flex items-center gap-1 ${
                               active
-                                ? "bg-black text-white shadow-sm font-bold"
-                                : "bg-black/[0.04] text-black/70 hover:bg-black/10 hover:text-black"
+                                ? "bg-brand-primary text-white shadow-sm font-bold"
+                                : "bg-black/[0.04] text-black/70 hover:bg-black/10 hover:text-brand-primary"
                             }`}
                           >
                             <span>{b}</span>
@@ -1059,7 +1028,7 @@ function Index() {
                         setSort("featured");
                         setQuery("");
                       }}
-                      className="text-xs text-black hover:text-black flex items-center justify-center gap-2 bg-black/5 hover:bg-black/10 px-4 py-2.5 rounded-xl transition-colors font-semibold w-full cursor-pointer mt-1"
+                      className="text-xs text-black hover:text-brand-primary flex items-center justify-center gap-2 bg-black/5 hover:bg-black/10 px-4 py-2.5 rounded-xl transition-colors font-semibold w-full cursor-pointer mt-1"
                     >
                       <RotateCcw size={14} /> Reset All Filters
                     </button>
@@ -1071,7 +1040,7 @@ function Index() {
               <div className="flex-1 min-w-0 w-full">
                 
                 {/* Mobile Filter & Sort Bar */}
-                <div className="lg:hidden sticky top-0 z-30 bg-[#ECEDEC]/90 backdrop-blur-md py-3 -mx-4 px-4 sm:-mx-6 sm:px-6 md:-mx-8 md:px-8 mb-4 transition-all">
+                <div className="lg:hidden sticky top-0 z-30 bg-brand-lavender/90 backdrop-blur-md py-3 -mx-4 px-4 sm:-mx-6 sm:px-6 md:-mx-8 md:px-8 mb-4 transition-all">
                   <div className="bg-white rounded-2xl p-2 sm:p-2.5 border border-black/5 shadow-sm flex items-center justify-between gap-2">
                     
                     {/* Mobile Drawer Trigger */}
@@ -1094,7 +1063,7 @@ function Index() {
                           <div>
                             <h3 className="font-bold text-sm mb-2.5 text-black" style={dmSans}>Categories</h3>
                             <div className="flex flex-col gap-1.5 max-h-[180px] overflow-y-auto pr-1">
-                              {(["All", ...liveCategories] as const).map((c) => {
+                              {(["All", ...customerCategories] as const).map((c) => {
                                 const active = activeCat === c;
                                 const count = categoryCounts[c];
                                 return (
@@ -1103,8 +1072,8 @@ function Index() {
                                     onClick={() => setActiveCat(c)}
                                     className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-all cursor-pointer ${
                                       active
-                                        ? "bg-black text-white shadow-sm font-semibold"
-                                        : "bg-transparent text-black/70 hover:bg-black/5 hover:text-black font-medium"
+                                        ? "bg-brand-primary text-white shadow-sm font-semibold"
+                                        : "bg-transparent text-black/70 hover:bg-black/5 hover:text-brand-primary font-medium"
                                     }`}
                                   >
                                     <span>{c}</span>
@@ -1132,8 +1101,8 @@ function Index() {
                                     onClick={() => setActiveBrand(b)}
                                     className={`px-2.5 py-1.5 rounded-lg text-xs transition-all cursor-pointer font-medium flex items-center gap-1 ${
                                       active
-                                        ? "bg-black text-white shadow-sm font-bold"
-                                        : "bg-black/[0.04] text-black/70 hover:bg-black/10 hover:text-black"
+                                        ? "bg-brand-primary text-white shadow-sm font-bold"
+                                        : "bg-black/[0.04] text-black/70 hover:bg-black/10 hover:text-brand-primary"
                                     }`}
                                   >
                                     <span>{b}</span>
@@ -1234,7 +1203,7 @@ function Index() {
                     </div>
                 </div>
 
-            {visibleProducts.length === 0 ? (
+            {catalogLoading ? <ProductGridSkeleton count={8} /> : catalogError ? <div role="alert">{catalogError} <button onClick={retryCatalog}>Retry</button></div> : visibleProducts.length === 0 ? (
               <div className="bg-white rounded-2xl p-10 text-center text-black/60">
                 No products match your filters.{" "}
                 <button
@@ -1263,6 +1232,11 @@ function Index() {
               </div>
             )}
             
+              <nav aria-label="Product pages" className="mt-6 flex items-center justify-center gap-4">
+                <button disabled={catalogPage === 1 || catalogLoading} onClick={() => setCatalogPage(p => p - 1)} className="rounded-full border px-4 py-2 disabled:opacity-40">Previous</button>
+                <span>{catalogPage} / {Math.max(1, Math.ceil(catalogTotal / 24))}</span>
+                <button disabled={catalogPage * 24 >= catalogTotal || catalogLoading} onClick={() => setCatalogPage(p => p + 1)} className="rounded-full border px-4 py-2 disabled:opacity-40">Next</button>
+              </nav>
             </div>
           </div>
           </>

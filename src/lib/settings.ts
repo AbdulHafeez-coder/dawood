@@ -14,19 +14,19 @@ export type Settings = {
   socials: Record<SocialKey, string>;
 };
 
-const CACHE_KEY = "dawood-mart-settings-v2";
+const CACHE_KEY = "dawood-mart-settings-v3";
 const SETTINGS_ID = "global";
 
 const DEFAULTS: Settings = {
   brandName: "Dawood Mart",
-  tagline: "Essentials for a tactile home",
+  tagline: "Smart Shopping, Better Living!",
   logoUrl: "",
   whatsappNumber: "03024201342",
   contactEmail: "abdulhafeez828@gmail.com",
   contactPhone: "0302-4201342",
   address: "Shakeel Crockery Store, Opposite Al Shams Jewellers, Al Noor Town Bazar, Walton Road, Lahore Cantt, Lahore, Pakistan",
   socials: {
-    instagram: "https://instagram.com/dawoodmart",
+    instagram: "",
     facebook: "",
     twitter: "",
     tiktok: "",
@@ -48,6 +48,7 @@ type SettingsRow = {
 };
 
 function fromRow(row: SettingsRow): Settings {
+  if (/maison\s*terra/i.test(row.brand_name) || /maisonterra\.co/i.test(row.contact_email)) return { ...DEFAULTS, socials: { ...DEFAULTS.socials } };
   return {
     brandName: row.brand_name ?? DEFAULTS.brandName,
     tagline: row.tagline ?? DEFAULTS.tagline,
@@ -191,7 +192,8 @@ export async function saveSettingsAsync(
     throw new Error(msg);
   }
 
-  current = data ? fromRow(data as SettingsRow) : next;
+  if (!data) throw new Error("Database did not confirm the settings save.");
+  current = fromRow(data as SettingsRow);
   persistCache();
   emit();
   return current;

@@ -28,7 +28,8 @@ const inter = { fontFamily: "'Inter', sans-serif" };
 function FavoritesPage() {
   const { favs, toggleFav } = useFavourites();
   const { cartCount } = useCart();
-  const { products } = useProducts();
+  const [page, setPage] = useState(1);
+  const { products, total, loading, error, refetch } = useProducts({ ids: favs, page, pageSize: 24 });
   const [cartOpen, setCartOpen] = useState(false);
   const mounted = useMounted();
 
@@ -67,6 +68,8 @@ function FavoritesPage() {
       </div>
 
       <section className="px-4 sm:px-6 md:px-8 lg:px-10 py-6 sm:py-8 lg:py-10">
+        {error && <div role="alert">{error} <button onClick={refetch}>Retry</button></div>}
+        {total > 24 && <nav aria-label="Favourite pages" className="flex gap-4 py-3"><button disabled={page === 1 || loading} onClick={() => setPage(p => p - 1)}>Previous</button><span>{page} / {Math.ceil(total / 24)}</span><button disabled={page * 24 >= total || loading} onClick={() => setPage(p => p + 1)}>Next</button></nav>}
         <div className="flex items-baseline justify-between mb-6">
           <h1 className="type-h1 text-black">Favourites</h1>
           <span className="text-black/50 text-sm">{items.length} saved</span>

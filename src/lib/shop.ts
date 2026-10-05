@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { publicProducts, productPageQuery, saveProductVisibility } from "./product-queries";
 import { supabase } from "@/lib/supabase";
 import type { Database } from "@/integrations/supabase/types";
 import type { Product, Category, CartItem } from "./types";
@@ -187,13 +188,15 @@ function extractBrand(name: string, details?: string[] | null): string {
   return "Classic";
 }
 
-function rowToProduct(r: ProductRow): Product {
+export function rowToProduct(r: ProductRow): Product {
   const originalPrice = typeof r.price === "string" ? Number(r.price) : r.price;
   const discountRate = 0.2; // 20% discount
   const discountedPrice = Math.round(originalPrice * (1 - discountRate));
 
   return {
     id: r.id,
+    is_active: r.is_active,
+    slug: r.slug,
     name: r.name,
     display_name: getDisplayName(r.name),
     tag: r.tag ?? "",
@@ -214,6 +217,7 @@ function rowToProduct(r: ProductRow): Product {
 function productToRow(p: Product): ProductInsert {
   return {
     id: p.id,
+    is_active: p.is_active ?? true,
     name: p.name,
     tag: p.tag ?? "",
     price: p.original_price ?? p.price,
@@ -230,8 +234,8 @@ function productToRow(p: Product): ProductInsert {
 
 
 // Exported live arrays. Seeded synchronously so SSR + first paint have data.
-export const products: Product[] = [...SEED_PRODUCTS];
-export const categoriesLive: string[] = [...SEED_CATEGORIES];
+export const products: Product[] = [];
+export const categoriesLive: string[] = [];
 
 // Per-category metadata (image, sort order). Keyed by category name.
 export type CategoryInfo = { name: string; imageUrl: string; sortOrder: number };
@@ -297,8 +301,8 @@ async function hydrateFromSupabase() {
       .from("categories")
       .select("name, image_url, sort_order")
       .order("sort_order", { ascending: true })
-      .order("created_at", { ascending: true }),
-    supabase.from("products").select("*").order("created_at", { ascending: false }),
+      .order("created_at", { ascending: true }).limit(6),
+    publicProducts(supabase).order("created_at", { ascending: false }).order("id").limit(24),
     supabase.from("promotions").select("*").order("sort_order", { ascending: true }),
   ]);
   if (catErr) console.error("[shop] categories load failed:", catErr.message);
@@ -323,7 +327,6 @@ async function hydrateFromSupabase() {
     0,
     products.length,
     ...((prodData ?? []) as ProductRow[]).map(rowToProduct),
-    ...SEED_PRODUCTS,
   );
   promotionsLive.splice(
     0,
@@ -356,16 +359,78 @@ export function getProduct(id: string): Product | undefined {
 }
 
 export async function getProductAsync(id: string): Promise<Product | undefined> {
-  await ensureStoreHydratedAsync();
-  return products.find((p) => p.id === id || p.slug === id);
+  let result = await publicProducts(supabase).eq("id", id).maybeSingle();
+  if (!result.error && !result.data) result = await publicProducts(supabase).eq("slug", id).maybeSingle();
+  if (result.error) throw result.error;
+  return result.data ? rowToProduct(result.data) : undefined;
 }
 
 // ---------- REACTIVE HOOKS ----------
-export function useProducts() {
+export type ProductQuery = { admin?: boolean; enabled?: boolean; page?: number; pageSize?: number; search?: string; category?: string; active?: string; minPrice?: string; maxPrice?: string; minRating?: string; maxRating?: string; sort?: string; brand?: string; ids?: string[] };
+// Explicit export/import only: never used during initial page rendering.
+export async function loadProductsForAdminExport() {
+  const result: Product[] = [];
+  for (let offset = 0; ; offset += 100) {
+    const { data, error } = await supabase.from("products").select("*").order("id").range(offset, offset + 99);
+    if (error) throw error;
+    result.push(...(data || []).map(rowToProduct));
+    if (!data || data.length < 100) return result;
+  }
+}
+const publicPageCache = new Map<string, { until: number; products: Product[]; total: number }>();
+export function useProducts(options?: ProductQuery) {
   ensureStoreHydrated();
   const [list, setList] = useState<Product[]>([...products]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [revision, setRevision] = useState(0);
+  const queryKey = options ? JSON.stringify(options) : "";
 
   useEffect(() => {
+    if (!queryKey) return;
+    const opts: ProductQuery = JSON.parse(queryKey);
+    if (opts.enabled === false) return;
+    const cached = !opts.admin && publicPageCache.get(queryKey);
+    if (cached && cached.until > Date.now()) {
+      setList(cached.products); setTotal(cached.total); setLoading(false); setError("");
+      return;
+    }
+    const controller = new AbortController();
+    const timeout = setTimeout(() => { controller.abort(); setLoading(false); setError("Products took too long to load. Please retry."); }, 15000);
+    let request = productPageQuery(supabase, opts);
+    if (opts.admin && opts.active && opts.active !== "all") request = request.eq("is_active", opts.active === "active");
+    if (opts.category === "Table Sheets & Table Mats") request = request.or("name.ilike.%table%sheet%,name.ilike.%table%mat%,name.ilike.%table%cover%,name.ilike.%table%runner%,name.ilike.%placemat%,name.ilike.%dastarkhwan%,category.ilike.%table%sheet%,category.ilike.%table%mat%");
+    else if (opts.category === "Wall Sheets & Wallpaper") request = request.or("name.ilike.%wall%sheet%,name.ilike.%wallpaper%,category.ilike.%wall%sheet%,category.ilike.%wallpaper%");
+    else if (opts.category && !["All", "all"].includes(opts.category)) request = request.eq("category", opts.category);
+    const term = (opts.search || "").replace(/[%,().*\\]/g, " ").trim();
+    if (term) request = request.or(`name.ilike.%${term}%,id.ilike.%${term}%,category.ilike.%${term}%`);
+    if (opts.brand && opts.brand !== "All") request = request.contains("details", [`brand:${opts.brand}`]);
+    if (opts.minPrice) request = request.gte("price", Number(opts.minPrice) / 0.8);
+    if (opts.maxPrice) request = request.lte("price", Number(opts.maxPrice) / 0.8);
+    if (opts.minRating) request = request.gte("rating", Number(opts.minRating));
+    if (opts.maxRating) request = request.lte("rating", Number(opts.maxRating));
+    if (opts.ids) request = request.in("id", opts.ids);
+    const column = opts.sort?.startsWith("price") ? "price" : opts.sort === "rating" ? "rating" : "created_at";
+    setLoading(true); setError("");
+    request.order(column, { ascending: opts.sort === "price-asc" }).order("id")
+      .abortSignal(controller.signal)
+      .then(({ data, error: queryError, count }) => {
+        if (controller.signal.aborted) return;
+        clearTimeout(timeout);
+        setList(queryError ? [] : (data || []).map(rowToProduct));
+        setTotal(count || 0); setLoading(false);
+        setError(queryError ? "Unable to load products. Please retry." : "");
+        if (!queryError && !opts.admin) {
+          if (publicPageCache.size > 64) publicPageCache.clear();
+          publicPageCache.set(queryKey, { until: Date.now() + 30000, products: (data || []).map(rowToProduct), total: count || 0 });
+        }
+      });
+    return () => { clearTimeout(timeout); controller.abort(); };
+  }, [queryKey, revision]);
+
+  useEffect(() => {
+    if (queryKey) return;
     ensureStoreHydrated();
     setList([...products]);
     const l = (p: Product[]) => setList(p);
@@ -373,7 +438,7 @@ export function useProducts() {
     return () => {
       productListeners.delete(l);
     };
-  }, []);
+  }, [queryKey]);
 
   const addProduct = useCallback((p: Omit<Product, "id"> & { id?: string }) => {
     const id = p.id ?? `p-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
@@ -391,36 +456,48 @@ export function useProducts() {
           if (idx >= 0) products.splice(idx, 1);
           emitProducts();
         }
+        publicPageCache.clear();
+        setRevision(n => n + 1);
       });
     return id;
   }, []);
 
-  const updateProduct = useCallback((id: string, patch: Partial<Product>) => {
+  const updateProduct = useCallback(async (id: string, patch: Partial<Product>) => {
     const idx = products.findIndex((p) => p.id === id);
-    if (idx < 0) return;
-    const prev = products[idx];
+    if (Object.keys(patch).length === 1 && typeof patch.is_active === "boolean") {
+      await saveProductVisibility(supabase, id, patch.is_active);
+      if (idx >= 0) {
+        if (!patch.is_active) products.splice(idx, 1);
+        else products[idx] = { ...products[idx], is_active: true };
+      }
+      publicPageCache.clear(); emitProducts(); setRevision(n => n + 1);
+      return;
+    }
+    let prev = list.find((p) => p.id === id) || products[idx];
+    if (!prev) {
+      const { data, error } = await supabase.from("products").select("*").eq("id", id).maybeSingle();
+      if (error) throw error;
+      if (data) prev = rowToProduct(data);
+    }
+    if (!prev) throw new Error("Product is not loaded. Reload this page and retry.");
     const next = { ...prev, ...patch };
     if (!next.gallery || next.gallery.length === 0) next.gallery = [next.img];
-    products[idx] = next;
-    emitProducts();
-    supabase
+    const { data, error } = await supabase
       .from("products")
       .update(productToRow(next))
       .eq("id", id)
-      .then(({ error }) => {
-        if (error) {
-          console.error("[shop] updateProduct failed:", error.message);
-          products[idx] = prev;
-          emitProducts();
-        }
-      });
-  }, []);
+      .select("id").maybeSingle();
+    if (error || !data) throw new Error(error?.message || "Database did not confirm the save.");
+    publicPageCache.clear();
+    if (idx >= 0) products[idx] = next;
+    emitProducts();
+    setRevision((n) => n + 1);
+  }, [list]);
 
   const deleteProduct = useCallback((id: string) => {
     const idx = products.findIndex((p) => p.id === id);
-    if (idx < 0) return;
     const removed = products[idx];
-    products.splice(idx, 1);
+    if (idx >= 0) products.splice(idx, 1);
     emitProducts();
     supabase
       .from("products")
@@ -429,9 +506,11 @@ export function useProducts() {
       .then(({ error }) => {
         if (error) {
           console.error("[shop] deleteProduct failed:", error.message);
-          products.splice(idx, 0, removed);
+          if (removed) products.splice(idx, 0, removed);
           emitProducts();
         }
+        publicPageCache.clear();
+        setRevision(n => n + 1);
       });
   }, []);
 
@@ -452,13 +531,27 @@ export function useProducts() {
     if (insErr) console.error("[shop] resetProducts insert failed:", insErr.message);
   }, []);
 
-  return { products: list, addProduct, updateProduct, deleteProduct, resetProducts };
+  return { products: options?.admin ? list : list.filter((p) => p.is_active !== false), total, loading, error, refetch: () => { publicPageCache.clear(); setRevision((n) => n + 1); }, addProduct, updateProduct, deleteProduct, resetProducts };
 }
 
-export function useCategories() {
+export function useCategories(all = false) {
   ensureStoreHydrated();
   const [list, setList] = useState<string[]>([...categoriesLive]);
   const [info, setInfo] = useState<Record<string, CategoryInfo>>({ ...categoryInfoLive });
+  const loadAll = useCallback(async () => {
+    await ensureStoreHydratedAsync();
+    const rows: { name: string; image_url: string | null; sort_order: number }[] = [];
+    for (let offset = 0; ; offset += 100) {
+      const { data, error } = await supabase.from("categories").select("name,image_url,sort_order").order("sort_order").order("name").range(offset, offset + 99);
+      if (error) { toast.error("Unable to load categories."); return; }
+      rows.push(...(data || []).map(r => ({ ...r, sort_order: r.sort_order || 0 })));
+      if (!data || data.length < 100) break;
+    }
+    categoriesLive.splice(0, categoriesLive.length, ...rows.map(r => r.name));
+    for (const r of rows) categoryInfoLive[r.name] = { name: r.name, imageUrl: r.image_url || "", sortOrder: r.sort_order };
+    emitCategories();
+  }, []);
+  useEffect(() => { if (all) void loadAll(); }, [all, loadAll]);
 
   useEffect(() => {
     ensureStoreHydrated();
@@ -582,6 +675,7 @@ export function useCategories() {
   return {
     categories: list,
     categoryInfo: info,
+    loadAll,
     addCategory,
     renameCategory,
     updateCategoryImage,

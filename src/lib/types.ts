@@ -3,6 +3,7 @@ export type Category = string;
 
 export type Product = {
   id: string;
+  is_active?: boolean;
   name: string;
   display_name: string;
   tag: string;
