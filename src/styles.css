@@ -1651,112 +1651,98 @@ select.mt-select:active {
 }
 .dm-hero-panel {
   min-width: 0;
-  min-height: 560px;
-  height: min(73vh, 760px);
+  aspect-ratio: 0.77;
   position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: center;
   overflow: hidden;
-  border-radius: 5px;
-  background: #e9e5d9;
+  border-radius: 20px;
+  background: #5e7284;
+  color: white;
   text-decoration: none;
-  padding: 38px 12px 30px;
   isolation: isolate;
+  transition: border-radius 500ms ease;
 }
 .dm-hero-panel h2 {
+  position: absolute;
+  top: 50%;
+  max-width: calc(100% - 24px);
+  transform: translateY(-50%);
+  margin: 0;
+  padding: 8px 16px;
+  border: 1px solid white;
+  border-radius: 9999px;
+  background: #00000020;
+  color: white;
   font-family: "DM Sans", Arial, sans-serif;
-  font-size: clamp(13px, 1.5vw, 23px);
-  font-weight: 500;
-  letter-spacing: 0.01em;
+  font-size: clamp(9px, 0.95vw, 13px);
+  font-weight: 600;
+  letter-spacing: 0.02em;
   line-height: 1.2;
   text-align: center;
   z-index: 2;
+  transition: transform 500ms ease;
 }
 .dm-panel-sage {
-  background: #e2e7dd;
+  background: #554c4b;
 }
 .dm-panel-peach {
-  background: #eee1d6;
+  background: #8d6b67;
 }
 .dm-panel-sky {
-  background: #e1e9e9;
+  background: #80887e;
 }
 .dm-panel-visual {
   position: absolute;
-  left: 6%;
-  right: 6%;
-  top: 17%;
-  bottom: 5%;
+  inset: 16% 7%;
   overflow: hidden;
-  border-radius: 48% 48% 8% 8% / 32% 32% 6% 6%;
-  transform: rotate(-3deg);
-}
-.dm-panel-sage .dm-panel-visual {
-  border-radius: 42% 12% 42% 12%;
-  transform: rotate(3deg);
-}
-.dm-panel-peach .dm-panel-visual {
-  border-radius: 46% 46% 12% 12% / 28% 28% 12% 12%;
-  transform: rotate(-2deg);
-}
-.dm-panel-sky .dm-panel-visual {
-  border-radius: 12% 42% 12% 42%;
-  transform: rotate(3deg);
+  border-radius: 12px;
 }
 .dm-panel-visual img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  transition: transform 0.35s ease;
+  object-fit: contain;
 }
 .dm-panel-cta {
   position: absolute;
-  bottom: 76px;
+  top: calc(50% + 26px);
   z-index: 2;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 15px;
-  min-height: 44px;
-  padding: 10px 18px;
-  border: 1px solid #555e4f;
-  background: #fffffff0;
-  border-radius: 30px;
+  gap: 8px;
+  min-height: 36px;
+  padding: 8px 16px;
+  border: 1px solid white;
+  background: #00000020;
+  color: white;
+  border-radius: 9999px;
   font-size: 11px;
   letter-spacing: 0.01em;
-  transition: background 0.2s;
+  transition: opacity 500ms ease, transform 500ms ease;
 }
-.dm-hero-panel:hover .dm-panel-cta {
-  background: #ffffffa8;
-}
-.dm-hero-panel:hover img {
-  transform: scale(1.025);
+@media (hover: hover) and (pointer: fine) {
+  .dm-panel-cta {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  .dm-hero-panel:hover,
+  .dm-hero-panel:focus-visible {
+    border-radius: 48% 48% 38% 38% / 32% 32% 28% 28%;
+  }
+  .dm-hero-panel:hover h2,
+  .dm-hero-panel:focus-visible h2 {
+    transform: translateY(calc(-50% - 12px));
+  }
+  .dm-hero-panel:hover .dm-panel-cta,
+  .dm-hero-panel:focus-visible .dm-panel-cta {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .dm-hero-swipe {
   display: none;
-}
-@media (min-width: 1500px) {
-  .dm-panel-visual {
-    left: 8%;
-    right: 8%;
-  }
-}
-@media (max-width: 1023px) and (min-width: 768px) {
-  .dm-hero-panel {
-    min-height: 440px;
-    height: 65vh;
-    padding-top: 28px;
-  }
-  .dm-panel-cta {
-    font-size: 10px;
-    gap: 8px;
-    padding: 10px 12px;
-  }
-  .dm-panel-visual {
-    left: 4%;
-    right: 4%;
-  }
 }
 @media (max-width: 767px) {
   .dm-home:has(.dm-header-floating) {
@@ -1785,24 +1771,9 @@ select.mt-select:active {
   }
   .dm-hero-panel {
     flex: 0 0 82vw;
-    min-height: 490px;
-    height: 65svh;
-    max-height: 600px;
     scroll-snap-align: center;
-    padding-top: 29px;
-    border-radius: 5px;
   }
   .dm-hero-panel h2 {
-    font-size: 21px;
-  }
-  .dm-panel-visual {
-    top: 16%;
-    bottom: 5%;
-    left: 7%;
-    right: 7%;
-  }
-  .dm-panel-cta {
-    bottom: 28px;
     font-size: 12px;
   }
   .dm-hero-swipe {
