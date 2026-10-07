@@ -83,6 +83,7 @@ export type Database = {
       products: {
         Row: {
           is_active: boolean;
+          in_stock: boolean;
           bg: string;
           category: string;
           created_at: string;
@@ -102,6 +103,7 @@ export type Database = {
         };
         Insert: {
           is_active?: boolean;
+          in_stock?: boolean;
           bg?: string;
           category: string;
           created_at?: string;
@@ -121,6 +123,7 @@ export type Database = {
         };
         Update: {
           is_active?: boolean;
+          in_stock?: boolean;
           bg?: string;
           category?: string;
           created_at?: string;

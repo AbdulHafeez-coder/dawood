@@ -5,6 +5,8 @@ import { useCart, computeShipping, useCoupon } from "@/lib/shop";
 import { formatPKR } from "@/lib/format";
 import { buildCheckoutWhatsappOrder } from "@/lib/whatsapp";
 import { saveOrder } from "@/lib/orders";
+import { assertPurchasable } from "@/lib/product-availability";
+import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { SafeImage } from "@/components/ui/SafeImage";
 
@@ -21,6 +23,7 @@ function CheckoutPage() {
   const shipping = computeShipping(discountedSubtotal);
   const total = discountedSubtotal + shipping;
 
+  const [submitting, setSubmitting] = useState(false);
   const [step, setStep] = useState<"info" | "review">("info");
 
   const [name, setName] = useState("");
@@ -61,7 +64,11 @@ function CheckoutPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleConfirmOrder = () => {
+  const handleConfirmOrder = async () => {
+    if (submitting) return;
+    setSubmitting(true);
+    try { await assertPurchasable(supabase, cart.map(p => p.baseId || p.id)); }
+    catch (error) { toast.error(error instanceof Error ? error.message : "Unable to check availability. Please retry."); setSubmitting(false); return; }
     // Generate Order ID
     const randomNum = Math.floor(10000 + Math.random() * 90000);
     const orderId = `DM-${randomNum}`;
@@ -79,7 +86,6 @@ function CheckoutPage() {
 
     const primary = cart[0];
     saveOrder({
-      id: orderId,
       kind: "cart",
       url,
       message: text,
@@ -89,8 +95,7 @@ function CheckoutPage() {
       primaryImg: primary?.img,
       primaryBg: primary?.bg,
       extraCount: Math.max(0, cart.length - 1),
-      status: "pending",
-      customerInfo,
+      status: "new",
     });
 
     toast.success("Order confirmed!", {
@@ -106,7 +111,7 @@ function CheckoutPage() {
 
   if (cart.length === 0) {
     return (
-      <div className="min-h-screen bg-[#FEFDF9] flex flex-col items-center justify-center p-6 text-center">
+      <div className="storefront dm-checkout min-h-screen bg-[#FEFDF9] flex flex-col items-center justify-center p-6 text-center">
         <h1 className="text-2xl font-semibold mb-4 text-black">Your cart is empty</h1>
         <p className="text-black/60 mb-6">Looks like you haven't added anything to your cart yet.</p>
         <button
@@ -120,7 +125,7 @@ function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FEFDF9] pb-24 lg:pb-12">
+    <div className="storefront dm-checkout min-h-screen bg-[#FEFDF9] pb-24 lg:pb-12">
       {/* Header */}
       <header className="bg-white border-b border-black/10 py-4 px-6 lg:px-12 sticky top-0 z-20">
         <div className="max-w-5xl mx-auto flex items-center gap-4">
@@ -293,6 +298,7 @@ function CheckoutPage() {
               </div>
 
               <button
+                disabled={submitting}
                 onClick={handleConfirmOrder}
                 className="w-full bg-[#25D366] text-white h-14 rounded-md font-medium hover:bg-[#1ebe57] transition-colors flex items-center justify-center gap-2 shadow-sm shadow-[#25D366]/20"
               >

@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { canPurchase, saveStock } from "./product-availability";
+import { storefrontCategories } from "./storefront-categories";
 import { publicProducts, productPageQuery, saveProductVisibility } from "./product-queries";
 import { supabase } from "@/lib/supabase";
 import type { Database } from "@/integrations/supabase/types";
@@ -196,6 +198,7 @@ export function rowToProduct(r: ProductRow): Product {
   return {
     id: r.id,
     is_active: r.is_active,
+    in_stock: r.in_stock,
     slug: r.slug,
     name: r.name,
     display_name: getDisplayName(r.name),
@@ -218,6 +221,7 @@ function productToRow(p: Product): ProductInsert {
   return {
     id: p.id,
     is_active: p.is_active ?? true,
+    in_stock: p.in_stock ?? true,
     name: p.name,
     tag: p.tag ?? "",
     price: p.original_price ?? p.price,
@@ -366,7 +370,7 @@ export async function getProductAsync(id: string): Promise<Product | undefined> 
 }
 
 // ---------- REACTIVE HOOKS ----------
-export type ProductQuery = { admin?: boolean; enabled?: boolean; page?: number; pageSize?: number; search?: string; category?: string; active?: string; minPrice?: string; maxPrice?: string; minRating?: string; maxRating?: string; sort?: string; brand?: string; ids?: string[] };
+export type ProductQuery = { admin?: boolean; enabled?: boolean; page?: number; pageSize?: number; search?: string; category?: string; active?: string; minPrice?: string; maxPrice?: string; minRating?: string; maxRating?: string; sort?: string; brand?: string; ids?: string[]; stock?: string };
 // Explicit export/import only: never used during initial page rendering.
 export async function loadProductsForAdminExport() {
   const result: Product[] = [];
@@ -379,7 +383,7 @@ export async function loadProductsForAdminExport() {
 }
 const publicPageCache = new Map<string, { until: number; products: Product[]; total: number }>();
 export function useProducts(options?: ProductQuery) {
-  ensureStoreHydrated();
+  if (!options) ensureStoreHydrated();
   const [list, setList] = useState<Product[]>([...products]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -400,7 +404,11 @@ export function useProducts(options?: ProductQuery) {
     const timeout = setTimeout(() => { controller.abort(); setLoading(false); setError("Products took too long to load. Please retry."); }, 15000);
     let request = productPageQuery(supabase, opts);
     if (opts.admin && opts.active && opts.active !== "all") request = request.eq("is_active", opts.active === "active");
-    if (opts.category === "Table Sheets & Table Mats") request = request.or("name.ilike.%table%sheet%,name.ilike.%table%mat%,name.ilike.%table%cover%,name.ilike.%table%runner%,name.ilike.%placemat%,name.ilike.%dastarkhwan%,category.ilike.%table%sheet%,category.ilike.%table%mat%");
+    const group = !opts.admin && storefrontCategories.find(g => g.name === opts.category);
+    if (opts.stock === "in") request = request.eq("in_stock", true);
+    if (opts.stock === "out") request = request.eq("in_stock", false);
+    if (group) request = request.in("category", group.categories);
+    else if (opts.category === "Table Sheets & Table Mats") request = request.or("name.ilike.%table%sheet%,name.ilike.%table%mat%,name.ilike.%table%cover%,name.ilike.%table%runner%,name.ilike.%placemat%,name.ilike.%dastarkhwan%,category.ilike.%table%sheet%,category.ilike.%table%mat%");
     else if (opts.category === "Wall Sheets & Wallpaper") request = request.or("name.ilike.%wall%sheet%,name.ilike.%wallpaper%,category.ilike.%wall%sheet%,category.ilike.%wallpaper%");
     else if (opts.category && !["All", "all"].includes(opts.category)) request = request.eq("category", opts.category);
     const term = (opts.search || "").replace(/[%,().*\\]/g, " ").trim();
@@ -464,6 +472,12 @@ export function useProducts(options?: ProductQuery) {
 
   const updateProduct = useCallback(async (id: string, patch: Partial<Product>) => {
     const idx = products.findIndex((p) => p.id === id);
+    if (Object.keys(patch).length === 1 && typeof patch.in_stock === "boolean") {
+      await saveStock(supabase, id, patch.in_stock);
+      if (idx >= 0) products[idx] = { ...products[idx], in_stock: patch.in_stock };
+      publicPageCache.clear(); emitProducts(); setRevision(n => n + 1);
+      return;
+    }
     if (Object.keys(patch).length === 1 && typeof patch.is_active === "boolean") {
       await saveProductVisibility(supabase, id, patch.is_active);
       if (idx >= 0) {
@@ -754,8 +768,9 @@ let cartHydrated = false;
 function ensureHydrated() {
   if (cartHydrated || typeof window === "undefined") return;
   cartHydrated = true;
-  ensureStoreHydrated();
-  cartState = resolvePersistedCart(parsePersistedCart());
+  const persisted = parsePersistedCart();
+  if (persisted.some(item => !item.snapshot)) ensureStoreHydrated();
+  cartState = resolvePersistedCart(persisted);
 }
 
 function emit() {
@@ -806,6 +821,7 @@ export function useCart() {
   }, []);
 
   const addToCart = useCallback((p: Product, qty = 1, extras: Partial<CartItem> = {}) => {
+    if (!canPurchase(p)) { toast.error("This product is unavailable."); return false; }
     const found = cartState.find((i) => i.id === p.id);
     if (found) {
       cartState = cartState.map((i) => (i.id === p.id ? { ...i, qty: i.qty + qty } : i));
@@ -813,6 +829,7 @@ export function useCart() {
       cartState = [...cartState, { ...p, ...extras, qty }];
     }
     emit();
+    return true;
   }, []);
 
   const changeQty = useCallback((id: string, delta: number) => {

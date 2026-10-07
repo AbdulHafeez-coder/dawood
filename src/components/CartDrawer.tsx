@@ -1,3 +1,5 @@
+import { assertPurchasable } from "@/lib/product-availability";
+import { supabase } from "@/lib/supabase";
 import { useState } from "react";
 import { ShoppingBag, X, Plus, Minus, Trash2, ArrowRight, Truck, Sparkles, Tag, Check } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
@@ -17,6 +19,7 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
   const navigate = useNavigate();
   const { cart, changeQty, removeItem, restoreItem, cartCount, subtotal } = useCart();
   const { couponCode, activeCoupon, applyCoupon, removeCoupon, calculateDiscount } = useCoupon();
+  const [checking, setChecking] = useState(false);
   const [couponInput, setCouponInput] = useState("");
 
   const discount = calculateDiscount(subtotal);
@@ -115,7 +118,7 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
     <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <SheetContent
         side="right"
-        className="w-full sm:w-[420px] p-0 flex flex-col border-l-0 gap-0"
+        className="dm-cart w-full sm:w-[420px] p-0 flex flex-col border-l-0 gap-0"
         hideCloseButton
       >
         <SheetHeader className="sr-only">
@@ -199,9 +202,6 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                         <div className="text-black truncate font-medium text-sm tracking-tight">
                           {i.baseName ?? i.name}
                         </div>
-                        <div className="text-black/50 text-xs">
-                          {i.brand ? `${i.brand} · ` : ""}{i.category}
-                        </div>
                         {(i.variantSizeLabel || i.variantColorLabel) && (
                           <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
                             {i.variantSizeLabel && (
@@ -230,7 +230,7 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                               {formatPKR(i.original_price * i.qty)}
                             </span>
                             <span className="text-red-600 text-[10px] font-bold bg-red-50 px-1 py-0.5 rounded">
-                              20% OFF
+                              {Math.round((1 - i.price / i.original_price) * 100)}% OFF
                             </span>
                             <span>{formatPKR(i.price * i.qty)}</span>
                           </>
@@ -301,7 +301,7 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                       type="text"
                       value={couponInput}
                       onChange={(e) => setCouponInput(e.target.value)}
-                      placeholder="Promo code (e.g. WELCOME10)"
+                      placeholder="Promo code"
                       className="w-full pl-8 pr-3 py-2 bg-stone-100 hover:bg-stone-150 focus:bg-white border border-black/10 rounded-xl text-xs outline-none uppercase font-semibold text-black placeholder:normal-case placeholder:font-normal placeholder:text-black/40 transition-colors"
                     />
                   </div>
@@ -341,9 +341,12 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
 
             <button
               type="button"
-              onClick={() => {
-                onClose();
-                navigate({ to: "/checkout" });
+              disabled={checking}
+              onClick={async () => {
+                setChecking(true);
+                try { await assertPurchasable(supabase, cart.map(p => p.baseId || p.id)); onClose(); void navigate({ to: "/checkout" }); }
+                catch (error) { toast.error(error instanceof Error ? error.message : "Unable to check availability."); }
+                finally { setChecking(false); }
               }}
               className="mt-1 inline-flex items-center justify-center gap-2 bg-black text-white rounded-xl h-11 text-sm font-semibold hover:bg-black/85 transition-colors cursor-pointer shadow-md"
             >

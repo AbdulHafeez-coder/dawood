@@ -25,6 +25,7 @@ export function SafeImage({
   return (
     <img
       {...props}
+      srcSet={imgSrc === fallbackSrc ? undefined : props.srcSet}
       src={imgSrc || fallbackSrc}
       alt={alt}
       className={className}

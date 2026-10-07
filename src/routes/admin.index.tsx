@@ -1023,6 +1023,7 @@ function AdminDashboard() {
                               <th className="py-2 pr-3 font-medium">Item</th>
                               <th className="py-2 pr-3 font-medium">Category</th>
                               <th className="py-2 pr-3 font-medium">Visibility</th>
+                              <th className="py-2 pr-3 font-medium">Stock</th>
                               <th className="py-2 pr-3 font-medium">Rating</th>
                               <th className="py-2 pr-3 font-medium text-right">Price</th>
                               <th className="py-2 pl-3 font-medium text-right">Actions</th>
@@ -1072,6 +1073,7 @@ function AdminDashboard() {
                                       {p.is_active === false ? "Inactive" : "Active"}
                                     </button>
                                   </td>
+                                  <td className="py-3 pr-3"><select aria-label={`Stock for ${p.name}`} value={p.in_stock === false ? "out" : "in"} className="rounded border px-2 py-1 text-xs" onChange={async e => { try { await updateProduct(p.id, { in_stock: e.target.value === "in" }); toast.success("Stock saved"); } catch (error) { toast.error(error instanceof Error ? error.message : "Save failed"); } }}><option value="in">In Stock</option><option value="out">Out of Stock</option></select></td>
                                   <td className="py-3 pr-3 text-black/70 tabular-nums">
                                     {p.rating.toFixed(1)}
                                   </td>
