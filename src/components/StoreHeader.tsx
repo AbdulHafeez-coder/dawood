@@ -40,9 +40,7 @@ export function StoreHeader({
           {settings.logoUrl ? (
             <img src={settings.logoUrl} alt={settings.brandName} width={180} height={48} />
           ) : (
-            <span>
-              Dawood Mart<span className="dm-wordmark-dot">.</span>
-            </span>
+            <img src="/dawood-logo.svg" alt="Dawood Mart" width={180} height={48} />
           )}
         </Link>
         <nav className="dm-desktop-nav" aria-label="Main navigation">

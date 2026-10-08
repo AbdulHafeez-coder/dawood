@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MessageCircle, Mail, MapPin, Clock } from "lucide-react";
+import { useSettings } from "@/lib/settings";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Link } from "@tanstack/react-router";
 
@@ -11,6 +12,7 @@ export const Route = createFileRoute("/support")({
 });
 
 function SupportPage() {
+  const settings = useSettings();
   return (
     <div className="min-h-screen bg-[#FEFDF9] flex flex-col font-inter">
       {/* Simple Header */}
@@ -54,7 +56,7 @@ function SupportPage() {
 
           {/* Email Contact */}
           <a
-            href="mailto:abdulhafeez828@gmail.com"
+            href={`mailto:${settings.contactEmail}`}
             className="group bg-white border border-black/10 rounded-2xl p-6 md:p-8 shadow-sm hover:border-black/30 hover:shadow-md transition-all block"
           >
             <div className="w-12 h-12 rounded-full bg-black/5 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
@@ -65,7 +67,7 @@ function SupportPage() {
               For formal inquiries, complaints, and bulk order quotations.
             </p>
             <div className="font-semibold text-black text-lg group-hover:text-black/70 transition-colors truncate">
-              abdulhafeez828@gmail.com
+              {settings.contactEmail}
             </div>
           </a>
 

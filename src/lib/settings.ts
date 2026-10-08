@@ -14,15 +14,15 @@ export type Settings = {
   socials: Record<SocialKey, string>;
 };
 
-const CACHE_KEY = "dawood-mart-settings-v3";
+const CACHE_KEY = "dawood-mart-settings-v4";
 const SETTINGS_ID = "global";
 
 const DEFAULTS: Settings = {
   brandName: "Dawood Mart",
   tagline: "Smart Shopping, Better Living!",
-  logoUrl: "",
+  logoUrl: "/dawood-logo.svg",
   whatsappNumber: "03024201342",
-  contactEmail: "abdulhafeez828@gmail.com",
+  contactEmail: "abdulhafeez8278@gmail.com",
   contactPhone: "0302-4201342",
   address: "Shakeel Crockery Store, Opposite Al Shams Jewellers, Al Noor Town Bazar, Walton Road, Lahore Cantt, Lahore, Pakistan",
   socials: {
@@ -52,7 +52,7 @@ function fromRow(row: SettingsRow): Settings {
   return {
     brandName: row.brand_name ?? DEFAULTS.brandName,
     tagline: row.tagline ?? DEFAULTS.tagline,
-    logoUrl: row.logo_url ?? "",
+    logoUrl: row.logo_url || DEFAULTS.logoUrl,
     whatsappNumber: row.whatsapp_number ?? "",
     contactEmail: row.contact_email ?? "",
     contactPhone: row.contact_phone ?? "",

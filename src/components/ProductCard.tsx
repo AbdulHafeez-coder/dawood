@@ -30,9 +30,10 @@ export const ProductCard = memo(function ProductCard({
     >
       <div className="dm-product-photo">
         <Link to="/product/$id" params={{ id: p.slug || p.id }} aria-label={name}>
-          <StoreImage src={p.img} alt={name} loading="lazy" />
+          <StoreImage src={p.img} alt={name} loading="lazy" className="dm-primary" />
           {hovered && second && !failed && (
             <StoreImage
+              key={second}
               src={second}
               alt=""
               className={`dm-secondary ${loaded ? "is-loaded" : ""}`}
