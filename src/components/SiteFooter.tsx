@@ -52,6 +52,7 @@ export function SiteFooter() {
           © {new Date().getFullYear()} {s.brandName}
         </span>
         <span>Made for everyday living · Pakistan</span>
+        <Link to="/admin/login">Admin Login</Link>
       </div>
     </footer>
   );
