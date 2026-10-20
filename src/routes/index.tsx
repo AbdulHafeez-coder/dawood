@@ -3,6 +3,7 @@ import { useState } from "react";
 import { SlidersHorizontal, ArrowRight } from "lucide-react";
 import { useProducts, useFavourites } from "@/lib/shop";
 import { storefrontCategories } from "@/lib/storefront-categories";
+import { taxonomyGroups } from "@/lib/category-taxonomy.js";
 import { StoreHeader } from "@/components/StoreHeader";
 import { ProductCard } from "@/components/ProductCard";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -81,7 +82,7 @@ const heroPanels = [
     tone: "sky",
   },
 ];
-const featured = storefrontCategories.filter((c) => c.image).slice(0, 6);
+const featured = taxonomyGroups;
 function Index() {
   const search = Route.useSearch(),
     navigate = useNavigate(),
@@ -212,7 +213,8 @@ function Index() {
               </div>
               <div className="dm-category-grid">
                 {featured.map((c) => (
-                  <a key={c.name} href={`/?category=${encodeURIComponent(c.name)}#shop`}>
+                  <div className="dm-category-card" key={c.name}>
+                    <a href={`/?category=${encodeURIComponent(c.name)}#shop`}>
                     <div>
                       <img
                         src={`/images/storefront/${c.image}-480.webp`}
@@ -228,7 +230,15 @@ function Index() {
                       {c.name}
                       <ArrowRight size={17} />
                     </span>
-                  </a>
+                    </a>
+                    <div className="dm-category-subcategories" aria-label={`${c.name} subcategories`}>
+                      {c.subcategories.map((subcategory) => (
+                        <a key={subcategory.name} href={`/?category=${encodeURIComponent(subcategory.name)}#shop`}>
+                          {subcategory.name}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
                 ))}
               </div>
             </section>

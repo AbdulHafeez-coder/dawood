@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { canPurchase, saveStock } from "./product-availability";
 import { storefrontCategories } from "./storefront-categories";
+import { findTaxonomy } from "./category-taxonomy.js";
 import { publicProducts, productPageQuery, saveProductVisibility } from "./product-queries";
 import { supabase } from "@/lib/supabase";
 import type { Database } from "@/integrations/supabase/types";
@@ -405,9 +406,11 @@ export function useProducts(options?: ProductQuery) {
     let request = productPageQuery(supabase, opts);
     if (opts.admin && opts.active && opts.active !== "all") request = request.eq("is_active", opts.active === "active");
     const group = !opts.admin && storefrontCategories.find(g => g.name === opts.category);
+    const taxonomy = !opts.admin && findTaxonomy(opts.category);
     if (opts.stock === "in") request = request.eq("in_stock", true);
     if (opts.stock === "out") request = request.eq("in_stock", false);
     if (group) request = request.in("category", group.categories);
+    else if (taxonomy) request = request.limit(100);
     else if (opts.category === "Table Sheets & Table Mats") request = request.or("name.ilike.%table%sheet%,name.ilike.%table%mat%,name.ilike.%table%cover%,name.ilike.%table%runner%,name.ilike.%placemat%,name.ilike.%dastarkhwan%,category.ilike.%table%sheet%,category.ilike.%table%mat%");
     else if (opts.category === "Wall Sheets & Wallpaper") request = request.or("name.ilike.%wall%sheet%,name.ilike.%wallpaper%,category.ilike.%wall%sheet%,category.ilike.%wallpaper%");
     else if (opts.category && !["All", "all"].includes(opts.category)) request = request.eq("category", opts.category);
@@ -426,12 +429,14 @@ export function useProducts(options?: ProductQuery) {
       .then(({ data, error: queryError, count }) => {
         if (controller.signal.aborted) return;
         clearTimeout(timeout);
-        setList(queryError ? [] : (data || []).map(rowToProduct));
-        setTotal(count || 0); setLoading(false);
+        const rows = (data || []).map(rowToProduct);
+        const filteredRows = taxonomy ? rows.filter(taxonomy.matches) : rows;
+        setList(queryError ? [] : filteredRows);
+        setTotal(taxonomy ? filteredRows.length : count || 0); setLoading(false);
         setError(queryError ? "Unable to load products. Please retry." : "");
         if (!queryError && !opts.admin) {
           if (publicPageCache.size > 64) publicPageCache.clear();
-          publicPageCache.set(queryKey, { until: Date.now() + 30000, products: (data || []).map(rowToProduct), total: count || 0 });
+          publicPageCache.set(queryKey, { until: Date.now() + 30000, products: filteredRows, total: taxonomy ? filteredRows.length : count || 0 });
         }
       });
     return () => { clearTimeout(timeout); controller.abort(); };

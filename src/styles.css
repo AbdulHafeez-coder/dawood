@@ -950,7 +950,7 @@ select.mt-select:active {
   grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 16px;
 }
-.dm-category-grid > a > div {
+.dm-category-card > a > div {
   aspect-ratio: 1;
   overflow: hidden;
   background: #eeeee7;
@@ -964,7 +964,7 @@ select.mt-select:active {
 .dm-category-grid a:hover img {
   transform: scale(1.025);
 }
-.dm-category-grid > a > span {
+.dm-category-card > a > span {
   display: flex;
   justify-content: space-between;
   gap: 8px;
@@ -975,6 +975,10 @@ select.mt-select:active {
 .dm-category-grid svg {
   flex-shrink: 0;
 }
+.dm-category-card { position: relative; }
+.dm-category-subcategories { display: none; position: absolute; z-index: 4; left: 0; right: 0; top: 100%; padding: 8px; background: #eeeee7; border: 1px solid rgba(0,0,0,.1); }
+.dm-category-card:hover .dm-category-subcategories, .dm-category-card:focus-within .dm-category-subcategories { display: grid; gap: 6px; }
+.dm-category-subcategories a { font-size: 11px; line-height: 1.3; }
 .dm-shop {
   border-top: 1px solid #deded5;
   scroll-margin-top: 24px;
@@ -1487,15 +1491,16 @@ select.mt-select:active {
     padding-bottom: 12px;
     scroll-snap-type: x mandatory;
   }
-  .dm-category-grid > a {
+  .dm-category-card {
     min-width: 42%;
     max-width: 42%;
     scroll-snap-align: start;
   }
-  .dm-category-grid > a > span {
+  .dm-category-card > a > span {
     font-size: 12px;
     margin-top: 12px;
   }
+  .dm-category-subcategories { position: static; display: grid; gap: 6px; padding: 8px 0 0; border: 0; background: transparent; }
   .dm-shop > .dm-section-heading {
     flex-direction: column;
     gap: 12px;

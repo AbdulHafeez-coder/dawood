@@ -198,6 +198,7 @@ function AdminDashboard() {
   const [pMaxRating, setPMaxRating] = useState<string>("");
   const [pPage, setPPage] = useState(1);
   const [pPageSize, setPPageSize] = useState(25);
+  const [pStock, setPStock] = useState("all");
   const [pShowFilters, setPShowFilters] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkTag, setBulkTag] = useState("");
@@ -209,7 +210,7 @@ function AdminDashboard() {
   const { products, total: productTotal, loading: productsLoading, error: productsError, refetch: reloadProducts, addProduct, updateProduct, deleteProduct, resetProducts } = useProducts({
     admin: true, enabled: isAuthed, page: pPage, pageSize: pPageSize,
     search: debouncedPQuery, category: pCategory, active: visibility,
-    minPrice: pMinPrice, maxPrice: pMaxPrice, minRating: pMinRating, maxRating: pMaxRating,
+    minPrice: pMinPrice, maxPrice: pMaxPrice, minRating: pMinRating, maxRating: pMaxRating, stock: pStock,
   });
   const filteredProducts = products;
   const pTotalPages = Math.max(1, Math.ceil(productTotal / pPageSize));
@@ -218,7 +219,7 @@ function AdminDashboard() {
 
   useEffect(() => {
     setPPage(1);
-  }, [debouncedPQuery, pCategory, pMinPrice, pMaxPrice, pMinRating, pMaxRating, pPageSize, visibility]);
+  }, [debouncedPQuery, pCategory, pMinPrice, pMaxPrice, pMinRating, pMaxRating, pPageSize, visibility, pStock]);
 
   const hasActiveFilters =
     pQuery !== "" ||
@@ -235,6 +236,7 @@ function AdminDashboard() {
     setPMaxPrice("");
     setPMinRating("");
     setPMaxRating("");
+    setPStock("all");
   }
 
   // Prune selection when products list changes (e.g. deletes, imports)
@@ -272,6 +274,40 @@ function AdminDashboard() {
 
   const clearSelection = () => setSelectedIds(new Set());
   const selectedCount = selectedIds.size;
+
+  async function selectAllFiltered() {
+    try {
+      const all = await loadProductsForAdminExport();
+      const term = debouncedPQuery.trim().toLowerCase();
+      const matching = all.filter((product) =>
+        (!term || `${product.id} ${product.name} ${product.category}`.toLowerCase().includes(term)) &&
+        (pCategory === "all" || product.category === pCategory) &&
+        (visibility === "all" || (visibility === "active") === (product.is_active !== false)) &&
+        (pStock === "all" || (pStock === "in") === (product.in_stock !== false)),
+      );
+      setSelectedIds(new Set(matching.map((product) => product.id)));
+      toast.success(`Selected ${matching.length} filtered products`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to select filtered products");
+    }
+  }
+
+  async function applyBulkPatch(label: string, patch: Partial<Product>) {
+    const ids = Array.from(selectedIds);
+    let succeeded = 0;
+    const failures: string[] = [];
+    for (let offset = 0; offset < ids.length; offset += 25) {
+      const batch = ids.slice(offset, offset + 25);
+      const results = await Promise.allSettled(batch.map((id) => updateProduct(id, patch)));
+      results.forEach((result, index) => {
+        if (result.status === "fulfilled") succeeded += 1;
+        else failures.push(batch[index]);
+      });
+    }
+    if (succeeded) toast.success(`${label}: ${succeeded} product${succeeded === 1 ? "" : "s"}`);
+    if (failures.length) toast.error(`${label} failed for ${failures.length} product${failures.length === 1 ? "" : "s"}`);
+    if (!failures.length) clearSelection();
+  }
 
   function applyBulkDelete() {
     const ids = Array.from(selectedIds);
@@ -844,6 +880,9 @@ function AdminDashboard() {
                           </option>
                         ))}
                       </select>
+                      <select value={pStock} onChange={(e) => setPStock(e.target.value)} className="px-3 py-2 text-sm rounded-full border border-black/15 bg-white">
+                        <option value="all">All stock</option><option value="in">In stock</option><option value="out">Out of stock</option>
+                      </select>
                       <button
                         onClick={() => setPShowFilters((v) => !v)}
                         className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-full border transition text-[10px] uppercase tracking-[0.18em] ${pShowFilters ? "border-black bg-black text-white" : "border-black/15 hover:border-black"}`}
@@ -951,6 +990,9 @@ function AdminDashboard() {
                             {selectedCount} selected
                           </div>
                           <div className="flex flex-wrap items-center gap-2">
+                            <button onClick={() => void applyBulkPatch("Activated", { is_active: true })} className="px-3 py-1.5 rounded-full bg-white text-black text-[10px] uppercase tracking-[0.18em]">Activate</button>
+                            <button onClick={() => void applyBulkPatch("Deactivated", { is_active: false })} className="px-3 py-1.5 rounded-full bg-white text-black text-[10px] uppercase tracking-[0.18em]">Deactivate</button>
+                            <button onClick={() => void applyBulkPatch("Marked out of stock", { in_stock: false })} className="px-3 py-1.5 rounded-full bg-white text-black text-[10px] uppercase tracking-[0.18em]">Out of stock</button>
                             <select
                               value={bulkCategory}
                               onChange={(e) => setBulkCategory(e.target.value)}
@@ -1005,6 +1047,10 @@ function AdminDashboard() {
                         </div>
                       )}
                       <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
+                        <div className="mb-2 flex items-center gap-3 text-xs text-black/60">
+                          <span>{allPageSelected ? "Current page selected" : "Select current page"}</span>
+                          <button type="button" onClick={() => void selectAllFiltered()} className="underline underline-offset-2">Select all filtered results ({productTotal})</button>
+                        </div>
                         <table className="w-full text-sm min-w-[760px]">
                           <thead>
                             <tr className="text-left text-[10px] uppercase tracking-[0.18em] text-black/45 border-b border-black/10">
