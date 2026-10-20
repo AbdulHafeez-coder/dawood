@@ -28,7 +28,7 @@ export function SourcingWidget() {
   const [phone, setPhone] = useState("");
   const [requestId, setRequestId] = useState("");
 
-  const { products } = useProducts();
+  const { products } = useProducts({ enabled: open, pageSize: 24 });
 
   const handleOpenChange = (v: boolean) => {
     if (!v) {

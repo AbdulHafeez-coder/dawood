@@ -34,6 +34,7 @@ import { toast } from "sonner";
 import { useAdminAuth } from "@/lib/admin-auth";
 import {
   useProducts,
+  loadProductsForAdminExport,
   useCategories,
   PRODUCT_IMAGE_CHOICES,
   PRODUCT_BG_CHOICES,
@@ -41,7 +42,7 @@ import {
   type Product,
 } from "@/lib/shop";
 import { useAllOrders, ORDER_STATUSES, type OrderStatus, type SavedOrder } from "@/lib/orders";
-import { useSettings, type SettingsSection } from "@/lib/settings";
+import { useSettings, updateSettings, saveSettingsAsync, resetSettings, type SocialKey } from "@/lib/settings";
 import { SafeImage } from "@/components/ui/SafeImage";
 import {
   formatPkPhone,
@@ -146,7 +147,6 @@ function AdminDashboard() {
     error: ordersError,
     refetch: refetchOrders,
   } = useAllOrders();
-  const { products, addProduct, updateProduct, deleteProduct, resetProducts } = useProducts();
   const {
     categories,
     categoryInfo,
@@ -155,7 +155,7 @@ function AdminDashboard() {
     updateCategoryImage,
     deleteCategory,
     resetCategories,
-  } = useCategories();
+  } = useCategories(isAuthed);
 
   const [tab, setTab] = useState<TabId>(() => {
     if (typeof window === "undefined") return "overview";
@@ -197,7 +197,8 @@ function AdminDashboard() {
   const [pMinRating, setPMinRating] = useState<string>("");
   const [pMaxRating, setPMaxRating] = useState<string>("");
   const [pPage, setPPage] = useState(1);
-  const [pPageSize, setPPageSize] = useState(10);
+  const [pPageSize, setPPageSize] = useState(25);
+  const [pStock, setPStock] = useState("all");
   const [pShowFilters, setPShowFilters] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkTag, setBulkTag] = useState("");
@@ -205,36 +206,20 @@ function AdminDashboard() {
   const [confirmBulkDelete, setConfirmBulkDelete] = useState(false);
   const [confirmLogout, setConfirmLogout] = useState(false);
 
-  const filteredProducts = useMemo(() => {
-    const q = debouncedPQuery.trim().toLowerCase();
-    const min = pMinPrice === "" ? -Infinity : Number(pMinPrice);
-    const max = pMaxPrice === "" ? Infinity : Number(pMaxPrice);
-    const rMin = pMinRating === "" ? -Infinity : Number(pMinRating);
-    const rMax = pMaxRating === "" ? Infinity : Number(pMaxRating);
-    return products.filter((p) => {
-      if (pCategory !== "all" && p.category !== pCategory) return false;
-      if (!Number.isNaN(min) && p.price < min) return false;
-      if (!Number.isNaN(max) && p.price > max) return false;
-      if (!Number.isNaN(rMin) && p.rating < rMin) return false;
-      if (!Number.isNaN(rMax) && p.rating > rMax) return false;
-      if (q) {
-        const hay = `${p.name} ${p.tagline} ${p.category} ${p.tag}`.toLowerCase();
-        if (!hay.includes(q)) return false;
-      }
-      return true;
-    });
-  }, [products, debouncedPQuery, pCategory, pMinPrice, pMaxPrice, pMinRating, pMaxRating]);
-
-  const pTotalPages = Math.max(1, Math.ceil(filteredProducts.length / pPageSize));
-  const pCurrentPage = Math.min(pPage, pTotalPages);
-  const pagedProducts = useMemo(
-    () => filteredProducts.slice((pCurrentPage - 1) * pPageSize, pCurrentPage * pPageSize),
-    [filteredProducts, pCurrentPage, pPageSize],
-  );
+  const [visibility, setVisibility] = useState("all");
+  const { products, total: productTotal, loading: productsLoading, error: productsError, refetch: reloadProducts, addProduct, updateProduct, deleteProduct, resetProducts } = useProducts({
+    admin: true, enabled: isAuthed, page: pPage, pageSize: pPageSize,
+    search: debouncedPQuery, category: pCategory, active: visibility,
+    minPrice: pMinPrice, maxPrice: pMaxPrice, minRating: pMinRating, maxRating: pMaxRating, stock: pStock,
+  });
+  const filteredProducts = products;
+  const pTotalPages = Math.max(1, Math.ceil(productTotal / pPageSize));
+  const pCurrentPage = pPage;
+  const pagedProducts = products;
 
   useEffect(() => {
     setPPage(1);
-  }, [debouncedPQuery, pCategory, pMinPrice, pMaxPrice, pMinRating, pMaxRating, pPageSize]);
+  }, [debouncedPQuery, pCategory, pMinPrice, pMaxPrice, pMinRating, pMaxRating, pPageSize, visibility, pStock]);
 
   const hasActiveFilters =
     pQuery !== "" ||
@@ -251,6 +236,7 @@ function AdminDashboard() {
     setPMaxPrice("");
     setPMinRating("");
     setPMaxRating("");
+    setPStock("all");
   }
 
   // Prune selection when products list changes (e.g. deletes, imports)
@@ -288,6 +274,40 @@ function AdminDashboard() {
 
   const clearSelection = () => setSelectedIds(new Set());
   const selectedCount = selectedIds.size;
+
+  async function selectAllFiltered() {
+    try {
+      const all = await loadProductsForAdminExport();
+      const term = debouncedPQuery.trim().toLowerCase();
+      const matching = all.filter((product) =>
+        (!term || `${product.id} ${product.name} ${product.category}`.toLowerCase().includes(term)) &&
+        (pCategory === "all" || product.category === pCategory) &&
+        (visibility === "all" || (visibility === "active") === (product.is_active !== false)) &&
+        (pStock === "all" || (pStock === "in") === (product.in_stock !== false)),
+      );
+      setSelectedIds(new Set(matching.map((product) => product.id)));
+      toast.success(`Selected ${matching.length} filtered products`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to select filtered products");
+    }
+  }
+
+  async function applyBulkPatch(label: string, patch: Partial<Product>) {
+    const ids = Array.from(selectedIds);
+    let succeeded = 0;
+    const failures: string[] = [];
+    for (let offset = 0; offset < ids.length; offset += 25) {
+      const batch = ids.slice(offset, offset + 25);
+      const results = await Promise.allSettled(batch.map((id) => updateProduct(id, patch)));
+      results.forEach((result, index) => {
+        if (result.status === "fulfilled") succeeded += 1;
+        else failures.push(batch[index]);
+      });
+    }
+    if (succeeded) toast.success(`${label}: ${succeeded} product${succeeded === 1 ? "" : "s"}`);
+    if (failures.length) toast.error(`${label} failed for ${failures.length} product${failures.length === 1 ? "" : "s"}`);
+    if (!failures.length) clearSelection();
+  }
 
   function applyBulkDelete() {
     const ids = Array.from(selectedIds);
@@ -356,15 +376,18 @@ function AdminDashboard() {
     toast.success(`Exported ${rows.length} product${rows.length === 1 ? "" : "s"}`);
   }
 
-  function handleExportProducts() {
-    if (products.length === 0) return toast.error("No products to export");
+  async function handleExportProducts() {
+    try {
+    const exportProducts = await loadProductsForAdminExport();
+    if (exportProducts.length === 0) return toast.error("No products to export");
     downloadCsv(
       `dawood-mart-products-${new Date().toISOString().slice(0, 10)}.csv`,
-      productsToCsv(products),
+      productsToCsv(exportProducts),
     );
     toast.success("Products exported", {
-      description: `${products.length} row${products.length === 1 ? "" : "s"}`,
+      description: `${exportProducts.length} row${exportProducts.length === 1 ? "" : "s"}`,
     });
+    } catch { toast.error("Unable to export products. Please retry."); }
   }
 
   function handleExportCategories() {
@@ -385,6 +408,7 @@ function AdminDashboard() {
       if (rows.length === 0) return toast.error("CSV is empty");
       const headerError = rows.find((r) => r.error && r.row === 1);
       if (headerError) return toast.error("Invalid CSV", { description: headerError.error });
+      const existingProducts = await loadProductsForAdminExport();
       const fallbackImg = PRODUCT_IMAGE_CHOICES[0]?.url ?? "";
       const fallbackBg = PRODUCT_BG_CHOICES[0] ?? "";
       const knownCats = new Set(categories.map((c) => c.toLowerCase()));
@@ -403,6 +427,7 @@ function AdminDashboard() {
         }
         const payload = {
           name: d.name,
+          display_name: d.name,
           tag: d.tag || "New",
           price: d.price,
           rating: d.rating ?? 4.7,
@@ -414,7 +439,7 @@ function AdminDashboard() {
           details: d.details ?? [],
           gallery: d.gallery && d.gallery.length ? d.gallery : [d.img || fallbackImg],
         };
-        const existing = d.id ? products.find((p) => p.id === d.id) : undefined;
+        const existing = d.id ? existingProducts.find((p) => p.id === d.id) : undefined;
         if (existing) {
           updateRows.push({ id: existing.id, name: d.name, category: d.category, payload });
         } else {
@@ -769,7 +794,7 @@ function AdminDashboard() {
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                 <SectionTitle
                   icon={<Package className="w-3.5 h-3.5" />}
-                  label={`Products (${filteredProducts.length}${filteredProducts.length !== products.length ? ` of ${products.length}` : ""})`}
+                  label={`Products (${productTotal})`}
                 />
                 <div className="flex flex-wrap items-center gap-2">
                   <input
@@ -810,7 +835,12 @@ function AdminDashboard() {
                 </div>
               </div>
 
-              {products.length === 0 ? (
+              <label className="mb-3 block text-sm">Storefront visibility
+                <select value={visibility} onChange={(e) => setVisibility(e.target.value)} className="ml-3 rounded border p-2">
+                  <option value="all">All products</option><option value="active">Active</option><option value="inactive">Inactive</option>
+                </select>
+              </label>
+              {productsLoading ? <div role="status">Loading products…</div> : productsError ? <div role="alert">{productsError} <button onClick={reloadProducts}>Retry</button></div> : productTotal === 0 && !pQuery && pCategory === "all" && visibility === "all" ? (
                 <EmptyState
                   label="No products yet"
                   cta="Create your first product"
@@ -849,6 +879,9 @@ function AdminDashboard() {
                             {c}
                           </option>
                         ))}
+                      </select>
+                      <select value={pStock} onChange={(e) => setPStock(e.target.value)} className="px-3 py-2 text-sm rounded-full border border-black/15 bg-white">
+                        <option value="all">All stock</option><option value="in">In stock</option><option value="out">Out of stock</option>
                       </select>
                       <button
                         onClick={() => setPShowFilters((v) => !v)}
@@ -957,6 +990,9 @@ function AdminDashboard() {
                             {selectedCount} selected
                           </div>
                           <div className="flex flex-wrap items-center gap-2">
+                            <button onClick={() => void applyBulkPatch("Activated", { is_active: true })} className="px-3 py-1.5 rounded-full bg-white text-black text-[10px] uppercase tracking-[0.18em]">Activate</button>
+                            <button onClick={() => void applyBulkPatch("Deactivated", { is_active: false })} className="px-3 py-1.5 rounded-full bg-white text-black text-[10px] uppercase tracking-[0.18em]">Deactivate</button>
+                            <button onClick={() => void applyBulkPatch("Marked out of stock", { in_stock: false })} className="px-3 py-1.5 rounded-full bg-white text-black text-[10px] uppercase tracking-[0.18em]">Out of stock</button>
                             <select
                               value={bulkCategory}
                               onChange={(e) => setBulkCategory(e.target.value)}
@@ -1011,6 +1047,10 @@ function AdminDashboard() {
                         </div>
                       )}
                       <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
+                        <div className="mb-2 flex items-center gap-3 text-xs text-black/60">
+                          <span>{allPageSelected ? "Current page selected" : "Select current page"}</span>
+                          <button type="button" onClick={() => void selectAllFiltered()} className="underline underline-offset-2">Select all filtered results ({productTotal})</button>
+                        </div>
                         <table className="w-full text-sm min-w-[760px]">
                           <thead>
                             <tr className="text-left text-[10px] uppercase tracking-[0.18em] text-black/45 border-b border-black/10">
@@ -1028,7 +1068,8 @@ function AdminDashboard() {
                               </th>
                               <th className="py-2 pr-3 font-medium">Item</th>
                               <th className="py-2 pr-3 font-medium">Category</th>
-                              <th className="py-2 pr-3 font-medium">Tag</th>
+                              <th className="py-2 pr-3 font-medium">Visibility</th>
+                              <th className="py-2 pr-3 font-medium">Stock</th>
                               <th className="py-2 pr-3 font-medium">Rating</th>
                               <th className="py-2 pr-3 font-medium text-right">Price</th>
                               <th className="py-2 pl-3 font-medium text-right">Actions</th>
@@ -1071,7 +1112,14 @@ function AdminDashboard() {
                                     </div>
                                   </td>
                                   <td className="py-3 pr-3 text-black/70">{p.category}</td>
-                                  <td className="py-3 pr-3 text-black/70">{p.tag}</td>
+                                  <td className="py-3 pr-3">
+                                    <button type="button" aria-label={`Storefront visibility for ${p.name}`} aria-pressed={p.is_active !== false}
+                                      className="rounded-full border px-3 py-1 text-xs"
+                                      onClick={async () => { try { await updateProduct(p.id, { is_active: p.is_active === false }); toast.success("Visibility saved"); } catch (error) { toast.error(error instanceof Error ? error.message : "Save failed"); } }}>
+                                      {p.is_active === false ? "Inactive" : "Active"}
+                                    </button>
+                                  </td>
+                                  <td className="py-3 pr-3"><select aria-label={`Stock for ${p.name}`} value={p.in_stock === false ? "out" : "in"} className="rounded border px-2 py-1 text-xs" onChange={async e => { try { await updateProduct(p.id, { in_stock: e.target.value === "in" }); toast.success("Stock saved"); } catch (error) { toast.error(error instanceof Error ? error.message : "Save failed"); } }}><option value="in">In Stock</option><option value="out">Out of Stock</option></select></td>
                                   <td className="py-3 pr-3 text-black/70 tabular-nums">
                                     {p.rating.toFixed(1)}
                                   </td>
@@ -1109,8 +1157,8 @@ function AdminDashboard() {
                         <div className="flex items-center gap-2">
                           <span>
                             Showing {(pCurrentPage - 1) * pPageSize + 1}–
-                            {Math.min(pCurrentPage * pPageSize, filteredProducts.length)} of{" "}
-                            {filteredProducts.length}
+                            {Math.min(pCurrentPage * pPageSize, productTotal)} of{" "}
+                            {productTotal}
                           </span>
                           <span className="text-black/30">·</span>
                           <label className="inline-flex items-center gap-1.5">
@@ -1297,10 +1345,12 @@ function AdminDashboard() {
             toast.success("Product created", { description: data.name });
             setProductDialog(null);
           }}
-          onSave={(id, patch) => {
-            updateProduct(id, patch);
+          onSave={async (id, patch) => {
+            try {
+            await updateProduct(id, patch);
             toast.success("Product updated", { description: patch.name });
             setProductDialog(null);
+            } catch (error) { toast.error(error instanceof Error ? error.message : "Save failed"); }
           }}
         />
       )}
@@ -1765,6 +1815,7 @@ function ProductFormDialog({
     ? { ...product }
     : {
         name: "",
+        display_name: "",
         tag: "New",
         price: 20,
         rating: 4.7,

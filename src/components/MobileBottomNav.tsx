@@ -24,7 +24,7 @@ export function MobileBottomNav({ onOpenCart, onOpenCategories }: Props) {
       <Link
         to="/"
         className={`flex flex-col items-center justify-center gap-1 py-1 px-2.5 rounded-xl transition-all ${
-          currentPath === "/" ? "text-black font-semibold" : "text-black/50 hover:text-black"
+          currentPath === "/" ? "text-black font-semibold" : "text-black/50 hover:text-brand-primary"
         }`}
       >
         <Home size={20} strokeWidth={currentPath === "/" ? 2.25 : 1.75} />
@@ -36,7 +36,7 @@ export function MobileBottomNav({ onOpenCart, onOpenCategories }: Props) {
         <button
           type="button"
           onClick={onOpenCategories}
-          className="flex flex-col items-center justify-center gap-1 py-1 px-2.5 rounded-xl text-black/50 hover:text-black transition-all cursor-pointer"
+          className="flex flex-col items-center justify-center gap-1 py-1 px-2.5 rounded-xl text-black/50 hover:text-brand-primary transition-all cursor-pointer"
         >
           <LayoutGrid size={20} strokeWidth={1.75} />
           <span className="text-[10px] tracking-tight">Categories</span>
@@ -44,7 +44,7 @@ export function MobileBottomNav({ onOpenCart, onOpenCategories }: Props) {
       ) : (
         <a
           href="/#collections"
-          className="flex flex-col items-center justify-center gap-1 py-1 px-2.5 rounded-xl text-black/50 hover:text-black transition-all"
+          className="flex flex-col items-center justify-center gap-1 py-1 px-2.5 rounded-xl text-black/50 hover:text-brand-primary transition-all"
         >
           <LayoutGrid size={20} strokeWidth={1.75} />
           <span className="text-[10px] tracking-tight">Categories</span>
@@ -57,13 +57,13 @@ export function MobileBottomNav({ onOpenCart, onOpenCategories }: Props) {
         className={`relative flex flex-col items-center justify-center gap-1 py-1 px-2.5 rounded-xl transition-all ${
           currentPath === "/favorites"
             ? "text-black font-semibold"
-            : "text-black/50 hover:text-black"
+            : "text-black/50 hover:text-brand-primary"
         }`}
       >
         <div className="relative">
           <Heart size={20} strokeWidth={currentPath === "/favorites" ? 2.25 : 1.75} />
           {favCount > 0 && (
-            <span className="absolute -top-1.5 -right-2 bg-black text-white text-[9px] font-bold min-w-3.5 h-3.5 px-0.5 rounded-full flex items-center justify-center">
+            <span className="absolute -top-1.5 -right-2 bg-brand-primary text-white text-[9px] font-bold min-w-3.5 h-3.5 px-0.5 rounded-full flex items-center justify-center">
               {favCount}
             </span>
           )}
@@ -75,13 +75,13 @@ export function MobileBottomNav({ onOpenCart, onOpenCategories }: Props) {
       <Link
         to="/orders"
         className={`relative flex flex-col items-center justify-center gap-1 py-1 px-2.5 rounded-xl transition-all ${
-          currentPath === "/orders" ? "text-black font-semibold" : "text-black/50 hover:text-black"
+          currentPath === "/orders" ? "text-black font-semibold" : "text-black/50 hover:text-brand-primary"
         }`}
       >
         <div className="relative">
           <ScrollText size={20} strokeWidth={currentPath === "/orders" ? 2.25 : 1.75} />
           {orderCount > 0 && (
-            <span className="absolute -top-1.5 -right-2 bg-black text-white text-[9px] font-bold min-w-3.5 h-3.5 px-0.5 rounded-full flex items-center justify-center">
+            <span className="absolute -top-1.5 -right-2 bg-brand-primary text-white text-[9px] font-bold min-w-3.5 h-3.5 px-0.5 rounded-full flex items-center justify-center">
               {orderCount}
             </span>
           )}
@@ -93,7 +93,7 @@ export function MobileBottomNav({ onOpenCart, onOpenCategories }: Props) {
       <button
         type="button"
         onClick={onOpenCart}
-        className="relative flex flex-col items-center justify-center gap-1 py-1 px-2.5 rounded-xl text-black/70 hover:text-black transition-all cursor-pointer"
+        className="relative flex flex-col items-center justify-center gap-1 py-1 px-2.5 rounded-xl text-black/70 hover:text-brand-primary transition-all cursor-pointer"
         aria-label="Open cart"
       >
         <div className="relative">

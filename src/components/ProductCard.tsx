@@ -1,140 +1,78 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Heart, Plus, Star, X } from "lucide-react";
-import { getVariants, type Category, type Product } from "@/lib/shop";
+import { Heart, X } from "lucide-react";
+import type { Product } from "@/lib/shop";
 import { formatPKR } from "@/lib/format";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-
-import { SafeImage } from "@/components/ui/SafeImage";
-
+import { StoreImage } from "./StoreImage";
 type Props = {
   product: Product;
   isFavourite: boolean;
   onToggleFav: (p: Product) => void;
-  /** "heart" toggles favourite state; "remove" always removes (used on favourites page) */
   favAction?: "heart" | "remove";
 };
-
-function ProductCardImpl({ product: p, isFavourite, onToggleFav, favAction = "heart" }: Props) {
-  const v = getVariants(p.category as Category);
-  const colors = v.colors.slice(0, 4);
-  const extraColors = Math.max(0, v.colors.length - colors.length);
-  const sizes = v.sizes.slice(0, 3);
-
+export const ProductCard = memo(function ProductCard({
+  product: p,
+  isFavourite,
+  onToggleFav,
+  favAction = "heart",
+}: Props) {
+  const second = p.gallery?.find((src) => src && src !== p.img);
+  const [hovered, setHovered] = useState(false),
+    [loaded, setLoaded] = useState(false),
+    [failed, setFailed] = useState(false);
+  const name = p.display_name || p.name;
   return (
-    <div className="bg-white rounded-2xl overflow-hidden flex flex-col h-full group relative">
-      <Link
-        to="/product/$id"
-        params={{ id: p.slug || p.id }}
-        className={`${p.bg} relative aspect-square overflow-hidden block`}
-      >
-        <span className="absolute top-4 left-4 z-10 bg-black text-white text-xs px-3 py-1 rounded-full font-medium">
-          {p.tag}
-        </span>
-        <span className="absolute bottom-4 left-4 z-10 bg-white/90 text-black text-[11px] font-medium px-2.5 py-0.5 rounded-full shadow-xs backdrop-blur-xs">
-          {p.brand ? `${p.brand} · ` : ""}{p.category}
-        </span>
-
-        <SafeImage
-          src={p.img}
-          alt={p.name}
-          width={1024}
-          height={1024}
-          loading="lazy"
-          decoding="async"
-          className={`absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-all duration-500 ${p.gallery && p.gallery.length > 1 ? "group-hover:opacity-0 hidden sm:block" : ""}`}
-        />
-        {/* Mobile image (never fades on hover) */}
-        <SafeImage
-          src={p.img}
-          alt={p.name}
-          width={1024}
-          height={1024}
-          loading="lazy"
-          decoding="async"
-          className={`absolute inset-0 w-full h-full object-cover sm:hidden`}
-        />
-        {p.gallery && p.gallery.length > 1 && (
-          <SafeImage
-            src={p.gallery[1]}
-            alt={`${p.name} alternate view`}
-            width={1024}
-            height={1024}
-            loading="lazy"
-            decoding="async"
-            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 opacity-0 group-hover:opacity-100 transition-all duration-500 hidden sm:block"
-          />
-        )}
-      </Link>
-      <button
-        onClick={() => onToggleFav(p)}
-        aria-label={
-          favAction === "remove"
-            ? "Remove from favourites"
-            : isFavourite
-              ? "Remove from favourites"
-              : "Add to favourites"
-        }
-        aria-pressed={favAction === "heart" ? isFavourite : undefined}
-        className="absolute top-3 right-3 z-10 h-9 w-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center hover:bg-white transition-colors shadow-sm"
-      >
-        {favAction === "remove" ? (
-          <X size={16} className="text-black" />
-        ) : (
-          <Heart size={16} className={isFavourite ? "fill-black text-black" : "text-black/60"} />
-        )}
-      </button>
-      <div className="p-3 sm:p-4 flex flex-col gap-2 flex-1">
-        <div className="min-w-0">
-          <Link
-            to="/product/$id"
-            params={{ id: p.slug || p.id }}
-            className="type-title text-black hover:underline block truncate"
-            title={p.display_name || p.name}
-          >
-            {p.display_name || p.name}
-          </Link>
-          <div className="flex items-center gap-1 mt-1 text-black/60 text-xs">
-            <Star size={12} className="fill-black text-black" /> {p.rating}
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-0.5">
-          {p.original_price && p.original_price > p.price ? (
-            <>
-              <div className="flex items-center gap-2">
-                <span className="text-black/50 line-through text-xs">
-                  {formatPKR(p.original_price)}
-                </span>
-                <span className="text-red-600 text-xs font-bold bg-red-50 px-1.5 py-0.5 rounded">
-                  20% OFF
-                </span>
-              </div>
-              <div className="type-price text-black">{formatPKR(p.price)}</div>
-            </>
-          ) : (
-            <div className="type-price text-black">{formatPKR(p.price)}</div>
-          )}
-        </div>
-
-        <Link
-          to="/product/$id"
-          params={{ id: p.slug || p.id }}
-          className="mt-auto inline-flex items-center justify-center gap-2 bg-black text-white rounded-md h-9 text-xs font-medium hover:bg-black/85 transition-colors"
-        >
-          {favAction === "remove" ? (
-            <>
-              <Plus size={16} /> Choose options
-            </>
-          ) : (
-            <>
-              Choose options <Plus size={16} />
-            </>
+    <article
+      className="dm-product"
+      onPointerEnter={(e) => {
+        if (e.pointerType === "mouse") setHovered(true);
+      }}
+    >
+      <div className="dm-product-photo">
+        <Link to="/product/$id" params={{ id: p.slug || p.id }} aria-label={name}>
+          <StoreImage src={p.img} alt={name} loading="lazy" className="dm-primary" />
+          {hovered && second && !failed && (
+            <StoreImage
+              key={second}
+              src={second}
+              alt=""
+              className={`dm-secondary ${loaded ? "is-loaded" : ""}`}
+              onLoad={() => setLoaded(true)}
+              onError={() => setFailed(true)}
+            />
           )}
         </Link>
+        <button
+          className="dm-icon dm-save"
+          onClick={() => onToggleFav(p)}
+          aria-label={
+            favAction === "remove" || isFavourite ? "Remove from favourites" : "Save to favourites"
+          }
+          aria-pressed={isFavourite}
+        >
+          {favAction === "remove" ? (
+            <X size={19} />
+          ) : (
+            <Heart size={19} fill={isFavourite ? "currentColor" : "none"} />
+          )}
+        </button>
+        {p.in_stock === false && <span className="dm-stock-label">Out of stock</span>}
       </div>
-    </div>
+      <div className="dm-product-info">
+        <Link to="/product/$id" params={{ id: p.slug || p.id }} className="dm-product-name">
+          {name}
+        </Link>
+        <div className="dm-price">
+          <strong>{formatPKR(p.price)}</strong>
+          {p.original_price && p.original_price > p.price ? (
+            <del>{formatPKR(p.original_price)}</del>
+          ) : null}
+        </div>
+        <Link to="/product/$id" params={{ id: p.slug || p.id }} className="dm-product-action">
+          {p.in_stock === false ? "View details" : "Choose options"}
+          <span aria-hidden="true">↗</span>
+        </Link>
+      </div>
+    </article>
   );
-}
-
-export const ProductCard = memo(ProductCardImpl);
+});

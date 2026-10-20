@@ -25,20 +25,22 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Dawood Mart crafts plush towels, peel-and-stick wallpaper and plant-based cleaning cloths for well-kept, quiet homes.",
+          "Shop crockery, kitchenware, towels and everyday home essentials at Dawood Mart in Pakistan.",
       },
       { property: "og:title", content: "Dawood Mart — Considered home essentials" },
       {
         property: "og:description",
         content:
-          "Plush towels, peel-and-stick wallpaper and plant-based cleaning made for calm, well-kept spaces.",
+          "Crockery, kitchenware, towels and everyday home essentials in Pakistan.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/favicon.ico?v=dm", type: "image/x-icon" },
+      { rel: "icon", href: "/dawood-icon.svg", type: "image/svg+xml" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
