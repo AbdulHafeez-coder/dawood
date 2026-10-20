@@ -58,6 +58,7 @@ vite.config.js.timestamp-*
 
 # Vercel
 .vercel
+.worktrees/
 eng.traineddata
 scratch/
 
