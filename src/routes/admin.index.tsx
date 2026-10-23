@@ -1926,14 +1926,12 @@ function ProductFormDialog({
             <Field label="Image">
               <ImageUploader
                 value={form.img}
+                multiple
                 onChange={(url) =>
                   setForm((f) => ({
                     ...f,
-                    img: url,
-                    gallery:
-                      f.gallery && f.gallery.length
-                        ? [url, ...f.gallery.filter((x) => x !== url)].slice(0, 4)
-                        : [url],
+                    img: f.img || url,
+                    gallery: [...new Set([...(f.gallery ?? []), url])],
                   }))
                 }
               />
@@ -2648,32 +2646,35 @@ const ACCEPTED_IMAGE_TYPES = [
 ];
 const MAX_IMAGE_BYTES = 3 * 1024 * 1024; // 3 MB
 
-function ImageUploader({ value, onChange }: { value: string; onChange: (url: string) => void }) {
+function ImageUploader({
+  value,
+  onChange,
+  multiple = false,
+}: {
+  value: string;
+  onChange: (url: string) => void;
+  multiple?: boolean;
+}) {
   const [dragging, setDragging] = useState(false);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  async function handleFile(file: File | undefined | null) {
-    if (!file) return;
-    if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
-      toast.error("Unsupported file", { description: "Use PNG, JPG, WEBP, GIF or SVG." });
-      return;
-    }
-    if (file.size > MAX_IMAGE_BYTES) {
-      toast.error("File too large", {
-        description: `Max ${(MAX_IMAGE_BYTES / 1024 / 1024).toFixed(0)} MB. Yours is ${(file.size / 1024 / 1024).toFixed(2)} MB.`,
-      });
-      return;
-    }
+  async function handleFiles(files: Iterable<File>) {
+    const selected = [...files];
+    if (!selected.length) return;
+    const valid = selected.filter((file) => ACCEPTED_IMAGE_TYPES.includes(file.type) && file.size <= MAX_IMAGE_BYTES);
+    const rejected = selected.length - valid.length;
+    if (rejected) toast.error(`${rejected} image${rejected === 1 ? "" : "s"} skipped`, { description: "Use PNG, JPG, WEBP, GIF or SVG under 3 MB." });
+    if (!valid.length) return;
     setLoading(true);
     try {
       const { uploadProductImage } = await import("@/lib/storage");
-      const url = await uploadProductImage(file);
-      onChange(url);
-      toast.success("Image uploaded", { description: file.name });
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Upload failed";
-      toast.error("Could not upload image", { description: msg });
+      const results = await Promise.allSettled(valid.map((file) => uploadProductImage(file)));
+      const urls = results.flatMap((result) => (result.status === "fulfilled" ? [result.value] : []));
+      urls.forEach(onChange);
+      if (urls.length) toast.success(`${urls.length} image${urls.length === 1 ? "" : "s"} uploaded`);
+      const failed = results.length - urls.length;
+      if (failed) toast.error(`${failed} image${failed === 1 ? "" : "s"} could not upload`, { description: "Successful uploads were kept." });
     } finally {
       setLoading(false);
     }
@@ -2690,7 +2691,7 @@ function ImageUploader({ value, onChange }: { value: string; onChange: (url: str
         onDrop={(e) => {
           e.preventDefault();
           setDragging(false);
-          handleFile(e.dataTransfer.files?.[0]);
+          handleFiles(e.dataTransfer.files);
         }}
         onClick={() => inputRef.current?.click()}
         role="button"
@@ -2710,17 +2711,18 @@ function ImageUploader({ value, onChange }: { value: string; onChange: (url: str
         <div className="flex flex-col items-center gap-2 text-black/60">
           <UploadCloud className="w-5 h-5" />
           <div className="text-sm">
-            <span className="font-medium text-black">Drop an image</span> or click to browse
+            <span className="font-medium text-black">Drop {multiple ? "images" : "an image"}</span> or click to browse
           </div>
           <div className="text-[11px] text-black/45">PNG, JPG, WEBP, GIF, SVG · up to 3 MB</div>
         </div>
         <input
           ref={inputRef}
           type="file"
+          multiple={multiple}
           accept={ACCEPTED_IMAGE_TYPES.join(",")}
           className="hidden"
           onChange={(e) => {
-            handleFile(e.target.files?.[0]);
+            handleFiles(e.target.files ?? []);
             e.target.value = "";
           }}
         />

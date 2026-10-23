@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { Heart, Minus, Plus, ArrowLeft } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Heart, Minus, Plus, ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import { getProductAsync, useProducts, useCart, useFavourites } from "@/lib/shop";
 import { assertPurchasable, canPurchase } from "@/lib/product-availability";
 import { supabase } from "@/lib/supabase";
@@ -54,11 +54,34 @@ function ProductPage() {
     [qty, setQty] = useState(1),
     [active, setActive] = useState(0),
     [busy, setBusy] = useState(false);
+  const interactionTimer = useRef<number | undefined>(undefined);
   useEffect(() => {
     setActive(0);
     setQty(1);
   }, [p.id]);
   const gallery = [...new Set([p.img, ...p.gallery].filter(Boolean))];
+  const multipleImages = gallery.length > 1;
+  const goTo = (next: number) => setActive((next + gallery.length) % gallery.length);
+  const pauseAutoplay = () => {
+    if (interactionTimer.current) window.clearTimeout(interactionTimer.current);
+    interactionTimer.current = window.setTimeout(() => {
+      interactionTimer.current = undefined;
+    }, 5000);
+  };
+  const interact = (next: number) => {
+    pauseAutoplay();
+    goTo(next);
+  };
+  useEffect(() => {
+    if (!multipleImages || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const timer = window.setInterval(() => {
+      if (!interactionTimer.current) setActive((current) => (current + 1) % gallery.length);
+    }, 3500);
+    return () => window.clearInterval(timer);
+  }, [multipleImages, gallery.length, p.id]);
+  useEffect(() => () => {
+    if (interactionTimer.current) window.clearTimeout(interactionTimer.current);
+  }, []);
   const name = p.display_name || p.name;
   const { products: related } = useProducts({ category: p.category, pageSize: 5 });
   async function add() {
@@ -95,13 +118,33 @@ function ProductPage() {
         </div>
         <section className="dm-detail">
           <div className="dm-gallery">
-            <div className="dm-main-image">
+            <div
+              className="dm-main-image"
+              onTouchStart={(event) => {
+                event.currentTarget.dataset.touchStart = String(event.touches[0]?.clientX ?? 0);
+              }}
+              onTouchEnd={(event) => {
+                const start = Number(event.currentTarget.dataset.touchStart);
+                const end = event.changedTouches[0]?.clientX ?? start;
+                if (multipleImages && Math.abs(end - start) >= 40) interact(active + (end < start ? 1 : -1));
+              }}
+            >
               <StoreImage
                 src={gallery[active] || p.img}
                 alt={name}
                 sizes="(max-width:767px) 100vw, 55vw"
                 fetchPriority="high"
               />
+              {multipleImages && (
+                <>
+                  <button className="dm-gallery-arrow dm-gallery-prev" aria-label="Previous image" onClick={() => interact(active - 1)}>
+                    <ChevronLeft aria-hidden="true" />
+                  </button>
+                  <button className="dm-gallery-arrow dm-gallery-next" aria-label="Next image" onClick={() => interact(active + 1)}>
+                    <ChevronRight aria-hidden="true" />
+                  </button>
+                </>
+              )}
             </div>
             {gallery.length > 1 && (
               <div className="dm-thumbnails">
@@ -111,7 +154,7 @@ function ProductPage() {
                     className={i === active ? "is-active" : ""}
                     aria-label={`View image ${i + 1}`}
                     aria-pressed={i === active}
-                    onClick={() => setActive(i)}
+                    onClick={() => interact(i)}
                   >
                     <StoreImage src={src} alt="" sizes="72px" loading="lazy" />
                   </button>

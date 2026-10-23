@@ -24,3 +24,21 @@ test("product detail page shows gallery, variants and add to cart", async ({ pag
 
   await expect(page.locator('button[aria-label="Cart"]').first()).toBeVisible();
 });
+
+test("multi-image product gallery exposes synced previous and next controls", async ({ page }) => {
+  await page.goto("/product/p-3star-crown-jar");
+
+  const image = page.locator(".dm-main-image img");
+  await expect(image).toBeVisible();
+  const firstSource = await image.getAttribute("src");
+
+  const next = page.getByRole("button", { name: "Next image" });
+  await expect(next).toBeVisible();
+  await next.click();
+
+  await expect(image).not.toHaveAttribute("src", firstSource ?? "");
+  await expect(page.getByRole("button", { name: "View image 2" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+});
