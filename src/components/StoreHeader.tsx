@@ -25,9 +25,7 @@ export function StoreHeader({
   }
   return (
     <>
-      {!floating && (
-        <div className="dm-announcement">Everyday essentials. A home that feels like you.</div>
-      )}
+      <div className="dm-announcement">Everyday essentials. A home that feels like you.</div>
       <header className={`dm-header ${floating ? "dm-header-floating" : ""}`}>
         <button
           className="dm-icon dm-menu"

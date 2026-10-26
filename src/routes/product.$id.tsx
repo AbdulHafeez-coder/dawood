@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Heart, Minus, Plus, ArrowLeft } from "lucide-react";
+import { Heart, Minus, Plus, ArrowLeft, Play } from "lucide-react";
 import { getProductAsync, useProducts, useCart, useFavourites } from "@/lib/shop";
 import { assertPurchasable, canPurchase } from "@/lib/product-availability";
 import { supabase } from "@/lib/supabase";
@@ -58,7 +58,16 @@ function ProductPage() {
     setActive(0);
     setQty(1);
   }, [p.id]);
-  const gallery = [...new Set([p.img, ...p.gallery].filter(Boolean))];
+  const gallery = [...new Set([p.img, ...(p.gallery ?? [])].filter(Boolean))];
+
+  type MediaSlide = { type: "image"; src: string } | { type: "video"; src: string };
+
+  const mediaSlides: MediaSlide[] = [
+    ...gallery.map((src) => ({ type: "image" as const, src })),
+    ...(p.video ? [{ type: "video" as const, src: p.video }] : []),
+  ];
+
+  const activeSlide = mediaSlides[active] || mediaSlides[0];
   const name = p.display_name || p.name;
   const { products: related } = useProducts({ category: p.category, pageSize: 5 });
   async function add() {
@@ -77,7 +86,10 @@ function ProductPage() {
     }
   }
   const details = p.details.filter(
-    (d) => !/^\s*(brand|source|compare_at_price|seo|tags?|vendor|import|supplier)\s*:/i.test(d),
+    (d) =>
+      !/^\s*(brand|source|compare_at_price|seo|tags?|vendor|import|supplier|__video__|video_url)\s*:/i.test(
+        d,
+      ),
   );
   return (
     <div className="storefront dm-detail-page">
@@ -95,25 +107,62 @@ function ProductPage() {
         </div>
         <section className="dm-detail">
           <div className="dm-gallery">
-            <div className="dm-main-image">
-              <StoreImage
-                src={gallery[active] || p.img}
-                alt={name}
-                sizes="(max-width:767px) 100vw, 55vw"
-                fetchPriority="high"
-              />
+            <div className="dm-main-image relative overflow-hidden">
+              {activeSlide?.type === "video" ? (
+                <video
+                  key={activeSlide.src}
+                  src={activeSlide.src}
+                  controls
+                  playsInline
+                  autoPlay={false}
+                  preload="metadata"
+                  className="w-full h-full object-contain bg-black"
+                  poster={gallery[0] || p.img}
+                >
+                  Your browser does not support the video tag.
+                </video>
+              ) : (
+                <StoreImage
+                  src={activeSlide?.src || p.img}
+                  alt={name}
+                  sizes="(max-width:767px) 100vw, 55vw"
+                  fetchPriority="high"
+                />
+              )}
+
+              {p.video && activeSlide?.type !== "video" && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const videoIdx = mediaSlides.findIndex((s) => s.type === "video");
+                    if (videoIdx >= 0) setActive(videoIdx);
+                  }}
+                  className="absolute bottom-3 right-3 px-3 py-1.5 bg-black/80 hover:bg-black text-white text-[11px] font-medium tracking-wide uppercase rounded-full shadow-md flex items-center gap-1.5 transition cursor-pointer backdrop-blur-xs"
+                >
+                  <Play size={12} className="fill-white" /> Watch Video
+                </button>
+              )}
             </div>
-            {gallery.length > 1 && (
+            {mediaSlides.length > 1 && (
               <div className="dm-thumbnails">
-                {gallery.map((src, i) => (
+                {mediaSlides.map((slide, i) => (
                   <button
-                    key={src}
-                    className={i === active ? "is-active" : ""}
-                    aria-label={`View image ${i + 1}`}
+                    key={`${slide.src}-${i}`}
+                    className={`${i === active ? "is-active" : ""} ${slide.type === "video" ? "is-video" : ""}`}
+                    aria-label={`View ${slide.type === "video" ? "product video" : `image ${i + 1}`}`}
                     aria-pressed={i === active}
                     onClick={() => setActive(i)}
                   >
-                    <StoreImage src={src} alt="" sizes="72px" loading="lazy" />
+                    {slide.type === "image" ? (
+                      <StoreImage src={slide.src} alt="" sizes="72px" loading="lazy" />
+                    ) : (
+                      <div className="w-full h-full aspect-square bg-black flex flex-col items-center justify-center text-white relative">
+                        <Play size={16} className="fill-white text-white" />
+                        <span className="text-[8px] uppercase tracking-wider font-semibold mt-0.5">
+                          Video
+                        </span>
+                      </div>
+                    )}
                   </button>
                 ))}
               </div>

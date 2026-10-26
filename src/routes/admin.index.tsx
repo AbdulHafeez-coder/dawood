@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { PromotionsPanel } from "@/components/admin/PromotionsPanel";
 import { SourcingPanel } from "@/components/admin/SourcingPanel";
+import { ProductMediaManager } from "@/components/admin/ProductMediaManager";
 import { toast } from "sonner";
 import { useAdminAuth } from "@/lib/admin-auth";
 import {
@@ -42,7 +43,13 @@ import {
   type Product,
 } from "@/lib/shop";
 import { useAllOrders, ORDER_STATUSES, type OrderStatus, type SavedOrder } from "@/lib/orders";
-import { useSettings, updateSettings, saveSettingsAsync, resetSettings, type SocialKey } from "@/lib/settings";
+import {
+  useSettings,
+  updateSettings,
+  saveSettingsAsync,
+  resetSettings,
+  type SocialKey,
+} from "@/lib/settings";
 import { SafeImage } from "@/components/ui/SafeImage";
 import {
   formatPkPhone,
@@ -96,7 +103,8 @@ import {
 const dmSans = { fontFamily: "'DM Sans', sans-serif" };
 const inter = { fontFamily: "'Inter', sans-serif" };
 
-type TabId = "overview" | "products" | "categories" | "promotions" | "orders" | "settings" | "sourcing";
+type TabId =
+  "overview" | "products" | "categories" | "promotions" | "orders" | "settings" | "sourcing";
 
 type ProductImportItem = {
   id?: string;
@@ -161,7 +169,15 @@ function AdminDashboard() {
     if (typeof window === "undefined") return "overview";
     const saved = window.localStorage.getItem("mt_admin_tab") as TabId | null;
     return saved &&
-      ["overview", "products", "categories", "promotions", "orders", "settings", "sourcing"].includes(saved)
+      [
+        "overview",
+        "products",
+        "categories",
+        "promotions",
+        "orders",
+        "settings",
+        "sourcing",
+      ].includes(saved)
       ? saved
       : "overview";
   });
@@ -207,10 +223,29 @@ function AdminDashboard() {
   const [confirmLogout, setConfirmLogout] = useState(false);
 
   const [visibility, setVisibility] = useState("all");
-  const { products, total: productTotal, loading: productsLoading, error: productsError, refetch: reloadProducts, addProduct, updateProduct, deleteProduct, resetProducts } = useProducts({
-    admin: true, enabled: isAuthed, page: pPage, pageSize: pPageSize,
-    search: debouncedPQuery, category: pCategory, active: visibility,
-    minPrice: pMinPrice, maxPrice: pMaxPrice, minRating: pMinRating, maxRating: pMaxRating, stock: pStock,
+  const {
+    products,
+    total: productTotal,
+    loading: productsLoading,
+    error: productsError,
+    refetch: reloadProducts,
+    addProduct,
+    updateProduct,
+    deleteProduct,
+    resetProducts,
+  } = useProducts({
+    admin: true,
+    enabled: isAuthed,
+    page: pPage,
+    pageSize: pPageSize,
+    search: debouncedPQuery,
+    category: pCategory,
+    active: visibility,
+    minPrice: pMinPrice,
+    maxPrice: pMaxPrice,
+    minRating: pMinRating,
+    maxRating: pMaxRating,
+    stock: pStock,
   });
   const filteredProducts = products;
   const pTotalPages = Math.max(1, Math.ceil(productTotal / pPageSize));
@@ -219,7 +254,17 @@ function AdminDashboard() {
 
   useEffect(() => {
     setPPage(1);
-  }, [debouncedPQuery, pCategory, pMinPrice, pMaxPrice, pMinRating, pMaxRating, pPageSize, visibility, pStock]);
+  }, [
+    debouncedPQuery,
+    pCategory,
+    pMinPrice,
+    pMaxPrice,
+    pMinRating,
+    pMaxRating,
+    pPageSize,
+    visibility,
+    pStock,
+  ]);
 
   const hasActiveFilters =
     pQuery !== "" ||
@@ -279,11 +324,13 @@ function AdminDashboard() {
     try {
       const all = await loadProductsForAdminExport();
       const term = debouncedPQuery.trim().toLowerCase();
-      const matching = all.filter((product) =>
-        (!term || `${product.id} ${product.name} ${product.category}`.toLowerCase().includes(term)) &&
-        (pCategory === "all" || product.category === pCategory) &&
-        (visibility === "all" || (visibility === "active") === (product.is_active !== false)) &&
-        (pStock === "all" || (pStock === "in") === (product.in_stock !== false)),
+      const matching = all.filter(
+        (product) =>
+          (!term ||
+            `${product.id} ${product.name} ${product.category}`.toLowerCase().includes(term)) &&
+          (pCategory === "all" || product.category === pCategory) &&
+          (visibility === "all" || (visibility === "active") === (product.is_active !== false)) &&
+          (pStock === "all" || (pStock === "in") === (product.in_stock !== false)),
       );
       setSelectedIds(new Set(matching.map((product) => product.id)));
       toast.success(`Selected ${matching.length} filtered products`);
@@ -305,7 +352,10 @@ function AdminDashboard() {
       });
     }
     if (succeeded) toast.success(`${label}: ${succeeded} product${succeeded === 1 ? "" : "s"}`);
-    if (failures.length) toast.error(`${label} failed for ${failures.length} product${failures.length === 1 ? "" : "s"}`);
+    if (failures.length)
+      toast.error(
+        `${label} failed for ${failures.length} product${failures.length === 1 ? "" : "s"}`,
+      );
     if (!failures.length) clearSelection();
   }
 
@@ -378,16 +428,18 @@ function AdminDashboard() {
 
   async function handleExportProducts() {
     try {
-    const exportProducts = await loadProductsForAdminExport();
-    if (exportProducts.length === 0) return toast.error("No products to export");
-    downloadCsv(
-      `dawood-mart-products-${new Date().toISOString().slice(0, 10)}.csv`,
-      productsToCsv(exportProducts),
-    );
-    toast.success("Products exported", {
-      description: `${exportProducts.length} row${exportProducts.length === 1 ? "" : "s"}`,
-    });
-    } catch { toast.error("Unable to export products. Please retry."); }
+      const exportProducts = await loadProductsForAdminExport();
+      if (exportProducts.length === 0) return toast.error("No products to export");
+      downloadCsv(
+        `dawood-mart-products-${new Date().toISOString().slice(0, 10)}.csv`,
+        productsToCsv(exportProducts),
+      );
+      toast.success("Products exported", {
+        description: `${exportProducts.length} row${exportProducts.length === 1 ? "" : "s"}`,
+      });
+    } catch {
+      toast.error("Unable to export products. Please retry.");
+    }
   }
 
   function handleExportCategories() {
@@ -835,12 +887,25 @@ function AdminDashboard() {
                 </div>
               </div>
 
-              <label className="mb-3 block text-sm">Storefront visibility
-                <select value={visibility} onChange={(e) => setVisibility(e.target.value)} className="ml-3 rounded border p-2">
-                  <option value="all">All products</option><option value="active">Active</option><option value="inactive">Inactive</option>
+              <label className="mb-3 block text-sm">
+                Storefront visibility
+                <select
+                  value={visibility}
+                  onChange={(e) => setVisibility(e.target.value)}
+                  className="ml-3 rounded border p-2"
+                >
+                  <option value="all">All products</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
                 </select>
               </label>
-              {productsLoading ? <div role="status">Loading products…</div> : productsError ? <div role="alert">{productsError} <button onClick={reloadProducts}>Retry</button></div> : productTotal === 0 && !pQuery && pCategory === "all" && visibility === "all" ? (
+              {productsLoading ? (
+                <div role="status">Loading products…</div>
+              ) : productsError ? (
+                <div role="alert">
+                  {productsError} <button onClick={reloadProducts}>Retry</button>
+                </div>
+              ) : productTotal === 0 && !pQuery && pCategory === "all" && visibility === "all" ? (
                 <EmptyState
                   label="No products yet"
                   cta="Create your first product"
@@ -880,8 +945,14 @@ function AdminDashboard() {
                           </option>
                         ))}
                       </select>
-                      <select value={pStock} onChange={(e) => setPStock(e.target.value)} className="px-3 py-2 text-sm rounded-full border border-black/15 bg-white">
-                        <option value="all">All stock</option><option value="in">In stock</option><option value="out">Out of stock</option>
+                      <select
+                        value={pStock}
+                        onChange={(e) => setPStock(e.target.value)}
+                        className="px-3 py-2 text-sm rounded-full border border-black/15 bg-white"
+                      >
+                        <option value="all">All stock</option>
+                        <option value="in">In stock</option>
+                        <option value="out">Out of stock</option>
                       </select>
                       <button
                         onClick={() => setPShowFilters((v) => !v)}
@@ -990,9 +1061,28 @@ function AdminDashboard() {
                             {selectedCount} selected
                           </div>
                           <div className="flex flex-wrap items-center gap-2">
-                            <button onClick={() => void applyBulkPatch("Activated", { is_active: true })} className="px-3 py-1.5 rounded-full bg-white text-black text-[10px] uppercase tracking-[0.18em]">Activate</button>
-                            <button onClick={() => void applyBulkPatch("Deactivated", { is_active: false })} className="px-3 py-1.5 rounded-full bg-white text-black text-[10px] uppercase tracking-[0.18em]">Deactivate</button>
-                            <button onClick={() => void applyBulkPatch("Marked out of stock", { in_stock: false })} className="px-3 py-1.5 rounded-full bg-white text-black text-[10px] uppercase tracking-[0.18em]">Out of stock</button>
+                            <button
+                              onClick={() => void applyBulkPatch("Activated", { is_active: true })}
+                              className="px-3 py-1.5 rounded-full bg-white text-black text-[10px] uppercase tracking-[0.18em]"
+                            >
+                              Activate
+                            </button>
+                            <button
+                              onClick={() =>
+                                void applyBulkPatch("Deactivated", { is_active: false })
+                              }
+                              className="px-3 py-1.5 rounded-full bg-white text-black text-[10px] uppercase tracking-[0.18em]"
+                            >
+                              Deactivate
+                            </button>
+                            <button
+                              onClick={() =>
+                                void applyBulkPatch("Marked out of stock", { in_stock: false })
+                              }
+                              className="px-3 py-1.5 rounded-full bg-white text-black text-[10px] uppercase tracking-[0.18em]"
+                            >
+                              Out of stock
+                            </button>
                             <select
                               value={bulkCategory}
                               onChange={(e) => setBulkCategory(e.target.value)}
@@ -1048,8 +1138,16 @@ function AdminDashboard() {
                       )}
                       <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
                         <div className="mb-2 flex items-center gap-3 text-xs text-black/60">
-                          <span>{allPageSelected ? "Current page selected" : "Select current page"}</span>
-                          <button type="button" onClick={() => void selectAllFiltered()} className="underline underline-offset-2">Select all filtered results ({productTotal})</button>
+                          <span>
+                            {allPageSelected ? "Current page selected" : "Select current page"}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => void selectAllFiltered()}
+                            className="underline underline-offset-2"
+                          >
+                            Select all filtered results ({productTotal})
+                          </button>
                         </div>
                         <table className="w-full text-sm min-w-[760px]">
                           <thead>
@@ -1113,13 +1211,49 @@ function AdminDashboard() {
                                   </td>
                                   <td className="py-3 pr-3 text-black/70">{p.category}</td>
                                   <td className="py-3 pr-3">
-                                    <button type="button" aria-label={`Storefront visibility for ${p.name}`} aria-pressed={p.is_active !== false}
+                                    <button
+                                      type="button"
+                                      aria-label={`Storefront visibility for ${p.name}`}
+                                      aria-pressed={p.is_active !== false}
                                       className="rounded-full border px-3 py-1 text-xs"
-                                      onClick={async () => { try { await updateProduct(p.id, { is_active: p.is_active === false }); toast.success("Visibility saved"); } catch (error) { toast.error(error instanceof Error ? error.message : "Save failed"); } }}>
+                                      onClick={async () => {
+                                        try {
+                                          await updateProduct(p.id, {
+                                            is_active: p.is_active === false,
+                                          });
+                                          toast.success("Visibility saved");
+                                        } catch (error) {
+                                          toast.error(
+                                            error instanceof Error ? error.message : "Save failed",
+                                          );
+                                        }
+                                      }}
+                                    >
                                       {p.is_active === false ? "Inactive" : "Active"}
                                     </button>
                                   </td>
-                                  <td className="py-3 pr-3"><select aria-label={`Stock for ${p.name}`} value={p.in_stock === false ? "out" : "in"} className="rounded border px-2 py-1 text-xs" onChange={async e => { try { await updateProduct(p.id, { in_stock: e.target.value === "in" }); toast.success("Stock saved"); } catch (error) { toast.error(error instanceof Error ? error.message : "Save failed"); } }}><option value="in">In Stock</option><option value="out">Out of Stock</option></select></td>
+                                  <td className="py-3 pr-3">
+                                    <select
+                                      aria-label={`Stock for ${p.name}`}
+                                      value={p.in_stock === false ? "out" : "in"}
+                                      className="rounded border px-2 py-1 text-xs"
+                                      onChange={async (e) => {
+                                        try {
+                                          await updateProduct(p.id, {
+                                            in_stock: e.target.value === "in",
+                                          });
+                                          toast.success("Stock saved");
+                                        } catch (error) {
+                                          toast.error(
+                                            error instanceof Error ? error.message : "Save failed",
+                                          );
+                                        }
+                                      }}
+                                    >
+                                      <option value="in">In Stock</option>
+                                      <option value="out">Out of Stock</option>
+                                    </select>
+                                  </td>
                                   <td className="py-3 pr-3 text-black/70 tabular-nums">
                                     {p.rating.toFixed(1)}
                                   </td>
@@ -1157,8 +1291,7 @@ function AdminDashboard() {
                         <div className="flex items-center gap-2">
                           <span>
                             Showing {(pCurrentPage - 1) * pPageSize + 1}–
-                            {Math.min(pCurrentPage * pPageSize, productTotal)} of{" "}
-                            {productTotal}
+                            {Math.min(pCurrentPage * pPageSize, productTotal)} of {productTotal}
                           </span>
                           <span className="text-black/30">·</span>
                           <label className="inline-flex items-center gap-1.5">
@@ -1347,10 +1480,12 @@ function AdminDashboard() {
           }}
           onSave={async (id, patch) => {
             try {
-            await updateProduct(id, patch);
-            toast.success("Product updated", { description: patch.name });
-            setProductDialog(null);
-            } catch (error) { toast.error(error instanceof Error ? error.message : "Save failed"); }
+              await updateProduct(id, patch);
+              toast.success("Product updated", { description: patch.name });
+              setProductDialog(null);
+            } catch (error) {
+              toast.error(error instanceof Error ? error.message : "Save failed");
+            }
           }}
         />
       )}
@@ -1811,8 +1946,28 @@ function ProductFormDialog({
   onCreate: (p: Omit<Product, "id">) => void;
   onSave: (id: string, patch: Partial<Product>) => void;
 }) {
+  const initialGallery = (
+    product?.gallery && product.gallery.length > 0
+      ? product.gallery
+      : product?.img
+        ? [product.img]
+        : [PRODUCT_IMAGE_CHOICES[0].url]
+  ).filter(Boolean);
+
+  const initialVideo =
+    product?.video ??
+    product?.details
+      ?.find((d) => d.startsWith("__video__:") || d.startsWith("video_url:"))
+      ?.replace(/^(__video__|video_url):\s*/, "") ??
+    null;
+
   const initial: Omit<Product, "id"> = product
-    ? { ...product }
+    ? {
+        ...product,
+        gallery: initialGallery,
+        img: initialGallery[0] || product.img || PRODUCT_IMAGE_CHOICES[0].url,
+        video: initialVideo,
+      }
     : {
         name: "",
         display_name: "",
@@ -1826,10 +1981,14 @@ function ProductFormDialog({
         description: "",
         details: [],
         gallery: [PRODUCT_IMAGE_CHOICES[0].url],
+        video: null,
       };
 
   const [form, setForm] = useState<Omit<Product, "id">>(initial);
-  const [detailsText, setDetailsText] = useState((initial.details ?? []).join("\n"));
+  const cleanDetails = (initial.details ?? []).filter(
+    (d) => !d.startsWith("__video__:") && !d.startsWith("video_url:"),
+  );
+  const [detailsText, setDetailsText] = useState(cleanDetails.join("\n"));
 
   function set<K extends keyof Omit<Product, "id">>(key: K, value: Omit<Product, "id">[K]) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -1843,11 +2002,21 @@ function ProductFormDialog({
     const details = detailsText
       .split("\n")
       .map((s) => s.trim())
-      .filter(Boolean);
+      .filter((s) => Boolean(s) && !s.startsWith("__video__:") && !s.startsWith("video_url:"));
+
+    if (form.video && form.video.trim()) {
+      details.push(`__video__:${form.video.trim()}`);
+    }
+
+    const gallery = form.gallery && form.gallery.length ? form.gallery.filter(Boolean) : [form.img];
+    const primaryImg = gallery[0] || form.img || PRODUCT_IMAGE_CHOICES[0].url;
+
     const payload: Omit<Product, "id"> = {
       ...form,
+      img: primaryImg,
+      gallery,
       details,
-      gallery: form.gallery && form.gallery.length ? form.gallery : [form.img],
+      video: form.video ? form.video.trim() : null,
     };
     if (mode === "create") onCreate(payload);
     else if (product) onSave(product.id, payload);
@@ -1857,7 +2026,7 @@ function ProductFormDialog({
 
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle style={{ ...dmSans, fontWeight: 400, letterSpacing: "-0.02em" }}>
             {mode === "create" ? "New product" : "Edit product"}
@@ -1969,59 +2138,38 @@ function ProductFormDialog({
               />
             </Field>
 
-            <Field label="Image">
-              <ImageUploader
-                value={form.img}
-                onChange={(url) =>
-                  setForm((f) => ({
+            <ProductMediaManager
+              images={
+                form.gallery && form.gallery.length ? form.gallery : form.img ? [form.img] : []
+              }
+              onChangeImages={(imgs) => {
+                setForm((f) => {
+                  const primary = imgs[0] || f.img;
+                  return {
                     ...f,
-                    img: url,
-                    gallery:
-                      f.gallery && f.gallery.length
-                        ? [url, ...f.gallery.filter((x) => x !== url)].slice(0, 4)
-                        : [url],
-                  }))
-                }
-              />
-              <div className="mt-3">
-                <div className="text-[10px] uppercase tracking-[0.18em] text-black/45 mb-2">
-                  Or pick a preset
-                </div>
-                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                  {PRODUCT_IMAGE_CHOICES.map((choice) => {
-                    const active = form.img === choice.url;
-                    return (
-                      <button
-                        type="button"
-                        key={choice.id}
-                        onClick={() =>
-                          setForm((f) => ({
-                            ...f,
-                            img: choice.url,
-                            gallery:
-                              f.gallery && f.gallery.length
-                                ? [choice.url, ...f.gallery.filter((x) => x !== choice.url)].slice(
-                                    0,
-                                    4,
-                                  )
-                                : [choice.url],
-                          }))
-                        }
-                        className={`relative aspect-square rounded-lg overflow-hidden border-2 transition ${
-                          active ? "border-black" : "border-transparent hover:border-black/30"
-                        }`}
-                        aria-label={choice.label}
-                      >
-                        <img src={choice.url} alt="" className="w-full h-full object-cover" />
-                        {active && (
-                          <div className="absolute inset-0 ring-2 ring-black rounded-lg" />
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </Field>
+                    gallery: imgs,
+                    img: primary,
+                  };
+                });
+              }}
+              primaryImage={form.img}
+              onSetPrimaryImage={(primary) => {
+                setForm((f) => {
+                  const currentGallery =
+                    f.gallery && f.gallery.length ? f.gallery : f.img ? [f.img] : [];
+                  const reordered = [primary, ...currentGallery.filter((x) => x !== primary)];
+                  return {
+                    ...f,
+                    img: primary,
+                    gallery: reordered,
+                  };
+                });
+              }}
+              video={form.video}
+              onChangeVideo={(videoUrl) => {
+                setForm((f) => ({ ...f, video: videoUrl }));
+              }}
+            />
 
             <Field label="Card background">
               <div className="flex flex-wrap gap-2">

@@ -27,7 +27,12 @@ const SEED_PRODUCTS: Product[] = [
     tagline: "Elegant marble design waterproof table sheet",
     description:
       "Premium quality 6-seater dining table sheet with a beautiful white marble and gold vein design. Waterproof, easy to clean, and protects your table from scratches and spills.",
-    details: ["Brand: Classic", "Size: 6 Seater", "Material: PVC/Waterproof", "Design: Marble Gold"],
+    details: [
+      "Brand: Classic",
+      "Size: 6 Seater",
+      "Material: PVC/Waterproof",
+      "Design: Marble Gold",
+    ],
     gallery: ["/images/products/dining-table-sheet.jpg"],
   },
   {
@@ -119,12 +124,7 @@ const SEED_PRODUCTS: Product[] = [
     tagline: "Heat resistant crystal clear daily drinkware",
     description:
       "Ergonomic handle and durable high-borosilicate glass construction. Ideal for everyday hot chai, green tea, latte, and iced beverages.",
-    details: [
-      "Brand: JBI",
-      "Set: 6 Mugs",
-      "Capacity: 220ml each",
-      "Microwave & Dishwasher Safe",
-    ],
+    details: ["Brand: JBI", "Set: 6 Mugs", "Capacity: 220ml each", "Microwave & Dishwasher Safe"],
     gallery: ["/images/products/timy-mugs-group.png"],
   },
   {
@@ -151,7 +151,6 @@ const SEED_PRODUCTS: Product[] = [
     gallery: ["/images/products/7-pcs-bowl-set.jpg"],
   },
 ];
-
 
 // ---------- LIVE STORE (products + categories) ----------
 // Backed by Supabase (public.products, public.categories). Cart + favourites
@@ -196,6 +195,13 @@ export function rowToProduct(r: ProductRow): Product {
   const discountRate = 0.2; // 20% discount
   const discountedPrice = Math.round(originalPrice * (1 - discountRate));
 
+  const rawVideo = r.video || null;
+  const detailsVideo =
+    r.details
+      ?.find((d: string) => d.startsWith("__video__:") || d.startsWith("video_url:"))
+      ?.replace(/^(__video__|video_url):\s*/, "") ?? null;
+  const video = rawVideo || detailsVideo || null;
+
   return {
     id: r.id,
     is_active: r.is_active,
@@ -213,13 +219,25 @@ export function rowToProduct(r: ProductRow): Product {
     brand: extractBrand(r.name, r.details),
     tagline: r.tagline ?? "",
     description: r.description ?? "",
-    details: r.details ?? [],
+    details: (r.details ?? []).filter(
+      (d: string) => !d.startsWith("__video__:") && !d.startsWith("video_url:"),
+    ),
     gallery: r.gallery && r.gallery.length ? r.gallery : [r.img],
+    video,
   };
 }
 
 function productToRow(p: Product): ProductInsert {
-  return {
+  const details = [...(p.details ?? [])];
+  const filteredDetails = details.filter(
+    (d) => !d.startsWith("__video__:") && !d.startsWith("video_url:"),
+  );
+  if (p.video && p.video.trim()) {
+    filteredDetails.push(`__video__:${p.video.trim()}`);
+  }
+
+  const gallery = p.gallery && p.gallery.length ? p.gallery.filter(Boolean) : [p.img];
+  const row: ProductInsert = {
     id: p.id,
     is_active: p.is_active ?? true,
     in_stock: p.in_stock ?? true,
@@ -227,16 +245,22 @@ function productToRow(p: Product): ProductInsert {
     tag: p.tag ?? "",
     price: p.original_price ?? p.price,
     rating: p.rating,
-    img: p.img,
+    img: gallery[0] || p.img,
     bg: p.bg,
     category: p.category,
     tagline: p.tagline ?? "",
     description: p.description ?? "",
-    details: p.details ?? [],
-    gallery: p.gallery && p.gallery.length ? p.gallery : [p.img],
+    details: filteredDetails,
+    gallery,
   };
-}
 
+  if (p.slug !== undefined) row.slug = p.slug;
+  if (p.seo_title !== undefined) row.seo_title = p.seo_title;
+  if (p.seo_description !== undefined) row.seo_description = p.seo_description;
+  if (p.video !== undefined) row.video = p.video || null;
+
+  return row;
+}
 
 // Exported live arrays. Seeded synchronously so SSR + first paint have data.
 export const products: Product[] = [];
@@ -306,7 +330,8 @@ async function hydrateFromSupabase() {
       .from("categories")
       .select("name, image_url, sort_order")
       .order("sort_order", { ascending: true })
-      .order("created_at", { ascending: true }).limit(6),
+      .order("created_at", { ascending: true })
+      .limit(6),
     publicProducts(supabase).order("created_at", { ascending: false }).order("id").limit(24),
     supabase.from("promotions").select("*").order("sort_order", { ascending: true }),
   ]);
@@ -328,11 +353,7 @@ async function hydrateFromSupabase() {
       sortOrder: r.sort_order ?? i,
     };
   });
-  products.splice(
-    0,
-    products.length,
-    ...((prodData ?? []) as ProductRow[]).map(rowToProduct),
-  );
+  products.splice(0, products.length, ...((prodData ?? []) as ProductRow[]).map(rowToProduct));
   promotionsLive.splice(
     0,
     promotionsLive.length,
@@ -365,18 +386,39 @@ export function getProduct(id: string): Product | undefined {
 
 export async function getProductAsync(id: string): Promise<Product | undefined> {
   let result = await publicProducts(supabase).eq("id", id).maybeSingle();
-  if (!result.error && !result.data) result = await publicProducts(supabase).eq("slug", id).maybeSingle();
+  if (!result.error && !result.data)
+    result = await publicProducts(supabase).eq("slug", id).maybeSingle();
   if (result.error) throw result.error;
   return result.data ? rowToProduct(result.data) : undefined;
 }
 
 // ---------- REACTIVE HOOKS ----------
-export type ProductQuery = { admin?: boolean; enabled?: boolean; page?: number; pageSize?: number; search?: string; category?: string; active?: string; minPrice?: string; maxPrice?: string; minRating?: string; maxRating?: string; sort?: string; brand?: string; ids?: string[]; stock?: string };
+export type ProductQuery = {
+  admin?: boolean;
+  enabled?: boolean;
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  category?: string;
+  active?: string;
+  minPrice?: string;
+  maxPrice?: string;
+  minRating?: string;
+  maxRating?: string;
+  sort?: string;
+  brand?: string;
+  ids?: string[];
+  stock?: string;
+};
 // Explicit export/import only: never used during initial page rendering.
 export async function loadProductsForAdminExport() {
   const result: Product[] = [];
   for (let offset = 0; ; offset += 100) {
-    const { data, error } = await supabase.from("products").select("*").order("id").range(offset, offset + 99);
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .order("id")
+      .range(offset, offset + 99);
     if (error) throw error;
     result.push(...(data || []).map(rowToProduct));
     if (!data || data.length < 100) return result;
@@ -398,33 +440,57 @@ export function useProducts(options?: ProductQuery) {
     if (opts.enabled === false) return;
     const cached = !opts.admin && publicPageCache.get(queryKey);
     if (cached && cached.until > Date.now()) {
-      setList(cached.products); setTotal(cached.total); setLoading(false); setError("");
+      setList(cached.products);
+      setTotal(cached.total);
+      setLoading(false);
+      setError("");
       return;
     }
     const controller = new AbortController();
-    const timeout = setTimeout(() => { controller.abort(); setLoading(false); setError("Products took too long to load. Please retry."); }, 15000);
+    const timeout = setTimeout(() => {
+      controller.abort();
+      setLoading(false);
+      setError("Products took too long to load. Please retry.");
+    }, 15000);
     let request = productPageQuery(supabase, opts);
-    if (opts.admin && opts.active && opts.active !== "all") request = request.eq("is_active", opts.active === "active");
-    const group = !opts.admin && storefrontCategories.find(g => g.name === opts.category);
+    if (opts.admin && opts.active && opts.active !== "all")
+      request = request.eq("is_active", opts.active === "active");
+    const group = !opts.admin && storefrontCategories.find((g) => g.name === opts.category);
     const taxonomy = !opts.admin && findTaxonomy(opts.category);
     if (opts.stock === "in") request = request.eq("in_stock", true);
     if (opts.stock === "out") request = request.eq("in_stock", false);
     if (group) request = request.in("category", group.categories);
     else if (taxonomy) request = request.limit(100);
-    else if (opts.category === "Table Sheets & Table Mats") request = request.or("name.ilike.%table%sheet%,name.ilike.%table%mat%,name.ilike.%table%cover%,name.ilike.%table%runner%,name.ilike.%placemat%,name.ilike.%dastarkhwan%,category.ilike.%table%sheet%,category.ilike.%table%mat%");
-    else if (opts.category === "Wall Sheets & Wallpaper") request = request.or("name.ilike.%wall%sheet%,name.ilike.%wallpaper%,category.ilike.%wall%sheet%,category.ilike.%wallpaper%");
-    else if (opts.category && !["All", "all"].includes(opts.category)) request = request.eq("category", opts.category);
+    else if (opts.category === "Table Sheets & Table Mats")
+      request = request.or(
+        "name.ilike.%table%sheet%,name.ilike.%table%mat%,name.ilike.%table%cover%,name.ilike.%table%runner%,name.ilike.%placemat%,name.ilike.%dastarkhwan%,category.ilike.%table%sheet%,category.ilike.%table%mat%",
+      );
+    else if (opts.category === "Wall Sheets & Wallpaper")
+      request = request.or(
+        "name.ilike.%wall%sheet%,name.ilike.%wallpaper%,category.ilike.%wall%sheet%,category.ilike.%wallpaper%",
+      );
+    else if (opts.category && !["All", "all"].includes(opts.category))
+      request = request.eq("category", opts.category);
     const term = (opts.search || "").replace(/[%,().*\\]/g, " ").trim();
-    if (term) request = request.or(`name.ilike.%${term}%,id.ilike.%${term}%,category.ilike.%${term}%`);
-    if (opts.brand && opts.brand !== "All") request = request.contains("details", [`brand:${opts.brand}`]);
+    if (term)
+      request = request.or(`name.ilike.%${term}%,id.ilike.%${term}%,category.ilike.%${term}%`);
+    if (opts.brand && opts.brand !== "All")
+      request = request.contains("details", [`brand:${opts.brand}`]);
     if (opts.minPrice) request = request.gte("price", Number(opts.minPrice) / 0.8);
     if (opts.maxPrice) request = request.lte("price", Number(opts.maxPrice) / 0.8);
     if (opts.minRating) request = request.gte("rating", Number(opts.minRating));
     if (opts.maxRating) request = request.lte("rating", Number(opts.maxRating));
     if (opts.ids) request = request.in("id", opts.ids);
-    const column = opts.sort?.startsWith("price") ? "price" : opts.sort === "rating" ? "rating" : "created_at";
-    setLoading(true); setError("");
-    request.order(column, { ascending: opts.sort === "price-asc" }).order("id")
+    const column = opts.sort?.startsWith("price")
+      ? "price"
+      : opts.sort === "rating"
+        ? "rating"
+        : "created_at";
+    setLoading(true);
+    setError("");
+    request
+      .order(column, { ascending: opts.sort === "price-asc" })
+      .order("id")
       .abortSignal(controller.signal)
       .then(({ data, error: queryError, count }) => {
         if (controller.signal.aborted) return;
@@ -432,14 +498,22 @@ export function useProducts(options?: ProductQuery) {
         const rows = (data || []).map(rowToProduct);
         const filteredRows = taxonomy ? rows.filter(taxonomy.matches) : rows;
         setList(queryError ? [] : filteredRows);
-        setTotal(taxonomy ? filteredRows.length : count || 0); setLoading(false);
+        setTotal(taxonomy ? filteredRows.length : count || 0);
+        setLoading(false);
         setError(queryError ? "Unable to load products. Please retry." : "");
         if (!queryError && !opts.admin) {
           if (publicPageCache.size > 64) publicPageCache.clear();
-          publicPageCache.set(queryKey, { until: Date.now() + 30000, products: filteredRows, total: taxonomy ? filteredRows.length : count || 0 });
+          publicPageCache.set(queryKey, {
+            until: Date.now() + 30000,
+            products: filteredRows,
+            total: taxonomy ? filteredRows.length : count || 0,
+          });
         }
       });
-    return () => { clearTimeout(timeout); controller.abort(); };
+    return () => {
+      clearTimeout(timeout);
+      controller.abort();
+    };
   }, [queryKey, revision]);
 
   useEffect(() => {
@@ -455,63 +529,107 @@ export function useProducts(options?: ProductQuery) {
 
   const addProduct = useCallback((p: Omit<Product, "id"> & { id?: string }) => {
     const id = p.id ?? `p-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
-    const gallery = p.gallery && p.gallery.length ? p.gallery : [p.img];
-    const next: Product = { ...p, id, gallery };
+    const gallery = p.gallery && p.gallery.length ? p.gallery.filter(Boolean) : [p.img];
+    const next: Product = { ...p, id, gallery, img: gallery[0] || p.img };
     products.unshift(next);
     emitProducts();
-    supabase
-      .from("products")
-      .insert(productToRow(next))
-      .then(({ error }) => {
-        if (error) {
-          console.error("[shop] addProduct failed:", error.message);
-          const idx = products.findIndex((x) => x.id === id);
-          if (idx >= 0) products.splice(idx, 1);
-          emitProducts();
+
+    const row = productToRow(next);
+    const saveToDb = async () => {
+      const res = await supabase.from("products").insert(row);
+      if (res.error) {
+        if (row.video !== undefined && res.error.message?.includes("video")) {
+          const fallbackRow: ProductInsert = { ...row };
+          delete fallbackRow.video;
+          const retry = await supabase.from("products").insert(fallbackRow);
+          if (retry.error) throw retry.error;
+          return;
         }
+        throw res.error;
+      }
+    };
+
+    saveToDb()
+      .then(() => {
         publicPageCache.clear();
-        setRevision(n => n + 1);
+        setRevision((n) => n + 1);
+      })
+      .catch((error) => {
+        console.error("[shop] addProduct failed:", error?.message || error);
+        const idx = products.findIndex((x) => x.id === id);
+        if (idx >= 0) products.splice(idx, 1);
+        emitProducts();
       });
+
     return id;
   }, []);
 
-  const updateProduct = useCallback(async (id: string, patch: Partial<Product>) => {
-    const idx = products.findIndex((p) => p.id === id);
-    if (Object.keys(patch).length === 1 && typeof patch.in_stock === "boolean") {
-      await saveStock(supabase, id, patch.in_stock);
-      if (idx >= 0) products[idx] = { ...products[idx], in_stock: patch.in_stock };
-      publicPageCache.clear(); emitProducts(); setRevision(n => n + 1);
-      return;
-    }
-    if (Object.keys(patch).length === 1 && typeof patch.is_active === "boolean") {
-      await saveProductVisibility(supabase, id, patch.is_active);
-      if (idx >= 0) {
-        if (!patch.is_active) products.splice(idx, 1);
-        else products[idx] = { ...products[idx], is_active: true };
+  const updateProduct = useCallback(
+    async (id: string, patch: Partial<Product>) => {
+      const idx = products.findIndex((p) => p.id === id);
+      if (Object.keys(patch).length === 1 && typeof patch.in_stock === "boolean") {
+        await saveStock(supabase, id, patch.in_stock);
+        if (idx >= 0) products[idx] = { ...products[idx], in_stock: patch.in_stock };
+        publicPageCache.clear();
+        emitProducts();
+        setRevision((n) => n + 1);
+        return;
       }
-      publicPageCache.clear(); emitProducts(); setRevision(n => n + 1);
-      return;
-    }
-    let prev = list.find((p) => p.id === id) || products[idx];
-    if (!prev) {
-      const { data, error } = await supabase.from("products").select("*").eq("id", id).maybeSingle();
-      if (error) throw error;
-      if (data) prev = rowToProduct(data);
-    }
-    if (!prev) throw new Error("Product is not loaded. Reload this page and retry.");
-    const next = { ...prev, ...patch };
-    if (!next.gallery || next.gallery.length === 0) next.gallery = [next.img];
-    const { data, error } = await supabase
-      .from("products")
-      .update(productToRow(next))
-      .eq("id", id)
-      .select("id").maybeSingle();
-    if (error || !data) throw new Error(error?.message || "Database did not confirm the save.");
-    publicPageCache.clear();
-    if (idx >= 0) products[idx] = next;
-    emitProducts();
-    setRevision((n) => n + 1);
-  }, [list]);
+      if (Object.keys(patch).length === 1 && typeof patch.is_active === "boolean") {
+        await saveProductVisibility(supabase, id, patch.is_active);
+        if (idx >= 0) {
+          if (!patch.is_active) products.splice(idx, 1);
+          else products[idx] = { ...products[idx], is_active: true };
+        }
+        publicPageCache.clear();
+        emitProducts();
+        setRevision((n) => n + 1);
+        return;
+      }
+      let prev = list.find((p) => p.id === id) || products[idx];
+      if (!prev) {
+        const { data, error } = await supabase
+          .from("products")
+          .select("*")
+          .eq("id", id)
+          .maybeSingle();
+        if (error) throw error;
+        if (data) prev = rowToProduct(data);
+      }
+      if (!prev) throw new Error("Product is not loaded. Reload this page and retry.");
+      const next = { ...prev, ...patch };
+      if (!next.gallery || next.gallery.length === 0) next.gallery = [next.img];
+      if (patch.gallery && patch.gallery.length > 0) next.img = patch.gallery[0];
+
+      const row: ProductUpdate = productToRow(next);
+      let { data, error } = await supabase
+        .from("products")
+        .update(row)
+        .eq("id", id)
+        .select("id")
+        .maybeSingle();
+
+      if (error && row.video !== undefined && error.message?.includes("video")) {
+        const fallbackRow: ProductUpdate = { ...row };
+        delete fallbackRow.video;
+        const retry = await supabase
+          .from("products")
+          .update(fallbackRow)
+          .eq("id", id)
+          .select("id")
+          .maybeSingle();
+        data = retry.data;
+        error = retry.error;
+      }
+
+      if (error || !data) throw new Error(error?.message || "Database did not confirm the save.");
+      publicPageCache.clear();
+      if (idx >= 0) products[idx] = next;
+      emitProducts();
+      setRevision((n) => n + 1);
+    },
+    [list],
+  );
 
   const deleteProduct = useCallback((id: string) => {
     const idx = products.findIndex((p) => p.id === id);
@@ -529,7 +647,7 @@ export function useProducts(options?: ProductQuery) {
           emitProducts();
         }
         publicPageCache.clear();
-        setRevision(n => n + 1);
+        setRevision((n) => n + 1);
       });
   }, []);
 
@@ -550,7 +668,20 @@ export function useProducts(options?: ProductQuery) {
     if (insErr) console.error("[shop] resetProducts insert failed:", insErr.message);
   }, []);
 
-  return { products: options?.admin ? list : list.filter((p) => p.is_active !== false), total, loading, error, refetch: () => { publicPageCache.clear(); setRevision((n) => n + 1); }, addProduct, updateProduct, deleteProduct, resetProducts };
+  return {
+    products: options?.admin ? list : list.filter((p) => p.is_active !== false),
+    total,
+    loading,
+    error,
+    refetch: () => {
+      publicPageCache.clear();
+      setRevision((n) => n + 1);
+    },
+    addProduct,
+    updateProduct,
+    deleteProduct,
+    resetProducts,
+  };
 }
 
 export function useCategories(all = false) {
@@ -561,16 +692,31 @@ export function useCategories(all = false) {
     await ensureStoreHydratedAsync();
     const rows: { name: string; image_url: string | null; sort_order: number }[] = [];
     for (let offset = 0; ; offset += 100) {
-      const { data, error } = await supabase.from("categories").select("name,image_url,sort_order").order("sort_order").order("name").range(offset, offset + 99);
-      if (error) { toast.error("Unable to load categories."); return; }
-      rows.push(...(data || []).map(r => ({ ...r, sort_order: r.sort_order || 0 })));
+      const { data, error } = await supabase
+        .from("categories")
+        .select("name,image_url,sort_order")
+        .order("sort_order")
+        .order("name")
+        .range(offset, offset + 99);
+      if (error) {
+        toast.error("Unable to load categories.");
+        return;
+      }
+      rows.push(...(data || []).map((r) => ({ ...r, sort_order: r.sort_order || 0 })));
       if (!data || data.length < 100) break;
     }
-    categoriesLive.splice(0, categoriesLive.length, ...rows.map(r => r.name));
-    for (const r of rows) categoryInfoLive[r.name] = { name: r.name, imageUrl: r.image_url || "", sortOrder: r.sort_order };
+    categoriesLive.splice(0, categoriesLive.length, ...rows.map((r) => r.name));
+    for (const r of rows)
+      categoryInfoLive[r.name] = {
+        name: r.name,
+        imageUrl: r.image_url || "",
+        sortOrder: r.sort_order,
+      };
     emitCategories();
   }, []);
-  useEffect(() => { if (all) void loadAll(); }, [all, loadAll]);
+  useEffect(() => {
+    if (all) void loadAll();
+  }, [all, loadAll]);
 
   useEffect(() => {
     ensureStoreHydrated();
@@ -774,7 +920,7 @@ function ensureHydrated() {
   if (cartHydrated || typeof window === "undefined") return;
   cartHydrated = true;
   const persisted = parsePersistedCart();
-  if (persisted.some(item => !item.snapshot)) ensureStoreHydrated();
+  if (persisted.some((item) => !item.snapshot)) ensureStoreHydrated();
   cartState = resolvePersistedCart(persisted);
 }
 
@@ -826,7 +972,10 @@ export function useCart() {
   }, []);
 
   const addToCart = useCallback((p: Product, qty = 1, extras: Partial<CartItem> = {}) => {
-    if (!canPurchase(p)) { toast.error("This product is unavailable."); return false; }
+    if (!canPurchase(p)) {
+      toast.error("This product is unavailable.");
+      return false;
+    }
     const found = cartState.find((i) => i.id === p.id);
     if (found) {
       cartState = cartState.map((i) => (i.id === p.id ? { ...i, qty: i.qty + qty } : i));
@@ -929,22 +1078,25 @@ export function useCoupon() {
     };
   }, []);
 
-  const applyCoupon = useCallback((code: string, subtotal: number): { ok: boolean; message: string } => {
-    const clean = code.trim().toUpperCase();
-    const found = AVAILABLE_COUPONS[clean];
-    if (!found) {
-      return { ok: false, message: "Invalid coupon code. Try WELCOME10 or FLAT500." };
-    }
-    if (found.minSpend && subtotal < found.minSpend) {
-      return {
-        ok: false,
-        message: `Minimum order of PKR ${found.minSpend.toLocaleString()} required for this coupon.`,
-      };
-    }
-    activeCouponState = clean;
-    emitCoupon();
-    return { ok: true, message: `Coupon ${clean} applied! (${found.description})` };
-  }, []);
+  const applyCoupon = useCallback(
+    (code: string, subtotal: number): { ok: boolean; message: string } => {
+      const clean = code.trim().toUpperCase();
+      const found = AVAILABLE_COUPONS[clean];
+      if (!found) {
+        return { ok: false, message: "Invalid coupon code. Try WELCOME10 or FLAT500." };
+      }
+      if (found.minSpend && subtotal < found.minSpend) {
+        return {
+          ok: false,
+          message: `Minimum order of PKR ${found.minSpend.toLocaleString()} required for this coupon.`,
+        };
+      }
+      activeCouponState = clean;
+      emitCoupon();
+      return { ok: true, message: `Coupon ${clean} applied! (${found.description})` };
+    },
+    [],
+  );
 
   const removeCoupon = useCallback(() => {
     activeCouponState = null;

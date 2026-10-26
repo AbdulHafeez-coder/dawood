@@ -3,7 +3,6 @@ import { useState } from "react";
 import { SlidersHorizontal, ArrowRight } from "lucide-react";
 import { useProducts, useFavourites } from "@/lib/shop";
 import { storefrontCategories } from "@/lib/storefront-categories";
-import { taxonomyGroups } from "@/lib/category-taxonomy.js";
 import { StoreHeader } from "@/components/StoreHeader";
 import { ProductCard } from "@/components/ProductCard";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -49,40 +48,38 @@ export const Route = createFileRoute("/")({
 });
 const heroPanels = [
   {
-    title: "NEW ARRIVALS",
-    image: "timy-mugs-group",
-    alt: "Colourful insulated mugs from Dawood Mart",
-    href: "/?sort=newest#shop",
-    cta: "Discover new",
+    title: "SHEETS",
+    image: "premium-table-sheet",
+    alt: "Dining table sheets, covers and runners",
+    href: "/?category=Sheets#shop",
+    cta: "Explore Sheets",
     tone: "sand",
   },
   {
-    title: "KITCHEN & DINING",
-    image: "7-pcs-bowl-set",
-    alt: "Amber glass bowls and serving set",
-    href: "/?category=Crockery%20%26%20Dining#shop",
-    cta: "Set your table",
+    title: "TOWELS",
+    image: "aqua-blue-bath-towel-set",
+    alt: "Luxury bath, hand and face towels",
+    href: "/?category=Towels#shop",
+    cta: "Explore Towels",
     tone: "sage",
   },
   {
-    title: "WOMEN’S HOME PICKS",
-    image: "crown-jar-dryfruits-gold-tray",
-    alt: "Gold-accented glass jars on a serving tray",
-    href: "/?category=Decoration%20%26%20Gifts#shop",
-    cta: "Find your favourites",
+    title: "GADGETS",
+    image: "gadgets-category",
+    alt: "Smart household and kitchen gadgets",
+    href: "/?category=Gadgets#shop",
+    cta: "Explore Gadgets",
     tone: "peach",
   },
-  // This existing product is explicitly marked Bestseller in the catalog.
   {
-    title: "BEST SELLERS",
-    image: "luxury-lavender-bath-towel-set",
-    alt: "Luxury lavender bath towel set",
-    href: "/product/luxury-lavender-bath-towel-set",
-    cta: "Explore the favourite",
+    title: "CROCKERY",
+    image: "7-pcs-bowl-set",
+    alt: "Glass bowls, plates and dinnerware sets",
+    href: "/?category=Crockery#shop",
+    cta: "Explore Crockery",
     tone: "sky",
   },
 ];
-const featured = taxonomyGroups;
 function Index() {
   const search = Route.useSearch(),
     navigate = useNavigate(),
@@ -200,47 +197,6 @@ function Index() {
               <p className="dm-hero-swipe">
                 Swipe to explore <span aria-hidden="true">→</span>
               </p>
-            </section>
-            <section className="dm-section dm-categories">
-              <div className="dm-section-heading">
-                <div>
-                  <p className="dm-eyebrow">FIND YOUR EVERYDAY</p>
-                  <h2>A place for everything.</h2>
-                </div>
-                <a href="#shop">
-                  Explore all <span aria-hidden="true">↗</span>
-                </a>
-              </div>
-              <div className="dm-category-grid">
-                {featured.map((c) => (
-                  <div className="dm-category-card" key={c.name}>
-                    <a href={`/?category=${encodeURIComponent(c.name)}#shop`}>
-                    <div>
-                      <img
-                        src={`/images/storefront/${c.image}-480.webp`}
-                        sizes="(max-width: 767px) 42vw, 16vw"
-                        width={480}
-                        height={480}
-                        loading="lazy"
-                        decoding="async"
-                        alt={c.name}
-                      />
-                    </div>
-                    <span>
-                      {c.name}
-                      <ArrowRight size={17} />
-                    </span>
-                    </a>
-                    <div className="dm-category-subcategories" aria-label={`${c.name} subcategories`}>
-                      {c.subcategories.map((subcategory) => (
-                        <a key={subcategory.name} href={`/?category=${encodeURIComponent(subcategory.name)}#shop`}>
-                          {subcategory.name}
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
             </section>
           </>
         )}

@@ -154,6 +154,7 @@ export const PRODUCT_CSV_COLUMNS = [
   "img",
   "bg",
   "gallery",
+  "video",
 ] as const;
 
 export function productsToCsv(products: Product[]): string {
@@ -173,6 +174,7 @@ export function productsToCsv(products: Product[]): string {
       p.img,
       p.bg,
       (p.gallery ?? []).join(" | "),
+      p.video ?? "",
     ]);
   }
   return stringifyCsv(rows);
@@ -236,6 +238,7 @@ export function parseProductsCsv(text: string): ParsedProductRow[] {
         img: get("img"),
         bg: get("bg"),
         gallery,
+        video: get("video") || undefined,
       },
     });
   }

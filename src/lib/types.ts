@@ -19,6 +19,7 @@ export type Product = {
   description: string;
   details: string[];
   gallery: string[];
+  video?: string | null;
   slug?: string | null;
   seo_title?: string | null;
   seo_description?: string | null;
@@ -51,4 +52,3 @@ export type Coupon = {
   minSpend?: number;
   description: string;
 };
-

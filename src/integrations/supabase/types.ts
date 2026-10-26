@@ -100,6 +100,7 @@ export type Database = {
           slug: string | null;
           seo_title: string | null;
           seo_description: string | null;
+          video: string | null;
         };
         Insert: {
           is_active?: boolean;
@@ -120,6 +121,7 @@ export type Database = {
           slug?: string | null;
           seo_title?: string | null;
           seo_description?: string | null;
+          video?: string | null;
         };
         Update: {
           is_active?: boolean;
@@ -140,6 +142,7 @@ export type Database = {
           slug?: string | null;
           seo_title?: string | null;
           seo_description?: string | null;
+          video?: string | null;
         };
         Relationships: [
           {
