@@ -3,6 +3,13 @@ import { useState } from "react";
 import { SlidersHorizontal, ArrowRight } from "lucide-react";
 import { useProducts, useFavourites } from "@/lib/shop";
 import { storefrontCategories } from "@/lib/storefront-categories";
+import {
+  CategoryLanding,
+  collections,
+  useCollection,
+  collectionSubcategories,
+} from "@/components/CategoryLanding";
+import { taxonomyGroups } from "@/lib/category-taxonomy.js";
 import { StoreHeader } from "@/components/StoreHeader";
 import { ProductCard } from "@/components/ProductCard";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -18,6 +25,7 @@ export const Route = createFileRoute("/")({
   validateSearch: (
     s: Record<string, unknown>,
   ): {
+    sub?: string;
     q?: string;
     category?: string;
     page?: number;
@@ -26,6 +34,7 @@ export const Route = createFileRoute("/")({
     min?: string;
     max?: string;
   } => ({
+    sub: typeof s.sub === "string" ? s.sub : undefined,
     q: typeof s.q === "string" ? s.q : undefined,
     category: typeof s.category === "string" ? s.category : undefined,
     page: s.page == null ? undefined : Math.max(1, Math.floor(Number(s.page) || 1)),
@@ -51,7 +60,7 @@ const heroPanels = [
     title: "SHEETS",
     image: "premium-table-sheet",
     alt: "Dining table sheets, covers and runners",
-    href: "/?category=Sheets#shop",
+    href: "/?category=Sheets",
     cta: "Explore Sheets",
     tone: "sand",
   },
@@ -59,7 +68,7 @@ const heroPanels = [
     title: "TOWELS",
     image: "aqua-blue-bath-towel-set",
     alt: "Luxury bath, hand and face towels",
-    href: "/?category=Towels#shop",
+    href: "/?category=Towels",
     cta: "Explore Towels",
     tone: "sage",
   },
@@ -67,7 +76,7 @@ const heroPanels = [
     title: "GADGETS",
     image: "gadgets-category",
     alt: "Smart household and kitchen gadgets",
-    href: "/?category=Gadgets#shop",
+    href: "/?category=Gadgets",
     cta: "Explore Gadgets",
     tone: "peach",
   },
@@ -75,7 +84,7 @@ const heroPanels = [
     title: "CROCKERY",
     image: "7-pcs-bowl-set",
     alt: "Glass bowls, plates and dinnerware sets",
-    href: "/?category=Crockery#shop",
+    href: "/?category=Crockery",
     cta: "Explore Crockery",
     tone: "sky",
   },
@@ -86,7 +95,11 @@ function Index() {
     [cart, setCart] = useState(false),
     [filters, setFilters] = useState(false);
   const { isFav, toggleFav } = useFavourites();
-  const { products, total, loading, error, refetch } = useProducts({
+  const collectionName =
+    search.category && collections[search.category] ? search.category : undefined;
+  const collection = useCollection(collectionName);
+  const catalog = useProducts({
+    enabled: !collectionName,
     page: search.page || 1,
     pageSize: 24,
     search: search.q,
@@ -96,11 +109,36 @@ function Index() {
     minPrice: search.min,
     maxPrice: search.max,
   });
+  const selectedSub = collectionSubcategories(collectionName || "").find(
+    (s) => s.name === search.sub,
+  );
+  const matching = collection.products.filter(
+    (p) =>
+      (!selectedSub || selectedSub.matches(p)) &&
+      (!search.q || (p.name + " " + p.category).toLowerCase().includes(search.q.toLowerCase())) &&
+      (!search.stock || (search.stock === "in" ? p.in_stock !== false : p.in_stock === false)) &&
+      (!search.min || p.price >= Number(search.min)) &&
+      (!search.max || p.price <= Number(search.max)),
+  );
+  if (search.sort === "price-asc") matching.sort((a, b) => a.price - b.price);
+  if (search.sort === "price-desc") matching.sort((a, b) => b.price - a.price);
+  const { products, total, loading, error, refetch } = collectionName
+    ? {
+        ...collection,
+        products: matching.slice(((search.page || 1) - 1) * 24, (search.page || 1) * 24),
+        total: matching.length,
+      }
+    : catalog;
   const filtered = !!(search.q || search.category || search.stock || search.min || search.max);
   function update(patch: Partial<typeof search>) {
     void navigate({
       to: "/",
-      search: { ...search, ...patch, page: patch.page || 1 },
+      search: {
+        ...search,
+        ...(patch.category !== undefined ? { sub: undefined } : {}),
+        ...patch,
+        page: patch.page || 1,
+      },
       hash: "shop",
     });
   }
@@ -113,9 +151,11 @@ function Index() {
           onChange={(e) => update({ category: e.target.value })}
         >
           <option value="">All categories</option>
-          {storefrontCategories.map((c) => (
-            <option key={c.name}>{c.name}</option>
-          ))}
+          {[...taxonomyGroups, ...storefrontCategories.filter((c) => !collections[c.name])].map(
+            (c) => (
+              <option key={c.name}>{c.name}</option>
+            ),
+          )}
         </select>
       </label>
       <label>
@@ -146,7 +186,13 @@ function Index() {
       </label>
       <button
         className="dm-button dm-outline"
-        onClick={() => void navigate({ to: "/", search: {}, hash: "shop" })}
+        onClick={() =>
+          void navigate({
+            to: "/",
+            search: collectionName ? { category: collectionName } : {},
+            hash: "shop",
+          })
+        }
       >
         Clear filters
       </button>
@@ -200,6 +246,17 @@ function Index() {
             </section>
           </>
         )}
+        {collectionName && (
+          <CategoryLanding
+            name={collectionName}
+            products={collection.products}
+            loading={collection.loading}
+            sub={search.sub}
+            onSubcategory={(sub) => update({ sub })}
+            isFav={isFav}
+            toggleFav={toggleFav}
+          />
+        )}
         <section id="shop" className="dm-section dm-shop">
           <div className="dm-section-heading">
             <div>
@@ -207,7 +264,9 @@ function Index() {
               <h2>
                 {search.q
                   ? `Results for “${search.q}”`
-                  : search.category || "Everyday favourites, waiting to be found."}
+                  : selectedSub?.name ||
+                    search.category ||
+                    "Everyday favourites, waiting to be found."}
               </h2>
             </div>
             <span className="dm-result-count" aria-live="polite">

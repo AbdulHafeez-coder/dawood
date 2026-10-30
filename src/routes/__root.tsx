@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -14,7 +15,7 @@ import appCss from "../styles.css?url";
 import { ErrorView } from "@/components/ui/ErrorView";
 import { NotFoundView } from "@/components/ui/NotFoundView";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { SourcingWidget } from "@/components/SourcingWidget";
+import { PREVIEW_MESSAGE } from "@/lib/preview-readonly";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
@@ -30,11 +31,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "Dawood Mart — Considered home essentials" },
       {
         property: "og:description",
-        content:
-          "Crockery, kitchenware, towels and everyday home essentials in Pakistan.",
+        content: "Crockery, kitchenware, towels and everyday home essentials in Pakistan.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "robots", content: "noindex, nofollow" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -71,16 +72,51 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const canBrowse =
+    pathname === "/" ||
+    pathname.startsWith("/product/") ||
+    ["/favorites", "/support", "/returns"].includes(pathname);
 
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
+        <div
+          style={{
+            background: "#3e4938",
+            color: "white",
+            padding: "10px 16px",
+            textAlign: "center",
+            fontSize: 12,
+          }}
+          role="note"
+        >
+          {PREVIEW_MESSAGE}
+        </div>
+        <div
+          onClickCapture={(event) => {
+            const anchor = (event.target as Element).closest("a");
+            if (anchor && /wa\.me|whatsapp\.com/.test(anchor.href)) {
+              event.preventDefault();
+              event.stopPropagation();
+            }
+          }}
+        >
+          {canBrowse ? (
+            <Outlet />
+          ) : (
+            <main className="storefront dm-section" style={{ paddingBlock: 80 }}>
+              <h1>Browsing preview only</h1>
+              <p>{PREVIEW_MESSAGE}</p>
+              <a className="dm-button" href="/">
+                Back to collections
+              </a>
+            </main>
+          )}
+        </div>
         <Toaster position="bottom-right" richColors closeButton />
-        <SourcingWidget />
       </TooltipProvider>
     </QueryClientProvider>
   );
 }
-
