@@ -1,6 +1,6 @@
 // This branch is a disposable read-only preview, never a production release.
 export const PREVIEW_MESSAGE =
-  "Read-only design preview — orders, sign-in and admin changes are disabled.";
+  "Sandbox preview — browser-only sheet pricing and cart; no production orders or database changes.";
 
 export function previewRequestAllowed(input: RequestInfo | URL, init?: RequestInit) {
   const request = typeof Request !== "undefined" && input instanceof Request ? input : undefined;

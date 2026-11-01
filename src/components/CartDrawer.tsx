@@ -1,7 +1,18 @@
 import { assertPurchasable } from "@/lib/product-availability";
 import { supabase } from "@/lib/supabase";
 import { useState } from "react";
-import { ShoppingBag, X, Plus, Minus, Trash2, ArrowRight, Truck, Sparkles, Tag, Check } from "lucide-react";
+import {
+  ShoppingBag,
+  X,
+  Plus,
+  Minus,
+  Trash2,
+  ArrowRight,
+  Truck,
+  Sparkles,
+  Tag,
+  Check,
+} from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useCart, computeShipping, useCoupon, FREE_SHIPPING_THRESHOLD } from "@/lib/shop";
@@ -22,18 +33,25 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
   const [checking, setChecking] = useState(false);
   const [couponInput, setCouponInput] = useState("");
 
-  const discount = calculateDiscount(subtotal);
+  const couponSubtotal = cart
+    .filter((i) => !i.wallpaperSheet)
+    .reduce((s, i) => s + i.qty * i.price, 0);
+  const invalidSheets = cart.find((i) => i.wallpaperSheet?.error);
+  const discount = calculateDiscount(couponSubtotal);
   const discountedSubtotal = Math.max(0, subtotal - discount);
   const shipping = computeShipping(discountedSubtotal);
   const finalTotal = discountedSubtotal + shipping;
 
-  const freeShippingProgress = Math.min(100, Math.round((subtotal / FREE_SHIPPING_THRESHOLD) * 100));
+  const freeShippingProgress = Math.min(
+    100,
+    Math.round((subtotal / FREE_SHIPPING_THRESHOLD) * 100),
+  );
   const amountToFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
 
   const handleApplyCoupon = (e: React.FormEvent) => {
     e.preventDefault();
     if (!couponInput.trim()) return;
-    const res = applyCoupon(couponInput, subtotal);
+    const res = applyCoupon(couponInput, couponSubtotal);
     if (res.ok) {
       toast.success(res.message);
       setCouponInput("");
@@ -50,7 +68,11 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
   const handleQty = (item: (typeof cart)[number], delta: number) => {
     const nextQty = item.qty + delta;
     const prevSnapshot = { ...item };
-    changeQty(item.id, delta);
+    if (changeQty(item.id, delta) === false) return;
+    if (item.wallpaperSheet) {
+      toast.success("Sheet quantity and savings updated");
+      return;
+    }
     const newSubtotal = cart.reduce(
       (s, i) => s + (i.id === item.id ? Math.max(0, nextQty) * i.price : i.qty * i.price),
       0,
@@ -152,7 +174,8 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                 </span>
               ) : (
                 <span>
-                  Add <strong className="text-black">{formatPKR(amountToFreeShipping)}</strong> more for <strong>FREE Delivery</strong>
+                  Add <strong className="text-black">{formatPKR(amountToFreeShipping)}</strong> more
+                  for <strong>FREE Delivery</strong>
                 </span>
               )}
             </span>
@@ -201,6 +224,14 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                       <div className="min-w-0">
                         <div className="text-black truncate font-medium text-sm tracking-tight">
                           {i.baseName ?? i.name}
+                          {i.wallpaperSheet && (
+                            <span className="block text-xs font-normal">
+                              Savings: {formatPKR(i.wallpaperSheet.savings || 0)}
+                              {i.wallpaperSheet.error && (
+                                <span role="alert">{i.wallpaperSheet.error}</span>
+                              )}
+                            </span>
+                          )}
                         </div>
                         {(i.variantSizeLabel || i.variantColorLabel) && (
                           <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
@@ -282,7 +313,9 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                   <div className="flex items-center gap-1.5 text-emerald-800 font-semibold">
                     <Tag size={14} />
                     <span>{activeCoupon.code}</span>
-                    <span className="font-normal text-emerald-600">({activeCoupon.description})</span>
+                    <span className="font-normal text-emerald-600">
+                      ({activeCoupon.description})
+                    </span>
                   </div>
                   <button
                     type="button"
@@ -296,7 +329,10 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
               ) : (
                 <form onSubmit={handleApplyCoupon} className="flex gap-2">
                   <div className="relative flex-1">
-                    <Tag size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-black/40" />
+                    <Tag
+                      size={14}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-black/40"
+                    />
                     <input
                       type="text"
                       value={couponInput}
@@ -341,12 +377,23 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
 
             <button
               type="button"
-              disabled={checking}
+              disabled={checking || !!invalidSheets}
               onClick={async () => {
                 setChecking(true);
-                try { await assertPurchasable(supabase, cart.map(p => p.baseId || p.id)); onClose(); void navigate({ to: "/checkout" }); }
-                catch (error) { toast.error(error instanceof Error ? error.message : "Unable to check availability."); }
-                finally { setChecking(false); }
+                try {
+                  await assertPurchasable(
+                    supabase,
+                    cart.map((p) => p.baseId || p.id),
+                  );
+                  onClose();
+                  void navigate({ to: "/checkout" });
+                } catch (error) {
+                  toast.error(
+                    error instanceof Error ? error.message : "Unable to check availability.",
+                  );
+                } finally {
+                  setChecking(false);
+                }
               }}
               className="mt-1 inline-flex items-center justify-center gap-2 bg-black text-white rounded-xl h-11 text-sm font-semibold hover:bg-black/85 transition-colors cursor-pointer shadow-md"
             >
@@ -361,4 +408,3 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
     </Sheet>
   );
 }
-

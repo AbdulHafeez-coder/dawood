@@ -172,18 +172,20 @@ function ProductPage() {
           <div className="dm-detail-copy">
             <p className="dm-eyebrow">MADE FOR YOUR EVERYDAY</p>
             <h1>{name}</h1>
-            <div className="dm-price">
-              <strong>{formatPKR(p.price)}</strong>
-              {p.original_price && p.original_price > p.price ? (
-                <del>{formatPKR(p.original_price)}</del>
-              ) : null}
-            </div>
+            {!isWallpaperProduct(p) && (
+              <div className="dm-price">
+                <strong>{formatPKR(p.price)}</strong>
+                {p.original_price && p.original_price > p.price ? (
+                  <del>{formatPKR(p.original_price)}</del>
+                ) : null}
+              </div>
+            )}
             <p className="dm-availability" role="status">
               {canPurchase(p) ? "In stock" : "Out of stock"}
             </p>
             <p className="dm-description">{p.description}</p>
             {isWallpaperProduct(p) ? (
-              <WallpaperCalculator key={p.id} product={p} />
+              <WallpaperCalculator key={p.id} product={p} onAdded={() => setCart(true)} />
             ) : (
               <div className="dm-purchase">
                 <div className="dm-quantity">

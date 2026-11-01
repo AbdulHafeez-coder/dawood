@@ -76,7 +76,7 @@ function RootComponent() {
   const canBrowse =
     pathname === "/" ||
     pathname.startsWith("/product/") ||
-    ["/favorites", "/support", "/returns"].includes(pathname);
+    ["/favorites", "/support", "/returns", "/checkout", "/admin/wallpaper"].includes(pathname);
 
   return (
     <QueryClientProvider client={queryClient}>

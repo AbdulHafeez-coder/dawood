@@ -82,6 +82,14 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+.dm-wallpaper-calculator .dm-roll-inquiry {
+  width: auto;
+  min-height: 36px;
+  padding: 4px 0;
+  font-size: 12px;
+  text-decoration: underline;
+  background: transparent;
+}
 @media (max-width: 480px) {
   .dm-wallpaper-calculator {
     padding: 16px;

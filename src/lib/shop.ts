@@ -1,3 +1,4 @@
+import { repriceSheetCart, getSheetConfig } from "./wallpaper-sheets";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { canPurchase, saveStock } from "./product-availability";
@@ -193,7 +194,9 @@ function extractBrand(name: string, details?: string[] | null): string {
 export function rowToProduct(r: ProductRow): Product {
   const originalPrice = typeof r.price === "string" ? Number(r.price) : r.price;
   const discountRate = 0.2; // 20% discount
-  const discountedPrice = Math.round(originalPrice * (1 - discountRate));
+  const isWallpaper = /wall\s*paper|wall\s*sheet/i.test(r.name);
+  const sheetPrice = isWallpaper ? getSheetConfig(r.id).base10 : originalPrice;
+  const discountedPrice = isWallpaper ? sheetPrice : Math.round(originalPrice * (1 - discountRate));
 
   const rawVideo = r.video || null;
   const detailsVideo =
@@ -211,7 +214,7 @@ export function rowToProduct(r: ProductRow): Product {
     display_name: getDisplayName(r.name),
     tag: r.tag ?? "",
     price: discountedPrice,
-    original_price: originalPrice,
+    original_price: isWallpaper ? sheetPrice : originalPrice,
     rating: typeof r.rating === "string" ? Number(r.rating) : r.rating,
     img: r.img ?? "",
     bg: r.bg ?? "",
@@ -876,36 +879,47 @@ function parsePersistedCart(): PersistedRow[] {
 }
 
 function resolvePersistedCart(rows: PersistedRow[]): CartItem[] {
-  return rows
-    .map((row) => {
-      const baseId = row.baseId ?? row.id.split("::")[0];
-      const base = products.find((p) => p.id === baseId) ?? row.snapshot;
-      if (!base) return null;
-      const qty = Number.isFinite(row.qty) && row.qty > 0 ? Math.floor(row.qty) : 1;
-      if (row.variantSize && row.variantColor) {
-        const v = getVariants(base.category);
-        const s = v.sizes.find((x) => x.id === row.variantSize);
-        const c = v.colors.find((x) => x.id === row.variantColor);
-        if (s && c) {
+  return repriceSheetCart(
+    rows
+      .map((row) => {
+        const baseId = row.baseId ?? row.id.split("::")[0];
+        const base = products.find((p) => p.id === baseId) ?? row.snapshot;
+        if (!base) return null;
+        const qty = Number.isFinite(row.qty) && row.qty > 0 ? Math.floor(row.qty) : 1;
+        if (row.snapshot?.wallpaperSheet)
           return {
             ...base,
+            ...row.snapshot,
             id: row.id,
-            name: `${base.name} — ${s.label} / ${c.label}`,
+            baseId,
             qty,
-            baseId: base.id,
-            baseName: base.name,
-            variantSize: s.id,
-            variantColor: c.id,
-            variantSizeLabel: s.label,
-            variantSizeNote: s.note,
-            variantColorLabel: c.label,
-            variantColorSwatch: c.swatch,
+            variantSizeLabel: `5 × ${row.snapshot.wallpaperSheet.length} ft sheet`,
           } satisfies CartItem;
+        if (row.variantSize && row.variantColor) {
+          const v = getVariants(base.category);
+          const s = v.sizes.find((x) => x.id === row.variantSize);
+          const c = v.colors.find((x) => x.id === row.variantColor);
+          if (s && c) {
+            return {
+              ...base,
+              id: row.id,
+              name: `${base.name} — ${s.label} / ${c.label}`,
+              qty,
+              baseId: base.id,
+              baseName: base.name,
+              variantSize: s.id,
+              variantColor: c.id,
+              variantSizeLabel: s.label,
+              variantSizeNote: s.note,
+              variantColorLabel: c.label,
+              variantColorSwatch: c.swatch,
+            } satisfies CartItem;
+          }
         }
-      }
-      return { ...base, qty } satisfies CartItem;
-    })
-    .filter((x): x is CartItem => !!x);
+        return { ...base, qty } satisfies CartItem;
+      })
+      .filter((x): x is CartItem => !!x),
+  );
 }
 
 function refreshCartFromCatalog() {
@@ -925,6 +939,7 @@ function ensureHydrated() {
 }
 
 function emit() {
+  cartState = repriceSheetCart(cartState);
   if (typeof window !== "undefined") {
     window.localStorage.setItem(
       STORAGE_KEY,
@@ -966,7 +981,15 @@ export function useCart() {
     setCart(cartState);
     const l = (c: CartItem[]) => setCart(c);
     listeners.add(l);
+    const syncPricing = (event: Event) => {
+      if (event instanceof StorageEvent && event.key !== "dm-preview-wallpaper-sheets-v1") return;
+      emit();
+    };
+    window.addEventListener("dm-sheet-config", syncPricing);
+    window.addEventListener("storage", syncPricing);
     return () => {
+      window.removeEventListener("dm-sheet-config", syncPricing);
+      window.removeEventListener("storage", syncPricing);
       listeners.delete(l);
     };
   }, []);
@@ -974,6 +997,14 @@ export function useCart() {
   const addToCart = useCallback((p: Product, qty = 1, extras: Partial<CartItem> = {}) => {
     if (!canPurchase(p)) {
       toast.error("This product is unavailable.");
+      return false;
+    }
+    const candidate = cartState.some((i) => i.id === p.id)
+      ? cartState.map((i) => (i.id === p.id ? { ...i, ...p, ...extras, qty: i.qty + qty } : i))
+      : [...cartState, { ...p, ...extras, qty }];
+    const invalid = repriceSheetCart(candidate).find((i) => i.wallpaperSheet?.error);
+    if (invalid) {
+      toast.error(invalid.wallpaperSheet!.error);
       return false;
     }
     const found = cartState.find((i) => i.id === p.id);
@@ -987,10 +1018,17 @@ export function useCart() {
   }, []);
 
   const changeQty = useCallback((id: string, delta: number) => {
-    cartState = cartState.flatMap((i) =>
+    const candidate = cartState.flatMap((i) =>
       i.id === id ? (i.qty + delta <= 0 ? [] : [{ ...i, qty: i.qty + delta }]) : [i],
     );
+    const invalid = repriceSheetCart(candidate).find((i) => i.wallpaperSheet?.error);
+    if (invalid) {
+      toast.error(invalid.wallpaperSheet!.error);
+      return false;
+    }
+    cartState = candidate;
     emit();
+    return true;
   }, []);
 
   const removeItem = useCallback((id: string) => {

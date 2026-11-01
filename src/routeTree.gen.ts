@@ -20,6 +20,7 @@ import { Route as TrackRequestRouteImport } from './routes/track-request'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminSplatRouteImport } from './routes/admin.$'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminWallpaperRouteImport } from './routes/admin.wallpaper'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -77,6 +78,11 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/admin/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminWallpaperRoute = AdminWallpaperRouteImport.update({
+  id: '/admin/wallpaper',
+  path: '/admin/wallpaper',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProductIdRoute = ProductIdRouteImport.update({
   id: '/product/$id',
   path: '/product/$id',
@@ -94,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/track-request': typeof TrackRequestRoute
   '/admin/$': typeof AdminSplatRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/wallpaper': typeof AdminWallpaperRoute
   '/product/$id': typeof ProductIdRoute
   '/admin/': typeof AdminIndexRoute
 }
@@ -108,6 +115,7 @@ export interface FileRoutesByTo {
   '/track-request': typeof TrackRequestRoute
   '/admin/$': typeof AdminSplatRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/wallpaper': typeof AdminWallpaperRoute
   '/product/$id': typeof ProductIdRoute
   '/admin': typeof AdminIndexRoute
 }
@@ -123,6 +131,7 @@ export interface FileRoutesById {
   '/track-request': typeof TrackRequestRoute
   '/admin/$': typeof AdminSplatRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/wallpaper': typeof AdminWallpaperRoute
   '/product/$id': typeof ProductIdRoute
   '/admin/': typeof AdminIndexRoute
 }
@@ -139,6 +148,7 @@ export interface FileRouteTypes {
     | '/track-request'
     | '/admin/$'
     | '/admin/login'
+    | '/admin/wallpaper'
     | '/product/$id'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
@@ -153,6 +163,7 @@ export interface FileRouteTypes {
     | '/track-request'
     | '/admin/$'
     | '/admin/login'
+    | '/admin/wallpaper'
     | '/product/$id'
     | '/admin'
   id:
@@ -167,6 +178,7 @@ export interface FileRouteTypes {
     | '/track-request'
     | '/admin/$'
     | '/admin/login'
+    | '/admin/wallpaper'
     | '/product/$id'
     | '/admin/'
   fileRoutesById: FileRoutesById
@@ -182,6 +194,7 @@ export interface RootRouteChildren {
   TrackRequestRoute: typeof TrackRequestRoute
   AdminSplatRoute: typeof AdminSplatRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminWallpaperRoute: typeof AdminWallpaperRoute
   ProductIdRoute: typeof ProductIdRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
@@ -265,6 +278,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/wallpaper': {
+      id: '/admin/wallpaper'
+      path: '/admin/wallpaper'
+      fullPath: '/admin/wallpaper'
+      preLoaderRoute: typeof AdminWallpaperRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/product/$id': {
       id: '/product/$id'
       path: '/product/$id'
@@ -286,6 +306,7 @@ const rootRouteChildren: RootRouteChildren = {
   TrackRequestRoute: TrackRequestRoute,
   AdminSplatRoute: AdminSplatRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminWallpaperRoute: AdminWallpaperRoute,
   ProductIdRoute: ProductIdRoute,
   AdminIndexRoute: AdminIndexRoute,
 }

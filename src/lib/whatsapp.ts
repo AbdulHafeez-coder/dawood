@@ -64,6 +64,9 @@ export function buildWhatsappCartOrder(
       `   Category:  ${i.category}`,
       sizeLine,
       colorLine,
+      i.wallpaperSheet
+        ? `   Cut: 5 × ${i.wallpaperSheet.length} ft; sheet savings: ${money(i.wallpaperSheet.savings || 0)}`
+        : null,
       `   Quantity:  ${i.qty}`,
       `   Price:     ${money(i.price)} each`,
       `   Subtotal:  ${money(i.price * i.qty)}`,
@@ -108,6 +111,7 @@ export function buildCheckoutWhatsappOrder(
   subtotal: number,
   customer: { name: string; phone: string; city: string; address: string; notes: string },
   couponInfo?: { code: string; discount: number },
+  preview = false,
 ) {
   const discount = couponInfo?.discount ?? 0;
   const discountedSubtotal = Math.max(0, subtotal - discount);
@@ -125,6 +129,9 @@ export function buildCheckoutWhatsappOrder(
       `*${idx + 1}. ${displayName}*`,
       sizeLine,
       colorLine,
+      i.wallpaperSheet
+        ? `   Cut: 5 × ${i.wallpaperSheet.length} ft; sheet savings: ${money(i.wallpaperSheet.savings || 0)}`
+        : null,
       `   Quantity:  ${i.qty}`,
       `   Price:     ${money(i.price)} each`,
       `   Subtotal:  ${money(i.price * i.qty)}`,
@@ -134,10 +141,12 @@ export function buildCheckoutWhatsappOrder(
 
   const brand = getSettings().brandName || "Store";
   const lines = [
-    `*${brand} — New Order Confirmation*`,
+    `*${brand} — ${preview ? "PREVIEW inquiry — not an order" : "New Order Confirmation"}*`,
     `Order ID: *${orderId}*`,
     "",
-    `Hi! I've placed an order on your website. Here are my details:`,
+    preview
+      ? "Please review this preview basket. No order has been placed or saved."
+      : `Hi! I've placed an order on your website. Here are my details:`,
     "",
     DIVIDER,
     `*Customer Information*`,
@@ -160,10 +169,11 @@ export function buildCheckoutWhatsappOrder(
     "",
     `Payment Method: *Cash on Delivery (COD)*`,
     "",
-    "Please confirm my order. Thanks!",
+    preview
+      ? "Please confirm stock, final price and shipping before any order."
+      : "Please confirm my order. Thanks!",
   ].filter(Boolean);
 
   const text = lines.join("\n");
   return { text, url: buildUrl(text), total, itemCount };
 }
-

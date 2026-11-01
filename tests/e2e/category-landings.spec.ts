@@ -62,13 +62,13 @@ for (const [category, id] of [
   });
 }
 
-test("preview blocks checkout and admin without sending writes", async ({ page }) => {
+test("preview blocks production admin without sending writes", async ({ page }) => {
   const writes: string[] = [];
   page.on("request", (request) => {
     if (request.url().includes("supabase.co") && !["GET", "HEAD"].includes(request.method()))
       writes.push(request.url());
   });
-  for (const path of ["/checkout", "/admin", "/admin/login", "/track-request"]) {
+  for (const path of ["/admin", "/admin/login", "/track-request"]) {
     await page.goto(path);
     await expect(page.getByRole("heading", { name: "Browsing preview only" })).toBeVisible();
   }

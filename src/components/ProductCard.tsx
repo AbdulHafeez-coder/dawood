@@ -1,3 +1,4 @@
+import { useSheetConfig } from "@/hooks/use-sheet-config";
 import { memo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Heart, X } from "lucide-react";
@@ -21,6 +22,9 @@ export const ProductCard = memo(function ProductCard({
     [loaded, setLoaded] = useState(false),
     [failed, setFailed] = useState(false);
   const name = p.display_name || p.name;
+  const config = useSheetConfig(p.id);
+  const wallpaper = /wall\s*paper|wall\s*sheet/i.test(p.name);
+  const price = wallpaper ? config.base10 : p.price;
   return (
     <article
       className="dm-product"
@@ -63,8 +67,8 @@ export const ProductCard = memo(function ProductCard({
           {name}
         </Link>
         <div className="dm-price">
-          <strong>{formatPKR(p.price)}</strong>
-          {p.original_price && p.original_price > p.price ? (
+          <strong>{formatPKR(price)}</strong>
+          {!wallpaper && p.original_price && p.original_price > p.price ? (
             <del>{formatPKR(p.original_price)}</del>
           ) : null}
         </div>

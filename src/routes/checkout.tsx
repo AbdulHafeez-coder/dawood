@@ -1,10 +1,21 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { ArrowLeft, CheckCircle2, MessageCircle, MapPin, User, Phone, Truck, Banknote, PackageOpen, Tag } from "lucide-react";
+import {
+  ArrowLeft,
+  CheckCircle2,
+  MessageCircle,
+  MapPin,
+  User,
+  Phone,
+  Truck,
+  Banknote,
+  PackageOpen,
+  Tag,
+} from "lucide-react";
 import { useCart, computeShipping, useCoupon } from "@/lib/shop";
 import { formatPKR } from "@/lib/format";
 import { buildCheckoutWhatsappOrder } from "@/lib/whatsapp";
-import { saveOrder } from "@/lib/orders";
+import { repriceSheetCart } from "@/lib/wallpaper-sheets";
 import { assertPurchasable } from "@/lib/product-availability";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
@@ -18,7 +29,11 @@ function CheckoutPage() {
   const navigate = useNavigate();
   const { cart, subtotal } = useCart();
   const { activeCoupon, calculateDiscount } = useCoupon();
-  const discount = calculateDiscount(subtotal);
+  const couponSubtotal = cart
+    .filter((i) => !i.wallpaperSheet)
+    .reduce((s, i) => s + i.qty * i.price, 0);
+  const invalidSheets = cart.find((i) => i.wallpaperSheet?.error);
+  const discount = calculateDiscount(couponSubtotal);
   const discountedSubtotal = Math.max(0, subtotal - discount);
   const shipping = computeShipping(discountedSubtotal);
   const total = discountedSubtotal + shipping;
@@ -56,64 +71,48 @@ function CheckoutPage() {
       return;
     }
     // Save to local storage for next time
-    localStorage.setItem(
-      "dm-customer-info",
-      JSON.stringify({ name, phone, city, address })
-    );
+    localStorage.setItem("dm-customer-info", JSON.stringify({ name, phone, city, address }));
     setStep("review");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleConfirmOrder = async () => {
-    if (submitting) return;
+    if (submitting || invalidSheets) return;
     setSubmitting(true);
-    try { await assertPurchasable(supabase, cart.map(p => p.baseId || p.id)); }
-    catch (error) { toast.error(error instanceof Error ? error.message : "Unable to check availability. Please retry."); setSubmitting(false); return; }
-    // Generate Order ID
-    const randomNum = Math.floor(10000 + Math.random() * 90000);
-    const orderId = `DM-${randomNum}`;
-    const customerInfo = { name, phone, city, address, notes };
-
-    const couponInfo = activeCoupon && discount > 0 ? { code: activeCoupon.code, discount } : undefined;
-
-    const { text, url, total: finalTotal, itemCount } = buildCheckoutWhatsappOrder(
-      orderId,
-      cart,
-      subtotal,
-      customerInfo,
-      couponInfo
-    );
-
-    const primary = cart[0];
-    saveOrder({
-      kind: "cart",
-      url,
-      message: text,
-      total: finalTotal,
-      itemCount,
-      primaryName: primary?.baseName ?? primary?.name ?? "Order",
-      primaryImg: primary?.img,
-      primaryBg: primary?.bg,
-      extraCount: Math.max(0, cart.length - 1),
-      status: "new",
-    });
-
-    toast.success("Order confirmed!", {
-      description: "Redirecting to WhatsApp to complete your purchase...",
-    });
-
-    setTimeout(() => {
+    try {
+      const repriced = repriceSheetCart(cart);
+      const invalid = repriced.find((i) => i.wallpaperSheet?.error);
+      if (invalid) throw new Error(invalid.wallpaperSheet!.error);
+      if (repriced.some((i, index) => i.price !== cart[index].price))
+        throw new Error("Pricing changed. Please review your basket again.");
+      await assertPurchasable(
+        supabase,
+        cart.map((p) => p.baseId || p.id),
+      );
+      const { url } = buildCheckoutWhatsappOrder(
+        "PREVIEW",
+        cart,
+        subtotal,
+        { name, phone, city, address, notes },
+        activeCoupon && discount > 0 ? { code: activeCoupon.code, discount } : undefined,
+        true,
+      );
       window.open(url, "_blank", "noopener,noreferrer");
-      navigate({ to: "/" });
-    }, 1000);
+      toast.success("Preview draft opened — no order saved");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to prepare draft.");
+    } finally {
+      setSubmitting(false);
+    }
   };
-
 
   if (cart.length === 0) {
     return (
       <div className="storefront dm-checkout min-h-screen bg-[#FEFDF9] flex flex-col items-center justify-center p-6 text-center">
         <h1 className="text-2xl font-semibold mb-4 text-black">Your cart is empty</h1>
-        <p className="text-black/60 mb-6">Looks like you haven't added anything to your cart yet.</p>
+        <p className="text-black/60 mb-6">
+          Looks like you haven't added anything to your cart yet.
+        </p>
         <button
           onClick={() => navigate({ to: "/" })}
           className="bg-black text-white px-6 py-3 rounded-md text-sm font-medium hover:bg-black/90 transition-colors"
@@ -143,7 +142,6 @@ function CheckoutPage() {
       </header>
 
       <main className="max-w-5xl mx-auto px-6 lg:px-12 pt-8 lg:pt-12 grid lg:grid-cols-[1fr_400px] gap-12 lg:gap-16">
-        
         {/* Left Column - Forms */}
         <div className="order-2 lg:order-1">
           {step === "info" ? (
@@ -151,10 +149,15 @@ function CheckoutPage() {
               <h2 className="text-xl font-semibold text-black mb-6 flex items-center gap-2">
                 <User size={20} className="text-black/50" /> Delivery Information
               </h2>
-              <form onSubmit={handleReview} className="space-y-6 bg-white p-6 rounded-2xl border border-black/5 shadow-sm">
+              <form
+                onSubmit={handleReview}
+                className="space-y-6 bg-white p-6 rounded-2xl border border-black/5 shadow-sm"
+              >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label htmlFor="name" className="text-sm font-medium text-black">Full Name *</label>
+                    <label htmlFor="name" className="text-sm font-medium text-black">
+                      Full Name *
+                    </label>
                     <input
                       id="name"
                       type="text"
@@ -166,7 +169,9 @@ function CheckoutPage() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label htmlFor="phone" className="text-sm font-medium text-black">WhatsApp Number *</label>
+                    <label htmlFor="phone" className="text-sm font-medium text-black">
+                      WhatsApp Number *
+                    </label>
                     <input
                       id="phone"
                       type="tel"
@@ -180,7 +185,9 @@ function CheckoutPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label htmlFor="city" className="text-sm font-medium text-black">City *</label>
+                  <label htmlFor="city" className="text-sm font-medium text-black">
+                    City *
+                  </label>
                   <input
                     id="city"
                     type="text"
@@ -193,7 +200,9 @@ function CheckoutPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label htmlFor="address" className="text-sm font-medium text-black">Complete Delivery Address *</label>
+                  <label htmlFor="address" className="text-sm font-medium text-black">
+                    Complete Delivery Address *
+                  </label>
                   <textarea
                     id="address"
                     required
@@ -206,7 +215,9 @@ function CheckoutPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label htmlFor="notes" className="text-sm font-medium text-black">Order Notes (Optional)</label>
+                  <label htmlFor="notes" className="text-sm font-medium text-black">
+                    Order Notes (Optional)
+                  </label>
                   <textarea
                     id="notes"
                     value={notes}
@@ -230,14 +241,21 @@ function CheckoutPage() {
               <h2 className="text-xl font-semibold text-black mb-6 flex items-center gap-2">
                 <CheckCircle2 size={20} className="text-[#25D366]" /> Review Your Order
               </h2>
-              
+
               <div className="bg-white rounded-2xl border border-black/5 shadow-sm p-6 mb-6">
                 <div className="flex justify-between items-start mb-4">
                   <h3 className="font-medium text-black">Delivery Details</h3>
-                  <button onClick={() => setStep("info")} className="text-sm text-black/50 underline hover:text-black">Edit</button>
+                  <button
+                    onClick={() => setStep("info")}
+                    className="text-sm text-black/50 underline hover:text-black"
+                  >
+                    Edit
+                  </button>
                 </div>
                 <div className="text-sm text-black/70 space-y-1.5 bg-[#FEFDF9] p-4 rounded-lg border border-black/5">
-                  <p><span className="text-black font-medium">{name}</span></p>
+                  <p>
+                    <span className="text-black font-medium">{name}</span>
+                  </p>
                   <p>{phone}</p>
                   <p>{address}</p>
                   <p>{city}</p>
@@ -250,19 +268,39 @@ function CheckoutPage() {
                   {cart.map((item) => (
                     <div key={item.id} className="flex gap-3 text-sm">
                       <div className="w-12 h-12 rounded bg-black/5 overflow-hidden shrink-0">
-                         <SafeImage src={item.img} alt="" className="w-full h-full object-cover" width={48} height={48} />
+                        <SafeImage
+                          src={item.img}
+                          alt=""
+                          className="w-full h-full object-cover"
+                          width={48}
+                          height={48}
+                        />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="truncate text-black">{item.baseName ?? item.name}</p>
+                        <p className="truncate text-black">
+                          {item.baseName ?? item.name}
+                          {item.wallpaperSheet && (
+                            <span className="block text-xs">
+                              5 × {item.wallpaperSheet.length} ft · Savings{" "}
+                              {formatPKR(item.wallpaperSheet.savings || 0)}
+                              {item.wallpaperSheet.error && (
+                                <span role="alert">{item.wallpaperSheet.error}</span>
+                              )}
+                            </span>
+                          )}
+                        </p>
                         <p className="text-black/50 text-xs">Qty: {item.qty}</p>
                       </div>
-                      <div className="text-black font-medium">{formatPKR(item.price * item.qty)}</div>
+                      <div className="text-black font-medium">
+                        {formatPKR(item.price * item.qty)}
+                      </div>
                     </div>
                   ))}
                 </div>
                 <div className="pt-4 border-t border-black/10 space-y-2 text-sm">
                   <div className="flex justify-between text-black/60">
-                    <span>Subtotal</span><span>{formatPKR(subtotal)}</span>
+                    <span>Subtotal</span>
+                    <span>{formatPKR(subtotal)}</span>
                   </div>
                   {discount > 0 && (
                     <div className="flex justify-between text-emerald-700 font-medium">
@@ -273,40 +311,50 @@ function CheckoutPage() {
                     </div>
                   )}
                   <div className="flex justify-between text-black/60">
-                    <span>Shipping</span><span>{shipping === 0 ? "Free" : formatPKR(shipping)}</span>
+                    <span>Shipping</span>
+                    <span>{shipping === 0 ? "Free" : formatPKR(shipping)}</span>
                   </div>
                   <div className="flex justify-between font-bold text-black text-lg pt-2 border-t border-black/10">
-                    <span>Total</span><span>{formatPKR(total)}</span>
+                    <span>Total</span>
+                    <span>{formatPKR(total)}</span>
                   </div>
                 </div>
-                
+
                 {/* Mobile Trust Badges */}
                 <div className="mt-5 bg-[#f4f5f4] p-4 rounded-lg space-y-3">
                   <div className="flex items-center gap-3 text-sm text-black/80">
                     <Truck size={16} className="shrink-0 text-black/60" />
-                    <span><span className="font-medium">3-5 Working Days</span> Standard Delivery</span>
+                    <span>
+                      <span className="font-medium">3-5 Working Days</span> Standard Delivery
+                    </span>
                   </div>
                   <div className="flex items-center gap-3 text-sm text-black/80">
                     <Banknote size={16} className="shrink-0 text-black/60" />
-                    <span><span className="font-medium">Cash on Delivery</span> Available</span>
+                    <span>
+                      <span className="font-medium">Cash on Delivery</span> Available
+                    </span>
                   </div>
                   <div className="flex items-center gap-3 text-sm text-black/80">
                     <PackageOpen size={16} className="shrink-0 text-black/60" />
-                    <span><span className="font-medium">Open & Check</span> Available on eligible parcels</span>
+                    <span>
+                      <span className="font-medium">Open & Check</span> Available on eligible
+                      parcels
+                    </span>
                   </div>
                 </div>
               </div>
 
               <button
-                disabled={submitting}
+                disabled={submitting || !!invalidSheets}
                 onClick={handleConfirmOrder}
                 className="w-full bg-[#25D366] text-white h-14 rounded-md font-medium hover:bg-[#1ebe57] transition-colors flex items-center justify-center gap-2 shadow-sm shadow-[#25D366]/20"
               >
                 <MessageCircle size={20} />
-                Confirm & Send via WhatsApp
+                Open WhatsApp Preview Draft
               </button>
               <p className="text-xs text-center text-black/50 mt-4 max-w-sm mx-auto">
-                You will be redirected to WhatsApp to send your pre-filled order receipt. Pay securely via Cash on Delivery when your parcel arrives.
+                Preview inquiry only. No order is confirmed or saved. Send the draft yourself only
+                if you want the seller to review it.
               </p>
             </div>
           )}
@@ -320,11 +368,26 @@ function CheckoutPage() {
               {cart.map((item) => (
                 <div key={item.id} className="flex gap-4">
                   <div className={`w-16 h-16 rounded-lg overflow-hidden shrink-0 ${item.bg}`}>
-                    <SafeImage src={item.img} alt="" className="w-full h-full object-cover" width={64} height={64} />
+                    <SafeImage
+                      src={item.img}
+                      alt=""
+                      className="w-full h-full object-cover"
+                      width={64}
+                      height={64}
+                    />
                   </div>
                   <div className="flex-1 min-w-0 flex flex-col justify-center">
                     <p className="text-sm font-medium text-black leading-tight line-clamp-2">
                       {item.baseName ?? item.name}
+                      {item.wallpaperSheet && (
+                        <span className="block text-xs">
+                          5 × {item.wallpaperSheet.length} ft · Savings{" "}
+                          {formatPKR(item.wallpaperSheet.savings || 0)}
+                          {item.wallpaperSheet.error && (
+                            <span role="alert">{item.wallpaperSheet.error}</span>
+                          )}
+                        </span>
+                      )}
                     </p>
                     <p className="text-xs text-black/50 mt-1">Qty: {item.qty}</p>
                   </div>
@@ -358,20 +421,25 @@ function CheckoutPage() {
               </div>
             </div>
 
-
             {/* Desktop Trust Badges */}
             <div className="mt-6 bg-[#f4f5f4] p-4 rounded-lg space-y-3">
               <div className="flex items-center gap-3 text-sm text-black/80">
                 <Truck size={16} className="shrink-0 text-black/60" />
-                <span><span className="font-medium">3-5 Working Days</span> Standard Delivery</span>
+                <span>
+                  <span className="font-medium">3-5 Working Days</span> Standard Delivery
+                </span>
               </div>
               <div className="flex items-center gap-3 text-sm text-black/80">
                 <Banknote size={16} className="shrink-0 text-black/60" />
-                <span><span className="font-medium">Cash on Delivery</span> Available</span>
+                <span>
+                  <span className="font-medium">Cash on Delivery</span> Available
+                </span>
               </div>
               <div className="flex items-center gap-3 text-sm text-black/80">
                 <PackageOpen size={16} className="shrink-0 text-black/60" />
-                <span><span className="font-medium">Open & Check</span> Available on eligible parcels</span>
+                <span>
+                  <span className="font-medium">Open & Check</span> Available on eligible parcels
+                </span>
               </div>
             </div>
           </div>

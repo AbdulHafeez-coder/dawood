@@ -2,6 +2,7 @@
 export type Category = string;
 
 export type Product = {
+  wallpaperSheet?: import("./wallpaper-sheets").SheetSelection;
   id: string;
   is_active?: boolean;
   in_stock?: boolean;
