@@ -34,7 +34,15 @@ export const SEED_BRANDS: readonly string[] = [
 ];
 
 // Pre-configured active coupon codes
-export const AVAILABLE_COUPONS: Record<string, { discountType: "percent" | "fixed"; discountValue: number; minSpend?: number; description: string }> = {
+export const AVAILABLE_COUPONS: Record<
+  string,
+  {
+    discountType: "percent" | "fixed";
+    discountValue: number;
+    minSpend?: number;
+    description: string;
+  }
+> = {
   WELCOME10: {
     discountType: "percent",
     discountValue: 10,
@@ -62,7 +70,6 @@ export const AVAILABLE_COUPONS: Record<string, { discountType: "percent" | "fixe
 
 // Kept for backwards-compat imports in existing components; treat as seed.
 export const CATEGORY_LIST = SEED_CATEGORIES;
-
 
 export const DEFAULT_VARIANTS: VariantOptions = {
   sizes: [
@@ -171,12 +178,7 @@ export function getVariants(category: Category): VariantOptions {
 }
 
 // ---------- SHIPPING (single source of truth, in PKR) ----------
-export const FREE_SHIPPING_THRESHOLD = 5000;
-export const SHIPPING_FEE = 500;
-export function computeShipping(subtotal: number): number {
-  if (subtotal <= 0) return 0;
-  return subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
-}
+export { FREE_SHIPPING_THRESHOLD, SHIPPING_FEE, computeShipping } from "./shipping";
 
 export const PRODUCT_IMAGE_CHOICES = [
   { id: "towel", label: "Towel", url: productTowel },

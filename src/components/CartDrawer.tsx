@@ -44,9 +44,9 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
 
   const freeShippingProgress = Math.min(
     100,
-    Math.round((subtotal / FREE_SHIPPING_THRESHOLD) * 100),
+    Math.round((discountedSubtotal / FREE_SHIPPING_THRESHOLD) * 100),
   );
-  const amountToFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
+  const amountToFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - discountedSubtotal);
 
   const handleApplyCoupon = (e: React.FormEvent) => {
     e.preventDefault();
@@ -168,14 +168,14 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
           <div className="flex items-center justify-between text-xs mb-1.5 font-medium">
             <span className="flex items-center gap-1.5 text-stone-800">
               <Truck size={14} className="text-emerald-700" />
-              {subtotal >= FREE_SHIPPING_THRESHOLD ? (
+              {discountedSubtotal >= FREE_SHIPPING_THRESHOLD ? (
                 <span className="text-emerald-700 font-bold flex items-center gap-1">
-                  <Sparkles size={13} /> You unlocked FREE Delivery!
+                  <Sparkles size={13} /> Free delivery if you pay in advance
                 </span>
               ) : (
                 <span>
                   Add <strong className="text-black">{formatPKR(amountToFreeShipping)}</strong> more
-                  for <strong>FREE Delivery</strong>
+                  for <strong>advance-payment free delivery</strong>
                 </span>
               )}
             </span>
@@ -184,13 +184,16 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
           <div className="w-full bg-stone-200 rounded-full h-2 overflow-hidden">
             <div
               className={`h-full transition-all duration-500 rounded-full ${
-                subtotal >= FREE_SHIPPING_THRESHOLD ? "bg-emerald-600" : "bg-black"
+                discountedSubtotal >= FREE_SHIPPING_THRESHOLD ? "bg-emerald-600" : "bg-black"
               }`}
               style={{ width: `${freeShippingProgress}%` }}
             />
           </div>
         </div>
 
+        <p className="px-5 py-2 text-xs">
+          COD delivery: PKR 200. Advance-payment eligibility is confirmed at checkout.
+        </p>
         {/* Cart Items List */}
         <div className="flex-1 overflow-y-auto px-5 py-4">
           {cart.length === 0 ? (

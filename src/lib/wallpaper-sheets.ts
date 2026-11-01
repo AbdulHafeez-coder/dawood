@@ -4,6 +4,10 @@ export type SheetConfig = {
   promo10: number | null;
   enabled10: boolean;
   stock10: number | null;
+  enabled11?: boolean;
+  price11?: number;
+  stock11?: number | null;
+  atsFleeceVerified?: boolean;
   enabled12: boolean;
   price12: number;
   stock12: number | null;
@@ -27,6 +31,10 @@ export function defaultSheetConfig(base10 = 1500): SheetConfig {
     promo10: null,
     enabled10: true,
     stock10: null,
+    enabled11: false,
+    price11: 0,
+    stock11: null,
+    atsFleeceVerified: false,
     enabled12: false,
     price12: 0,
     stock12: null,
@@ -60,6 +68,10 @@ export function validateSheetConfig(c: SheetConfig) {
     throw new Error("Stock must be a whole number or blank for confirmation.");
   if (c.enabled12 && c.price12 < c.floor10 * 1.2)
     throw new Error("Set a 12-ft price above its proportional minimum.");
+  if (c.enabled11 && (!Number.isFinite(c.price11) || c.price11! < c.floor10 * 1.1))
+    throw new Error("Set an 11-ft price above its proportional minimum.");
+  if (c.stock11 != null && (!Number.isSafeInteger(c.stock11) || c.stock11 < 0))
+    throw new Error("11-ft stock must be a whole number.");
   if (c.custom && c.customRate < c.floor10 / 10)
     throw new Error("Set a custom rate above the proportional minimum.");
   if (
@@ -77,11 +89,14 @@ export function validateSheetConfig(c: SheetConfig) {
     throw new Error("Use unique whole quantity thresholds (2+) and discounts from 0–100%.");
   return c;
 }
-export function getSheetConfig(id: string, fallback = defaultSheetConfig()): SheetConfig {
+export function getSheetConfig(
+  id: string,
+  fallback: SheetConfig = { ...defaultSheetConfig(), atsFleeceVerified: id === "p-mvjofm73-rrll" },
+): SheetConfig {
   if (typeof window === "undefined") return fallback;
   try {
     const c = JSON.parse(localStorage.getItem(SHEET_CONFIG_KEY) || "{}")[id];
-    return c ? validateSheetConfig(c) : fallback;
+    return c ? validateSheetConfig({ ...fallback, ...c }) : fallback;
   } catch {
     return fallback;
   }
@@ -115,12 +130,20 @@ export function quoteSheets(
     throw new Error("Choose a whole sheet quantity (1+).");
   const standard = length === 10;
   const twelve = length === 12;
-  if ((standard && !c.enabled10) || (twelve && !c.enabled12) || (!standard && !twelve && !c.custom))
+  const eleven = length === 11;
+  if (
+    (standard && !c.enabled10) ||
+    (eleven && !c.enabled11) ||
+    (twelve && !c.enabled12) ||
+    (!standard && !eleven && !twelve && !c.custom)
+  )
     throw new Error("This sheet length is not available online. / یہ لمبائی دستیاب نہیں۔");
-  const stock = standard ? c.stock10 : twelve ? c.stock12 : null;
+  const stock = standard ? c.stock10 : eleven ? (c.stock11 ?? null) : twelve ? c.stock12 : null;
   if (stock !== null && quantity > stock)
     throw new Error("Requested quantity exceeds configured stock. / مقدار اسٹاک سے زیادہ ہے۔");
-  const normalUnit = money(standard ? c.base10 : twelve ? c.price12 : c.customRate * length);
+  const normalUnit = money(
+    standard ? c.base10 : eleven ? c.price11! : twelve ? c.price12 : c.customRate * length,
+  );
   const percent = Math.max(
     0,
     ...c.tiers.filter((t) => discountQuantity >= t.quantity).map((t) => t.percent),
@@ -206,4 +229,37 @@ export function repriceSheetCart<
       };
     }
   });
+}
+
+// Calculator is an estimate only; it never changes basket quantity or billing.
+export function estimateWall(c: SheetConfig, mode: "full" | "half", width: number, height: number) {
+  if (
+    ![width, height].every(
+      (n) => Number.isFinite(n) && n > 0 && Math.abs(n * 100 - Math.round(n * 100)) < 1e-6,
+    )
+  )
+    throw new Error("Enter valid dimensions. / درست پیمائش درج کریں۔");
+  if (mode === "half" && (width < 10 || width >= 60 || (width > 18 && !c.custom)))
+    throw new Error(
+      "Half wall: 10–18 ft; other lengths need configured custom cuts. / نصف دیوار: 10 تا 18 فٹ۔",
+    );
+  const quantity = mode === "full" ? Math.ceil(width / 5) : 1;
+  const needed = mode === "full" ? height : width;
+  const lengths = [c.enabled10 && 10, c.enabled11 && 11, c.enabled12 && 12].filter(
+    (n): n is number => !!n && n >= needed,
+  );
+  if (mode === "half" && c.custom && ![10, 11, 12].includes(needed)) lengths.push(needed);
+  for (const length of [...new Set(lengths)].sort((a, b) => a - b)) {
+    try {
+      const quote = quoteSheets(c, length, quantity);
+      if (c.sourceRolls !== null && Math.ceil(quantity / Math.floor(60 / length)) > c.sourceRolls)
+        continue;
+      return { ...quote, length, height: mode === "half" ? 5 : height };
+    } catch {
+      /* Try the next configured size; never infer a missing rate. */
+    }
+  }
+  throw new Error(
+    "No suitable priced sheet is currently configured. Please enquire. / مناسب سائز اور قیمت کی تصدیق کریں۔",
+  );
 }

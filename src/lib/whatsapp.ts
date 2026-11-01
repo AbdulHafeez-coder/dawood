@@ -1,3 +1,4 @@
+import type { PaymentMethod } from "./shipping";
 import type { Product, CartItem } from "@/lib/shop";
 import { computeShipping } from "@/lib/shop";
 import { getSettings } from "@/lib/settings";
@@ -112,10 +113,11 @@ export function buildCheckoutWhatsappOrder(
   customer: { name: string; phone: string; city: string; address: string; notes: string },
   couponInfo?: { code: string; discount: number },
   preview = false,
+  payment: PaymentMethod = "cod",
 ) {
   const discount = couponInfo?.discount ?? 0;
   const discountedSubtotal = Math.max(0, subtotal - discount);
-  const shipping = computeShipping(discountedSubtotal);
+  const shipping = computeShipping(discountedSubtotal, payment);
   const total = discountedSubtotal + shipping;
   const itemCount = cart.reduce((n, i) => n + i.qty, 0);
 
@@ -164,10 +166,10 @@ export function buildCheckoutWhatsappOrder(
     "*Order Summary*",
     `Subtotal:  ${money(subtotal)}`,
     discount > 0 ? `Coupon (${couponInfo?.code}):  -${money(discount)}` : null,
-    `Shipping:  ${shipping === 0 ? "Free" : money(shipping)}`,
+    `Shipping:  ${shipping === 0 ? "Free only after advance payment is confirmed" : money(shipping)}`,
     `*Total:     ${money(total)}*`,
     "",
-    `Payment Method: *Cash on Delivery (COD)*`,
+    `Payment Method: *${payment === "advance" ? "Advance payment — pending seller confirmation" : "Cash on Delivery (COD)"}*`,
     "",
     preview
       ? "Please confirm stock, final price and shipping before any order."

@@ -24,36 +24,28 @@ async function openCalculator(page: Page) {
   });
   await page.goto("/?category=Sheets");
   await page.locator(".dm-collection-featured .dm-product-name").first().click();
-  await expect(page.getByRole("heading", { name: /Wallpaper sheets & calculator/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Wall size calculator/ })).toBeVisible();
 }
 
-test("mobile room rounds every wall; standard price, no roll cart and unknown cuts hidden", async ({
-  page,
-}) => {
+test("two calculator modes stay independent of sheet ordering", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openCalculator(page);
-  await expect(page.locator(".dm-wallpaper-calculator .dm-price")).toContainText("PKR 1,500");
-  await expect(page.getByLabel("Sheet length").locator("option")).toHaveCount(1);
-  await page.getByLabel("Wall coverage").selectOption("room");
-  await page.getByLabel("Room length (ft)").fill("11");
-  await page.getByLabel("Room width (ft)").fill("9");
-  await page.getByLabel("Wallpaper height (ft)").fill("10");
-  await expect(page.getByLabel("Quantity / شیٹس کی تعداد", { exact: true })).toHaveValue("10");
-  await expect(page.locator(".dm-wallpaper-calculator")).toContainText("PKR 15,000");
-  await expect(page.locator(".dm-wallpaper-calculator")).toContainText("3 + 2 + 3 + 2");
-  await page.getByLabel("Wallpaper height (ft)").fill("12");
-  await expect(page.getByRole("alert")).toContainText("shorter");
-  await expect(page.getByRole("button", { name: /Add sheets to cart/ })).toBeDisabled();
-  await page.evaluate(() => {
-    window.open = ((url: string) => {
-      (window as unknown as { draft: string }).draft = url;
-      return null;
-    }) as typeof window.open;
-  });
-  await page.getByRole("button", { name: /Ask About Full Roll/ }).click();
-  expect(
-    decodeURIComponent(await page.evaluate(() => (window as unknown as { draft: string }).draft)),
-  ).toContain("manually quote the full roll price and shipping");
+  const calc = page.locator('[aria-labelledby="wallpaper-calculator-title"]');
+  await expect(page.getByLabel("Coverage / کوریج").locator("option")).toHaveCount(2);
+  await page.getByLabel("Wall width (ft)").fill("14");
+  await page.getByLabel("Wall height (ft)").fill("10");
+  await expect(calc).toContainText("PKR 4,500");
+  await expect(page.getByLabel("Quantity / شیٹس کی تعداد", { exact: true })).toHaveValue("1");
+  await page.getByLabel("Wall height (ft)").fill("11");
+  await expect(calc.getByRole("alert")).toContainText("No suitable priced sheet");
+  await page.getByLabel("Coverage / کوریج").selectOption("half");
+  await page.getByLabel("Wall horizontal length (ft)").fill("10");
+  await expect(calc).toContainText("PKR 1,500");
+  await expect(page.getByLabel("Wall height (ft)")).toHaveCount(0);
+  await page.getByLabel("Wall horizontal length (ft)").fill("14");
+  await expect(calc.getByRole("alert")).toBeVisible();
+  await expect(page.getByRole("button", { name: /Add sheets to cart/ })).toBeEnabled();
+  await expect(page.locator(".dm-ats-quality")).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
@@ -75,14 +67,19 @@ test("preview admin settings persist; cart reprices, reloads and checkout drafts
   await expect(page.getByText("Saved in this preview browser only.").first()).toBeVisible();
   await page.getByRole("link", { name: /Back to wallpaper/ }).click();
   await page.getByLabel("Quantity / شیٹس کی تعداد", { exact: true }).fill("3");
-  await expect(page.locator(".dm-wallpaper-calculator")).toContainText("PKR 4,080");
+  await expect(page.locator('[aria-labelledby="wallpaper-order-title"]')).toContainText(
+    "PKR 4,080",
+  );
   await page.getByRole("button", { name: /Add sheets to cart/ }).click();
   const cart = page.getByRole("dialog");
   await expect(cart).toContainText("PKR 4,080");
   // Persisted snapshots retain sheet length and quantity pricing on a new page load.
   await page.goto("/?category=Sheets");
   await expect(page.locator(".dm-collection-caption")).toBeVisible();
-  await page.getByRole("button", { name: /Open cart,/ }).first().click();
+  await page
+    .getByRole("button", { name: /Open cart,/ })
+    .first()
+    .click();
   await expect(cart).toContainText("5 × 10 ft sheet");
   await expect(cart).toContainText("PKR 4,080");
   await cart.getByRole("button", { name: "Decrease", exact: true }).click();
@@ -91,6 +88,12 @@ test("preview admin settings persist; cart reprices, reloads and checkout drafts
   await expect(cart).toContainText("PKR 4,080");
   await page.getByRole("button", { name: /Proceed to Checkout/ }).click();
   await expect(page).toHaveURL(/checkout/);
+  const eligibility = page.getByRole("region", { name: "Shipping eligibility" });
+  await expect(eligibility).toContainText("Standard shipping: PKR 200");
+  await page.getByLabel("Payment method").selectOption("advance");
+  await expect(eligibility).toContainText("Estimated shipping: Free");
+  await page.getByLabel("Payment method").selectOption("cod");
+  await expect(eligibility).toContainText("Standard shipping: PKR 200");
   await page.getByLabel("Full Name", { exact: false }).fill("Preview Test");
   await page.getByLabel("WhatsApp Number", { exact: false }).fill("03001234567");
   await page.getByLabel("City", { exact: false }).fill("Lahore");
@@ -112,5 +115,7 @@ test("preview admin settings persist; cart reprices, reloads and checkout drafts
   expect(draft).toContain("PREVIEW inquiry — not an order");
   expect(draft).toContain("5 × 10 ft");
   expect(draft).toContain("4,080");
+  expect(draft).toContain("PKR 200");
+  expect(draft).toContain("Cash on Delivery");
   expect(writes).toEqual([]);
 });

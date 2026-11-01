@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import type { Product } from "@/lib/types";
 import { useSheetConfig } from "@/hooks/use-sheet-config";
-import { quoteSheets, roomSheets } from "@/lib/wallpaper-sheets";
+import { quoteSheets, estimateWall } from "@/lib/wallpaper-sheets";
 import { useCart } from "@/lib/shop";
 import { useSettings } from "@/lib/settings";
 import { formatPKR } from "@/lib/format";
@@ -14,7 +14,7 @@ import "./wallpaper-calculator.css";
 export function isWallpaperProduct(p: Product) {
   return /wall\s*paper|wall\s*sheet/i.test(p.name);
 }
-export function WallpaperCalculator({
+export function WallpaperPurchase({
   product,
   onAdded,
 }: {
@@ -24,50 +24,15 @@ export function WallpaperCalculator({
   const config = useSheetConfig(product.id),
     settings = useSettings();
   const { addToCart } = useCart();
-  const [coverage, setCoverage] = useState("single"),
-    [width, setWidth] = useState("");
-  const [depth, setDepth] = useState(""),
-    [height, setHeight] = useState("");
   const [cut, setCut] = useState("10"),
     [customLength, setCustomLength] = useState("");
   const [quantity, setQuantity] = useState("1"),
     [busy, setBusy] = useState(false);
-  const length = cut === "custom" ? Number(customLength || height) : Number(cut);
-  useEffect(() => {
-    try {
-      if (!width || !height || (coverage === "room" && !depth)) return;
-      const walls =
-        coverage === "room"
-          ? [Number(width), Number(depth), Number(width), Number(depth)]
-          : [Number(width)];
-      setQuantity(String(roomSheets(walls, Number(height), length).strips));
-    } catch {
-      /* Keep entered quantity until measurements are valid. */
-    }
-  }, [width, height, depth, coverage, length]);
-  let geometry: ReturnType<typeof roomSheets> | undefined;
+  const length = cut === "custom" ? Number(customLength) : Number(cut);
   let quote: ReturnType<typeof quoteSheets> | undefined;
   let error = "";
-  const measuring = !!(width || height || (coverage === "room" && depth));
   try {
-    if (measuring) {
-      if (!width || !height || (coverage === "room" && !depth))
-        throw new Error("Complete the wall measurements. / مکمل پیمائش درج کریں۔");
-      const walls =
-        coverage === "room"
-          ? [Number(width), Number(depth), Number(width), Number(depth)]
-          : [Number(width)];
-      geometry = roomSheets(walls, Number(height), length);
-    }
     quote = quoteSheets(config, length, Number(quantity));
-    if (geometry?.short)
-      throw new Error(
-        "Selected sheet is shorter than your wallpaper height. Choose a longer cut. / منتخب کٹ اونچائی سے چھوٹا ہے۔",
-      );
-    if (geometry && Number(quantity) < geometry.strips)
-      throw new Error(
-        "Use the calculated quantity or add enough sheets. / حساب کے مطابق مقدار منتخب کریں۔",
-      );
     const rolls = Math.ceil(Number(quantity) / Math.floor(60 / length));
     if (config.sourceRolls !== null && rolls > config.sourceRolls)
       throw new Error("Not enough source rolls for these cuts. Please enquire.");
@@ -80,8 +45,8 @@ export function WallpaperCalculator({
   const phone = phoneRaw.startsWith("03") ? "92" + phoneRaw.slice(1) : phoneRaw;
   function inquire(roll = false) {
     const message = roll
-      ? `Dawood Mart — Full roll inquiry\n${product.name}\nPlease manually quote the full roll price and shipping. This is not an online order.`
-      : `Dawood Mart — Wallpaper sheets inquiry\n${product.name}\n${quantity} sheets, each 5 × ${length} ft\n${geometry ? `${coverage} wall dimensions: ${width}${coverage === "room" ? ` × ${depth} room` : ""} ft, wallpaper height ${height} ft; ${geometry.strips} strips required.\n` : ""}${quote && !error ? `Sheet total: ${formatPKR(quote.total)}; savings: ${formatPKR(quote.savings)}.` : "Please confirm dimensions, stock and price."}\nDelivery and installation separate. Please confirm pattern matching and waste allowance.`;
+      ? `Dawood Mart — Full roll inquiry\n${product.name}\nPlease manually quote the full roll price and shipping. Not an online order.`
+      : `Dawood Mart — Sheet inquiry\n${product.name}\n${quantity} sheets, each 5 × ${length} ft\n${quote && !error ? formatPKR(quote.total) : "Please confirm price and availability."}\nShipping and installation separate.`;
     window.open(
       `https://wa.me/${phone}?text=${encodeURIComponent(message)}`,
       "_blank",
@@ -120,12 +85,12 @@ export function WallpaperCalculator({
     }
   }
   return (
-    <section className="dm-wallpaper-calculator" aria-labelledby="wallpaper-calculator-title">
+    <section className="dm-wallpaper-calculator" aria-labelledby="wallpaper-order-title">
       <p className="dm-eyebrow">CUT SHEETS FOR YOUR HOME</p>
-      <h2 id="wallpaper-calculator-title">
-        Wallpaper sheets & calculator{" "}
+      <h2 id="wallpaper-order-title">
+        Order wallpaper sheets{" "}
         <span lang="ur" dir="rtl">
-          وال پیپر شیٹس اور کیلکولیٹر
+          وال پیپر شیٹس خریدیں
         </span>
       </h2>
       <p className="dm-price">
@@ -158,7 +123,7 @@ export function WallpaperCalculator({
               step="0.01"
               inputMode="decimal"
               value={customLength}
-              placeholder="Use wallpaper height"
+              placeholder="Length in feet"
               onChange={(e) => setCustomLength(e.target.value)}
             />
           </label>
@@ -175,78 +140,6 @@ export function WallpaperCalculator({
           />
         </label>
       </div>
-      <details open className="dm-product-details">
-        <summary>Calculate your walls / دیواروں کا حساب</summary>
-        <div className="dm-wallpaper-fields">
-          <label>
-            Wall coverage / دیوار کی کوریج
-            <select value={coverage} onChange={(e) => setCoverage(e.target.value)}>
-              <option value="single">Single Wall / ایک دیوار</option>
-              <option value="half">Half Wall / آدھی دیوار</option>
-              <option value="room">Full Room / پورا کمرہ</option>
-            </select>
-          </label>
-          <label>
-            {coverage === "room"
-              ? "Room length (ft) / کمرے کی لمبائی"
-              : "Wall width (ft) / دیوار کی چوڑائی"}
-            <input
-              type="number"
-              min="0.01"
-              step="0.01"
-              inputMode="decimal"
-              value={width}
-              onChange={(e) => setWidth(e.target.value)}
-            />
-          </label>
-          {coverage === "room" && (
-            <label>
-              Room width (ft) / کمرے کی چوڑائی
-              <input
-                type="number"
-                min="0.01"
-                step="0.01"
-                inputMode="decimal"
-                value={depth}
-                onChange={(e) => setDepth(e.target.value)}
-              />
-            </label>
-          )}
-          <label>
-            Wallpaper height (ft) / مطلوبہ اونچائی
-            <input
-              type="number"
-              min="0.01"
-              max="59.99"
-              step="0.01"
-              inputMode="decimal"
-              value={height}
-              onChange={(e) => setHeight(e.target.value)}
-            />
-          </label>
-        </div>
-        <p className="dm-wallpaper-note">
-          Full Room covers four rectangular walls, not the ceiling. Each wall rounds up separately.
-          Half Wall uses your entered height. Doors/windows are not deducted. / چار دیواروں کا الگ
-          حساب؛ دروازے اور کھڑکیاں منہا نہیں۔
-        </p>
-        {geometry && (
-          <div className="dm-wallpaper-result" aria-live="polite">
-            <p>
-              Required: <strong>{geometry.strips} sheets</strong>, each 5 × {length} ft ·{" "}
-              {geometry.runningFeet} running ft.
-            </p>
-            <p>Strips per wall: {geometry.perWall.join(" + ")}</p>
-            <button
-              type="button"
-              className="dm-button dm-outline"
-              onClick={() => setQuantity(String(geometry!.strips))}
-            >
-              Use calculated quantity / حساب والی مقدار لیں
-            </button>
-          </div>
-        )}
-      </details>
       {error && (
         <p role="alert" className="dm-wallpaper-warning">
           {error}
@@ -304,6 +197,101 @@ export function WallpaperCalculator({
       <Link to="/admin/wallpaper" search={{ product: product.id }} className="dm-wallpaper-note">
         Preview admin: edit sheet pricing
       </Link>
+    </section>
+  );
+}
+
+export function WallpaperCalculator({ product }: { product: Product }) {
+  const config = useSheetConfig(product.id);
+  const [mode, setMode] = useState<"full" | "half">("full");
+  const [width, setWidth] = useState(""),
+    [height, setHeight] = useState("");
+  let estimate: ReturnType<typeof estimateWall> | undefined,
+    error = "";
+  if (width && (mode === "half" || height)) {
+    try {
+      if (product.in_stock === false)
+        throw new Error("Currently out of stock / فی الحال دستیاب نہیں");
+      estimate = estimateWall(config, mode, Number(width), mode === "half" ? 5 : Number(height));
+    } catch (e) {
+      error = (e as Error).message;
+    }
+  }
+  return (
+    <section className="dm-wallpaper-calculator" aria-labelledby="wallpaper-calculator-title">
+      <h2 id="wallpaper-calculator-title">
+        Wall size calculator{" "}
+        <span lang="ur" dir="rtl">
+          دیوار کا سادہ حساب
+        </span>
+      </h2>
+      <label>
+        Coverage / کوریج
+        <select value={mode} onChange={(e) => setMode(e.target.value as "full" | "half")}>
+          <option value="full">Full Wall / پوری دیوار</option>
+          <option value="half">Half Wall / آدھی دیوار</option>
+        </select>
+      </label>
+      <div className="dm-wallpaper-fields">
+        <label>
+          {mode === "half"
+            ? "Wall horizontal length (ft) / دیوار کی لمبائی"
+            : "Wall width (ft) / دیوار کی چوڑائی"}
+          <input
+            type="number"
+            inputMode="decimal"
+            min={mode === "half" ? 10 : 0.01}
+            max={mode === "half" ? (config.custom ? 59.99 : 18) : undefined}
+            step=".01"
+            value={width}
+            onChange={(e) => setWidth(e.target.value)}
+          />
+        </label>
+        {mode === "full" ? (
+          <label>
+            Wall height (ft) / دیوار کی اونچائی
+            <input
+              type="number"
+              inputMode="decimal"
+              min=".01"
+              max="12"
+              step=".01"
+              value={height}
+              onChange={(e) => setHeight(e.target.value)}
+            />
+          </label>
+        ) : (
+          <p>
+            Installation height: 5 ft / تنصیب کی اونچائی: 5 فٹ
+            <br />
+            Horizontal lengths: 10–18 ft; custom lengths only when configured.
+          </p>
+        )}
+      </div>
+      {error && (
+        <p role="alert" className="dm-wallpaper-warning">
+          {error}
+        </p>
+      )}
+      {estimate && (
+        <dl className="dm-wallpaper-result" aria-live="polite">
+          <div>
+            Recommended sheet / تجویز کردہ شیٹ: <strong>5 × {estimate.length} ft</strong>
+          </div>
+          <div>
+            Quantity / تعداد: <strong>{estimate.quantity}</strong>
+          </div>
+          <div>
+            Estimated price / تخمینی قیمت: <strong>{formatPKR(estimate.total)}</strong>
+          </div>
+        </dl>
+      )}
+      <p className="dm-wallpaper-note">
+        Estimate only; does not change your cart. Full-wall sheets run vertically; half-wall
+        material runs horizontally at 5-ft height. Pattern matching and installation waste may
+        increase material. / یہ صرف تخمینہ ہے، کارٹ تبدیل نہیں ہوگا۔ ڈیزائن ملانے اور تنصیب میں
+        اضافی مواد لگ سکتا ہے۔
+      </p>
     </section>
   );
 }

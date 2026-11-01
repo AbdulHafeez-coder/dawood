@@ -1,3 +1,4 @@
+import type { PaymentMethod } from "@/lib/shipping";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import {
@@ -35,7 +36,8 @@ function CheckoutPage() {
   const invalidSheets = cart.find((i) => i.wallpaperSheet?.error);
   const discount = calculateDiscount(couponSubtotal);
   const discountedSubtotal = Math.max(0, subtotal - discount);
-  const shipping = computeShipping(discountedSubtotal);
+  const [payment, setPayment] = useState<PaymentMethod>("cod");
+  const shipping = computeShipping(discountedSubtotal, payment);
   const total = discountedSubtotal + shipping;
 
   const [submitting, setSubmitting] = useState(false);
@@ -96,6 +98,7 @@ function CheckoutPage() {
         { name, phone, city, address, notes },
         activeCoupon && discount > 0 ? { code: activeCoupon.code, discount } : undefined,
         true,
+        payment,
       );
       window.open(url, "_blank", "noopener,noreferrer");
       toast.success("Preview draft opened — no order saved");
@@ -144,6 +147,32 @@ function CheckoutPage() {
       <main className="max-w-5xl mx-auto px-6 lg:px-12 pt-8 lg:pt-12 grid lg:grid-cols-[1fr_400px] gap-12 lg:gap-16">
         {/* Left Column - Forms */}
         <div className="order-2 lg:order-1">
+          <section
+            className="bg-white rounded-xl p-5 mb-6 border border-black/10"
+            aria-label="Shipping eligibility"
+          >
+            <label htmlFor="payment-method">Payment method / ادائیگی کا طریقہ</label>
+            <select
+              id="payment-method"
+              className="block w-full border rounded-md p-3 mt-2"
+              value={payment}
+              onChange={(e) => setPayment(e.target.value as PaymentMethod)}
+            >
+              <option value="cod">Cash on Delivery</option>
+              <option value="advance">Pay in advance</option>
+            </select>
+            <p className="text-sm mt-3" aria-live="polite">
+              {shipping === 0
+                ? "Estimated shipping: Free — only after advance payment is confirmed."
+                : "Standard shipping: PKR 200."}
+            </p>
+            <p className="text-xs mt-2">
+              Free shipping on a discounted order subtotal of PKR 3,000 or more, only with confirmed
+              advance payment. COD shipping stays PKR 200. / 3,000 روپے یا زیادہ پر صرف پیشگی
+              ادائیگی کی تصدیق کے بعد مفت ڈیلیوری۔
+            </p>
+            <p className="text-xs mt-2">Preview does not collect or confirm payment.</p>
+          </section>
           {step === "info" ? (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
               <h2 className="text-xl font-semibold text-black mb-6 flex items-center gap-2">
@@ -312,7 +341,9 @@ function CheckoutPage() {
                   )}
                   <div className="flex justify-between text-black/60">
                     <span>Shipping</span>
-                    <span>{shipping === 0 ? "Free" : formatPKR(shipping)}</span>
+                    <span>
+                      {shipping === 0 ? "Free (advance payment required)" : formatPKR(shipping)}
+                    </span>
                   </div>
                   <div className="flex justify-between font-bold text-black text-lg pt-2 border-t border-black/10">
                     <span>Total</span>
@@ -413,7 +444,9 @@ function CheckoutPage() {
               )}
               <div className="flex justify-between text-sm text-black/60">
                 <span>Shipping</span>
-                <span>{shipping === 0 ? "Free" : formatPKR(shipping)}</span>
+                <span>
+                  {shipping === 0 ? "Free (advance payment required)" : formatPKR(shipping)}
+                </span>
               </div>
               <div className="flex justify-between text-base font-bold text-black pt-3 border-t border-black/10">
                 <span>Total</span>

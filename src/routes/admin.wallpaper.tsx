@@ -56,7 +56,10 @@ function ConfigEditor({ productId, initial }: { productId: string; initial: Shee
       />
     </label>
   );
-  const check = (key: "enabled10" | "enabled12" | "custom", label: string) => (
+  const check = (
+    key: "enabled10" | "enabled11" | "enabled12" | "custom" | "atsFleeceVerified",
+    label: string,
+  ) => (
     <label>
       <input
         style={{ width: 20, minHeight: 20, display: "inline", marginRight: 8 }}
@@ -91,6 +94,10 @@ function ConfigEditor({ productId, initial }: { productId: string; initial: Shee
       </div>
       <h2>Other cuts / دیگر کٹ</h2>
       <div className="dm-wallpaper-fields">
+        {check("atsFleeceVerified", "Verified ATS Fabric/Fleece product (not Chinese wallpaper)")}
+        {check("enabled11", "11-ft sheets available")}
+        {number("price11", "Normal 5 × 11 ft price (PKR)")}
+        {number("stock11", "11-ft sheets in stock (blank = confirm)", true)}
         {check("enabled12", "12-ft sheets available")}
         {number("price12", "Normal 5 × 12 ft price (PKR)")}
         {number("stock12", "12-ft sheets in stock (blank = confirm)", true)}
@@ -99,8 +106,8 @@ function ConfigEditor({ productId, initial }: { productId: string; initial: Shee
         {number("sourceRolls", "Source rolls available for cutting (optional)", true)}
       </div>
       <p>
-        12-ft and custom cuts stay unavailable until enabled with valid prices. No full-roll online
-        sales. Minimums scale with cut length.
+        11-ft, 12-ft and custom cuts stay unavailable until enabled with valid prices. No full-roll
+        online sales. Minimums scale with cut length.
       </p>
       <h2>Quantity savings / مقدار پر رعایت</h2>
       <p>
