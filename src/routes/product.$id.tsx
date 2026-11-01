@@ -12,6 +12,7 @@ import { StoreImage } from "@/components/StoreImage";
 import { ProductCard } from "@/components/ProductCard";
 import { SiteFooter } from "@/components/SiteFooter";
 import { LazyCartDrawer } from "@/components/LazyCartDrawer";
+import { WallpaperCalculator, isWallpaperProduct } from "@/components/WallpaperCalculator";
 export const Route = createFileRoute("/product/$id")({
   loader: async ({ params }) => {
     const product = await getProductAsync(params.id);
@@ -87,7 +88,7 @@ function ProductPage() {
   }
   const details = p.details.filter(
     (d) =>
-      !/^\s*(brand|source|compare_at_price|seo|tags?|vendor|import|supplier|__video__|video_url)\s*:/i.test(
+      !/^\s*(brand|source|compare_at_price|seo|tags?|vendor|import|supplier|wallpaper_config|__video__|video_url)\s*:/i.test(
         d,
       ),
   );
@@ -181,32 +182,36 @@ function ProductPage() {
               {canPurchase(p) ? "In stock" : "Out of stock"}
             </p>
             <p className="dm-description">{p.description}</p>
-            <div className="dm-purchase">
-              <div className="dm-quantity">
-                <button
-                  aria-label="Decrease quantity"
-                  disabled={qty === 1}
-                  onClick={() => setQty((q) => Math.max(1, q - 1))}
-                >
-                  <Minus size={16} />
+            {isWallpaperProduct(p) ? (
+              <WallpaperCalculator key={p.id} product={p} />
+            ) : (
+              <div className="dm-purchase">
+                <div className="dm-quantity">
+                  <button
+                    aria-label="Decrease quantity"
+                    disabled={qty === 1}
+                    onClick={() => setQty((q) => Math.max(1, q - 1))}
+                  >
+                    <Minus size={16} />
+                  </button>
+                  <span>{qty}</span>
+                  <button aria-label="Increase quantity" onClick={() => setQty((q) => q + 1)}>
+                    <Plus size={16} />
+                  </button>
+                </div>
+                <button className="dm-button" disabled={!canPurchase(p) || busy} onClick={add}>
+                  {busy ? "Checking…" : canPurchase(p) ? "Add to cart" : "Out of stock"}
                 </button>
-                <span>{qty}</span>
-                <button aria-label="Increase quantity" onClick={() => setQty((q) => q + 1)}>
-                  <Plus size={16} />
+                <button
+                  className="dm-icon dm-outline"
+                  aria-label="Save to favourites"
+                  aria-pressed={isFav(p.id)}
+                  onClick={() => toggleFav(p)}
+                >
+                  <Heart size={20} fill={isFav(p.id) ? "currentColor" : "none"} />
                 </button>
               </div>
-              <button className="dm-button" disabled={!canPurchase(p) || busy} onClick={add}>
-                {busy ? "Checking…" : canPurchase(p) ? "Add to cart" : "Out of stock"}
-              </button>
-              <button
-                className="dm-icon dm-outline"
-                aria-label="Save to favourites"
-                aria-pressed={isFav(p.id)}
-                onClick={() => toggleFav(p)}
-              >
-                <Heart size={20} fill={isFav(p.id) ? "currentColor" : "none"} />
-              </button>
-            </div>
+            )}
             {details.length > 0 && (
               <details open className="dm-product-details">
                 <summary>Product details</summary>
