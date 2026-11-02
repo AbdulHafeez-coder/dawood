@@ -1831,3 +1831,15 @@ select.mt-select:active {
   ) {
   border-radius: 0 !important;
 }
+
+/* Keep catalog photography prominent across narrow and wide layouts. */
+.dm-product-photo, .dm-main-image, .dm-category-card > a > div {
+  border-radius: clamp(12px, 2vw, 20px);
+  overflow: hidden;
+}
+.dm-product-info { padding-inline: 4px; }
+.dm-thumbnails { scroll-snap-type: x proximity; }
+.dm-thumbnails button { border-radius: 10px; scroll-snap-align: start; }
+.dm-thumbnails button.is-active { box-shadow: inset 0 0 0 1px currentColor; }
+.dm-detail-copy { min-width: 0; }
+.dm-detail h1 { overflow-wrap: anywhere; text-wrap: pretty; }
