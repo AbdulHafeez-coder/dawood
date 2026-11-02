@@ -1,3 +1,4 @@
+import { isPvcSheet, usePvcSizes } from "@/lib/pvc-sizes";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Heart, Minus, Plus, ArrowLeft } from "lucide-react";
@@ -20,7 +21,7 @@ export const Route = createFileRoute("/product/$id")({
   },
   head: ({ loaderData }) => ({
     meta: [
-      { title: `${loaderData?.product.display_name || "Product"} — Dawood Mart` },
+      { title: `${loaderData?.product.seo_title || loaderData?.product.display_name || "Product"} — Dawood Mart` },
       {
         name: "description",
         content:
@@ -56,14 +57,20 @@ function ProductPage() {
   useEffect(() => {
     setQty(1);
   }, [p.id]);
+  const linked = isPvcSheet(p.id);
+  const sizes = usePvcSizes(linked);
+  const [size, setSize] = useState("36x57");
+  const variant = sizes.find(row => row.size === size);
+  const available = canPurchase(p) && (!linked || !!variant && qty <= variant.available);
   const name = p.display_name || p.name;
   const { products: related } = useProducts({ category: p.category, pageSize: 5 });
   async function add() {
-    if (busy || !canPurchase(p)) return;
+    if (busy || !available) return;
     setBusy(true);
     try {
       await assertPurchasable(supabase, [p.id]);
-      if (addToCart(p, qty, { baseId: p.id, baseName: name })) {
+      const item = linked && variant ? { ...p, id: p.id + "::" + size, price: variant.price } : p;
+      if (addToCart(item, qty, { baseId: p.id, baseName: name, ...(linked ? { variantSize: size, variantSizeLabel: size + " inches" } : {}) })) {
         toast.success("Added to your cart");
         setCart(true);
       }
@@ -99,13 +106,14 @@ function ProductPage() {
             <p className="dm-eyebrow">MADE FOR YOUR EVERYDAY</p>
             <h1>{name}</h1>
             <div className="dm-price">
-              <strong>{formatPKR(p.price)}</strong>
+              <strong>{formatPKR(variant?.price ?? p.price)}</strong>
               {p.original_price && p.original_price > p.price ? (
                 <del>{formatPKR(p.original_price)}</del>
               ) : null}
             </div>
+            <>{linked && <label>Sheet size <select value={size} onChange={e => { setSize(e.target.value); setQty(1); }}>{sizes.map(row => <option key={row.size} value={row.size}>{row.size.replace("x"," × ")} inches</option>)}</select></label>}</>
             <p className="dm-availability" role="status">
-              {canPurchase(p) ? "In stock" : "Out of stock"}
+              {linked && variant && canPurchase(p) ? variant.available + " available" : available ? "In stock" : "Out of stock"}
             </p>
             <p className="dm-description">{p.description}</p>
             <div className="dm-purchase">
@@ -118,11 +126,11 @@ function ProductPage() {
                   <Minus size={16} />
                 </button>
                 <span>{qty}</span>
-                <button aria-label="Increase quantity" onClick={() => setQty((q) => q + 1)}>
+                <button aria-label="Increase quantity" disabled={linked && qty >= (variant?.available ?? 0)} onClick={() => setQty((q) => q + 1)}>
                   <Plus size={16} />
                 </button>
               </div>
-              <button className="dm-button" disabled={!canPurchase(p) || busy} onClick={add}>
+              <button className="dm-button" disabled={!available || busy} onClick={add}>
                 {busy ? "Checking…" : canPurchase(p) ? "Add to cart" : "Out of stock"}
               </button>
               <button

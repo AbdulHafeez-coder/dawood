@@ -1,3 +1,4 @@
+import type { PvcLine } from "./pvc-sizes";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { Database } from "@/integrations/supabase/types";
@@ -111,12 +112,13 @@ function rowToOrder(r: OrderRow): SavedOrder {
   };
 }
 
-async function pushOrderToSupabase(entry: SavedOrder) {
+async function pushOrderToSupabase(entry: SavedOrder, pvcLines?: PvcLine[]) {
   try {
     const {
       data: { user },
     } = await supabase.auth.getUser();
     const row: OrderInsert = {
+      ...(pvcLines ? { pvc_lines: pvcLines } : {}),
       id: entry.id,
       user_id: user?.id ?? null,
       device_id: deviceId(),
@@ -133,8 +135,10 @@ async function pushOrderToSupabase(entry: SavedOrder) {
     };
 
     const { error } = await supabase.from("orders").insert(row);
+    if (error && pvcLines) throw new Error(error.message);
     if (error) console.error("[orders] save failed:", error.message);
   } catch (error) {
+    if (pvcLines) throw error;
     console.error("[orders] save failed:", error);
     // best effort — local cache remains source of truth for the shopper.
   }
@@ -150,19 +154,20 @@ async function deleteOrderInSupabase(id: string) {
   }
 }
 
-export function saveOrder(order: Omit<SavedOrder, "id" | "createdAt">) {
+export async function saveOrder(order: Omit<SavedOrder, "id" | "createdAt">, pvcLines?: PvcLine[], retryId?: string) {
   ensureHydrated();
   const entry: SavedOrder = {
     ...order,
-    id:
+    id: retryId ?? (
       typeof crypto !== "undefined" && "randomUUID" in crypto
         ? crypto.randomUUID()
-        : `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        : `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`),
     createdAt: Date.now(),
   };
+  if (pvcLines) await pushOrderToSupabase(entry, pvcLines);
   const next = [entry, ...state].slice(0, MAX_ORDERS);
   persist(next);
-  void pushOrderToSupabase(entry);
+  if (!pvcLines) void pushOrderToSupabase(entry);
   return entry;
 }
 

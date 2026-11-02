@@ -9,5 +9,5 @@ test("maps verified Sheets products without classifying ambiguous sheet products
 
 test("keeps Kitchen Towels and absent categories outside taxonomy", () => {
   assert.equal(findTaxonomy("Towels").matches({ id: "prod-f955056e", category: "Towels", name: "Kitchen Towels" }), false);
-  assert.equal(findTaxonomy("Dastarkhwan Sheets"), undefined);
+  assert.equal(findTaxonomy("Dastarkhwan Sheets").matches({ category: "Sheets", tagline: "Dastarkhwan Sheets" }), true);
 });

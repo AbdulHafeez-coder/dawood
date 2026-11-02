@@ -1,3 +1,4 @@
+import { isPvcSheet } from "./pvc-sizes";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { canPurchase, saveStock } from "./product-availability";
@@ -208,9 +209,11 @@ export function rowToProduct(r: ProductRow): Product {
     in_stock: r.in_stock,
     slug: r.slug,
     name: r.name,
-    display_name: getDisplayName(r.name),
+    display_name: isPvcSheet(r.id) ? r.name : getDisplayName(r.name),
+    seo_title: r.seo_title ?? undefined,
+    seo_description: r.seo_description ?? undefined,
     tag: r.tag ?? "",
-    price: discountedPrice,
+    price: isPvcSheet(r.id) ? originalPrice : discountedPrice,
     original_price: originalPrice,
     rating: typeof r.rating === "string" ? Number(r.rating) : r.rating,
     img: r.img ?? "",
@@ -882,6 +885,7 @@ function resolvePersistedCart(rows: PersistedRow[]): CartItem[] {
       const base = products.find((p) => p.id === baseId) ?? row.snapshot;
       if (!base) return null;
       const qty = Number.isFinite(row.qty) && row.qty > 0 ? Math.floor(row.qty) : 1;
+      if (isPvcSheet(baseId) && row.variantSize && row.snapshot) return { ...row.snapshot, id: row.id, baseId, qty, variantSize: row.variantSize, variantSizeLabel: row.variantSize + " inches" };
       if (row.variantSize && row.variantColor) {
         const v = getVariants(base.category);
         const s = v.sizes.find((x) => x.id === row.variantSize);

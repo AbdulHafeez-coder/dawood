@@ -31,11 +31,11 @@ export const taxonomyGroups = [
         name: "Dining Table Sheets",
         matches: (p) => (source(p, "Sheets") && p.tagline === "Dining Table Sheets") || sheetsSource(p) && named(p, /dining|table mat|table runner|placemat/i),
       },
-      ...["PVC Table Mat / Protective Sheets", "Self-Adhesive Marble Sheets"].map((name) => ({
+      ...["Dastarkhwan Sheets", "PVC Table Mat / Protective Sheets", "Self-Adhesive Marble Sheets"].map((name) => ({
         name,
         matches: (p) => source(p, "Sheets") && p.tagline === name,
       })),
-      { name: "Center & Side Table Sheets", matches: (p) => p.id === "prod-c5fd53b3" },
+      { name: "Center & Side Table Sheets", matches: (p) => p.id === "prod-c5fd53b3" || (source(p,"Sheets") && p.tagline === "Center & Side Table Sheets") },
       { name: "Dressing & Bedside Table Sheets", matches: (p) => p.id === "prod-53f5fe33" },
       {
         name: "Wallpaper Sheets",

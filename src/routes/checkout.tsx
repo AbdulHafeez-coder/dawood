@@ -1,3 +1,4 @@
+import { isPvcSheet } from "@/lib/pvc-sizes";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { ArrowLeft, CheckCircle2, MessageCircle, MapPin, User, Phone, Truck, Banknote, PackageOpen, Tag } from "lucide-react";
@@ -23,6 +24,7 @@ function CheckoutPage() {
   const shipping = computeShipping(discountedSubtotal);
   const total = discountedSubtotal + shipping;
 
+  const [attemptId] = useState(() => crypto.randomUUID());
   const [submitting, setSubmitting] = useState(false);
   const [step, setStep] = useState<"info" | "review">("info");
 
@@ -85,7 +87,8 @@ function CheckoutPage() {
     );
 
     const primary = cart[0];
-    saveOrder({
+    const pvcLines = cart.filter(p => isPvcSheet(p.baseId || p.id)).map(p => ({ product: p.baseId || p.id, size: p.variantSize || "", qty: p.qty, price: p.price }));
+    try { await saveOrder({
       kind: "cart",
       url,
       message: text,
@@ -96,7 +99,7 @@ function CheckoutPage() {
       primaryBg: primary?.bg,
       extraCount: Math.max(0, cart.length - 1),
       status: "new",
-    });
+    }, pvcLines.length ? pvcLines : undefined, pvcLines.length ? attemptId : undefined); } catch (error) { toast.error(error instanceof Error ? error.message : "Order could not be saved"); setSubmitting(false); return; }
 
     toast.success("Order confirmed!", {
       description: "Redirecting to WhatsApp to complete your purchase...",

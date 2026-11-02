@@ -8,6 +8,7 @@ export type Database = {
   };
   public: {
     Tables: {
+      pvc_sheet_sizes: { Row: { size: string; price: number; available: number }; Insert: {size: string; price: number; available: number}; Update: { price?: number; available?: number }; Relationships: [] };
       categories: {
         Row: {
           created_at: string;
@@ -47,6 +48,7 @@ export type Database = {
           user_id: string | null;
         };
         Insert: {
+          pvc_lines?: Json;
           created_at?: string;
           device_id?: string;
           extra_count?: number;

@@ -1,3 +1,5 @@
+import { PvcSizeEditor } from "@/components/admin/PvcSizeEditor";
+import { isPvcSheet } from "@/lib/pvc-sizes";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
@@ -2042,6 +2044,7 @@ function ProductFormDialog({
           <ProductFormSkeleton mode={mode} />
         ) : (
           <form onSubmit={submit} className="space-y-4" style={inter}>
+            {isPvcSheet(product?.id) && <PvcSizeEditor />}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Field label="Name">
                 <input
