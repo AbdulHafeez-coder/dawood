@@ -29,8 +29,12 @@ export const taxonomyGroups = [
     subcategories: [
       {
         name: "Dining Table Sheets",
-        matches: (p) => sheetsSource(p) && named(p, /dining|table mat|table runner|placemat/i),
+        matches: (p) => (source(p, "Sheets") && p.tagline === "Dining Table Sheets") || sheetsSource(p) && named(p, /dining|table mat|table runner|placemat/i),
       },
+      ...["PVC Table Mat / Protective Sheets", "Self-Adhesive Marble Sheets"].map((name) => ({
+        name,
+        matches: (p) => source(p, "Sheets") && p.tagline === name,
+      })),
       { name: "Center & Side Table Sheets", matches: (p) => p.id === "prod-c5fd53b3" },
       { name: "Dressing & Bedside Table Sheets", matches: (p) => p.id === "prod-53f5fe33" },
       {
@@ -102,6 +106,7 @@ export function findTaxonomy(value) {
       {
         group: group.name,
         matches: (product) =>
+          source(product, group.name) && group.name === "Sheets" ||
           group.subcategories.some((subcategory) => subcategory.matches(product)),
       },
       ...group.subcategories.map((subcategory) => ({
