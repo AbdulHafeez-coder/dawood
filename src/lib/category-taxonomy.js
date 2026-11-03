@@ -73,6 +73,7 @@ export const taxonomyGroups = [
     name: "Crockery",
     image: "7-pcs-bowl-set",
     subcategories: [
+      { name: "Trays", matches: (p) => source(p, "Serving Trays") },
       {
         name: "Cups, Glasses & Mugs",
         matches: (p) => crockerySources.has(p.category) && named(p, /cup|glass|mug|water set/i),
