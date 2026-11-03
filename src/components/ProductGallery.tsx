@@ -28,6 +28,7 @@ export function ProductGallery({
   const loaded = useRef(new Set<number>()),
     pointer = useRef<{ x: number; y: number } | null>(null);
   const slide = slides[active] || slides[0];
+  const tiktokId = video?.match(/^https:\/\/www\.tiktok\.com\/@[\w.-]+\/video\/(\d+)\/?(?:\?.*)?$/)?.[1];
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
     const motion = () => setReduced(media.matches),
@@ -132,7 +133,12 @@ export function ProductGallery({
             }}
           />
         ))}
-        {slide.video && (
+        {slide.video && tiktokId && (
+          <iframe className="dm-gallery-video" title={name + " video on TikTok"}
+            src={`https://www.tiktok.com/player/v1/${tiktokId}?autoplay=0`}
+            allowFullScreen />
+        )}
+        {slide.video && !tiktokId && (
           <video
             key={slide.src}
             src={slide.src}
@@ -165,6 +171,7 @@ export function ProductGallery({
         )}
       </div>
       <div className="dm-gallery-controls">
+        {slide.video && tiktokId && <a href={video!} target="_blank" rel="noopener noreferrer">Watch on TikTok</a>}
         <span>
           {active + 1} / {slides.length}
         </span>
