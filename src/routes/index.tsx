@@ -1,8 +1,15 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
 import { SlidersHorizontal, ArrowRight } from "lucide-react";
 import { useProducts, useFavourites } from "@/lib/shop";
-import { storefrontCategories } from "@/lib/storefront-categories";
+import { CategoryArtwork } from "@/components/CategoryLanding";
+import {
+  CategoryLanding,
+  collections,
+  useCollection,
+  collectionSubcategories,
+} from "@/components/CategoryLanding";
+import { taxonomyGroups } from "@/lib/category-taxonomy.js";
 import { StoreHeader } from "@/components/StoreHeader";
 import { ProductCard } from "@/components/ProductCard";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -18,6 +25,7 @@ export const Route = createFileRoute("/")({
   validateSearch: (
     s: Record<string, unknown>,
   ): {
+    sub?: string;
     q?: string;
     category?: string;
     page?: number;
@@ -26,6 +34,7 @@ export const Route = createFileRoute("/")({
     min?: string;
     max?: string;
   } => ({
+    sub: typeof s.sub === "string" ? s.sub : undefined,
     q: typeof s.q === "string" ? s.q : undefined,
     category: typeof s.category === "string" ? s.category : undefined,
     page: s.page == null ? undefined : Math.max(1, Math.floor(Number(s.page) || 1)),
@@ -46,47 +55,22 @@ export const Route = createFileRoute("/")({
   }),
   component: Index,
 });
-const heroPanels = [
-  {
-    title: "SHEETS",
-    image: "premium-table-sheet",
-    alt: "Dining table sheets, covers and runners",
-    href: "/?category=Sheets#shop",
-    cta: "Explore Sheets",
-    tone: "sand",
-  },
-  {
-    title: "TOWELS",
-    image: "aqua-blue-bath-towel-set",
-    alt: "Luxury bath, hand and face towels",
-    href: "/?category=Towels#shop",
-    cta: "Explore Towels",
-    tone: "sage",
-  },
-  {
-    title: "GADGETS",
-    image: "gadgets-category",
-    alt: "Smart household and kitchen gadgets",
-    href: "/?category=Gadgets#shop",
-    cta: "Explore Gadgets",
-    tone: "peach",
-  },
-  {
-    title: "CROCKERY",
-    image: "7-pcs-bowl-set",
-    alt: "Glass bowls, plates and dinnerware sets",
-    href: "/?category=Crockery#shop",
-    cta: "Explore Crockery",
-    tone: "sky",
-  },
-];
-function Index() {
-  const search = Route.useSearch(),
+export function Index({ fixedCategory }: { fixedCategory?: string } = {}) {
+  const rawSearch = useSearch({ strict: false }) as ReturnType<typeof Route.useSearch>;
+  const search = {
+      ...rawSearch,
+      category:
+        fixedCategory || (rawSearch.category === "Gadgets" ? "Household" : rawSearch.category),
+    },
     navigate = useNavigate(),
     [cart, setCart] = useState(false),
     [filters, setFilters] = useState(false);
   const { isFav, toggleFav } = useFavourites();
-  const { products, total, loading, error, refetch } = useProducts({
+  const collectionName =
+    search.category && collections[search.category] ? search.category : undefined;
+  const collection = useCollection(collectionName);
+  const catalog = useProducts({
+    enabled: !collectionName,
     page: search.page || 1,
     pageSize: 24,
     search: search.q,
@@ -96,11 +80,37 @@ function Index() {
     minPrice: search.min,
     maxPrice: search.max,
   });
+  const selectedSub = collectionSubcategories(collectionName || "").find(
+    (s) => s.name === search.sub,
+  );
+  const matching = collection.products.filter(
+    (p) =>
+      (!selectedSub || selectedSub.matches(p)) &&
+      (!search.q || (p.name + " " + p.category).toLowerCase().includes(search.q.toLowerCase())) &&
+      (!search.stock || (search.stock === "in" ? p.in_stock !== false : p.in_stock === false)) &&
+      (!search.min || p.price >= Number(search.min)) &&
+      (!search.max || p.price <= Number(search.max)),
+  );
+  if (search.sort === "price-asc") matching.sort((a, b) => a.price - b.price);
+  if (search.sort === "price-desc") matching.sort((a, b) => b.price - a.price);
+  const { products, total, loading, error, refetch } = collectionName
+    ? {
+        ...collection,
+        products: matching.slice(((search.page || 1) - 1) * 24, (search.page || 1) * 24),
+        total: matching.length,
+      }
+    : catalog;
   const filtered = !!(search.q || search.category || search.stock || search.min || search.max);
   function update(patch: Partial<typeof search>) {
     void navigate({
-      to: "/",
-      search: { ...search, ...patch, page: patch.page || 1 },
+      to: fixedCategory && patch.category !== "" ? "/category/$category" : "/",
+      params: { category: (patch.category || fixedCategory || "").toLowerCase() },
+      search: {
+        ...search,
+        ...(patch.category !== undefined ? { sub: undefined } : {}),
+        ...patch,
+        page: patch.page || 1,
+      },
       hash: "shop",
     });
   }
@@ -113,7 +123,7 @@ function Index() {
           onChange={(e) => update({ category: e.target.value })}
         >
           <option value="">All categories</option>
-          {storefrontCategories.map((c) => (
+          {taxonomyGroups.map((c) => (
             <option key={c.name}>{c.name}</option>
           ))}
         </select>
@@ -146,7 +156,13 @@ function Index() {
       </label>
       <button
         className="dm-button dm-outline"
-        onClick={() => void navigate({ to: "/", search: {}, hash: "shop" })}
+        onClick={() =>
+          void navigate({
+            to: "/",
+            search: collectionName ? { category: collectionName } : {},
+            hash: "shop",
+          })
+        }
       >
         Clear filters
       </button>
@@ -157,48 +173,52 @@ function Index() {
   );
   return (
     <div className="storefront dm-home">
-      <StoreHeader
-        onOpenCart={() => setCart(true)}
-        floating={!filtered && (search.page || 1) === 1}
-      />
+      <StoreHeader onOpenCart={() => setCart(true)} floating={false} />
       <main>
         {!filtered && (search.page || 1) === 1 && (
           <>
-            <section className="dm-editorial-hero" aria-label="Shop Dawood Mart collections">
-              <h1 className="sr-only">Dawood Mart — everyday home essentials</h1>
-              <div className="dm-hero-panels">
-                {heroPanels.map((panel, index) => (
+            <section
+              className="dm-category-edit dm-section"
+              aria-label="Shop Dawood Mart collections"
+            >
+              <div className="dm-edit-heading">
+                <div>
+                  <p className="dm-eyebrow">MADE FOR EVERYDAY LIVING</p>
+                  <h1>A little more home.</h1>
+                </div>
+                <p>Thoughtful finds for the spaces you love.</p>
+              </div>
+              <div className="dm-edit-grid">
+                {taxonomyGroups.map((group, index) => (
                   <a
-                    key={panel.title}
-                    href={panel.href}
-                    className={`dm-hero-panel dm-panel-${panel.tone}`}
+                    key={group.name}
+                    href={`/category/${group.name.toLowerCase()}`}
+                    className="dm-edit-card"
                   >
-                    <h2>{panel.title}</h2>
-                    <div className="dm-panel-visual">
-                      <img
-                        src={`/images/storefront/${panel.image}-480.webp`}
-                        srcSet={`/images/storefront/${panel.image}-480.webp 480w, /images/storefront/${panel.image}-800.webp 800w`}
-                        sizes="(max-width: 767px) 82vw, 25vw"
-                        width={800}
-                        height={800}
-                        loading={index === 0 ? "eager" : "lazy"}
-                        fetchPriority={index === 0 ? "high" : "auto"}
-                        decoding="async"
-                        alt={panel.alt}
-                      />
+                    <CategoryArtwork name={group.name} eager={index < 2} />
+                    <div className="dm-edit-label">
+                      <span className="dm-eyebrow">0{index + 1} / THE COLLECTION</span>
+                      <h2>{group.name}</h2>
+                      <span>
+                        Explore collection <ArrowRight size={18} />
+                      </span>
                     </div>
-                    <span className="dm-panel-cta">
-                      {panel.cta}
-                      <ArrowRight size={15} aria-hidden="true" />
-                    </span>
                   </a>
                 ))}
               </div>
-              <p className="dm-hero-swipe">
-                Swipe to explore <span aria-hidden="true">→</span>
-              </p>
             </section>
           </>
+        )}
+        {collectionName && (
+          <CategoryLanding
+            name={collectionName}
+            products={collection.products}
+            loading={collection.loading}
+            sub={search.sub}
+            onSubcategory={(sub) => update({ sub })}
+            isFav={isFav}
+            toggleFav={toggleFav}
+          />
         )}
         <section id="shop" className="dm-section dm-shop">
           <div className="dm-section-heading">
@@ -207,7 +227,9 @@ function Index() {
               <h2>
                 {search.q
                   ? `Results for “${search.q}”`
-                  : search.category || "Everyday favourites, waiting to be found."}
+                  : selectedSub?.name ||
+                    search.category ||
+                    "Everyday favourites, waiting to be found."}
               </h2>
             </div>
             <span className="dm-result-count" aria-live="polite">

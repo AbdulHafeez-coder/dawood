@@ -3,7 +3,7 @@ import { Heart, Menu, ShoppingBag, UserRound } from "lucide-react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useCart, useFavourites } from "@/lib/shop";
 import { useSettings } from "@/lib/settings";
-import { storefrontCategories } from "@/lib/storefront-categories";
+import { taxonomyGroups } from "@/lib/category-taxonomy.js";
 import { SearchAutocomplete } from "./SearchAutocomplete";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "./ui/sheet";
 export function StoreHeader({
@@ -21,7 +21,9 @@ export function StoreHeader({
   const navigate = useNavigate();
   function browse(category = "", q = "") {
     setMenu(false);
-    void navigate({ to: "/", search: { category, q }, hash: "shop" });
+    if (taxonomyGroups.some((g) => g.name === category) && !q) {
+      void navigate({ to: "/category/$category", params: { category: category.toLowerCase() } });
+    } else void navigate({ to: "/", search: { category, q }, hash: "shop" });
   }
   return (
     <>
@@ -77,7 +79,7 @@ export function StoreHeader({
           </SheetHeader>
           <nav className="dm-category-menu" aria-label="Categories">
             <button onClick={() => browse()}>Shop all products</button>
-            {storefrontCategories.map((c) => (
+            {taxonomyGroups.map((c) => (
               <button key={c.name} onClick={() => browse(c.name)}>
                 {c.name}
                 <span aria-hidden="true">↗</span>
