@@ -320,7 +320,7 @@ export function Index({ fixedCategory }: { fixedCategory?: string } = {}) {
             Everyday possibilities.
           </h2>
           <p>Set the table. Refresh a corner. Make room for the little moments.</p>
-          <a className="dm-button dm-outline" href="/?category=Kitchen#shop">
+          <a className="dm-button dm-outline" href="/category/household?sub=Kitchen%20Gadgets#shop">
             Discover kitchen essentials <ArrowRight size={18} />
           </a>
         </section>
