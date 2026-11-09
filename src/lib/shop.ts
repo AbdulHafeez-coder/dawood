@@ -1,4 +1,5 @@
 import { isPvcSheet } from "./pvc-sizes";
+import { sheetDesigns } from "./sheet-inventory.js";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { canPurchase, saveStock } from "./product-availability";
@@ -885,7 +886,7 @@ function resolvePersistedCart(rows: PersistedRow[]): CartItem[] {
       const base = products.find((p) => p.id === baseId) ?? row.snapshot;
       if (!base) return null;
       const qty = Number.isFinite(row.qty) && row.qty > 0 ? Math.floor(row.qty) : 1;
-      if (isPvcSheet(baseId) && row.variantSize && row.snapshot) return { ...row.snapshot, id: row.id, baseId, qty, variantSize: row.variantSize, variantSizeLabel: row.variantSize + " inches" };
+      if (isPvcSheet(baseId) && row.variantSize && row.snapshot) return { ...row.snapshot, id: row.id, baseId, qty, baseName: row.snapshot.display_name || row.snapshot.name, variantSize: row.variantSize, variantSizeLabel: row.variantSize + " inches", variantColor: row.variantColor, variantColorLabel: sheetDesigns.find(d => d.id === row.variantColor)?.label };
       if (row.variantSize && row.variantColor) {
         const v = getVariants(base.category);
         const s = v.sizes.find((x) => x.id === row.variantSize);

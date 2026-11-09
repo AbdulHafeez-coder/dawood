@@ -2,8 +2,9 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { usePvcSizes, type PvcSize } from "@/lib/pvc-sizes";
+import { sheetInventory } from "@/lib/sheet-inventory.js";
 
-function SizeRow({ initial }: { initial: PvcSize }) {
+function SizeRow({ initial, productId }: { initial: PvcSize; productId?: string }) {
   const [saved, setSaved] = useState(initial);
   const [price, setPrice] = useState(String(initial.price));
   const [stock, setStock] = useState(String(initial.available));
@@ -11,7 +12,7 @@ function SizeRow({ initial }: { initial: PvcSize }) {
     const update = { price: Number(price), available: Number(stock) };
     if (!stock || !Number.isSafeInteger(update.available) || update.available < 0 ||
         !Number.isSafeInteger(update.price) || update.price < 1) return toast.error("Enter a valid price and stock count.");
-    const { data } = await supabase.from("pvc_sheet_sizes").update(update)
+    const { data } = await supabase.from(sheetInventory(productId) || "pvc_sheet_sizes").update(update)
       .eq("size", saved.size).eq("available", saved.available).eq("price", saved.price).select().maybeSingle();
     if (!data) return toast.error("Could not save. Reopen this product to refresh stock.");
     setSaved(data);
@@ -24,7 +25,7 @@ function SizeRow({ initial }: { initial: PvcSize }) {
     <button type="button" onClick={save}>Save size</button>
   </div>;
 }
-export function PvcSizeEditor() {
-  const sizes = usePvcSizes(true);
-  return <fieldset><legend>Shared PVC sheet prices and stock</legend>{sizes.map(row=><SizeRow key={row.size} initial={row}/>)}</fieldset>;
+export function PvcSizeEditor({ productId }: { productId?: string }) {
+  const sizes = usePvcSizes(true, productId);
+  return <fieldset><legend>Shared PVC sheet prices and stock</legend>{sizes.map(row=><SizeRow key={productId + row.size} initial={row} productId={productId}/>)}</fieldset>;
 }

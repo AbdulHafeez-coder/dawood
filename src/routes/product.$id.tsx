@@ -1,4 +1,5 @@
 import { isPvcSheet, usePvcSizes } from "@/lib/pvc-sizes";
+import { sheetInventory, sheetDesigns } from "@/lib/sheet-inventory.js";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Heart, Minus, Plus, ArrowLeft } from "lucide-react";
@@ -58,9 +59,13 @@ function ProductPage() {
     setQty(1);
   }, [p.id]);
   const linked = isPvcSheet(p.id);
-  const sizes = usePvcSizes(linked);
-  const [size, setSize] = useState("36x57");
-  const variant = sizes.find(row => row.size === size);
+  const decorative = sheetInventory(p.id) === 'decorative_sheet_sizes';
+  const sizes = usePvcSizes(linked, p.id);
+  const [size, setSize] = useState(decorative ? "36x60" : "36x57");
+  const [designId, setDesignId] = useState('blue');
+  const design = sheetDesigns.find(d => d.id === designId) || sheetDesigns[0];
+  useEffect(() => { setSize(decorative ? '36x60' : '36x57'); setDesignId('blue'); }, [p.id, decorative]);
+  const variant = linked ? sizes.find(row => row.size === size) : undefined;
   const available = canPurchase(p) && (!linked || !!variant && qty <= variant.available);
   const name = p.display_name || p.name;
   const { products: related } = useProducts({ category: p.category, pageSize: 5 });
@@ -69,8 +74,8 @@ function ProductPage() {
     setBusy(true);
     try {
       await assertPurchasable(supabase, [p.id]);
-      const item = linked && variant ? { ...p, id: p.id + "::" + size, price: variant.price } : p;
-      if (addToCart(item, qty, { baseId: p.id, baseName: name, ...(linked ? { variantSize: size, variantSizeLabel: size + " inches" } : {}) })) {
+      const item = linked && variant ? { ...p, id: p.id + "::" + size + (decorative ? '::' + design.id : ''), price: variant.price, ...(decorative ? { img: p.gallery[sheetDesigns.indexOf(design)] || design.image } : {}) } : p;
+      if (addToCart(item, qty, { baseId: p.id, baseName: name, ...(linked ? { variantSize: size, variantSizeLabel: size + " inches" } : {}), ...(decorative ? { variantColor: design.id, variantColorLabel: design.label } : {}) })) {
         toast.success("Added to your cart");
         setCart(true);
       }
@@ -101,7 +106,7 @@ function ProductPage() {
           </a>
         </div>
         <section className="dm-detail">
-          <ProductGallery key={p.id} images={[p.img, ...(p.gallery ?? [])]} video={p.video} name={name} />
+          <ProductGallery key={p.id + (decorative ? designId : '')} images={decorative ? [p.gallery[sheetDesigns.indexOf(design)] || design.image, p.img, ...p.gallery] : [p.img, ...(p.gallery ?? [])]} video={p.video} name={name} />
           <div className="dm-detail-copy">
             <p className="dm-eyebrow">MADE FOR YOUR EVERYDAY</p>
             <h1>{name}</h1>
@@ -112,8 +117,9 @@ function ProductPage() {
               ) : null}
             </div>
             <>{linked && <label>Sheet size <select value={size} onChange={e => { setSize(e.target.value); setQty(1); }}>{sizes.map(row => <option key={row.size} value={row.size}>{row.size.replace("x"," × ")} inches</option>)}</select></label>}</>
+            {decorative && <fieldset style={{border:0,padding:0,margin:'16px 0'}}><legend>Choose your design / ڈیزائن منتخب کریں</legend><div style={{display:'flex',gap:8,flexWrap:'wrap'}}>{sheetDesigns.map((d,i) => <button key={d.id} type="button" aria-pressed={designId === d.id} onClick={() => setDesignId(d.id)} style={{width:82,padding:4,border:designId === d.id ? '2px solid #49735b' : '1px solid #ddd',borderRadius:8}}><img src={p.gallery[i] || d.image} alt={d.label} loading="lazy" style={{width:'100%',aspectRatio:'1',objectFit:'cover'}}/><span>{d.label}</span></button>)}</div><p>36 × 60 inches / 3 × 5 feet · One sheet</p></fieldset>}
             <p className="dm-availability" role="status">
-              {linked && variant && canPurchase(p) ? variant.available + " available" : available ? "In stock" : "Out of stock"}
+              {linked && variant && canPurchase(p) ? variant.available + (decorative ? " available — shared stock for Center Table & Dastarkhwan" : " available") : available ? "In stock" : "Out of stock"}
             </p>
             <p className="dm-description">{p.description}</p>
             <div className="dm-purchase">
@@ -162,6 +168,7 @@ function ProductPage() {
             </details>
           </div>
         </section>
+        {decorative && <section className="dm-section"><h2>Installed Photos</h2><p>Product styling photos supplied by Dawood Mart. These are not customer reviews. Table and accessories are not included.</p><div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:12}}>{[...new Set([p.img,...p.gallery])].map((src,i) => <img key={src} src={src} alt={`Table sheet installed view ${i+1}`} loading="lazy" style={{width:'100%',borderRadius:12}}/>)}</div></section>}
         {related.some((r) => r.id !== p.id) && (
           <section className="dm-section">
             <div className="dm-section-heading">

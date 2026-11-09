@@ -87,7 +87,7 @@ function CheckoutPage() {
     );
 
     const primary = cart[0];
-    const pvcLines = cart.filter(p => isPvcSheet(p.baseId || p.id)).map(p => ({ product: p.baseId || p.id, size: p.variantSize || "", qty: p.qty, price: p.price }));
+    const pvcLines = cart.filter(p => isPvcSheet(p.baseId || p.id)).map(p => ({ product: p.baseId || p.id, size: p.variantSize || "", qty: p.qty, price: p.price, design: p.variantColor }));
     try { await saveOrder({
       kind: "cart",
       url,

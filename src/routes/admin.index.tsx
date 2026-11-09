@@ -2044,7 +2044,7 @@ function ProductFormDialog({
           <ProductFormSkeleton mode={mode} />
         ) : (
           <form onSubmit={submit} className="space-y-4" style={inter}>
-            {isPvcSheet(product?.id) && <PvcSizeEditor />}
+            {isPvcSheet(product?.id) && <PvcSizeEditor productId={product?.id} />}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Field label="Name">
                 <input
