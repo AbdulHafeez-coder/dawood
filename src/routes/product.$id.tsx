@@ -101,8 +101,8 @@ function ProductPage() {
             Shop
           </Link>
           <span>/</span>
-          <a href={`/?category=${encodeURIComponent(customerCategory(p.category))}#shop`}>
-            {customerCategory(p.category)}
+          <a href={decorative ? `/category/sheets?sub=${encodeURIComponent(p.tagline)}#shop` : `/?category=${encodeURIComponent(customerCategory(p.category))}#shop`}>
+            {decorative ? `Sheets / ${p.tagline}` : customerCategory(p.category)}
           </a>
         </div>
         <section className="dm-detail">
