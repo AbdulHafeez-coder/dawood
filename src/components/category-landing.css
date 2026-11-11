@@ -448,3 +448,84 @@
   height: 100%;
   object-fit: cover;
 }
+
+/* Collection interiors: supplied banner, compact image links, then catalog. */
+.dm-collection-banner {
+  max-width: 1440px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 8px;
+}
+.dm-collection-banner img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.dm-collection-title {
+  font-size: clamp(24px, 3vw, 34px);
+  font-weight: 500;
+  margin: 0;
+}
+.dm-collection-discover {
+  padding-top: 24px;
+  padding-bottom: 16px;
+}
+.dm-subcategory-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.dm-subcategory-link {
+  flex: 0 0 132px;
+  text-align: center;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 8px;
+}
+.dm-subcategory-link .dm-subcategory-cover,
+.dm-subcategory-link .dm-subcategory-empty {
+  display: flex;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  background: #f3f1eb;
+  object-fit: contain;
+  padding: 12px;
+}
+.dm-subcategory-link:hover .dm-subcategory-cover,
+.dm-subcategory-link[aria-current="true"] .dm-subcategory-cover,
+.dm-subcategory-link[aria-current="true"] .dm-subcategory-empty {
+  border-color: #65705b;
+}
+.dm-subcategory-link:focus-visible {
+  outline: 2px solid #65705b;
+  outline-offset: 4px;
+}
+.dm-subcategory-link .dm-subcategory-empty p { display: none; }
+.dm-subcategory-link .dm-subcategory-copy { padding: 10px 0 0; }
+.dm-subcategory-link .dm-subcategory-copy h3 {
+  display: block;
+  font-size: 13px;
+  line-height: 1.4;
+  margin: 0;
+}
+.dm-subcategory-link .dm-subcategory-count {
+  font-size: 11px;
+  margin: 4px 0 0;
+}
+@media (max-width: 600px) {
+  .dm-collection-banner { border-radius: 0; }
+  .dm-subcategory-links {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 12px;
+    padding: 4px 4px 12px;
+    scroll-snap-type: x proximity;
+  }
+  .dm-subcategory-link { flex-basis: 98px; scroll-snap-align: start; }
+  .dm-subcategory-link .dm-subcategory-cover,
+  .dm-subcategory-link .dm-subcategory-empty { width: 88px; height: 88px; padding: 8px; }
+  .dm-subcategory-link .dm-subcategory-copy h3 { font-size: 12px; }
+}

@@ -18,7 +18,6 @@ import { publicProducts } from "@/lib/product-queries";
 import { supabase } from "@/lib/supabase";
 import { rowToProduct, type Product } from "@/lib/shop";
 import { StoreImage } from "./StoreImage";
-import { formatPKR } from "@/lib/format";
 import "./category-landing.css";
 
 export const collections: Record<string, { title: string; intro: string }> = {
@@ -203,7 +202,6 @@ export function CategoryLanding({
   isFav: (id: string) => boolean;
   toggleFav: (p: Product) => void;
 }) {
-  const content = collections[name];
   const images = useCategoryImages();
   const categories = collectionSubcategories(name).map((s) => {
     const matching = products.filter((p) => s.matches(p));
@@ -227,32 +225,32 @@ export function CategoryLanding({
           </a>
         ))}
       </nav>
-      <section className="dm-collection-hero">
-        <div className="dm-collection-copy">
-          <p className="dm-eyebrow">THE DAWOOD MART EDIT / {name}</p>
-          <h1>{content.title}</h1>
-          <p>{content.intro}</p>
-          <a className="dm-button" href="#shop">
-            Shop {name} <ArrowRight size={18} />
-          </a>
-        </div>
-        <CategoryArtwork name={name} eager />
-      </section>
+      <div className="dm-collection-banner">
+        <img
+          src={`/images/storefront/banners/${name.toLowerCase()}-1600.webp`}
+          srcSet={`/images/storefront/banners/${name.toLowerCase()}-800.webp 800w, /images/storefront/banners/${name.toLowerCase()}-1600.webp 1600w`}
+          sizes="(max-width: 1440px) 100vw, 1440px"
+          alt={`Dawood Mart ${name} collection`}
+          width={1600}
+          height={900}
+          loading="eager"
+          fetchPriority="high"
+        />
+      </div>
       <section className="dm-section dm-collection-discover">
         <div className="dm-section-heading">
           <div>
-            <p className="dm-eyebrow">FIND YOUR EVERYDAY</p>
-            <h2>Explore {name.toLowerCase()}</h2>
+            <h1 className="dm-collection-title">{name}</h1>
           </div>
           <a href="#shop" onClick={() => onSubcategory(undefined)}>
             View all <ArrowRight size={16} />
           </a>
         </div>
-        <nav className="dm-subcategory-grid" aria-label={`${name} subcategories`}>
+        <nav className="dm-subcategory-links" aria-label={`${name} subcategories`}>
           {categories.map((s) => (
             <a
               key={s.name}
-              className="dm-subcategory-card"
+              className="dm-subcategory-link"
               href={`/category/${name.toLowerCase()}?sub=${encodeURIComponent(s.name)}#shop`}
               aria-current={sub === s.name ? "true" : undefined}
               onClick={(e) => {
@@ -268,7 +266,7 @@ export function CategoryLanding({
                   src={images[`${name} / ${s.name}`] || s.preview!.img}
                   alt={s.name}
                   loading="lazy"
-                  sizes="(max-width: 600px) 45vw, 25vw"
+                  sizes="(max-width: 600px) 88px, 120px"
                 />
               ) : (
                 <EmptyCategoryImage name={s.name} loading={loading} />
@@ -276,31 +274,10 @@ export function CategoryLanding({
               <div className="dm-subcategory-copy">
                 <h3>
                   {s.name}
-                  <ArrowRight size={17} />
                 </h3>
                 <p className="dm-subcategory-count">
                   {loading ? "Loading…" : `${s.products.length} products`}
                 </p>
-                {s.preview && (
-                  <>
-                    <p className="dm-preview-name">{s.preview.display_name || s.preview.name}</p>
-                    <strong>{formatPKR(s.preview.price)}</strong>
-                    <div className="dm-preview-thumbnails">
-                      {[...new Set([s.preview.img, ...(s.preview.gallery || [])])]
-                        .filter(Boolean)
-                        .slice(0, 4)
-                        .map((src) => (
-                          <StoreImage
-                            key={src}
-                            src={src}
-                            alt={s.preview!.name}
-                            loading="lazy"
-                            sizes="48px"
-                          />
-                        ))}
-                    </div>
-                  </>
-                )}
               </div>
             </a>
           ))}
