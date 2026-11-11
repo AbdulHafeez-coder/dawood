@@ -225,22 +225,19 @@ export function CategoryLanding({
           </a>
         ))}
       </nav>
-      <div className="dm-collection-banner">
-        <img
-          src={`/images/storefront/banners/${name.toLowerCase()}-1600.webp`}
-          srcSet={`/images/storefront/banners/${name.toLowerCase()}-800.webp 800w, /images/storefront/banners/${name.toLowerCase()}-1600.webp 1600w`}
-          sizes="(max-width: 1440px) 100vw, 1440px"
-          alt={`Dawood Mart ${name} collection`}
-          width={1600}
-          height={900}
-          loading="eager"
-          fetchPriority="high"
-        />
-      </div>
+      <section className="dm-simple-hero" aria-label={`${name} collection`}>
+        <div className="dm-simple-hero-copy">
+          <p className="dm-eyebrow">EVERYDAY HOME ESSENTIALS</p>
+          <h1>{name}</h1>
+          <p>{collections[name].intro}</p>
+          <a href="#shop">Explore collection <ArrowRight size={16} /></a>
+        </div>
+        <CategoryArtwork name={name} eager />
+      </section>
       <section className="dm-section dm-collection-discover">
         <div className="dm-section-heading">
           <div>
-            <h1 className="dm-collection-title">{name}</h1>
+            <h2 className="dm-collection-title">Shop by type</h2>
           </div>
           <a href="#shop" onClick={() => onSubcategory(undefined)}>
             View all <ArrowRight size={16} />

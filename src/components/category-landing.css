@@ -449,18 +449,28 @@
   object-fit: cover;
 }
 
-/* Collection interiors: supplied banner, compact image links, then catalog. */
-.dm-collection-banner {
+/* Quiet collection introduction; compact image links lead into the catalog. */
+.dm-simple-hero {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
   max-width: 1440px;
   margin: 0 auto;
   overflow: hidden;
   border-radius: 8px;
+  background: #f3f0e9;
 }
-.dm-collection-banner img {
-  display: block;
-  width: 100%;
-  height: auto;
+.dm-simple-hero-copy { align-self: center; padding: clamp(24px, 5vw, 64px); }
+.dm-simple-hero-copy h1 {
+  font-size: clamp(32px, 4vw, 56px);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  margin: 14px 0;
 }
+.dm-simple-hero-copy > p:not(.dm-eyebrow) { max-width: 42ch; line-height: 1.65; color: #62665c; }
+.dm-simple-hero-copy > a { display: inline-flex; align-items: center; gap: 10px; margin-top: 22px; font-size: 13px; border-bottom: 1px solid; padding-bottom: 6px; }
+.dm-simple-hero > .dm-category-art,
+.dm-simple-hero > .dm-category-custom { aspect-ratio: 1; max-height: 380px; }
 .dm-collection-title {
   font-size: clamp(24px, 3vw, 34px);
   font-weight: 500;
@@ -516,7 +526,14 @@
   margin: 4px 0 0;
 }
 @media (max-width: 600px) {
-  .dm-collection-banner { border-radius: 0; }
+  .dm-simple-hero { border-radius: 0; grid-template-columns: 1.15fr 1fr; }
+  .dm-simple-hero-copy { padding: 22px 16px; }
+  .dm-simple-hero-copy .dm-eyebrow { font-size: 9px; letter-spacing: 0.08em; }
+  .dm-simple-hero-copy h1 { font-size: 28px; }
+  .dm-simple-hero-copy > p:not(.dm-eyebrow) { font-size: 12px; line-height: 1.5; }
+  .dm-simple-hero-copy > a { font-size: 11px; margin-top: 14px; }
+  .dm-simple-hero > .dm-category-art,
+  .dm-simple-hero > .dm-category-custom { aspect-ratio: auto; height: 100%; min-height: 250px; }
   .dm-subcategory-links {
     flex-wrap: nowrap;
     overflow-x: auto;
