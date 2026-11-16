@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { StoreHeader } from "@/components/StoreHeader";
 import { ProductGallery } from "@/components/ProductGallery";
 import { WallpaperPackages, isWallpaperPackage } from "@/components/WallpaperPackages";
+import { WallpaperInstallations, hasWallpaperInstallations } from "@/components/WallpaperInstallations";
 import { ProductCard } from "@/components/ProductCard";
 import { SiteFooter } from "@/components/SiteFooter";
 import { LazyCartDrawer } from "@/components/LazyCartDrawer";
@@ -171,6 +172,7 @@ function ProductPage() {
           </div>
         </section>
         {decorative && <section className="dm-section"><h2>Installed Photos</h2><p>Product styling photos supplied by Dawood Mart. These are not customer reviews. Table and accessories are not included.</p><div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:12}}>{[...new Set([p.img,...p.gallery])].map((src,i) => <img key={src} src={src} alt={`Table sheet installed view ${i+1}`} loading="lazy" style={{width:'100%',borderRadius:12}}/>)}</div></section>}
+        {hasWallpaperInstallations(p) && <WallpaperInstallations />}
         {related.some((r) => r.id !== p.id) && (
           <section className="dm-section">
             <div className="dm-section-heading">

@@ -214,7 +214,7 @@ export function rowToProduct(r: ProductRow): Product {
     seo_title: r.seo_title ?? undefined,
     seo_description: r.seo_description ?? undefined,
     tag: r.tag ?? "",
-    price: isPvcSheet(r.id) || /^(fabric-wallpaper-(1-sheet|[2348]-sheets)|wallpaper-glue-(1kg|500g))$/.test(r.id) ? originalPrice : discountedPrice,
+    price: isPvcSheet(r.id) || /^(fabric-wallpaper-(1-sheet|[2348]-sheets|half-wall-(10|20)|half-room-(10|13))|wallpaper-glue-(1kg|500g))$/.test(r.id) ? originalPrice : discountedPrice,
     original_price: originalPrice,
     rating: typeof r.rating === "string" ? Number(r.rating) : r.rating,
     img: r.img ?? "",
