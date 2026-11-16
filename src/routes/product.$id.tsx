@@ -11,6 +11,7 @@ import { formatPKR } from "@/lib/format";
 import { toast } from "sonner";
 import { StoreHeader } from "@/components/StoreHeader";
 import { ProductGallery } from "@/components/ProductGallery";
+import { WallpaperPackages, isWallpaperPackage } from "@/components/WallpaperPackages";
 import { ProductCard } from "@/components/ProductCard";
 import { SiteFooter } from "@/components/SiteFooter";
 import { LazyCartDrawer } from "@/components/LazyCartDrawer";
@@ -122,6 +123,7 @@ function ProductPage() {
               {linked && variant && canPurchase(p) ? variant.available + (decorative ? " available — shared stock for Center Table & Dastarkhwan" : " available") : available ? "In stock" : "Out of stock"}
             </p>
             <p className="dm-description">{p.description}</p>
+            {isWallpaperPackage(p.id) && <WallpaperPackages product={p} />}
             <div className="dm-purchase">
               <div className="dm-quantity">
                 <button
