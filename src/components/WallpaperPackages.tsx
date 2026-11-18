@@ -14,19 +14,25 @@ const packages = [
   { id: "fabric-wallpaper-half-room-13", label: "Half room · 10 × 11–13 ft · 5 ft high", sheets: 5 },
 ];
 
+const chinaPackages = packages.slice(0, 4).map((pack) => ({
+  ...pack,
+  id: `china-${pack.id}`,
+}));
+
 export function isWallpaperPackage(id: string) {
-  return packages.some((pack) => pack.id === id);
+  return [...packages, ...chinaPackages].some((pack) => pack.id === id);
 }
 
 export function WallpaperPackages({ product }: { product: Product }) {
-  const { products } = useProducts({ ids: packages.map((pack) => pack.id), pageSize: packages.length });
+  const availablePackages = product.id.startsWith("china-") ? chinaPackages : packages;
+  const { products } = useProducts({ ids: availablePackages.map((pack) => pack.id), pageSize: availablePackages.length });
   const catalog = [product, ...products];
   return (
     <section aria-label="Wallpaper wall-size packages" style={{ marginBlock: 24 }}>
       <h2 style={{ fontSize: 18, marginBottom: 8 }}>Choose your wall size · دیوار کا سائز</h2>
       <p style={{ fontSize: 13, marginBottom: 12 }}>Each sheet is 5 × 10 ft. Half-wall sheets cover 10 ft horizontally at 5 ft high; check pattern direction before fitting. / ہر شیٹ 5 × 10 فٹ؛ ہاف وال کی اونچائی 5 فٹ ہے۔</p>
       <div style={{ display: "grid", gap: 8 }}>
-        {packages.map((pack) => {
+        {availablePackages.map((pack) => {
           const item = catalog.find((p) => p.id === pack.id && p.is_active !== false);
           if (!item) return null;
           return (
