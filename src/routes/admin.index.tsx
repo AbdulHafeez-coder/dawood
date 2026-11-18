@@ -492,6 +492,7 @@ function AdminDashboard() {
           description: d.description ?? "",
           details: d.details ?? [],
           gallery: d.gallery && d.gallery.length ? d.gallery : [d.img || fallbackImg],
+          video: d.video,
         };
         const existing = d.id ? existingProducts.find((p) => p.id === d.id) : undefined;
         if (existing) {

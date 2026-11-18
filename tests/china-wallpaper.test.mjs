@@ -45,3 +45,12 @@ test('package chooser keeps China packages separate from existing packages', () 
   assert.equal(requested.length, 9);
   assert.ok(requested.every(id => !id.startsWith('china-')));
 });
+
+test('CSV import preserves the product video', () => {
+  const source = fs.readFileSync(new URL('../src/routes/admin.index.tsx', import.meta.url), 'utf8');
+  const start = source.indexOf('const payload = {');
+  const payloadCode = source.slice(start, source.indexOf('\n        };', start) + '\n        };'.length);
+  const d = { name: 'China Wallpaper', category: 'Wall paper sheets', price: 2000, video: '/images/products/china-fabric-wallpaper/paper5.mp4' };
+  const payload = new Function('d', 'fallbackImg', 'fallbackBg', payloadCode + ';return payload;')(d, '', '');
+  assert.equal(payload.video, d.video);
+});
